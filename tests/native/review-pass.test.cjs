@@ -86,7 +86,7 @@ it('Toast notices are one-row capsules: severity symbol, message, action, then a
  const capsule=json(root.toJSON(),n=>jsonStyle(n)?.backgroundColor===colors.nested);
  expect(jsonStyle(capsule)).toMatchObject({flexDirection:'row',alignItems:'center',minHeight:44,borderRadius:22});expect(jsonStyle(capsule).borderWidth).toBeUndefined();
  const parts=capsule.children;expect(parts).toHaveLength(4);
- expect(json(parts[0],n=>[jsonStyle(n)?.borderColor,jsonStyle(n)?.backgroundColor].includes(colors.negative))).toBeTruthy();
+ expect(json(parts[0],n=>n.type==='ExpoImage').props.tintColor).toBe(colors.negative);
  expect(jsonStyle(parts[1])).toMatchObject({flex:1});expect(json(parts[1],n=>n.type==='Text').children).toEqual(['Order failed']);
  expect(json(parts[2],n=>n.type==='Text').children).toEqual(['Retry']);
  expect(parts[3].props.accessibilityLabel).toBe('Dismiss Order failed');expect(json(parts[3].children,n=>n.type==='Text')).toBeNull();

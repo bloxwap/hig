@@ -1,4 +1,7 @@
 "use client";
+import { ArrowDown } from '@bloxwap/icons/react/arrow-down';
+import { ArrowUp } from '@bloxwap/icons/react/arrow-up';
+import { ChevronRight } from '@bloxwap/icons/react/chevron-right';
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
@@ -69,8 +72,8 @@ const pnlFormat={style:'currency',currency:'USD',signDisplay:'exceptZero',minimu
 const skeletons=[0,1,2,3];
 /** How a row reads its side: `Short 20×`, or `Short` without leverage. */
 export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{leverageNote?:string},labels:Pick<TradeHistoryListLabels,'long'|'short'>,locale?:string):string=>`${trade.side==='long'?labels.long:labels.short}${trade.leverage!=null?` ${formatNumber(trade.leverage,locale)}×`:''}${trade.leverageNote?` ${trade.leverageNote}`:''}`;
-const arrow=(side:'long'|'short')=><svg aria-hidden='true' focusable='false' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'>{side==='long'?<path d='M8 13V3.5M4 7.5l4-4 4 4'/>:<path d='M8 3v9.5M4 8.5l4 4 4-4'/>}</svg>;
-const chevron=<svg className='hig-trade-row-chevron' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><path d='m7.5 4.5 5.5 5.5-5.5 5.5'/></svg>;
+const arrow=(side:'long'|'short')=>(side==='long'?<ArrowUp size={16}/>:<ArrowDown size={16}/>);
+const chevron=<ChevronRight size={20} className='hig-trade-row-chevron'/>;
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
 export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,stickyHeader,headingId,className,...rest}:TradeHistoryListBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();

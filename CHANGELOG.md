@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Use the published `@bloxwap/icons` package for shared web and native UI symbols. Consumers of these components install `@bloxwap/icons@^0.1.0`; native consumers also install their Expo SDK-compatible `expo-image` version and rebuild their development client. Icons remain decorative unless explicitly labelled.
+- Add a wider, softer glow beneath the gesture sheet handle.
+
 ## 0.8.0 (2026-11-17)
 
 - Enforce amount precision, asset identity and submission guards across swap panels; preserve nested provider settings and controlled ownership. Validate numeric and collection boundaries, Field semantics and sheet detents; clean up async results and expire stale chart feeds. Serialize feedback preference writes and cap confetti at 500 particles per burst and eight simultaneous or queued bursts per renderer.

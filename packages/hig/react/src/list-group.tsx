@@ -1,4 +1,7 @@
 "use client";
+import { ArrowUpRight } from '@bloxwap/icons/react/arrow-up-right';
+import { Check } from '@bloxwap/icons/react/check';
+import { ChevronRight } from '@bloxwap/icons/react/chevron-right';
 import React,{Children,forwardRef,useId,useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useControllable,useHIG} from './provider.js';
@@ -71,10 +74,9 @@ export interface ListRowProps extends Omit<React.HTMLAttributes<HTMLElement>,'on
  defaultChecked?:boolean;
  onCheckedChange?:(checked:boolean)=>void;
 }
-const svg={'aria-hidden':true,focusable:false,viewBox:'0 0 20 20',width:20,height:20,fill:'none',stroke:'currentColor',strokeLinecap:'round',strokeLinejoin:'round'} as const;
-const chevron=<svg className='hig-list-row-chevron' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><path d='m7.5 4.5 5.5 5.5-5.5 5.5'/></svg>;
-const external=<svg {...svg} className='hig-list-row-chevron' data-glyph='external' strokeWidth='1.8'><path d='M6.5 13.5 14 6M8 5.5h6.5V12'/></svg>;
-const check=<svg {...svg} className='hig-list-row-check' strokeWidth='2'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
+const chevron=<ChevronRight size={20} className='hig-list-row-chevron'/>;
+const external=<ArrowUpRight size={20} className='hig-list-row-chevron' data-glyph='external'/>;
+const check=<Check size={20} className='hig-list-row-check'/>;
 /** One row of a `ListGroup`: the label leads; a value, icons, a badge or a control trail. With `onSelect` or `href` the whole row is one target and shows a disclosure chevron; with `checked` or `onCheckedChange` the whole row is a switch; otherwise the row is static, so a control in `trailing` is its only target. The ref reaches the row's element. */
 export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<HTMLElement>>=/* @__PURE__ */forwardRef<HTMLElement,ListRowProps>(function ListRow({label,description,tone,leading,value,valueLabel,valueTone,trailing,onSelect,href,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,className,...rest},ref){
  const {messages}=useHIG();const descriptionId=useId();const input=useRef<HTMLInputElement>(null);

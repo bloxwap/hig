@@ -1,3 +1,4 @@
+import { Copy } from '@bloxwap/icons/native/copy';
 import {useAsyncResult} from './async-result.js';
 import React from 'react';
 import {Pressable,View} from 'react-native';
@@ -20,7 +21,7 @@ export interface WalletAddressCoreProps {
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** Two overlapping rounded squares: copy. */
-function CopyIcon({color}: {color:string}){return <View {...hidden} style={{width:16,height:16}}><View style={{position:'absolute',left:0,top:0,width:11,height:11,borderRadius:3,borderWidth:1.5,borderColor:color}}/><View style={{position:'absolute',right:0,bottom:0,width:11,height:11,borderRadius:3,borderWidth:1.5,borderColor:color}}/></View>;}
+function CopyIcon({color}: {color:string}){return <Copy size={16} color={color}/>;}
 /** @internal The layout both `WalletAddress` entries share. `code` is the QR as drawn, already named for assistive technology. */
 export function WalletAddressFrame({address,kind,code,size=196,onCopy,announce=true,testID}:Omit<WalletAddressCoreProps,'qr'>&{code:React.ReactNode}){
  const colors=useColors();const t=useMessages();const {notice,show,dismiss}=useTransientNotice();

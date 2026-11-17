@@ -73,7 +73,7 @@ it('draws nothing while idle, then the HIG capsule with its message, description
 });
 
 it('paints the capsule and its severity symbol from the provider roles, Display P3 on an iOS P3 host',()=>{
- const painted=()=>{const colors=new Set();for(const node of root.root.findAll(node=>typeof node.type==='string'))for(const part of flat(node.props.style))for(const value of Object.values(part))if(typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value))colors.add(value);return colors;};
+ const painted=()=>{const colors=new Set();for(const node of root.root.findAll(node=>typeof node.type==='string'))for(const part of [...flat(node.props.style),{tintColor:node.props.tintColor}])for(const value of Object.values(part))if(typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value))colors.add(value);return colors;};
  mount();act(()=>{toast.success('Saved');toast.error('Failed');toast.warning('Slow network');toast.info('Synced');});
  const srgb=painted();
  for(const role of ['positive','negative','warning','info','nested','muted'])expect(srgb.has(nativeSrgb[role])).toBe(true);

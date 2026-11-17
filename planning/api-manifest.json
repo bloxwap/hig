@@ -2816,14 +2816,6 @@
         "entry": "icons",
         "signature": "export declare function EditIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
       },
-      "SeverityIconKind": {
-        "entry": "icons",
-        "signature": "export type SeverityIconKind = 'info' | 'success' | 'warning' | 'error';"
-      },
-      "SeverityIcon": {
-        "entry": "icons",
-        "signature": "export declare function SeverityIcon({ kind, color }: {\n    kind: SeverityIconKind;\n    color: string;\n}): React.JSX.Element;"
-      },
       "EmptyIcon": {
         "entry": "icons",
         "signature": "export declare function EmptyIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
@@ -2831,6 +2823,14 @@
       "EyeIcon": {
         "entry": "icons",
         "signature": "export declare function EyeIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "SeverityIconKind": {
+        "entry": "icons",
+        "signature": "export type SeverityIconKind = 'info' | 'success' | 'warning' | 'error';"
+      },
+      "SeverityIcon": {
+        "entry": "icons",
+        "signature": "export declare function SeverityIcon({ kind, color }: {\n    kind: SeverityIconKind;\n    color: string;\n}): React.JSX.Element;"
       },
       "TrendIcon": {
         "entry": "icons",

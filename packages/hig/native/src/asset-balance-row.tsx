@@ -1,3 +1,4 @@
+import { Check } from '@bloxwap/icons/native/check';
 import React,{useState} from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
 import {useColors,useFills,useNumberLocale,usePresentNumber} from './provider.js';
@@ -67,7 +68,7 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
   </View>:null}
   {trailing!=null&&trailing!==false&&!split?<View {...hidden} testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>:null}
  </>;
- const check=selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:strong,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null;
+ const check=selected?<Check size={20} color={strong} testID={testID?`${testID}-check`:undefined}/>:null;
  if(split){
   // The control leaves the row's element: the rest is one element (or button), the control its own target beside it.
   const main:ViewStyle={flex:1,minWidth:0,flexDirection:'row',alignItems:'center',gap:12,alignSelf:'stretch'};

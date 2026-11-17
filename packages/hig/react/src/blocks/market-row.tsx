@@ -1,4 +1,5 @@
 "use client";
+import { Check } from '@bloxwap/icons/react/check';
 import React,{forwardRef} from 'react';
 import {Button} from '../button.js';
 import {Usd,Percent} from '../data.js';
@@ -23,7 +24,7 @@ interface MarketRowContent extends Omit<React.HTMLAttributes<HTMLDivElement>,'ch
  active?:boolean;
 }
 export type MarketRowProps=MarketRowContent&({/** Default: HIG owns the name button and its accepted activation. */mode?:'action';onSelect:()=>void;identity?:never}|{/** Host owns selection/keyboard semantics, for example a cmdk option. HIG adds no action or tab stop. */mode:'presentation';onSelect?:never;/** Host market identity, such as symbol/name with its existing compact layout. */identity?:React.ReactNode});
-const check=<svg className='hig-market-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
+const check=<Check size={20} className='hig-market-check'/>;
 /** A market as one row: its name (a button, or the host's identity in presentation mode), price and change. Other attributes, pointer handlers and the ref reach the row's root. */
 export const MarketRow=forwardRef<HTMLDivElement,MarketRowProps>(function MarketRow({symbol,name,price,change,onSelect,priceOptions,changeOptions,mode='action',identity,icon,favorite,volume,detail,trailing,selected,disabled,active,className,style,...rest},ref){
  // The name sits in its own span so an action row can truncate it on one line instead of wrapping.

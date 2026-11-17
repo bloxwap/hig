@@ -1,3 +1,4 @@
+import { Check } from '@bloxwap/icons/native/check';
 import React,{forwardRef} from 'react';
 import {View,type GestureResponderEvent,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors,useFills} from './provider.js';
@@ -69,7 +70,7 @@ export const MarketRow:React.ForwardRefExoticComponent<MarketRowProps&React.RefA
   {identityCell}
   {figures}
   {trailing!=null&&trailing!==false?<View testID={testID?`${testID}-trailing`:undefined} style={[{flexDirection:'row',alignItems:'center',gap:8,flexShrink:1,minWidth:0,overflow:'hidden'},dim]}>{trailing}</View>:null}
-  {selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:colors.text,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null}
+  {selected?<Check size={20} color={colors.text} testID={testID?`${testID}-check`:undefined}/>:null}
  </>;
  const plain=!ref&&!leading&&detail===undefined&&price!==undefined&&change!==undefined&&volume===undefined&&trailing==null&&!selected&&!disabled&&!active&&!onPressIn&&mode==='action'&&!testID&&!style;
  // Without host options the row is exactly the 0.6.0 one: the name button, the price and the change in a wrapping Row.

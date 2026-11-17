@@ -26,3 +26,6 @@ jest.mock('react-native-reanimated',()=>{
   ReduceMotion:{Never:'never',System:'system',Always:'always'},
  };
 });
+
+// Native image decoding is exercised in the simulator fixture; Jest checks view props.
+jest.mock('expo-image',()=>({Image:'ExpoImage'}));

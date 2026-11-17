@@ -18,7 +18,7 @@ cpSync('fixtures/native',dir,{recursive:true,filter:s=>!s.includes('/node_module
 writeFileSync(join(dir,'assets.d.ts'),readFileSync('types/assets.d.ts'));
 writeFileSync(join(dir,'package.json'),JSON.stringify(manifest,null,2));
 const tarballs=[process.env.HIG_REGISTRY_VERSION?`@bloxwap/hig@${process.env.HIG_REGISTRY_VERSION}`:process.env.HIG_PACKED_TARBALL||packedTarball()];
-execFileSync('npm',['install','--no-audit','--no-fund',...tarballs],{cwd:dir,stdio:'pipe'});
+execFileSync('npm',['install','--no-audit','--no-fund','@bloxwap/icons@^0.1.0',...tarballs],{cwd:dir,stdio:'pipe'});
 const staticData=readFileSync(join(dir,'node_modules/@bloxwap/hig/native/dist/data.js'),'utf8');
 assert.doesNotMatch(staticData,/react-native-reanimated|react-native-worklets/,'Ordinary native data must remain animation-engine-free');
 const runtime=verifyNativeReact(dir);console.log('Native runtime versions',runtime);console.log('Expo native modules',verifyExpoNativeModules(dir));

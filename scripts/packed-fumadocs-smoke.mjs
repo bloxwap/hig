@@ -10,7 +10,7 @@ const directory=scratchDir('hig-fumadocs-');
 const tarball=packedTarball();
 assert.ok(existsSync(tarball),`Run smoke:packed first: missing ${tarball}`);
 writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module',dependencies:{
- '@bloxwap/hig':`file:${tarball}`,
+ '@bloxwap/hig':`file:${tarball}`,'@bloxwap/icons':'^0.1.0',
  'fumadocs-ui':fumadocs,'fumadocs-core':fumadocs,next:'16.4.0',react:'19.2.0','react-dom':'19.2.0',
  // Fumadocs supplies dialog and popover; the consumer adds the remaining optional HIG overlay peers at their current releases.
  '@radix-ui/react-dropdown-menu':'^2.1.16','@radix-ui/react-tooltip':'^1.2.8'}},null,2));

@@ -1,3 +1,4 @@
+import { Check } from '@bloxwap/icons/native/check';
 import React,{useMemo,useState} from 'react';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {StickyHeaderLayout} from './sticky-header.js';
@@ -77,7 +78,7 @@ export function LanguageBlock({title,onBack,headerAction,languages,value=null,on
       <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{language.name}</Text>
       {language.description?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{language.description}</Text>:null}
      </View>
-     {selected?<View {...hidden} testID={testID?`${testID}-check`:undefined} style={{width:20,height:20,alignItems:'center',justifyContent:'center'}}><View style={{width:6,height:12,borderRightWidth:2,borderBottomWidth:2,borderColor:colors.text,transform:[{translateY:-1},{rotate:'45deg'}]}}/></View>:null}
+     {selected?<Check size={20} color={colors.text} testID={testID?`${testID}-check`:undefined}/>:null}
     </Pressable>;})}
   </View>}
  </>;

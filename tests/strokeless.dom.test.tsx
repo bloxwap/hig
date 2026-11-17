@@ -92,14 +92,14 @@ describe('reviewed component changes',()=>{
  it('insets a magnifying glass on the leading edge of SearchInput and keeps the ref on the input',()=>{
   const ref=React.createRef<HTMLInputElement>();render(<SearchInput ref={ref} aria-label='Search markets' className='host'/>);
   const input=screen.getByRole('searchbox',{name:'Search markets'});expect(ref.current).toBe(input);expect(input.className).toContain('host');
-  expect(input.parentElement?.className).toBe('hig-search-input');expect(input.previousElementSibling?.getAttribute('class')).toBe('hig-search-icon');
+  expect(input.parentElement?.className).toBe('hig-search-input');expect(input.previousElementSibling?.classList.contains('hig-search-icon')).toBe(true);
   expect(rule('.hig-search-icon')).toContain('inset-inline-start:16px');
   // Every text field takes the button height (44 touch, 36 compact); the search text starts 42px in, 6px after the glass.
   expect(rule('.hig-input')).toContain('min-height:var(--hig-button)');expect(rule('.hig-search-input')).not.toContain('--hig-control');expect(rule('.hig-search-input > .hig-input')).toContain('padding-inline-start:42px');
  });
  it('puts an outline chevron on the trailing edge of the accordion header and turns it when open',async()=>{
   const changed=vi.fn();render(<Accordion title='Advanced options' onOpenChange={changed}><p>Body</p></Accordion>);
-  const summary=screen.getByText('Advanced options').closest('summary')!;expect(summary.lastElementChild?.getAttribute('class')).toBe('hig-accordion-chevron');
+  const summary=screen.getByText('Advanced options').closest('summary')!;expect(summary.lastElementChild?.classList.contains('hig-accordion-chevron')).toBe(true);
   expect(rule('.hig-select-chevron,.hig-select-check,.hig-accordion-chevron')).toContain('fill:none;stroke:currentColor');
   expect(rule('.hig-accordion[open] > .hig-accordion-summary .hig-accordion-chevron')).toContain('transform:rotate(180deg)');
   expect(rule('.hig-accordion[open]::details-content')).toContain('block-size:auto');

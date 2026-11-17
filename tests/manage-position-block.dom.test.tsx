@@ -89,7 +89,7 @@ describe('ManagePositionBlock host slots',()=>{
   expect(rows.map(row=>[spoken(row.querySelector('.hig-list-row-label')!),row.querySelector('.hig-list-row-value')?spoken(row.querySelector('.hig-list-row-value')!):null,row.querySelector('.hig-manage-action-value')?.getAttribute('data-tone')??null])).toEqual([['Take Profit','$66,000','positive'],['Stop Loss','$63,500','negative'],['Close',null,null]]);
   expect(rows[0].querySelector('.hig-animated-number-visual')).not.toBeNull();
   // The value sits before the chevron, and the whole row stays the one button.
-  const order=[...rows[0].children].map(child=>child.getAttribute('class')?.split(' ')[0]);expect(order.indexOf('hig-list-row-value')).toBeLessThan(order.indexOf('hig-list-row-chevron'));
+  const order=[...rows[0].children].map(child=>[...child.classList].find(name=>name.startsWith('hig-')));expect(order.indexOf('hig-list-row-value')).toBeLessThan(order.indexOf('hig-list-row-chevron'));
   await userEvent.click(rows[0]);expect(cancel).toHaveBeenCalledTimes(1);
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain(".hig-manage-action-value[data-tone='positive'] { color:var(--hig-positive); }");
  });

@@ -112,7 +112,7 @@ export const beamAvatar=(...args)=>{counts.generator++;return real.beamAvatar(..
 ${native?'':'export const avatarSide=size=>{counts.avatar++;return real.avatarSide(size);};'}`}));
  bundle.onResolve({filter:/^react-dom\/client$/},()=>({path:require.resolve('react-dom/profiling')}));
 }};
-const bundle=async(component,plugins)=>(await build({stdin:{contents:source(component),resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',alias,plugins,...(native?{resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json']}:{}),define:{'process.env.NODE_ENV':'"production"',...(native?{__DEV__:'false',global:'globalThis'}:{})}})).outputFiles[0].text;
+const bundle=async(component,plugins)=>(await build({stdin:{contents:source(component),resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',alias,plugins,...(native?{resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json']}:{}),define:{'process.env.NODE_ENV':'"production"','process.env.EXPO_OS':'"web"',...(native?{__DEV__:'false',global:'globalThis'}:{})}})).outputFiles[0].text;
 // `current` is the module being measured; `against`, when given, is the one it is compared with.
 const bundles={current:{timing:await bundle(component,[]),counting:await bundle(component,[counted])},...(against?{against:{timing:await bundle(against,[]),counting:await bundle(against,[counted])}}:{})},names=Object.keys(bundles);
 const median=values=>{const sorted=[...values].sort((a,b)=>a-b);return sorted[sorted.length>>1];};

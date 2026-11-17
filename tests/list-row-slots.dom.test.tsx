@@ -82,9 +82,14 @@ describe('ListRow additions',()=>{
   view.rerender(<ListRow label='Swing alerts' checked onCheckedChange={change} busy/>);await userEvent.click(document.querySelector('.hig-list-row-label')!);expect(change).toHaveBeenCalledTimes(3);
   expect(screen.getByRole('switch',{name:'Swing alerts'}).getAttribute('aria-busy')).toBe('true');
  });
- it('renders the 0.6.0 markup when none of the new props are given',()=>{
+ it('keeps the existing row slots and uses the shared decorative chevron',()=>{
   const {container}=render(<ListRow label='Notifications' value='Off' onSelect={()=>{}}/>);
-  expect(container.innerHTML).toBe('<button type="button" class="hig-list-row"><span class="hig-list-row-label">Notifications</span><span class="hig-list-row-value">Off</span><svg class="hig-list-row-chevron" aria-hidden="true" focusable="false" viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.5 5.5 5.5-5.5 5.5"></path></svg></button>');
+  const row=container.querySelector('button')!;
+  expect([...row.children].map(child=>[...child.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-list-row-label','hig-list-row-value','hig-list-row-chevron']);
+  const icon=row.querySelector('svg')!;
+  expect(icon.classList.contains('bloxwap-icon-chevron-right')).toBe(true);
+  expect(icon.getAttribute('aria-hidden')).toBe('true');
+  expect(icon.getAttribute('viewBox')).toBe('0 0 24 24');
  });
 });
 describe('ListGroup additions',()=>{
