@@ -207,3 +207,11 @@ describe('one component under two names',()=>{
   expect(root.root.findAllByType(RNText).filter(node=>node.props.testID).map(node=>node.props.testID)).toEqual(['price','other']);
  });
 });
+
+it('preserves decorations and lets larger digits use their natural line height',()=>{
+ const style={fontSize:32,textDecorationLine:'line-through',textDecorationColor:'red',textDecorationStyle:'solid'};
+ mount(flow({style}));
+ expect(StyleSheet.flatten(reading().props.style)).toMatchObject({...style,lineHeight:undefined});
+ update(flow({style:{...style,lineHeight:40}}));
+ expect(StyleSheet.flatten(reading().props.style).lineHeight).toBe(40);
+});

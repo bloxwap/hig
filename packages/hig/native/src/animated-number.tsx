@@ -41,7 +41,7 @@ export interface AnimatedNumberProps extends NumberProps {
  willChange?:boolean;
  /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */
  animateFormatted?:boolean}
-const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign']);
+const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign','textDecorationLine','textDecorationColor','textDecorationStyle']);
 // Android Fabric reads colour 0 as "unset", so 'transparent' (0x00000000) drew the hidden reading in the default
 // black under the reels. Clear white is non-zero there and still invisible.
 const hiddenColor='#ffffff00';
@@ -171,6 +171,7 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);
  const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
+ if(typography.fontSize!==undefined && typography.lineHeight===undefined) typography.lineHeight=undefined;
  const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  const textStyle:StyleProp<TextStyle>=[typography,{color,fontVariant:['tabular-nums']}];
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
