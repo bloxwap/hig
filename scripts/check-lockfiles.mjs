@@ -11,6 +11,10 @@ export const parseBunLock=text=>new Function(`return (${text})`)();
 const bunVersion=entry=>{const id=entry[0];return id.slice(id.lastIndexOf('@')+1);};
 export function compareLockfiles({bun,npm,manifest}){
   const problems=[];
+  for(const [path,entry] of Object.entries(npm.packages)){
+    if(!entry.link && typeof entry.resolved==='string' && entry.resolved.startsWith('file:'))
+      problems.push(`${path}: local tarball resolution ${entry.resolved} cannot be installed on a clean release runner; use the published registry package`);
+  }
   const npmWorkspaces=Object.keys(npm.packages).filter(p=>!p.includes('node_modules/'));
   const paths=[...new Set([...Object.keys(bun.workspaces),...npmWorkspaces])].sort();
   for(const path of paths){

@@ -45,3 +45,8 @@ it('the quality job checks package-lock.json with npm before installing with Bun
   expect(workflow.indexOf('node scripts/check-lockfiles.mjs --npm')).toBeLessThan(workflow.indexOf('bun install --frozen-lockfile'));
   expect(JSON.parse(readFileSync('package.json','utf8')).scripts.lint).toContain('node scripts/check-lockfiles.mjs');
 });
+
+it('rejects a local tarball even when its version agrees with Bun',()=>{
+  const state=load();state.npm.packages['node_modules/@bloxwap/icons'].resolved='file:vendor/bloxwap-icons-0.1.0.tgz';
+  expect(run(state)).toEqual(['node_modules/@bloxwap/icons: local tarball resolution file:vendor/bloxwap-icons-0.1.0.tgz cannot be installed on a clean release runner; use the published registry package']);
+});
