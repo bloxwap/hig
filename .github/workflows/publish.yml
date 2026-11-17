@@ -144,7 +144,8 @@ jobs:
           persist-credentials: false
       - name: Require the approved tag commit
         run: test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      # setup-node v4 has no automatic package-manager cache and no cache input is set.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4  # zizmor: ignore[cache-poisoning] (pinned v4 has no implicit cache)
         with:
           node-version: '24.22.1'
           registry-url: https://registry.npmjs.org
