@@ -51,6 +51,10 @@ it('fills the Custom row with its value when the host holds a custom value, and 
  // A host accessibility label and test ID replace the defaults.
  const own=mount({custom:{label:'Custom amount',value:'$75',selected:false,onSelect:()=>{},accessibilityLabel:'Edit custom size, current $75',testID:'my-custom'}});
  expect(pressable(own,'my-custom').props.accessibilityLabel).toBe('Edit custom size, current $75');expect(pressable(own,'my-custom').props.accessibilityState).toEqual({selected:false});
+ // pressProps reach the row (a host that plays its own sound silences Android's click), and HIG keeps its own press and name.
+ const host2=jest.fn(),silent=mount({custom:{label:'Custom amount',onSelect:host2,pressProps:{android_disableSound:true,accessibilityLabel:'ignored',onPress:()=>{}}}});
+ const quiet=pressable(silent,'preset-picker-custom');expect(quiet.props.android_disableSound).toBe(true);
+ act(()=>quiet.props.onPress());expect(host2).toHaveBeenCalledTimes(1);
 });
 
 it('draws the Leverage pane with a suffix, a default chip test ID and an adjustable group that steps through enabled chips',()=>{

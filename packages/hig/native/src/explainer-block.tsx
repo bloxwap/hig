@@ -39,6 +39,8 @@ export interface ExplainerAction {
  busy?:boolean;
  /** The button's test ID, in place of `<testID>-primary` or `<testID>-secondary`. */
  testID?:string;
+ /** Pressable props for the button (native), such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state and press. */
+ pressProps?:ScreenHeaderControlProps;
 }
 export interface ExplainerBlockProps {
  /** Heading of the header. Leave it out inside a host sheet that draws its own title. */
@@ -89,7 +91,7 @@ export function ExplainerBlock({title,description,sections=[],steps=[],caveat,pr
  // Host text is drawn as muted Text; host nodes are drawn as given.
  const prose=(content:React.ReactNode,part:string)=>typeof content==='string'||typeof content==='number'?<Text testID={id(part)} style={muted}>{content}</Text>:<View testID={id(part)}>{content}</View>;
  const shown=(content:React.ReactNode)=>content!=null&&content!==false;
- const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=><Button testID={entry.testID??id(fallback)} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}</Button>;
+ const action=(entry:ExplainerAction,fallback:'primary'|'secondary')=><Button {...entry.pressProps} testID={entry.testID??id(fallback)} intent={entry.intent??fallback} disabled={entry.disabled} busy={entry.busy} suppressFeedback={suppressFeedback} onPress={entry.onSelect} style={{flex:1,alignSelf:'auto'}}>{entry.label}</Button>;
  const header=title!==undefined?<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
   {shown(description)?prose(description,descriptionPart):null}

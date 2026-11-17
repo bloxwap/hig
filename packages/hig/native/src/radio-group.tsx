@@ -4,6 +4,7 @@ import {tokens} from '@bloxwap/hig/tokens';
 import {useControllable,useColors,useFills,useHIG} from './provider.js';
 import {Text} from './surface.js';
 import type {Choice,ChoicesProps} from './selection-types.js';
+import type {ScreenHeaderControlProps} from './screen-header.js';
 export function RadioGroup({label,options,value,defaultValue='',disabled,onValueChange}:ChoicesProps){
  const [current,set]=useControllable(value,defaultValue,onValueChange);const {direction,locale}=useHIG();const colors=useColors();
  return <View accessibilityRole='radiogroup' accessibilityLabel={label} style={{direction}}><Text>{label}</Text>{options.map(o=>{
@@ -16,8 +17,8 @@ const segmentSlop={top:6,bottom:6},compactSegmentSlop={top:10,bottom:10};
 /** Equal-width choices with one interruptible selection indicator. The track is the dark well and the selected segment the lighter fill; the control is 44dp tall (36 compact). */
 /** One segment. `testID` is the segment's test ID, in place of `<group testID>-<value>`. */
 export interface SegmentedControlOption extends Choice {testID?:string}
-export interface SegmentedControlProps extends Omit<ChoicesProps,'options'> {options:readonly SegmentedControlOption[];/** Keeps `label` as the group's accessible name but does not draw it, for a control whose heading or row already names it. */hideLabel?:boolean;/** Test ID of the group; each segment takes `<testID>-<value>`, such as `trade-share-mode-video`, unless the option sets its own `testID`. */testID?:string}
-export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,onValueChange}:SegmentedControlProps){
+export interface SegmentedControlProps extends Omit<ChoicesProps,'options'> {options:readonly SegmentedControlOption[];/** Keeps `label` as the group's accessible name but does not draw it, for a control whose heading or row already names it. */hideLabel?:boolean;/** Test ID of the group; each segment takes `<testID>-<value>`, such as `trade-share-mode-video`, unless the option sets its own `testID`. */testID?:string;/** Pressable props for every segment, such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state, target and press. */segmentProps?:ScreenHeaderControlProps}
+export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,segmentProps,onValueChange}:SegmentedControlProps){
  const [current,set]=useControllable(value,defaultValue,onValueChange);
  const {direction,locale,reducedMotion,density}=useHIG();const colors=useColors();const fills=useFills();const compact=density==='compact';
  const [width,setWidth]=useState(0);const translateX=useRef(new Animated.Value(0)).current;
@@ -45,7 +46,7 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,h
     {options.map(option=>{
      const checked=current===option.value,blocked=!!disabled||!!option.disabled;
      const activate=()=>{if(!blocked)set(option.value);};
-     return <Pressable key={option.value} testID={option.testID??(testID===undefined?undefined:`${testID}-${option.value}`)} accessible accessibilityRole='radio' accessibilityLabel={option.label} accessibilityHint={option.description} accessibilityLanguage={option.lang} aria-checked={checked} aria-disabled={blocked} accessibilityState={{checked,disabled:blocked}} accessibilityActions={[{name:'activate'}]} disabled={blocked} onPress={activate} onAccessibilityAction={event=>{if(event.nativeEvent.actionName==='activate')activate();}} hitSlop={compact?compactSegmentSlop:segmentSlop} style={{flex:1,minWidth:0,minHeight:compact?28:36,paddingHorizontal:12,paddingVertical:compact?2:4,alignItems:'stretch',justifyContent:'center',borderRadius:9999,opacity:blocked?0.5:1}}>
+     return <Pressable {...segmentProps} key={option.value} testID={option.testID??(testID===undefined?undefined:`${testID}-${option.value}`)} accessible accessibilityRole='radio' accessibilityLabel={option.label} accessibilityHint={option.description} accessibilityLanguage={option.lang} aria-checked={checked} aria-disabled={blocked} accessibilityState={{checked,disabled:blocked}} accessibilityActions={[{name:'activate'}]} disabled={blocked} onPress={activate} onAccessibilityAction={event=>{if(event.nativeEvent.actionName==='activate')activate();}} hitSlop={compact?compactSegmentSlop:segmentSlop} style={{flex:1,minWidth:0,minHeight:compact?28:36,paddingHorizontal:12,paddingVertical:compact?2:4,alignItems:'stretch',justifyContent:'center',borderRadius:9999,opacity:blocked?0.5:1}}>
       <Text accessible={false} accessibilityLanguage={option.lang} style={{color:checked?colors.text:colors.muted,fontWeight:'500',textAlign:'center'}}>{option.label}</Text>
       {option.description!==undefined&&<Text accessible={false} accessibilityLanguage={locale} style={{color:colors.muted,fontSize:14,lineHeight:20,textAlign:'center'}}>{option.description}</Text>}
      </Pressable>;

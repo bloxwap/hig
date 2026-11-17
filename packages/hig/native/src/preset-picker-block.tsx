@@ -22,6 +22,8 @@ export interface PresetPickerCustom {
  accessibilityLabel?:string;
  /** The row's test ID, in place of `<testID>-custom`. */
  testID?:string;
+ /** Pressable props for the row, such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state and press. */
+ pressProps?:ScreenHeaderControlProps;
 }
 /** Steps through the chips with the screen reader's adjust gesture (swipe up or down on iOS, volume keys on Android). */
 export interface PresetPickerAdjustable {
@@ -115,7 +117,7 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const header=title!==undefined?<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
   <View style={{alignItems:'center'}}><AnimatedNumberReadout testID={id('headline')} value={value} options={valueOptions} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
-  {custom?<Pressable testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
+  {custom?<Pressable {...custom.pressProps} testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:customSelected?onFill:colors.text}}>{custom.label}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>
     {custom.value!==undefined?<Text testID={id('custom-value')} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:customSelected?onFill:colors.muted}}>{custom.value}</Text>:null}

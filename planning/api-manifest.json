@@ -1854,7 +1854,7 @@
       },
       "PresetPickerCustom": {
         "entry": "preset-picker-block",
-        "signature": "export interface PresetPickerCustom {\n    /** The row's text: Custom amount. */\n    label: string;\n    /** Called on a press; the host opens its own entry. */\n    onSelect: () => void;\n    /** The value the host's entry set, as host text: `$75`. It is drawn on the trailing edge and the row reads as selected. */\n    value?: string;\n    /** Whether the row reads as selected. Defaults to whether `value` is given. */\n    selected?: boolean;\n    /** The row's accessible name, in place of its text (and value): Edit custom size, current $75. */\n    accessibilityLabel?: string;\n    /** The row's test ID, in place of `<testID>-custom`. */\n    testID?: string;\n}"
+        "signature": "export interface PresetPickerCustom {\n    /** The row's text: Custom amount. */\n    label: string;\n    /** Called on a press; the host opens its own entry. */\n    onSelect: () => void;\n    /** The value the host's entry set, as host text: `$75`. It is drawn on the trailing edge and the row reads as selected. */\n    value?: string;\n    /** Whether the row reads as selected. Defaults to whether `value` is given. */\n    selected?: boolean;\n    /** The row's accessible name, in place of its text (and value): Edit custom size, current $75. */\n    accessibilityLabel?: string;\n    /** The row's test ID, in place of `<testID>-custom`. */\n    testID?: string;\n    /** Pressable props for the row, such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state and press. */\n    pressProps?: ScreenHeaderControlProps;\n}"
       },
       "PresetPickerAdjustable": {
         "entry": "preset-picker-block",
@@ -1874,7 +1874,7 @@
       },
       "ExplainerAction": {
         "entry": "explainer-block",
-        "signature": "export interface ExplainerAction {\n    label: string;\n    onSelect: () => void;\n    /** Defaults to `primary` for `primaryAction` and `secondary` for `secondaryAction`. */\n    intent?: 'primary' | 'secondary' | 'destructive' | 'ghost';\n    disabled?: boolean;\n    busy?: boolean;\n    /** The button's test ID, in place of `<testID>-primary` or `<testID>-secondary`. */\n    testID?: string;\n}"
+        "signature": "export interface ExplainerAction {\n    label: string;\n    onSelect: () => void;\n    /** Defaults to `primary` for `primaryAction` and `secondary` for `secondaryAction`. */\n    intent?: 'primary' | 'secondary' | 'destructive' | 'ghost';\n    disabled?: boolean;\n    busy?: boolean;\n    /** The button's test ID, in place of `<testID>-primary` or `<testID>-secondary`. */\n    testID?: string;\n    /** Pressable props for the button (native), such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state and press. */\n    pressProps?: ScreenHeaderControlProps;\n}"
       },
       "ExplainerTone": {
         "entry": "explainer-block",
@@ -2202,11 +2202,11 @@
       },
       "SegmentedControlProps": {
         "entry": "radio-group",
-        "signature": "export interface SegmentedControlProps extends Omit<ChoicesProps, 'options'> {\n    options: readonly SegmentedControlOption[]; /** Keeps `label` as the group's accessible name but does not draw it, for a control whose heading or row already names it. */\n    hideLabel?: boolean; /** Test ID of the group; each segment takes `<testID>-<value>`, such as `trade-share-mode-video`, unless the option sets its own `testID`. */\n    testID?: string;\n}"
+        "signature": "export interface SegmentedControlProps extends Omit<ChoicesProps, 'options'> {\n    options: readonly SegmentedControlOption[]; /** Keeps `label` as the group's accessible name but does not draw it, for a control whose heading or row already names it. */\n    hideLabel?: boolean; /** Test ID of the group; each segment takes `<testID>-<value>`, such as `trade-share-mode-video`, unless the option sets its own `testID`. */\n    testID?: string; /** Pressable props for every segment, such as `{android_disableSound: true}` when the host plays its own sound. HIG keeps its own name, role, state, target and press. */\n    segmentProps?: ScreenHeaderControlProps;\n}"
       },
       "SegmentedControl": {
         "entry": "radio-group",
-        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, hideLabel, testID, onValueChange }: SegmentedControlProps): React.JSX.Element;"
+        "signature": "export declare function SegmentedControl({ label, options, value, defaultValue, disabled, hideLabel, testID, segmentProps, onValueChange }: SegmentedControlProps): React.JSX.Element;"
       },
       "FilterOption": {
         "entry": "radio-group",

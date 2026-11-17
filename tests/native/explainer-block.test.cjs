@@ -60,6 +60,9 @@ it('draws a task dialog: Back with backProps, numbered steps, two actions with t
  const actions=host(view,'invite-actions');expect(actions.findAllByType(Button).map(node=>[node.props.testID,node.props.intent])).toEqual([['invite-secondary','secondary'],['invite-copy','primary']]);
  expect(button(view,'invite-copy').props).toMatchObject({busy:true,suppressFeedback:true});
  act(()=>button(view,'invite-secondary').props.onPress());expect(later).toHaveBeenCalledTimes(1);
+ // pressProps reach the action's Button, such as Android sound off for a host that plays its own.
+ const quiet=mount({testID:'quiet',primaryAction:{label:'Close',onSelect:later,pressProps:{android_disableSound:true}}});
+ expect(button(quiet,'quiet-primary').props.android_disableSound).toBe(true);
  const sticky=mount({title:'Invite a friend',stickyHeader:true});expect(has(sticky,'explainer-sticky-header')).toBe(true);
  // A step drawn from a node may hold its own control, so the row stays open to VoiceOver and TalkBack.
  const rich=mount({testID:'rich',steps:['Copy your link.',h(Button,{testID:'rich-copy',onPress:()=>{}},'Copy')]});
