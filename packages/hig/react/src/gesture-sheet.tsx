@@ -1,5 +1,5 @@
 "use client";
-import React,{useCallback,useEffect,useRef,useState} from 'react';
+import React,{useCallback,useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {Drawer,type DialogProps as BackendProps} from 'vaul';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useThemeStyle} from './provider.js';
@@ -50,7 +50,7 @@ function useDynamicHeight(open:boolean,enabled:boolean,reducedMotion:boolean,pan
    const next=content.getBoundingClientRect().height,from=animation.current?card.getBoundingClientRect().height:previous;previous=next;
    if(from===null||Math.abs(from-next)<.5)return;
    if(reducedMotion||card.style.height||typeof card.animate!=='function'){cancel();return;}
-   cancel();const current=card.animate([{height:`${from}px`},{height:`${next}px`}],{duration:200,easing:'cubic-bezier(.32,.72,0,1)'});animation.current=current;
+   cancel();const current=card.animate([{height:`${from}px`},{height:`${next}px`}],{duration:270,easing:'cubic-bezier(.26,.08,.25,1)'});animation.current=current;
    current.onfinish=current.oncancel=()=>{if(animation.current===current)animation.current=null;};
   };
   const resize=typeof ResizeObserver==='undefined'?null:new ResizeObserver(measure);resize?.observe(content);measure();
@@ -123,4 +123,41 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
    </Drawer.Content>
   </Drawer.Portal>
  </Drawer.Root>;
+}
+
+export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {
+ /** Names the view. A change swaps the content with the transition. */
+ viewKey:string|number;
+}
+// One curve for the height and both views, measured from Vaul's Dynamic Drawer: no spring and no overshoot, a short ease in and a long ease out. The old view leaves in 270ms and the new one arrives in 220ms.
+const VIEW_SWAP:KeyframeAnimationOptions={duration:270,easing:'cubic-bezier(.26,.08,.25,1)'};
+const useCommitEffect=typeof window==='undefined'?useEffect:useLayoutEffect;
+/**
+ * One view of a sheet that shows several, such as the steps of a flow. When `viewKey` changes, the old view fades and
+ * shrinks out of the way without holding its space, the new one fades in at its own size, and a content-sized sheet
+ * (`enableDynamicSizing`) moves to the new height at the same time. The first view appears with the sheet, and nothing
+ * moves under reduced motion. The outgoing view is inert and hidden from assistive technology while it leaves.
+ */
+export function GestureSheetView({viewKey,children,className,...rest}:GestureSheetViewProps){
+ const {reducedMotion}=useHIG();
+ type View={key:string|number;node:React.ReactNode};
+ const committed=useRef<View>({key:viewKey,node:children}),enter=useRef<HTMLDivElement>(null),exit=useRef<HTMLDivElement>(null),mounted=useRef(false);
+ const [shown,setShown]=useState(viewKey),[leaving,setLeaving]=useState<View|null>(null);
+ // The children of the view that was last on screen are kept so it can be drawn once more while it leaves.
+ if(shown!==viewKey){setShown(viewKey);setLeaving(reducedMotion||committed.current.key===viewKey?null:committed.current);}
+ useEffect(()=>{committed.current={key:viewKey,node:children};});
+ useCommitEffect(()=>{
+  if(!mounted.current){mounted.current=true;return;}
+  if(reducedMotion){setLeaving(null);return;}
+  enter.current?.animate?.([{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'scale(1)'}],{...VIEW_SWAP,duration:220});
+  const out=exit.current?.animate?.([{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.96)'}],{...VIEW_SWAP,fill:'forwards'});
+  if(!out){setLeaving(null);return;}
+  const done=()=>setLeaving(current=>current&&current.key!==viewKey?null:current);
+  out.onfinish=done;out.oncancel=done;
+  return()=>{out.onfinish=null;out.oncancel=null;};
+ },[viewKey]);
+ return <div {...rest} className={['hig-gesture-views',className].filter(Boolean).join(' ')}>
+  {leaving&&<div key={leaving.key} ref={exit} className='hig-gesture-view' data-leaving='' aria-hidden='true' inert>{leaving.node}</div>}
+  <div key={viewKey} ref={enter} className='hig-gesture-view'>{children}</div>
+ </div>;
 }

@@ -1,6 +1,6 @@
 import React,{createContext,useCallback,useContext,useEffect,useId,useMemo,useRef,useState} from 'react';
 import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
-import Reanimated,{cancelAnimation,ReduceMotion,runOnJS,useAnimatedProps,useAnimatedReaction,useAnimatedScrollHandler,useAnimatedStyle,useDerivedValue,useSharedValue,withSpring,withTiming,type SharedValue} from 'react-native-reanimated';
+import Reanimated,{cancelAnimation,Easing,ReduceMotion,runOnJS,useAnimatedProps,useAnimatedReaction,useAnimatedScrollHandler,useAnimatedStyle,useDerivedValue,useSharedValue,withSpring,withTiming,type SharedValue} from 'react-native-reanimated';
 import {Gesture,GestureDetector,type GestureType} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {nativeMetrics as tokens} from '@bloxwap/hig/tokens';
@@ -8,7 +8,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {Raised,useColors,useHIG} from './provider.js';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';
-import {backdropProgress,detentHeights,dragPosition,releaseTarget,SHEET_SPRING,type SheetSnapPoint} from './gesture-sheet-model.js';
+import {backdropProgress,detentHeights,dragPosition,releaseTarget,SHEET_SPRING,SHEET_VIEW_SWAP,type SheetSnapPoint} from './gesture-sheet-model.js';
 export type {SheetSnapPoint} from './gesture-sheet-model.js';
 
 type FocusTarget=React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null;
@@ -39,7 +39,7 @@ interface SheetCommonProps {
  onChange?:(index:number)=>void;
  /** Return true to consume Android Back, or false to leave it to another handler. Omit for default dismissal. */
  onHardwareBackPress?:()=>boolean;
- /** Room kept clear above the sheet and padding under default content. Default to the safe-area insets. */
+ /** Room kept clear above the sheet, and padding under its content so nothing sits behind the home indicator. Default to the safe-area insets; pass `bottomInset={0}` for content that runs to the edge. */
  topInset?:number;
  bottomInset?:number;
  /** Draws the drag handle. Default `true`. The whole sheet drags either way. */
@@ -97,6 +97,23 @@ export const GestureSheetScrollView=React.forwardRef<React.ComponentRef<typeof R
  const animatedProps=useAnimatedProps(()=>{'worklet';return {scrollEnabled:atTop.value};});
  return <GestureDetector gesture={native}><Reanimated.ScrollView keyboardShouldPersistTaps='handled' {...props} ref={ref} bounces={false} overScrollMode='never' scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
 });
+
+const swapCurve=Easing.bezier(...SHEET_VIEW_SWAP.curve);
+const VIEW_LEAVE={duration:SHEET_VIEW_SWAP.duration,easing:swapCurve},VIEW_ARRIVE={duration:SHEET_VIEW_SWAP.enter,easing:swapCurve};
+const viewEntering=()=>{'worklet';return {initialValues:{opacity:0,transform:[{scale:0.96}]},animations:{opacity:withTiming(1,VIEW_ARRIVE),transform:[{scale:withTiming(1,VIEW_ARRIVE)}]}};};
+const viewExiting=()=>{'worklet';return {initialValues:{opacity:1,transform:[{scale:1}]},animations:{opacity:withTiming(0,VIEW_LEAVE),transform:[{scale:withTiming(0.96,VIEW_LEAVE)}]}};};
+/**
+ * One view of a sheet that shows several, such as the steps of a flow. When `viewKey` changes, the old view fades and
+ * shrinks out of the way without holding its space, the new one fades in at its own size, and a content-sized sheet
+ * springs to the new height at the same time. The first view appears with the sheet, and nothing moves under reduced motion.
+ */
+export function GestureSheetView({viewKey,children,style,testID}:{/** Names the view. A change swaps the content with the transition. */viewKey:string|number;children:React.ReactNode;style?:StyleProp<ViewStyle>;testID?:string}){
+ const {reducedMotion}=useHIG(),initial=useRef(viewKey),swapped=useRef(false);
+ // The first view appears with the sheet. After the first swap every view enters with the transition, including a return to the first one.
+ if(viewKey!==initial.current)swapped.current=true;
+ const animate=!reducedMotion&&swapped.current;
+ return <Reanimated.View key={viewKey} testID={testID} entering={animate?viewEntering:undefined} exiting={reducedMotion?undefined:viewExiting} style={style}>{children}</Reanimated.View>;
+}
 
 const focusOn=(node:FocusTarget)=>{if(!node)return;try{const handle=findNodeHandle(node);if(handle!=null){AccessibilityInfo.setAccessibilityFocus(handle);if(Platform.OS==='android')AccessibilityInfo.sendAccessibilityEvent(node,'viewHoverEnter');}}catch{/* A detached focus target cannot block the sheet. */}};
 const OFFSCREEN=100000;
@@ -157,14 +174,14 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  useAnimatedReaction(()=>{
   'worklet';
   const list=positions.value,space=roomValue.value;
-  if(space<=0)return {target:-1,kick:kick.value};
-  if(!shown.value)return {target:space,kick:kick.value};
-  if(list.length===0)return {target:-1,kick:kick.value};
-  return {target:list[Math.max(0,Math.min(list.length-1,list.length-1-active.value))],kick:kick.value};
+  if(space<=0)return {target:-1,kick:kick.value,index:active.value};
+  if(!shown.value)return {target:space,kick:kick.value,index:active.value};
+  if(list.length===0)return {target:-1,kick:kick.value,index:active.value};
+  return {target:list[Math.max(0,Math.min(list.length-1,list.length-1-active.value))],kick:kick.value,index:active.value};
  },(next,previous)=>{
   'worklet';
   const target=next.target;
-  if(target<0||dragging.value||(previous!==null&&target===previous.target&&next.kick===previous.kick))return;
+  if(target<0||dragging.value||(previous!==null&&target===previous.target&&next.kick===previous.kick&&next.index===previous.index))return;
   const space=roomValue.value;
   if(position.value>space)position.value=space;
   const closes=target>=space;
@@ -172,6 +189,9 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   const motion={...SHEET_SPRING,reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
   if(closes){closing.value=true;position.value=withSpring(target,motion,finished=>{'worklet';if(finished)runOnJS(finishClose)();});return;}
   const index=active.value;
+  // Content that changed height while the sheet rests is a view swap: it moves on the swap's own curve, in step with the cross-fade. Opening and a new detent index use the spring.
+  const resized=previous!==null&&previous.target>=0&&previous.target<space&&next.kick===previous.kick&&next.index===previous.index;
+  if(resized&&!reduce.value){position.value=withTiming(target,VIEW_LEAVE,finished=>{'worklet';if(finished)runOnJS(settled)(index);});return;}
   position.value=withSpring(target,motion,finished=>{'worklet';if(finished)runOnJS(settled)(index);});
  });
  const pan=useMemo(()=>Gesture.Pan().activeOffsetY([-6,6]).failOffsetX([-28,28])
@@ -215,7 +235,7 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   <GestureDetector gesture={pan}>
    <Reanimated.View testID={id('surface')} renderToHardwareTextureAndroid style={[styles.surface,{top,backgroundColor:colors.overlay,borderTopLeftRadius:tokens.radius.xl,borderTopRightRadius:tokens.radius.xl},backgroundStyle,surfaceStyle]}>
     {room>0?<ScrollContext.Provider value={scroll}>
-     <View onLayout={onContent} style={enableDynamicSizing?{maxHeight:limit}:{height:limit}}>
+     <View onLayout={onContent} style={[enableDynamicSizing?{maxHeight:limit}:{height:limit},contentMode==='custom'?{paddingBottom:bottom}:null]}>
       {handle?<View testID={id('handle')} accessible={false} importantForAccessibility='no' style={styles.handle}><View style={[styles.grip,{backgroundColor:colors.action}]}/></View>:null}
       {lifted}
      </View>

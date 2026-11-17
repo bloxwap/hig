@@ -6,7 +6,7 @@ const mockSprings=[];
 jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
  const shared=initial=>{const ref=React.useRef(null);if(ref.current===null)ref.current={value:initial};return ref.current;};
- return {__esModule:true,default:{View:RN.View,ScrollView:RN.ScrollView},cancelAnimation:()=>{},ReduceMotion:{Always:'always',System:'system'},runOnJS:fn=>fn,
+ return {__esModule:true,default:{View:RN.View,ScrollView:RN.ScrollView},cancelAnimation:()=>{},Easing:{bezier:(...points)=>points},ReduceMotion:{Always:'always',System:'system'},runOnJS:fn=>fn,
   useSharedValue:shared,useDerivedValue:fn=>({get value(){return fn();}}),useAnimatedStyle:()=>({}),useAnimatedProps:()=>({}),useAnimatedScrollHandler:()=>()=>{},useAnimatedReaction:()=>{},
   withSpring:(to,config,done)=>{mockSprings.push({to,config,done});return to;},withTiming:to=>to};
 });
@@ -80,10 +80,10 @@ it('sizes fixed content to the tallest detent and caps content-sized sheets',()=
  let view=mount({open:true,contentMode:'custom',handle:false});layout(view);
  const box=id=>all(view,id)[0].parent;
  // 90% of 800 points of room (the mocked safe area has no top inset).
- expect(view.findAll(node=>typeof node.type==='string'&&node.props.style&&node.props.style.height===720)).toHaveLength(1);
+ expect(view.findAll(node=>typeof node.type==='string'&&node.props.style&&require('react-native').StyleSheet.flatten(node.props.style).height===720)).toHaveLength(1);
  act(()=>root.unmount());
  view=mount({open:true,contentMode:'custom',handle:false,enableDynamicSizing:true,snapPoints:undefined,maxDynamicContentSize:300});layout(view);
- expect(view.findAll(node=>typeof node.type==='string'&&node.props.style&&node.props.style.maxHeight===300)).toHaveLength(1);void box;
+ expect(view.findAll(node=>typeof node.type==='string'&&node.props.style&&require('react-native').StyleSheet.flatten(node.props.style).maxHeight===300)).toHaveLength(1);void box;
 });
 
 it('GestureSheetScrollView is a plain scroller outside a sheet, with bounce and overscroll off',()=>{

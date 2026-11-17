@@ -61,11 +61,20 @@ export function releaseTarget(position:number,velocity:number,positions:readonly
  if(dismissible&&position>lowest+(closed-lowest)/2)return -1;
  return nearest;
 }
-/** The spring every settle uses: critically damped, so the sheet lands without a bounce, and stiff enough to feel attached to the finger. */
-export const SHEET_SPRING={damping:500,stiffness:1000,mass:3,overshootClamping:true} as const;
+/**
+ * The spring every settle uses: critically damped (damping = 2·√(stiffness·mass)), so the sheet lands without a bounce and
+ * without a slow tail, in about a third of a second. An overdamped spring creeps to rest and keeps drawing frames long
+ * after the sheet looks still (measured on a Seeker: animating almost a second per settle).
+ */
+export const SHEET_SPRING={damping:36,stiffness:320,mass:1,overshootClamping:true} as const;
 /** Backdrop strength for a position: full at the lowest detent and above, fading to none at closed. */
 export function backdropProgress(position:number,lowest:number,closed:number):number{
  'worklet';
  if(closed<=lowest)return position>=closed?0:1;
  return Math.max(0,Math.min(1,(closed-position)/(closed-lowest)));
 }
+/**
+ * A view swap and the height change that goes with it, measured from Vaul's Dynamic Drawer: one curve for all of it, with
+ * no spring and no overshoot. The old view leaves and the sheet resizes in `duration`; the new view arrives in `enter`.
+ */
+export const SHEET_VIEW_SWAP={duration:270,enter:220,curve:[0.26,0.08,0.25,1]} as const;

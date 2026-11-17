@@ -718,6 +718,14 @@
         "entry": "gesture-sheet",
         "signature": "export declare function GestureSheet({ open, onOpenChange, title, description, trigger, children, titleHidden, descriptionHidden, contentProps, contentRef, closeButton, closeLabel, backendProps, contentMode, handle, handleProps, handleRef, overlayProps, enableDynamicSizing, maxDynamicContentSize, labelledBy }: GestureSheetProps): React.JSX.Element;"
       },
+      "GestureSheetViewProps": {
+        "entry": "gesture-sheet",
+        "signature": "export interface GestureSheetViewProps extends React.HTMLAttributes<HTMLDivElement> {\n    /** Names the view. A change swaps the content with the transition. */\n    viewKey: string | number;\n}"
+      },
+      "GestureSheetView": {
+        "entry": "gesture-sheet",
+        "signature": "export declare function GestureSheetView({ viewKey, children, className, ...rest }: GestureSheetViewProps): React.JSX.Element;"
+      },
       "ListGroupAction": {
         "entry": "list-group",
         "signature": "export interface ListGroupAction {\n    /** Host text drawn as the action and naming it. */\n    label: string;\n    onSelect: () => void;\n    disabled?: boolean;\n}"
@@ -1928,6 +1936,10 @@
         "entry": "gesture-sheet-next",
         "signature": "export declare const GestureSheetScrollView: React.ForwardRefExoticComponent<Omit<import(\"react-native-reanimated\").AnimatedScrollViewProps, \"ref\"> & React.RefAttributes<Reanimated.ScrollView>>;"
       },
+      "GestureSheetView": {
+        "entry": "gesture-sheet-next",
+        "signature": "export declare function GestureSheetView({ viewKey, children, style, testID }: {\n    viewKey: string | number;\n    children: React.ReactNode;\n    style?: StyleProp<ViewStyle>;\n    testID?: string;\n}): React.JSX.Element;"
+      },
       "GestureSheet": {
         "entry": "gesture-sheet-next",
         "signature": "export declare function GestureSheet(props: GestureSheetProps): React.JSX.Element | null;"
@@ -2418,11 +2430,15 @@
       },
       "SHEET_SPRING": {
         "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_SPRING: {\n    readonly damping: 500;\n    readonly stiffness: 1000;\n    readonly mass: 3;\n    readonly overshootClamping: true;\n};"
+        "signature": "export declare const SHEET_SPRING: {\n    readonly damping: 36;\n    readonly stiffness: 320;\n    readonly mass: 1;\n    readonly overshootClamping: true;\n};"
       },
       "backdropProgress": {
         "entry": "gesture-sheet-model",
         "signature": "export declare function backdropProgress(position: number, lowest: number, closed: number): number;"
+      },
+      "SHEET_VIEW_SWAP": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare const SHEET_VIEW_SWAP: {\n    readonly duration: 270;\n    readonly enter: 220;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
       },
       "SearchIcon": {
         "entry": "icons",
