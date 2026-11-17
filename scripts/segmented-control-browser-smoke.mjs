@@ -17,7 +17,7 @@ for(const renderer of ['react','native'].filter(renderer=>!process.env.HIG_SEGME
  function Example(){const [value,setValue]=useState('all'),[reduced,setReduced]=useState(undefined);
  return <HIGProvider direction={window.direction} reducedMotion={reduced}><SegmentedControl label='Markets' options={${JSON.stringify(options)}} value={value} onValueChange={setValue}/><button onClick={()=>setReduced(true)}>Reduce motion</button></HIGProvider>;}
  createRoot(document.getElementById('root')).render(<Example/>);`;
- const bundle=await build({stdin:{contents:source,resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"',__DEV__:'false',global:'globalThis'}});
+ const bundle=await build({stdin:{contents:source,resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',resolveExtensions:['.web.tsx','.web.ts','.web.js','.tsx','.ts','.jsx','.js','.json'],alias:{'react-native':'react-native-web',react:dirname(require.resolve('react/package.json')),'react-dom':dirname(require.resolve('react-dom/package.json'))},define:{'process.env.NODE_ENV':'"production"','process.env.EXPO_OS':'"web"',__DEV__:'false',global:'globalThis'}});
  for(const [engine,type] of Object.entries({chromium,webkit})){
   const browser=await launchBrowser(type,{headless:true});
   try{for(const width of [390,1280])for(const direction of ['ltr','rtl']){

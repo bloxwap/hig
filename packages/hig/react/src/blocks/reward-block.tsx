@@ -1,4 +1,5 @@
 "use client";
+import { CircleCheck } from '@bloxwap/icons/react/circle-check';
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
@@ -107,7 +108,7 @@ const skeletons=[0,1,2,3,4];
 export function rewardProgress(amount:number|null|undefined,goal:number|null|undefined):number|null{
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
-const verifiedGlyph=<svg className='hig-reward-verified-mark' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'><circle cx='10' cy='10' r='7.5'/><path d='m6.75 10.25 2.25 2.25 4.25-4.75'/></svg>;
+const verifiedGlyph=<CircleCheck size={16} className='hig-reward-verified-mark'/>;
 function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive,as:Tag='li'}:{entry:RewardEntry;scoreOptions:Intl.NumberFormatOptions;verifiedLabel?:string;verifiedMark?:React.ReactNode;verifiedMarkInteractive?:boolean;as?:'li'|'div'}){
  const detail=entry.detail;
  return <Tag className='hig-reward-row' data-you={entry.you||undefined}>

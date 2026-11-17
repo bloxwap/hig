@@ -1,4 +1,5 @@
 "use client";
+import { Check } from '@bloxwap/icons/react/check';
 import React from 'react';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {PressDecoration} from './provider.js';
@@ -36,7 +37,7 @@ export interface AssetBalanceRowProps extends Omit<React.HTMLAttributes<HTMLElem
  onSelect?:()=>void;
 }
 const usd={style:'currency',currency:'USD'} as const,units={maximumFractionDigits:6} as const;
-const check=<svg className='hig-asset-row-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
+const check=<Check size={20} className='hig-asset-row-check'/>;
 /** One holding in a list: round artwork, the asset's name over its symbol, and its dollar value over its units. Both numbers update place by place. */
 export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,trailingInteractive,selected,disabled,onSelect,className,...rest}:AssetBalanceRowProps){
  const unitsFirst=headline==='units',hasTrailing=trailing!=null&&trailing!==false,split=!!trailingInteractive&&hasTrailing;

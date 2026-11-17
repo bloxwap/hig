@@ -16,7 +16,7 @@ for(const platform of ['react','native']){
  const devDependencies={typescript:'5.9.3','@types/react':'19.1.16','@types/node':'22.18.10',...(platform==='react'?{'@types/react-dom':'19.1.9'}:{})};
  writeFileSync(join(directory,'package.json'),JSON.stringify({private:true,type:'module',dependencies,devDependencies}));
  const tarballs=[packedTarball()];
- execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',...tarballs],{cwd:directory,stdio:'pipe'});
+ execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','@bloxwap/icons@^0.1.0',...tarballs],{cwd:directory,stdio:'pipe'});
  if(platform==='native')verifyNativeReact(directory);
  mkdirSync(join(directory,'examples'));
  for(const example of examples)for(const state of example.states){writeFileSync(join(directory,'examples',`${example.slug}-${state}.tsx`),exampleCode(example.name,platform,'comfortable',state));count++;}

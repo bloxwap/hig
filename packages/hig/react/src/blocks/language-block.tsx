@@ -1,4 +1,5 @@
 "use client";
+import { Check } from '@bloxwap/icons/react/check';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from '../provider.js';
@@ -45,7 +46,7 @@ export function filterLanguages(languages:readonly LanguageOption[],query:string
  const needle=fold(query.trim());
  return needle===''?[...languages]:languages.filter(language=>fold(`${language.name} ${language.description??''} ${language.code}`).includes(needle));
 }
-const check=<svg className='hig-language-check' aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'><path d='m4.5 10.5 3.5 3.5 7.5-8'/></svg>;
+const check=<Check size={20} className='hig-language-check'/>;
 /** Choose the app's language: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
 export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,autoFocus,disabled,description,stickyHeader,headingId,className,...rest}:LanguageBlockProps){
  const {messages}=useHIG();const heading=title??messages.language??en.language;

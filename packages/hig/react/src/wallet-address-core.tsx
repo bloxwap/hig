@@ -1,4 +1,5 @@
 "use client";
+import { Copy } from '@bloxwap/icons/react/copy';
 import {useAsyncResult} from './async-result.js';
 import React,{useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -39,7 +40,7 @@ export function WalletAddress({address,kind,qr,qrValue,arena,size=196,onCopy,ann
    <span className='hig-wallet-address-qr' role='img' aria-label={messages.qrCode??en.qrCode}>{qr??<QRCode value={qrValue??address} arena={arena} size={size} quietZone={0} background='none' color='currentColor' decorative/>}</span>
    <VerticalAddress address={address} kind={kind} rowHeight={size/rows}/>
   </span>
-  {onCopy&&<span className='hig-wallet-address-hint'><svg aria-hidden='true' focusable='false' viewBox='0 0 20 20'><rect x='7' y='7' width='9.5' height='9.5' rx='2'/><path d='M4.5 13H4a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 4 3.5h6.5A1.5 1.5 0 0 1 12 5v.5'/></svg>{messages.tapToCopy??en.tapToCopy}</span>}
+  {onCopy&&<span className='hig-wallet-address-hint'><Copy size={20}/>{messages.tapToCopy??en.tapToCopy}</span>}
  </>;
  const shared={className:`hig-wallet-address${className?` ${className}`:''}`,style:{'--hig-qr':`${size}px`,...style} as React.CSSProperties};
  return onCopy

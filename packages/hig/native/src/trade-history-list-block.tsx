@@ -1,3 +1,5 @@
+import { ArrowUp } from '@bloxwap/icons/native/arrow-up';
+import { ArrowDown } from '@bloxwap/icons/native/arrow-down';
 import React from 'react';
 import {Image,Pressable,View,type NativeScrollEvent,type NativeSyntheticEvent,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
@@ -114,7 +116,7 @@ const avatar=40,skeletons=[0,1,2,3],dot='·';
 const keyOf=(trade:TradeHistoryItem)=>trade.id;
 function Gap(){return <View style={{height:8}}/>;}
 /** Points up; a short turns it over. */
-function Arrow({color,down}:{color:string;down:boolean}){return <View style={{width:12,height:14,alignItems:'center',transform:down?[{rotate:'180deg'}]:undefined}}><View style={{position:'absolute',top:1,width:7,height:7,borderLeftWidth:1.75,borderTopWidth:1.75,borderColor:color,transform:[{rotate:'45deg'}]}}/><View style={{width:1.75,height:14,borderRadius:1,backgroundColor:color}}/></View>;}
+function Arrow({color,down}:{color:string;down:boolean}){const Symbol=down?ArrowDown:ArrowUp;return <Symbol size={16} color={color}/>;}
 /** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
 export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,listChrome,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryListBlockProps){
  const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();

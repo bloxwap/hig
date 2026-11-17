@@ -1,4 +1,6 @@
 "use client";
+import { Search } from '@bloxwap/icons/react/search';
+import { X } from '@bloxwap/icons/react/x';
 import React,{createContext,useContext,useId,useRef,useCallback,useEffect,forwardRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from './provider.js';
@@ -30,9 +32,9 @@ export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputEle
 export const SearchInput=/* @__PURE__ */forwardRef<HTMLInputElement,SearchInputProps>(function SearchInput({trailing,onClear,clearLabel,...props},ref){
  const {messages}=useHIG();const inner=useRef<HTMLInputElement|null>(null);const off=!!useContext(Context).disabled||!!props.disabled;
  const attach=useCallback((node:HTMLInputElement|null)=>{inner.current=node;const cleanup:unknown=typeof ref==='function'?ref(node):undefined;if(ref&&typeof ref!=='function')ref.current=node;return()=>{inner.current=null;if(typeof cleanup==='function')cleanup();else if(typeof ref==='function')ref(null);else if(ref)ref.current=null;};},[ref]);
- const clear=onClear&&props.value!=null&&String(props.value)!==''?<button type='button' className='hig-search-clear' aria-label={clearLabel??messages.clearSearch??en.clearSearch} disabled={off} onClick={()=>{onClear();inner.current?.focus();}}><svg aria-hidden='true' focusable='false' viewBox='0 0 16 16'><path d='m4 4 8 8m0-8-8 8'/></svg><PressDecoration kind='icon-button' disabled={off}/></button>:null;
+ const clear=onClear&&props.value!=null&&String(props.value)!==''?<button type='button' className='hig-search-clear' aria-label={clearLabel??messages.clearSearch??en.clearSearch} disabled={off} onClick={()=>{onClear();inner.current?.focus();}}><X size={16}/><PressDecoration kind='icon-button' disabled={off}/></button>:null;
  const extra=trailing!=null&&trailing!==false;
  const end=extra||clear?<span className='hig-search-trailing'>{trailing}{clear}</span>:null;
  // The end padding stays while the clear button comes and goes, so typed text never reflows.
- return <span className='hig-search-input' data-trailing={extra||onClear?'':undefined}><svg className='hig-search-icon' aria-hidden='true' focusable='false' viewBox='0 0 20 20'><circle cx='9' cy='9' r='5.25'/><path d='m13 13 3.5 3.5'/></svg><Input type='search' {...props} ref={onClear?attach:ref}/>{end}</span>;
+ return <span className='hig-search-input' data-trailing={extra||onClear?'':undefined}><Search size={20} className='hig-search-icon'/><Input type='search' {...props} ref={onClear?attach:ref}/>{end}</span>;
 });

@@ -1,3 +1,4 @@
+import { Check } from '@bloxwap/icons/native/check';
 import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {Animated,Easing,Image,Platform,Pressable,ScrollView,View,type LayoutChangeEvent,type ScrollViewProps} from 'react-native';
@@ -78,7 +79,7 @@ function FilterChip({option,checked,blocked,reducedMotion,onSelect,onLayout}: {o
   <View {...hiddenMark} style={{width:24,height:24,borderRadius:12,overflow:'hidden',alignItems:'center',justifyContent:'center'}}>
    {option.icon?<Image source={{uri:option.icon}} accessible={false} style={{position:'absolute',width:24,height:24,borderRadius:12}}/>:<View style={{position:'absolute',width:24,height:24,borderRadius:12,borderWidth:2,borderColor:ink}}/>}
    <Animated.View style={{position:'absolute',width:24,height:24,borderRadius:12,backgroundColor:colors.background,opacity:progress}}/>
-   <Animated.View style={{opacity:progress,transform:[{scale:progress.interpolate({inputRange:[0,1],outputRange:[0.4,1]})}]}}><View style={{width:11,height:6,borderLeftWidth:2,borderBottomWidth:2,borderColor:colors.text,transform:[{translateY:-1.5},{rotate:'-45deg'}]}}/></Animated.View>
+   <Animated.View style={{opacity:progress,transform:[{scale:progress.interpolate({inputRange:[0,1],outputRange:[0.4,1]})}]}}><Check size={16} color={colors.text}/></Animated.View>
   </View>
   <Text accessible={false} style={{fontSize:14,lineHeight:21,fontWeight:'600',color:ink}}>{option.label}</Text>
  </Pressable>;

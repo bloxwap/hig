@@ -1,6 +1,6 @@
 {
   "version": "0.8.0",
-  "sourceCommit": "cdf4068fa57f7be341785de1e7e67043b9a84cf8",
+  "sourceCommit": "9a3fd4e52d0868f649de7b90047f00a6be7a4ff7",
   "sourceTreeDirty": false,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -30,6 +30,9 @@
       "raw": 714,
       "gzip": 426,
       "inputs": [
+        "node_modules/@bloxwap/icons/dist/react/create-icon.js",
+        "node_modules/@bloxwap/icons/dist/react/search.js",
+        "node_modules/@bloxwap/icons/dist/react/x.js",
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/contracts/dist/invariants.js",
         "packages/hig/contracts/dist/decimal.js",
@@ -106,11 +109,11 @@
       ]
     },
     "docsJS": {
-      "raw": 2166410,
-      "gzip": 681159
+      "raw": 2193728,
+      "gzip": 689655
     },
     "docsCSS": {
-      "raw": 207825
+      "raw": 207799
     },
     "fonts": {
       "raw": 592796

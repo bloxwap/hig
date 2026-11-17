@@ -83,9 +83,9 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
   const valid=()=>validField.findByType(RN.TextInput);expect(flat(valid())).toMatchObject({borderColor:'transparent',backgroundColor:p3.surface});
   act(()=>valid().props.onFocus({}));expect(flat(valid()).borderColor).toBe(p3.faint);act(()=>valid().props.onBlur({}));expect(flat(valid()).borderColor).toBe('transparent');
   expect(flat(mount(React.createElement(Surface,null,React.createElement(Input))).findByType(RN.TextInput)).backgroundColor).toBe(p3.nested);
-  const {Rect,Path}=require('react-native-svg');
+  const {Rect}=require('react-native-svg');
   const mark=mount(React.createElement(BrandMark));expect(mark.findByType(Rect).props.fill).toBe(p3.action);expect(mark.findAll(n=>n.props.strokeWidth==='16')[0].props.stroke).toBe(p3.background);
-  expect(mount(React.createElement(CheckIcon)).findByType(Path).props.stroke).toBe(p3.text);
+  expect(mount(React.createElement(CheckIcon)).findByType('ExpoImage').props.tintColor).toBe(p3.text);
  }));
  it('Dialog surface paints from the P3 table',()=>withOS('ios',()=>{
   const sheet=mount(React.createElement(Dialog,{open:true,onOpenChange:jest.fn(),title:'Review',description:'Verify amount'},null)).findByType(RN.ScrollView);

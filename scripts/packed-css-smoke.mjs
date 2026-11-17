@@ -20,7 +20,7 @@ mkdirSync('artifacts',{recursive:true});
 const [pack]=JSON.parse(execFileSync('npm',['pack','./packages/hig','--json','--ignore-scripts','--pack-destination',resolve('artifacts')],{encoding:'utf8'}));
 const dir=scratchDir('hig-plain-css-consumer-');
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,name:'hig-plain-css-consumer'},null,2));
-execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',resolve('artifacts',pack.filename)],{cwd:dir,stdio:'pipe'});
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','@bloxwap/icons@^0.1.0',resolve('artifacts',pack.filename)],{cwd:dir,stdio:'pipe'});
 assert.ok(readdirSync(join(dir,'node_modules/@bloxwap')).includes('hig'),'the plain CSS consumer installs the @bloxwap/hig tarball');
 const installed=JSON.parse(readFileSync(join(dir,'node_modules/@bloxwap/hig/package.json'),'utf8'));
 const cssExport=installed.exports['./tokens/css'].default;assert.equal(typeof cssExport,'string','@bloxwap/hig exposes ./tokens/css');

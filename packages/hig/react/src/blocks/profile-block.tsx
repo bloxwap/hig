@@ -1,4 +1,5 @@
 "use client";
+import { PenLine } from '@bloxwap/icons/react/pen-line';
 import React,{useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from '../provider.js';
@@ -75,7 +76,7 @@ export interface ProfileBlockProps extends Omit<React.HTMLAttributes<HTMLElement
  /** `id` of the name heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
  headingId?:string;
 }
-const editIcon=<svg aria-hidden='true' focusable='false' viewBox='0 0 20 20' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='1.6' strokeLinecap='round' strokeLinejoin='round'><path d='M12.5 4.5 15.5 7.5 7.5 15.5H4.5V12.5ZM10.5 15.5H16'/></svg>;
+const editIcon=<PenLine size={20}/>;
 /** True for a `ProfileFigure`: a plain object with a `value`, not an element, array or other node. */
 const isProfileFigure=(value:unknown):value is ProfileFigure=>value!=null&&typeof value==='object'&&!React.isValidElement(value)&&!Array.isArray(value)&&!(Symbol.iterator in value)&&'value' in value;
 function rowValue(row:ProfileRow):React.ReactNode{

@@ -29,7 +29,7 @@ const next=JSON.parse(readFileSync('fixtures/next/package.json','utf8')).depende
 const dir=scratchDir('hig-og-consumer-');
 const root=JSON.parse(readFileSync('package.json','utf8')).devDependencies;
 writeFileSync(join(dir,'package.json'),JSON.stringify({private:true,type:'module',dependencies:{next:next.next,react:next.react,'react-dom':next['react-dom']},devDependencies:{typescript:root.typescript,'@types/node':root['@types/node'],'@types/react':root['@types/react']}},null,2));
-execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund',tarball],{cwd:dir,stdio:'pipe'});
+execFileSync('npm',['install','--ignore-scripts','--no-audit','--no-fund','@bloxwap/icons@^0.1.0',tarball],{cwd:dir,stdio:'pipe'});
 writeFileSync(join(dir,'native-manifest.json'),JSON.stringify(nativeManifest));
 writeFileSync(join(dir,'og.mjs'),`import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';

@@ -1,3 +1,13 @@
+import { ArrowDown } from '@bloxwap/icons/native/arrow-down';
+import { ArrowUpDown } from '@bloxwap/icons/native/arrow-up-down';
+import { ChevronDown } from '@bloxwap/icons/native/chevron-down';
+import { Delete } from '@bloxwap/icons/native/delete';
+import { Lock } from '@bloxwap/icons/native/lock';
+import { LogOut } from '@bloxwap/icons/native/log-out';
+import { Menu } from '@bloxwap/icons/native/menu';
+import { RotateCcw } from '@bloxwap/icons/native/rotate-ccw';
+import { ScanLine } from '@bloxwap/icons/native/scan-line';
+import { Wallet } from '@bloxwap/icons/native/wallet';
 import React,{createContext} from 'react';
 import {Image,Pressable,View,type FlatListProps,type Insets,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
@@ -8,29 +18,17 @@ import {AnimatedNumberReadout} from './animated-number.js';
 import type {SwapArtwork,SwapToken} from './swap-shared.js';
 /** What a host surface supplies to the swap views: a sheet passes its backend's list so drags hand off to the sheet, and turns off the panel's own height animation. */
 export const SwapHostContext=createContext<{listComponent?:React.ComponentType<FlatListProps<SwapToken>>;animateHeight?:boolean}>({});
-// Outline symbols drawn from plain views, like ./icons: decorative, so the control that holds them carries the name.
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const,pointerEvents:'none' as const};
-const stroke=1.75;
 const centre:ViewStyle={alignItems:'center',justifyContent:'center'};
-const crossAngles=['45deg','-45deg'];
-function Arrow({color,down,height}: {color:string;down?:boolean;height:number}){return <View style={{width:7,height,alignItems:'center',transform:down?[{rotate:'180deg'}]:undefined}}><View style={{position:'absolute',top:1,width:5,height:5,borderLeftWidth:stroke,borderTopWidth:stroke,borderColor:color,transform:[{rotate:'45deg'}]}}/><View style={{width:stroke,height,borderRadius:stroke,backgroundColor:color}}/></View>;}
-/** One arrow, top to bottom: a one-way panel. */
-export function DownIcon({color,size=16}: {color:string;size?:number}){return <View {...hidden} style={{width:size,height:size,...centre}}><Arrow color={color} down height={size-3}/></View>;}
-/** Two opposed arrows: exchange the pair, or switch the denomination. */
-export function FlipIcon({color,size=16}: {color:string;size?:number}){return <View {...hidden} style={{width:size,height:size,flexDirection:'row',gap:1,...centre}}><Arrow color={color} down height={size-3}/><Arrow color={color} height={size-3}/></View>;}
-export function MenuIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,gap:3.5,...centre}}>{[0,1,2].map(index=><View key={index} style={{width:14,height:stroke,borderRadius:stroke,backgroundColor:color}}/>)}</View>;}
-/** An open ring with an arrowhead at its gap. */
-export function ResetIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><View style={{width:14,height:14,borderRadius:7,borderWidth:stroke,borderColor:color,borderTopColor:'transparent',transform:[{rotate:'-45deg'}]}}/><View style={{position:'absolute',left:2,top:3,width:5,height:5,borderLeftWidth:stroke,borderBottomWidth:stroke,borderColor:color}}/></View>;}
-/** Keypad delete: a key outline holding an x. */
-export function DeleteIcon({color}: {color:string}){return <View {...hidden} style={{width:26,height:18,borderRadius:5,borderWidth:stroke,borderColor:color,...centre}}>{crossAngles.map(angle=><View key={angle} style={{position:'absolute',width:9,height:stroke,borderRadius:stroke,backgroundColor:color,transform:[{rotate:angle}]}}/>)}</View>;}
-/** Four viewfinder corners. */
-export function ScanIcon({color}: {color:string}){const corner=(style:ViewStyle)=><View style={[{position:'absolute',width:6,height:6,borderColor:color},style]}/>;return <View {...hidden} style={{width:18,height:18}}>{corner({left:0,top:0,borderLeftWidth:stroke,borderTopWidth:stroke,borderTopLeftRadius:3})}{corner({right:0,top:0,borderRightWidth:stroke,borderTopWidth:stroke,borderTopRightRadius:3})}{corner({left:0,bottom:0,borderLeftWidth:stroke,borderBottomWidth:stroke,borderBottomLeftRadius:3})}{corner({right:0,bottom:0,borderRightWidth:stroke,borderBottomWidth:stroke,borderBottomRightRadius:3})}<View style={{position:'absolute',left:0,right:0,top:8,height:stroke,borderRadius:stroke,backgroundColor:color}}/></View>;}
-/** A wallet: a rounded body with a clasp on the trailing edge. */
-export function WalletIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,...centre}}><View style={{width:16,height:12,borderRadius:3,borderWidth:stroke,borderColor:color,alignItems:'flex-end',justifyContent:'center'}}><View style={{width:5,height:4,borderTopLeftRadius:2,borderBottomLeftRadius:2,borderWidth:stroke,borderRightWidth:0,borderColor:color,marginEnd:-stroke}}/></View></View>;}
-/** A padlock: a shackle over a body. */
-export function LockIcon({color}: {color:string}){return <View {...hidden} style={{width:16,height:16,alignItems:'center',justifyContent:'flex-end'}}><View style={{width:8,height:7,borderTopLeftRadius:4,borderTopRightRadius:4,borderWidth:stroke,borderBottomWidth:0,borderColor:color}}/><View style={{width:12,height:8,borderRadius:2,borderWidth:stroke,borderColor:color}}/></View>;}
-/** A doorway with an arrow leaving it. */
-export function LeaveIcon({color}: {color:string}){return <View {...hidden} style={{width:20,height:20,flexDirection:'row',alignItems:'center'}}><View style={{width:8,height:14,borderWidth:stroke,borderRightWidth:0,borderColor:color,borderTopLeftRadius:3,borderBottomLeftRadius:3}}/><View style={{width:9,height:stroke,borderRadius:stroke,backgroundColor:color,marginStart:-2}}/><View style={{width:5,height:5,borderRightWidth:stroke,borderTopWidth:stroke,borderColor:color,marginStart:-5,transform:[{rotate:'45deg'}]}}/></View>;}
+export function DownIcon({color,size=16}: {color:string;size?:number}){return <ArrowDown size={size} color={color}/>;}
+export function FlipIcon({color,size=16}: {color:string;size?:number}){return <ArrowUpDown size={size} color={color}/>;}
+export function MenuIcon({color}: {color:string}){return <Menu size={20} color={color}/>;}
+export function ResetIcon({color}: {color:string}){return <RotateCcw size={20} color={color}/>;}
+export function DeleteIcon({color}: {color:string}){return <Delete size={24} color={color}/>;}
+export function ScanIcon({color}: {color:string}){return <ScanLine size={18} color={color}/>;}
+export function WalletIcon({color}: {color:string}){return <Wallet size={20} color={color}/>;}
+export function LockIcon({color}: {color:string}){return <Lock size={16} color={color}/>;}
+export function LeaveIcon({color}: {color:string}){return <LogOut size={20} color={color}/>;}
 /** Circular artwork from a URL or the host's own element, or the symbol's first letters when the host has none. */
 export function TokenArt({uri,symbol,size,ring}: {uri?:SwapArtwork;symbol?:string;size:number;ring?:string}){
  const colors=useColors();const shape:ViewStyle={width:size,height:size,borderRadius:size/2,backgroundColor:colors.nested,...(ring?{borderWidth:2,borderColor:ring}:{})};
@@ -60,7 +58,7 @@ export function SwapHeader({title,onBack}: {title:string;onBack?:()=>void}){
  </View>;
 }
 /** A small chevron: down marks a side that can be changed, trailing marks a card that opens something. Mirrors in RTL. */
-export function SmallChevron({color,trailing}: {color:string;trailing?:boolean}){const {direction}=useHIG();return <View {...hidden} style={{width:16,height:16,...centre,transform:trailing?[{rotate:direction==='rtl'?'90deg':'-90deg'}]:undefined}}><View style={{width:7,height:7,borderRightWidth:stroke,borderBottomWidth:stroke,borderColor:color,transform:[{translateY:-1.5},{rotate:'45deg'}]}}/></View>;}
+export function SmallChevron({color,trailing}: {color:string;trailing?:boolean}){const {direction}=useHIG();return <ChevronDown size={16} color={color} style={{transform:trailing?[{rotate:direction==='rtl'?'90deg':'-90deg'}]:undefined}}/>;}
 /** A pushed view inside the panel: Back and the view title, then the body. There is no close control; Back pops. */
 export function SwapSubview({title,onBack,testID,children}:React.PropsWithChildren<{title:string;onBack:()=>void;testID?:string}>){
  return <View testID={testID} style={{gap:16}}>

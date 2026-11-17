@@ -1,4 +1,6 @@
 "use client";
+import { Check } from '@bloxwap/icons/react/check';
+import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
 import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React,{useEffect,useId,useLayoutEffect,useRef,useState} from 'react';
 import {useControllable,useHIG} from './provider.js';
@@ -120,11 +122,11 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
 
  return <div className='hig-field'><label id={`${id}-label`} htmlFor={id}>{label}</label><div className='hig-select'>
   <button ref={trigger} id={id} type='button' role='combobox' className='hig-input hig-select-trigger' disabled={disabled} aria-labelledby={`${id}-label`} aria-haspopup='listbox' aria-expanded={expanded} aria-controls={expanded?`${id}-list`:undefined} aria-activedescendant={expanded&&activeOption?optionId(active):undefined} onClick={()=>expanded?setOpen(false):show()} onKeyDown={onKeyDown} onBlur={()=>setOpen(false)}>
-   <span className='hig-select-value'>{options[selected]?.label??''}</span><svg className='hig-select-chevron' aria-hidden='true' viewBox='0 0 20 20'><path d='m5 7.5 5 5 5-5'/></svg>
+   <span className='hig-select-value'>{options[selected]?.label??''}</span><ChevronDown size={20} className='hig-select-chevron'/>
   </button>
   {expanded&&<div ref={list} id={`${id}-list`} className='hig-select-list' role='listbox' aria-labelledby={`${id}-label`} popover='manual' onPointerDown={event=>event.preventDefault()}>
    {options.map((option,index)=><div key={option.value} id={optionId(index)} role='option' className='hig-select-option' aria-selected={index===selected} aria-disabled={option.disabled||undefined} data-active={index===active||undefined} onPointerMove={()=>{if(!option.disabled)setActive(index);}} onClick={()=>choose(index)}>
-    <span>{option.label}</span><svg className='hig-select-check' aria-hidden='true' viewBox='0 0 20 20'><path d='m4 10 4 4 8-8'/></svg>
+    <span>{option.label}</span><Check size={20} className='hig-select-check'/>
    </div>)}
   </div>}
  </div></div>;
