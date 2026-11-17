@@ -167,9 +167,6 @@ export function qrMaskAt(mask:number,column:number,row:number):boolean{
   default:return ((column+row)%2+column*row%3)%2===0;
  }
 }
-// Every mask pattern repeats each 6 columns and 12 rows, so one 12×6 tile a mask answers `qrMaskAt` with a lookup.
-const MASK_TILES=new Uint8Array(8*72);
-for(let mask=0;mask<8;mask++)for(let row=0;row<12;row++)for(let column=0;column<6;column++)MASK_TILES[mask*72+row*6+column]=qrMaskAt(mask,column,row)?1:0;
 /**
  * The mask search reads a symbol as bits, 32 cells a word, so a mask is scored in a few operations a word, not many a cell.
  * A line (a row or a column) is cut into words that start every `SPAN` cells and overlap: word k holds cells 21k−1 to 21k+30,
@@ -177,15 +174,29 @@ for(let mask=0;mask<8;mask++)for(let row=0;row<12;row++)for(let column=0;column<
  * the bit before them says whether a run began earlier, and the ten after them complete an eleven-cell sequence.
  */
 const SPAN=21,OWN=0x3ffffe;
+const MASK_COLUMNS=8*12*2;let maskWords:Int32Array|undefined;
 /**
- * Each mask pattern as words: for a row, by `row % 12` and the word's parity (a word starts 21 columns after the last, and the
- * pattern repeats every 6); for a column, by `column % 6` and the word's index modulo 4 (the pattern repeats every 12 rows).
+ * Each mask pattern as words, built when a symbol is first encoded: every pattern repeats each 6 columns and 12 rows. For a
+ * row, by `row % 12` and the word's parity (a word starts 21 columns after the last); then, from `MASK_COLUMNS`, for a column,
+ * by `column % 6` and the word's index modulo 4.
  */
-const MASK_ROWS=new Int32Array(8*12*2),MASK_COLUMNS=new Int32Array(8*6*4);
-for(let mask=0;mask<8;mask++){
- const tile=mask*72;
- for(let row=0;row<12;row++)for(let phase=0;phase<2;phase++){let six=0;for(let bit=0;bit<6;bit++)six|=MASK_TILES[tile+row*6+(bit+5+3*phase)%6]!<<bit;MASK_ROWS[(mask*12+row)*2+phase]=Math.imul(six,0x41041041);}
- for(let column=0;column<6;column++)for(let phase=0;phase<4;phase++){let twelve=0;for(let bit=0;bit<12;bit++)twelve|=MASK_TILES[tile+(bit+11+9*phase)%12*6+column]!<<bit;MASK_COLUMNS[(mask*6+column)*4+phase]=Math.imul(twelve,0x1001001);}
+function maskPatterns():Int32Array{
+ if(maskWords)return maskWords;
+ const words=maskWords=new Int32Array(MASK_COLUMNS+8*6*4),tile=new Uint8Array(12);
+ for(let mask=0;mask<8;mask++){
+  for(let row=0;row<12;row++){
+   let six=0;for(let column=0;column<6;column++)if(qrMaskAt(mask,column,row))six|=1<<column;
+   tile[row]=six;
+   // Bit j of a row's word is column 21k−1+j: column j+5 of the tile in an even word, j+2 in an odd one. Six bits repeat to fill the word.
+   for(let phase=0;phase<2;phase++){const turn=5-3*phase;words[(mask*12+row)*2+phase]=Math.imul((six>>>turn|six<<6-turn)&63,0x41041041);}
+  }
+  for(let column=0;column<6;column++){
+   let twelve=0;for(let row=0;row<12;row++)twelve|=(tile[row]!>>>column&1)<<row;
+   // Bit j of a column's word is row 21k−1+j: row j+11, j+8, j+5 and j+2 of the tile in words 0 to 3.
+   for(let phase=0;phase<4;phase++){const turn=11-3*phase;words[MASK_COLUMNS+(mask*6+column)*4+phase]=Math.imul((twelve>>>turn|twelve<<12-turn)&4095,0x1001001);}
+  }
+ }
+ return words;
 }
 /** A symbol as words, its rows and then its columns: `lines` holds the modules and `free` the cells that are not reserved, which a mask may invert. */
 function pack(modules:Uint8Array,reserved:Uint8Array,size:number):{lines:Int32Array;free:Int32Array}{
@@ -250,14 +261,14 @@ function template(version:number):{modules:Uint8Array;reserved:Uint8Array}{
  * score reaches `limit`: it cannot be lower than a score already found.
  */
 function maskPenalty(lines:Int32Array,free:Int32Array,size:number,mask:number,limit:number):number{
- const words=Math.ceil(size/SPAN),inside=new Int32Array(words),above=new Int32Array(2*words);
+ const words=Math.ceil(size/SPAN),inside=new Int32Array(words),above=new Int32Array(2*words),patterns=maskPatterns();
  for(let word=0;word<words;word++){const cells=size+1-word*SPAN;inside[word]=(cells<32?(1<<cells)-1:-1)&(word?-1:-2);}
  let score=0,dark=0,at=0;
  // Along the rows: runs, finder-like sequences, 2×2 blocks against the row above, and the dark count.
  for(let row=0;row<size;row++){
   const pattern=(mask*12+row%12)*2;
   for(let word=0;word<words;word++,at++){
-   const cells=lines[at]!^MASK_ROWS[pattern+(word&1)]!&free[at]!,valid=inside[word]!,equal=~(cells^cells>>>1)&valid&valid>>>1;
+   const cells=lines[at]!^patterns[pattern+(word&1)]!&free[at]!,valid=inside[word]!,equal=~(cells^cells>>>1)&valid&valid>>>1;
    const blocks=equal&above[words+word]!&~(cells^above[word]!)&OWN;
    if(blocks)score+=3*count(blocks);
    above[word]=cells;above[words+word]=equal;dark+=count(cells&OWN);score+=wordPenalty(cells,equal,valid);
@@ -266,8 +277,8 @@ function maskPenalty(lines:Int32Array,free:Int32Array,size:number,mask:number,li
  }
  // Down the columns: runs and finder-like sequences.
  for(let column=0;column<size;column++){
-  const pattern=(mask*6+column%6)*4;
-  for(let word=0;word<words;word++,at++){const cells=lines[at]!^MASK_COLUMNS[pattern+(word&3)]!&free[at]!,valid=inside[word]!;score+=wordPenalty(cells,~(cells^cells>>>1)&valid&valid>>>1,valid);}
+  const pattern=MASK_COLUMNS+(mask*6+column%6)*4;
+  for(let word=0;word<words;word++,at++){const cells=lines[at]!^patterns[pattern+(word&3)]!&free[at]!,valid=inside[word]!;score+=wordPenalty(cells,~(cells^cells>>>1)&valid&valid>>>1,valid);}
   if(score>=limit)return limit;
  }
  const total=size*size;
@@ -312,9 +323,11 @@ export function encodeQR(value:string,options:QREncodeOptions={}):QRMatrix{
   const {lines,free}=pack(modules,reserved,size);let lowest=Infinity;mask=0;
   for(let candidate=0;candidate<8;candidate++){const score=maskPenalty(lines,free,size,candidate,lowest);if(score<lowest){lowest=score;mask=candidate;}}
  }
- for(let row=0,at=0;row<size;row++){
-  const tile=mask*72+row%12*6;
-  for(let column=0,phase=0;column<size;column++,at++){modules[at]=modules[at]!^MASK_TILES[tile+phase]!&(reserved[at]!^1);if(++phase===6)phase=0;}
+ // A row's pattern words hold its columns 21 a word, from bit 1: the mask inverts each cell that is not reserved.
+ const patterns=maskPatterns();
+ for(let row=0,at=0,end=size;row<size;row++,end+=size){
+  const pattern=(mask*12+row%12)*2;
+  for(let word=0;at<end;word++)for(let inverts=patterns[pattern+(word&1)]!>>>1,stop=Math.min(at+SPAN,end);at<stop;at++,inverts>>>=1)modules[at]=modules[at]!^inverts&(reserved[at]!^1);
  }
  const result=modules,format=qrFormatBits(level,mask);
  const set=(column:number,row:number,bit:number)=>{result[row*size+column]=bit;};

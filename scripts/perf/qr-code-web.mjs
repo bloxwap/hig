@@ -10,7 +10,8 @@
 //
 // Scenarios: mount one code; mount one with an arena image; re-render its parent 100 times with identical props; change only
 // `size` 100 times; change `value` on each keystroke of a 60-character payment URI; mount a list of 50 distinct codes, and of
-// 50 equal ones. One change a frame where frames are counted. A throttled desktop Chromium is not a phone.
+// 50 equal ones; mount a code that was shown and unmounted. One change a frame where frames are counted. HIG_QR_SCENARIOS
+// names a subset. A throttled desktop Chromium is not a phone.
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {dirname,resolve} from 'node:path';
@@ -64,6 +65,7 @@ const scenarios=`
   typing:{async setup(){show([{value:''}]);await frames(2);},async run(){return report({changes:uri.length,...stats(await perFrame(uri.length,index=>show([{value:uri.slice(0,index+1)}])))});}},
   list:{async run(){const commitMs=await inFrame(()=>show(Array.from({length:50},(_,index)=>({value:address(index),size:96}))));return report({commitMs});}},
   listSame:{async run(){const commitMs=await inFrame(()=>show(Array.from({length:50},()=>({value:eth,size:96}))));return report({commitMs});}},
+  remount:{async setup(){show([{value:eth}]);await frames(2);show([]);await frames(2);},async run(){const commitMs=await inFrame(()=>show([{value:eth}]));return report({commitMs});}},
  };`;
 const sources={
  react:`import React,{useState} from 'react';import {createRoot} from 'react-dom/client';import {flushSync} from 'react-dom';
@@ -79,7 +81,7 @@ const bundle=await build({stdin:{contents:sources[renderer],resolveDir:root,load
 const html=`<!doctype html><html lang="en"><head><style>${css}body{margin:24px;background:var(--hig-background);color:var(--hig-text)}#root>div>div{display:flex;flex-wrap:wrap;gap:8px}</style></head><body><main id="root"></main><script>${bundle.outputFiles[0].text.replaceAll('</script','<\\/script')}</script></body></html>`;
 // Cross-origin isolated, so `performance.now()` in the page resolves 5 µs rather than 100 µs.
 const origin='https://qr-code.perf/',isolation={'Cross-Origin-Opener-Policy':'same-origin','Cross-Origin-Embedder-Policy':'require-corp'};
-const names=['mount','mountArena','rerender','resize','typing','list','listSame'];
+const names=(process.env.HIG_QR_SCENARIOS??'mount,mountArena,rerender,resize,typing,list,listSame,remount').split(',');
 const median=(values)=>{const sorted=[...values].sort((a,b)=>a-b);return sorted[sorted.length>>1];};
 const round=(value)=>Math.round(value*1000)/1000;
 const browser=await launchBrowser(chromium,{headless:true});
