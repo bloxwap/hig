@@ -84,6 +84,7 @@
   "/docs/guides/components/overlays/": [
     "api-and-anatomy",
     "optional-web-gesture-backend",
+    "native-sheet-engine-preview",
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",

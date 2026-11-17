@@ -133,6 +133,30 @@ The host can reject `onOpenChange(false)` while pending; HIG restores Vaul's las
 
 `scripts/gesture-sheet-browser-smoke.mjs` exercises the real Vaul backend in Chromium and WebKit: drag/scroll handoff, handle-only drag, controlled veto with retained input identity, nondismissible state, snap expansion, dynamic growth/shrink and capped scrolling, rapid resize interruption, focus/node identity, focus trap/Escape/return, viewport resizing, host styles/refs and reduced motion. Evidence in `evidence/web-gesture-sheet/` records the exact source baseline and dirty state. Desktop viewport resizing does not certify physical mobile software-keyboard behavior; that remains a host/device observation.
 
+## Native sheet engine (preview)
+
+`@bloxwap/hig/native/gesture-sheet-next` is HIG's own sheet for iOS and Android, written to replace the `@gorhom/bottom-sheet` backend behind `@bloxwap/hig/native/gesture-sheet`. It needs `react-native-reanimated`, `react-native-gesture-handler` and `react-native-safe-area-context`, and no sheet library. It is a preview: its arithmetic and lifecycle are tested, but it has not yet been measured on devices, so it sits beside the existing entry until it has.
+
+```tsx
+import {GestureSheet, GestureSheetHost, GestureSheetScrollView} from '@bloxwap/hig/native/gesture-sheet-next';
+
+<GestureSheetHost>{/* once, around the screen */}
+  <App/>
+  <GestureSheet open={open} onOpenChange={setOpen} title="Markets" contentMode="custom" enableDynamicSizing>
+    <GestureSheetScrollView>{rows}</GestureSheetScrollView>
+  </GestureSheet>
+</GestureSheetHost>
+```
+
+- **Why it stays smooth.** While the sheet moves, only its `translateY` and the backdrop's opacity change, both on the UI thread. Nothing is laid out per frame, whatever the content weighs. Opening, closing, a new detent set and content that changed height all become one spring. The surface is rasterised on Android (`renderToHardwareTextureAndroid`).
+- **Sizing.** `snapPoints` are points or a percentage of the room under `topInset`, sorted for you, with `initialIndex` counted from the lowest. Fixed content is laid out once at the tallest detent, so at a lower detent its lower part is off screen, as in Vaul. `enableDynamicSizing` gives one detent as tall as the content, up to `maxDynamicContentSize`; when the content changes height the content is laid out at once and the sheet springs to the new height.
+- **Drag.** The whole sheet drags. A slow release takes the nearest detent, or closes past half way below the lowest; a flick moves one detent in its direction, or closes from the lowest. Above the top detent the sheet resists. A drag can be caught mid-motion.
+- **Scrolling content.** Use `GestureSheetScrollView`: at the top detent it scrolls, a pull down from the top of the content moves the sheet, and below the top detent the drag moves the sheet. Bounce and overscroll are off.
+- **Presentation.** `modal` (default) draws in the nearest `GestureSheetHost` and is mounted from opening until its closing motion ends; without a host it draws in place. `inline` draws where it is rendered and keeps its children mounted while closed.
+- **Dismissal.** Drag, a backdrop press, Android Back, the accessibility escape and the default Close ask through `onOpenChange(false)`; a host that keeps `open` gets the sheet back at its detent. `dismissible={false}` blocks all of them. `onDismiss` fires once after an accepted dismissal has finished moving; `onChange(index)` fires when the sheet settles on a detent.
+- **Keyboard.** iOS lifts the sheet over the keyboard. Android resizes the window, which the sheet reads as new room.
+- **Differences from `native/gesture-sheet`.** No backend-typed props: `modalRef`, `sheetRef`, `handleComponent`, `backgroundComponent`, `backdropComponent`, `animationConfigs`, `containerStyle`, `keyboardBehavior` and `enableContentPanningGesture` are gone. `handle`, `backgroundStyle`, `backdropOpacity` and `testID` take their place. Modal sheets need `GestureSheetHost` in place of `BottomSheetModalProvider`. The sheet draws no shadow.
+
 ## When to use and examples
 
 Do: repeat the order amount and give an explicit cancel action. Don’t: hide essential terms in hover help or execute confirm on open.
