@@ -1,4 +1,5 @@
 "use client";
+import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React from 'react';
 import {useControllable} from './provider.js';
 import {Button} from './button.js';
@@ -25,7 +26,7 @@ export interface PresetGroupProps<T extends string|number=string> {
  testID?:string;
 }
 /** A set of quick choices as chips in an equal-width grid, such as order sizes or leverage steps. Single choice, or none; each chip is a toggle button that reads pressed when selected, at least 44px tall, in the interface face. TargetBlock draws its presets with it. */
-export function PresetGroup<T extends string|number=string>({label,options,value,defaultValue=null,onValueChange,columns,selectedIntent='primary',disabled,suppressFeedback,className,testID}:PresetGroupProps<T>){
+export function PresetGroup<T extends string|number=string>({label,options,value,defaultValue=null,onValueChange,columns,selectedIntent='primary',disabled,suppressFeedback,className,testID}:PresetGroupProps<T>){assertUniqueKeys(options,option=>option.value,'Choices');
  const [current,set]=useControllable<T|null>(value,defaultValue,onValueChange as ((value:T|null)=>void)|undefined,suppressFeedback?null:'selection');
  const count=Math.max(1,Math.floor(columns??options.length)||1);
  return <div role='group' aria-label={label} aria-disabled={disabled||undefined} className={`hig-preset-group${className?` ${className}`:''}`} data-testid={testID} style={{'--hig-preset-columns':count} as React.CSSProperties}>

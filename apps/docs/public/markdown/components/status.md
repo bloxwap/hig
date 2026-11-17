@@ -6,6 +6,8 @@ Includes `Badge`, `Alert`, `Callout`, `Toast`, `Toaster` with `toast()`, `Progre
 
 Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import. `Confetti` has its own entries, `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`; see [Confetti](#confetti).
 
+Progress normalizes its value and maximum consistently for drawing and accessibility. Confetti is bounded to 500 particles per burst and eight simultaneous bursts per renderer (4,000 active particles); at most eight pre-mount requests wait. Overflow requests resolve immediately without drawing.
+
 ## API and anatomy
 
 | Component | Key props and behavior |

@@ -1,4 +1,5 @@
 "use client";
+import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React from 'react';
 import {formatNumber,presentNumberFormat} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -27,7 +28,7 @@ export function VerticalAddress({address,kind,rowHeight,className}:{address:stri
 export function Metric({label,value}: {label:string;value:React.ReactNode}){return <dl className='hig-surface'><dt>{label}</dt><dd>{value}</dd></dl>;}
 export const Stat=Metric;
 export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render:(item:T)=>React.ReactNode;empty?:string;label?:string;loading?:boolean;error?:string;onRetry?:()=>void;onLoadMore?:()=>void}
-export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){const {messages}=useHIG();return <div className='hig-data-list' aria-busy={loading}>
+export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){assertUniqueKeys(items,keyFor,'List');const {messages}=useHIG();return <div className='hig-data-list' aria-busy={loading}>
  {items.length?<ul className='hig-list' aria-label={label}>{items.map(item=><li key={keyFor(item)}>{render(item)}</li>)}</ul>:!loading&&!error?<p className='hig-list-message'>{empty??messages.noItems??en.noItems}</p>:null}
  {loading&&<p className='hig-list-message' role='status'>{messages.loadingItems??en.loadingItems}</p>}{error&&<div className='hig-list-error' role='alert'><p className='hig-list-message'>{error}</p>{onRetry&&<button className='hig-button' data-intent='secondary' type='button' disabled={loading} onClick={onRetry}>{messages.retry??en.retry}</button>}</div>}
  {onLoadMore&&<button className='hig-button' data-intent='secondary' type='button' disabled={loading} onClick={onLoadMore}>{messages.loadMore??en.loadMore}</button>}
@@ -51,7 +52,7 @@ export interface TableProps<T> {
  state?:React.ReactNode;
 }
 function tableRowAttributes(props:TableRowProps|undefined){const attributes:React.HTMLAttributes<HTMLTableRowElement>={...props};delete attributes.children;delete attributes.dangerouslySetInnerHTML;delete attributes.role;return attributes;}
-export function Table<T>({caption,rows,columns,keyFor,rowProps,className,style,tableClassName,captionHidden=false,stickyHeader=false,loading=false,state}:TableProps<T>){
+export function Table<T>({caption,rows,columns,keyFor,rowProps,className,style,tableClassName,captionHidden=false,stickyHeader=false,loading=false,state}:TableProps<T>){assertUniqueKeys(rows,keyFor,'Table');assertUniqueKeys(columns,column=>column.key,'Table columns');
  const {messages}=useHIG();const status=state!==undefined?state:loading?<span role='status'>{messages.loading??en.loading}</span>:!rows.length?messages.noRows??en.noRows:null;
  return <div className={`hig-table-scroll${className?` ${className}`:''}`} style={style} tabIndex={0} role='region' aria-label={caption} aria-busy={loading||undefined}><table className={`hig-table${tableClassName?` ${tableClassName}`:''}`} data-sticky-header={stickyHeader||undefined}><caption className={captionHidden?'hig-sr-only':undefined}>{caption}</caption><thead><tr>{columns.map(c=><th key={c.key} scope='col' aria-sort={c.sort} style={c.align?{textAlign:c.align}:undefined}>{c.onSort?<button type='button' className='hig-table-sort' onClick={c.onSort}>{c.label}<svg className='hig-table-sort-icon' aria-hidden='true' focusable='false' width='14' height='14' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'><path className='hig-table-sort-up' d='m4.5 6 3.5-3.5L11.5 6'/><path className='hig-table-sort-down' d='m4.5 10 3.5 3.5 3.5-3.5'/></svg></button>:c.label}</th>)}</tr></thead><tbody>{rows.map((row,index)=><tr {...tableRowAttributes(rowProps?.(row,index))} key={keyFor(row)}>{columns.map(c=><td key={c.key} style={c.align?{textAlign:c.align}:undefined}>{c.render(row)}</td>)}</tr>)}{status!==null&&status!==false&&<tr className='hig-table-state'><td colSpan={Math.max(1,columns.length)}>{status}</td></tr>}</tbody></table></div>;
 }

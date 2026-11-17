@@ -12,6 +12,8 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 
 `@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
 
+Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds without a valid update and display the localized stale marker until the next update. Built-in feeds reconnect after 30 seconds of silence and report connection loss through the optional second callback, onStale. Cleanup invalidates late callbacks from replaced feeds. Controlled data freshness remains the host's responsibility. Outcome IDs are deduplicated in first-seen order.
+
 ## API and anatomy
 
 | Component | Key props and behavior |

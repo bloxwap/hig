@@ -1,3 +1,4 @@
+import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {tokens} from '@bloxwap/hig/tokens';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
@@ -111,7 +112,7 @@ export interface SpinnerProps {
  testID?:string;
 }
 export function Spinner({label,hideLabel,testID}:SpinnerProps){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View testID={testID} accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/>{hideLabel?null:<Text>{text}</Text>}</View>;}
-export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){
+export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){({value,max}=progressValue(value,max));
  const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
  return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>

@@ -107,7 +107,7 @@ export const confettiStarWedge={width:2*CONFETTI_STAR_OUTER*CONFETTI_STAR_INNER*
  */
 export function createConfettiBurst(options:ConfettiOptions|undefined,fallbackColors:readonly string[]|(()=>readonly string[]),random:()=>number=Math.random):ConfettiBurst{
  const o=options??{},d=confettiDefaults;
- const count=Math.floor(finite(o.particleCount,d.particleCount,0,Number.MAX_SAFE_INTEGER));
+ const count=Math.floor(finite(o.particleCount,d.particleCount,0,500));
  const angle=finite(o.angle,d.angle)*Math.PI/180,spread=finite(o.spread,d.spread)*Math.PI/180,velocity=finite(o.startVelocity,d.startVelocity);
  const own=list(o.colors).filter(color=>typeof color==='string'&&color!=='');const colors=own.length?own:typeof fallbackColors==='function'?fallbackColors():fallbackColors;
  const picked=list(o.shapes).filter(shape=>shapes.includes(shape));const pool=picked.length?picked:d.shapes;

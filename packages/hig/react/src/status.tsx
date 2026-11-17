@@ -1,4 +1,5 @@
 "use client";
+import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -34,7 +35,7 @@ export function Toast({notices,onDismiss,dismissLabel}: {notices:readonly Notice
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <aside className='hig-toast' aria-label={messages.notifications??en.notifications}>{unique.map(n=><ToastNotice key={n.id} message={n.message} severity={n.severity} action={n.action} dismissName={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onDismiss={()=>onDismiss(n.id)}/>)}<span className='hig-sr-only' role={announcement.severity==='error'?'alert':'status'} aria-atomic='true'>{announcement.message}</span></aside>;
 }
-export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
+export function Progress({label,value,max=100}: {label:string;value?:number;max?:number}){({value,max}=progressValue(value,max));return <label className='hig-progress'>{label}<progress aria-label={label} value={value} max={max}/></label>;}
 export interface SpinnerProps {
  /** What is loading; defaults to HIGProvider `messages.loading`. */
  label?:string;

@@ -31,7 +31,7 @@ const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;f
 const flowing=(element:Element)=>element.querySelectorAll('.hig-animated-number-old').length;
 describe('swap helpers',()=>{
  it('names the action from the pair',()=>{
-  expect(swapAction(null,eth)).toBe('send');expect(swapAction(eth,eth)).toBe('send');expect(swapAction(usdc,baseUsdc)).toBe('send');
+  expect(swapAction(null,eth)).toBe('send');expect(swapAction(eth,eth)).toBe('send');expect(swapAction(usdc,baseUsdc)).toBe('bridge');
   expect(swapAction(eth,usdc)).toBe('swap');expect(swapAction(eth,baseUsdc)).toBe('bridge');
  });
  it('edits an amount string one key at a time and caps dollars at two decimals',()=>{
@@ -98,7 +98,7 @@ describe('SwapPanelBlock',()=>{
   expect(screen.getByText('Base')).toBeTruthy();expect(screen.queryByText('From…')).toBeNull();
  });
  it('labels send, swap, bridge and an amount over the balance',()=>{
-  const view=render(<Host initialFrom={eth} initialTo={baseEth}/>);type('5');expect(action().textContent).toBe('Send');view.unmount();
+  const view=render(<Host initialFrom={eth} initialTo={baseEth}/>);type('5');expect(action().textContent).toBe('Bridge');view.unmount();
   render(<Host initialFrom={eth} initialTo={baseUsdc}/>);type('5');expect(action().textContent).toBe('Bridge');
   type('0 0 0');expect(action().textContent).toBe('Insufficient ETH');expect(action()).toHaveProperty('disabled',true);
  });

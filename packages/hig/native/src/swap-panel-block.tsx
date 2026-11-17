@@ -1,3 +1,5 @@
+import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts';
+import {useAsyncResult} from './async-result.js';
 import React,{useContext,useEffect,useMemo,useRef,useState} from 'react';
 import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
@@ -12,7 +14,7 @@ import {withAlpha} from '@bloxwap/hig/tokens';
 import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHostContext,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
-import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
+import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 /** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
 export {SwapHostContext} from './swap-parts.js';
@@ -128,10 +130,11 @@ export interface SwapPanelBlockProps {
 export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,submittingLabel,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapPanelBlockProps){
  const env=useHIG();const {direction}=env;const locale=useNumberLocale();const present=usePresentNumber();const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
+ const boundedUnits=(raw:string)=>{const canonical=decimal(raw,from?.decimals??100);return limitToBalance&&from?.balance!=null&&Number.isFinite(from.balance)&&from.balance>=0&&decimalCompare(canonical,from.balance)>0?decimal(from.balance,from?.decimals??100):canonical;};
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
  // `amount` seeds the first render too, in the default denomination at the initial From token's price.
- const [entry,setEntry]=useState(()=>amount===undefined?'0':unitsToEntry(Number(amount)||0,defaultMode,from?.price??0));const [fromMode,setFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
+ const [entry,setEntry]=useState(()=>amount===undefined?'0':unitsToEntry(boundedUnits(amount),defaultMode,from?.price??0));const [fromMode,setFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
  const host=useContext(SwapHostContext);
  const [ownView,keepView]=useState<SwapView>('main');const view=viewProp??ownView;
  const show=(next:SwapView)=>{if(next===view)return;if(viewProp===undefined)keepView(next);onViewChange?.(next);};
@@ -141,20 +144,22 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  useEffect(()=>{if(view==='main')return;const subscription=BackHandler.addEventListener('hardwareBackPress',()=>{pop.current();return true;});return()=>subscription.remove();},[view==='main']);
  const {notice,show:showNotice,dismiss:dismissNotice}=useTransientNotice();
  const fromPrice=from?.price??0,toPrice=to?.price??0,input=Number(entry)||0;
- const units=fromMode==='token'?input:fromPrice>0?input/fromPrice:0,usd=units*fromPrice,unitsText=trimNumber(units);
+ const exact=useRef<{entry:string;mode:SwapDenomination;units:string;asset:string|undefined}|null>(amount===undefined?null:{entry,mode:fromMode,units:boundedUnits(amount),asset:from?.id});
+ const unitsText=exact.current&&exact.current.entry===entry&&exact.current.mode===fromMode&&exact.current.asset===from?.id?exact.current.units:fromMode==='token'?decimal(entry,from?.decimals??100):decimalDivide(entry,fromPrice,from?.decimals??18);
+ const units=Number(unitsText),usd=units*fromPrice;
  const showReceive=isReceiving&&!!receive;
  // Report the amount in token units; resync the entry when the host sets a different amount.
  const reported=useRef(amount??'0');
  useEffect(()=>{if(reported.current!==unitsText){reported.current=unitsText;onAmountChange?.(unitsText);}},[unitsText]);
- useEffect(()=>{if(amount===undefined||Number(amount)===Number(reported.current))return;reported.current=trimNumber(Number(amount)||0);setEntry(unitsToEntry(Number(amount)||0,fromMode,fromPrice));},[amount]);
- const sameAsset=!!from&&!!to&&from.id===to.id;
+ useEffect(()=>{if(amount===undefined||boundedUnits(amount)===reported.current)return;const canonical=boundedUnits(amount),next=unitsToEntry(canonical,fromMode,fromPrice);reported.current=canonical;if(decimal(amount)!==canonical)onAmountChange?.(canonical);exact.current={entry:next,mode:fromMode,units:canonical,asset:from?.id};setEntry(next);},[amount]);
+ const sameAsset=!!from&&!!to&&swapAction(from,to)==='send';
  const receivedUnits=sameAsset?units:received??(toPrice>0?usd/toPrice:0);
  const receivedUsd=toPrice>0?receivedUnits*toPrice:sameAsset?usd:0;
  const action=swapAction(from,to);
- const insufficient=!!from&&(from.balance??0)>0&&units>(from.balance??0);
+ const insufficient=!!from&&from.balance!=null&&(!Number.isFinite(from.balance)||from.balance<0||decimalCompare(unitsText,from.balance)>0);
  // A destination or a details card stands in for the To token: one way, and ready from the From side alone.
  const fixed=!!destination||(!!details&&!to);const oneWay=oneWayProp||fixed;
- const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
+ const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&Number.isFinite(units)&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
  const readyText=actionLabel??(action==='swap'&&!fixed?t.swapActionSwap:action==='bridge'&&!fixed?t.swapActionBridge:t.swapActionSend);
  // While the host's submit is in flight the amount may already be cleared: the action keeps its name rather than asking for an amount.
  const actionText=showReceive?t.swapSendFromWallet:!from||(!to&&!fixed)?t.swapChooseToken:destination?.pending?t.swapChooseDestination:submitting?submittingLabel??(actionDisabled&&actionStatus?actionStatus:readyText):units<=0?t.swapEnterAmount:insufficient?t.swapInsufficient(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
@@ -162,20 +167,21 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;
  // Read at key time: several keys can land in one render.
- const limits=useRef({decimals:from?.decimals,balance:from?.balance??0,price:from?.price??0,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance??0,price:from?.price??0,cap:limitToBalance};
- const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||!(balance>0))return false;const value=Number(next)||0;return (latest.current==='token'?value:price>0?value/price:0)>balance;};
+ const limits=useRef({decimals:from?.decimals,balance:from?.balance,price:from?.price??0,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance,price:from?.price??0,cap:limitToBalance};
+ const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||balance==null)return false;if(!Number.isFinite(balance)||balance<0)return true;const value=latest.current==='token'?next:decimalDivide(next,price,limits.current.decimals??18);return decimalCompare(value,balance)>0;};
  // While the host's submit is in flight the keypad, Max and Test leave the amount as it is.
- const typed:typeof setEntry=next=>{if(!submitting)setEntry(next);};
+ const typed:typeof setEntry=next=>{if(!submitting)setEntry(current=>{const value=typeof next==='function'?next(current):next;if(value.length>1000)return current;const normalized=decimal(value,latest.current==='usd'?2:limits.current.decimals??100);if(over(normalized))return current;exact.current=null;const [whole,fraction]=value.split('.');const places=latest.current==='usd'?2:limits.current.decimals??100;return fraction===undefined?whole:places>0?whole+'.'+fraction.slice(0,places):whole;});};
  const press=(key:string)=>typed(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
- const switchFromMode=(mode:SwapDenomination)=>{if(mode===fromMode)return;setEntry(mode==='usd'?trimNumber(usd,2):trimNumber(units));setFromMode(mode);};
- const changeDenomination=(mode:SwapDenomination)=>{setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
+ const switchFromMode=(mode:SwapDenomination)=>{if(submitting||mode===fromMode)return;const next=unitsToEntry(unitsText,mode,fromPrice);exact.current={entry:next,mode,units:unitsText,asset:from?.id};setEntry(next);setFromMode(mode);};
+ const changeDenomination=(mode:SwapDenomination)=>{if(submitting)return;setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
  // A new default applies to an untouched entry at once; a typed amount keeps its denomination until reset.
  useEffect(()=>{if(input===0){setFromMode(defaultMode);applyToMode(defaultMode);}},[defaultMode]);
- const reset=()=>{setEntry('0');setFromMode(defaultMode);applyToMode(defaultMode);if(isReceiving)setReceiving(false);if(!lockFrom)setFrom(null);if(!lockTo)setTo(null);onReset?.();};
- const flip=()=>{if(!from||!to)return;setFrom(to);setTo(from);};
+ const reset=()=>{if(submitting)return;exact.current=null;setEntry('0');setFromMode(defaultMode);applyToMode(defaultMode);if(isReceiving)setReceiving(false);if(!lockFrom)setFrom(null);if(!lockTo)setTo(null);onReset?.();};
+ const flip=()=>{if(submitting||!from||!to)return;setFrom(to);setTo(from);};
  const submit=()=>{if(submitting)return;if(showReceive){onConnect?.();return;}if(ready)onSubmit(fixed?'send':action);};
  // A copied address shows as a transient toast capsule (about 4s, dismissible), announced the way Toast announces any notice.
- const copyAddress=()=>{if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>showNotice(t.addressCopied)).catch(()=>{/* The host adapter reports its own failure. */});};
+ const beginCopy=useAsyncResult(receive?.address);
+ const copyAddress=()=>{const current=beginCopy();if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>{if(current())showNotice(t.addressCopied);}).catch(()=>{/* The host adapter reports its own failure. */});};
  const chainList=useMemo(()=>{if(chains)return chains;const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];},[chains,tokens]);
  const usdText=(value:number)=>formatNumber(value,locale,present({style:'currency',currency:'USD'}));
  const fraction=entry.includes('.')?Math.min(entry.length-entry.indexOf('.')-1,fromMode==='usd'?2:8):0;
@@ -191,7 +197,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
     {typeof token.caption==='object'?<AnimatedNumberReadout testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
    </View>
   </View>
-  {side==='from'&&(token.balance??0)>0?<SwapCapsule testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
+  {side==='from'&&(token.balance??0)>0?<SwapCapsule disabled={submitting} testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
  </>;
  const header=(side:'from'|'to',token:SwapToken)=><>
   <View pointerEvents='none' style={{flex:1,minWidth:0,flexDirection:'row',alignItems:'flex-start',gap:12}}>
@@ -202,13 +208,13 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   </View>
   {side==='from'?((token.balance??0)>0?<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
     <View pointerEvents='box-none' style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'flex-end',gap:8}}>
-     <SwapCapsule testID='swap-test' onPress={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
-     <SwapCapsule testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
+     <SwapCapsule disabled={submitting} testID='swap-test' onPress={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
+     <SwapCapsule disabled={submitting} testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
     </View>
     <View pointerEvents='none'><AnimatedNumberReadout testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
    </View>:null)
    :<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
-    <SwapCapsule testID='swap-slippage' label={t.swapSlippage(slippageText)} onPress={()=>show(onSlippageChange?'slippage':'settings')}><SwapNumberText template={t.swapSlippage} text={slippageText} value={slippage*100} formattedValue={slippageText.slice(0,-1)} suffix='%'/></SwapCapsule>
+    <SwapCapsule disabled={submitting} testID='swap-slippage' label={t.swapSlippage(slippageText)} onPress={()=>!submitting&&show(onSlippageChange?'slippage':'settings')}><SwapNumberText template={t.swapSlippage} text={slippageText} value={slippage*100} formattedValue={slippageText.slice(0,-1)} suffix='%'/></SwapCapsule>
     <View pointerEvents='none'><SwapNumberText testID='swap-fee' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/></View>
    </View>}
  </>;
@@ -227,19 +233,19 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   return <View testID={`swap-card-${side}`} style={{backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'}}><Raised>
    <View>
     {/* A locked side shows its token but offers no picker. */}
-    {locked?null:<Pressable accessibilityRole='button' accessibilityLabel={t.swapSelectToken(label)} testID={`swap-slot-${side}`} onPress={()=>show(side)} style={StyleSheet.absoluteFill}/>}
+    {locked?null:<Pressable accessibilityRole='button' accessibilityLabel={t.swapSelectToken(label)} disabled={submitting} testID={`swap-slot-${side}`} onPress={()=>!submitting&&show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:84,padding:16}}>
      {token?token.caption!==undefined?account(side,token,locked):header(side,token):<View pointerEvents='none'><Text accessible={false} style={{fontSize:40,lineHeight:46,fontWeight:'500',letterSpacing:-0.8,color:colors.faint}}>{label}…</Text></View>}
     </View>
    </View>
    {side==='from'&&showReceive&&receive?receiveView(receive):side==='to'&&showReceive?null:<View>
     {/* The slot above is the accessible control for the picker; this larger target is for touch only. */}
-    {locked?null:<Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>show(side)} style={StyleSheet.absoluteFill}/>}
+    {locked?null:<Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>!submitting&&show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{alignItems:'center',gap:8,paddingTop:4,paddingHorizontal:16,paddingBottom:20}}>
-     <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
-      <AnimatedNumberReadout value={shown} prefix={prefix} suffix={suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+     <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:side==='from'&&mode==='token'?localizeDecimal(entry,locale):`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
+      <AnimatedNumberReadout value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
      </View>
-     {denominationSwitch&&<SwapCapsule label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
+     {denominationSwitch&&<SwapCapsule disabled={submitting} label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>!submitting&&(side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd'))}>
       <Text accessible={false} style={[small,{opacity:0.5}]}>=</Text>
       {mode==='token'?<AnimatedNumberReadout testID={`swap-conversion-${side}`} value={cardUsd} options={usdOptions} tone='muted' style={smallType}/>:<AnimatedNumberReadout testID={`swap-conversion-${side}`} value={cardUnits} options={{maximumFractionDigits:8,useGrouping:false}} suffix={token?` ${token.symbol}`:''} tone='muted' style={smallType}/>}
       <FlipIcon color={colors.muted} size={14}/>
@@ -263,7 +269,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
   const shape:ViewStyle={backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'};
   // With a pressable destination the whole card is the button; the rows inside it are read as part of it.
-  return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' onPress={destination.onPress} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;
+  return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' disabled={submitting} onPress={()=>{if(!submitting)destination.onPress?.();}} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;
  };
  const fromCard=card('from'),toCard=fixedCard()??card('to');
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
@@ -274,14 +280,14 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   <View style={{height:8,zIndex:1,alignItems:'center'}}>
    {/* A disc in the page colour breaks the seam between the cards; the control sits on it. */}
    <View style={{position:'absolute',top:-15,width:38,height:38,borderRadius:19,backgroundColor:colors.background,alignItems:'center',justifyContent:'center'}}>
-    {oneWay?<View testID='swap-one-way' style={{width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center',backgroundColor:colors.nested}}><DownIcon color={colors.muted}/></View>:<Pressable accessibilityRole='button' accessibilityLabel={t.swapFlip} accessibilityState={{disabled:!from||!to}} disabled={!from||!to} testID='swap-flip' onPress={flip} hitSlop={6} style={({pressed})=>({width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center',backgroundColor:!from||!to?colors.surface:colors.nested,opacity:pressed?0.85:1})}><FlipIcon color={!from||!to?colors.faint:colors.muted}/></Pressable>}
+    {oneWay?<View testID='swap-one-way' style={{width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center',backgroundColor:colors.nested}}><DownIcon color={colors.muted}/></View>:<Pressable accessibilityRole='button' accessibilityLabel={t.swapFlip} accessibilityState={{disabled:submitting||!from||!to}} disabled={submitting||!from||!to} testID='swap-flip' onPress={flip} hitSlop={6} style={({pressed})=>({width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center',backgroundColor:!from||!to?colors.surface:colors.nested,opacity:pressed?0.85:1})}><FlipIcon color={!from||!to?colors.faint:colors.muted}/></Pressable>}
    </View>
   </View>
   {toCard}
   {note?<View testID='swap-note' style={tone?{marginTop:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{marginTop:8,paddingHorizontal:4}}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
   {!showReceive&&keypad!=='never'?<SwapKeypad onKey={press} label={t.swapKeypad} deleteLabel={t.swapDelete}/>:null}
   <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:16}}>
-   {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' onPress={()=>show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}
+   {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' disabled={submitting} onPress={()=>!submitting&&show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}
    {/* Button lays its children in a row: the decorative icon rides before the label and adds nothing to the name. */}
    <Button intent={actionIntent} busy={submitting} disabled={!showReceive&&!ready} testID='swap-action' onPress={submit} style={{flex:1,alignSelf:'auto'}}>{actionIcon?<View key='icon' testID='swap-action-icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{actionIcon}</View>:null}{actionText}</Button>
    {controls?<IconButton intent='secondary' label={t.swapReset} disabled={pristine||submitting} testID='swap-reset' onPress={reset}><ResetIcon color={colors.text}/></IconButton>:null}
@@ -290,9 +296,9 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   {footer?<View testID='swap-footer' style={{marginTop:16}}>{footer}</View>:null}
  </View>;
  const body=view==='main'?main
-  :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={onConnect} onDisconnect={onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined}/>
-  :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={setTo} wallet={wallet} recipient={recipient} onRecipientChange={onRecipientChange} onScanRecipient={onScanRecipient}/>
-  :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={denominationSwitch?changeDenomination:undefined} slippage={slippage} onSlippageChange={onSlippageChange} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
+  :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={token=>{if(!submitting)setFrom(token);}} wallet={wallet} onConnect={submitting?undefined:onConnect} onDisconnect={submitting?undefined:onDisconnect} receiving={isReceiving} onReceivingChange={receive?value=>{if(!submitting)setReceiving(value);}:undefined}/>
+  :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={token=>{if(!submitting)setTo(token);}} wallet={wallet} recipient={recipient} onRecipientChange={value=>{if(!submitting)onRecipientChange?.(value);}} onScanRecipient={submitting?undefined:onScanRecipient}/>
+  :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={denominationSwitch?changeDenomination:undefined} slippage={slippage} onSlippageChange={value=>{if(!submitting)onSlippageChange?.(value);}} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
  return <View testID='swap-panel' style={[{direction,width:'100%',maxWidth:448,alignSelf:'center'},style]}><SwapStage view={view} animateHeight={host.animateHeight!==false}>{body}</SwapStage></View>;
 }
 const viewDepth=(view:SwapView)=>view==='main'?0:view==='slippage'||view==='fees'?2:1;

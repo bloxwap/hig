@@ -19,20 +19,20 @@ export interface HIGContext extends Environment { onAccepted?: (id:string)=>void
 /** Host colours for the market-direction roles. An omitted, empty or non-string role keeps `buy`/`sell`. */
 export interface HIGMarketColors {up?:string;down?:string}
 export interface HIGProviderProps extends Partial<Omit<HIGContext,'messages'>> { /** Translations for HIG's built-in strings; omitted keys fall back to the enclosing provider, then English. */ messages?:Partial<HIGMessages> }
-const Context=createContext<HIGContext&{drawPress?:DrawPressLayer}>({...defaultEnvironment,messages:{}});
+const Context=createContext<HIGContext&{drawPress?:DrawPressLayer;provided?:boolean}>({...defaultEnvironment,messages:{}});
 const marketColor=(value:unknown)=>typeof value==='string'&&value!==''?value:undefined;
-export function HIGProvider({children,density='comfortable',locale='en-US',direction='ltr',reducedMotion,onAccepted,feedback,primaryColor,messages,pressDecoration,numberFormat,marketColors}:React.PropsWithChildren<HIGProviderProps>){
- const parent=useContext(Context);const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
+export function HIGProvider({children,density,locale,direction,reducedMotion,onAccepted,feedback,primaryColor,messages,pressDecoration,numberFormat,marketColors}:React.PropsWithChildren<HIGProviderProps>){
+ const parent=useContext(Context);density??=parent.density;locale??=parent.locale;direction??=parent.direction;onAccepted??=parent.onAccepted;feedback??=parent.feedback;const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
  const market=marketColors??parent.marketColors;const up=marketColor(market?.up),down=marketColor(market?.down);
  const inheritedMarket=useMemo(()=>up===undefined&&down===undefined?undefined:{up,down},[up,down]);
  const accent=primaryColor??parent.primaryColor;const theme=useMemo(()=>marketStyle(primaryStyle(accent),up,down),[accent,up,down]);
  const decorate=pressDecoration??parent.pressDecoration;const drawPress=useMemo(()=>decorate?pressLayer(decorate):undefined,[decorate]);
  const [osReduced,setOSReduced]=useState(false);
  useEffect(()=>{const query=window.matchMedia?.('(prefers-reduced-motion: reduce)');if(!query)return;const update=()=>setOSReduced(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
- const reduced=reducedMotion??osReduced,format=numberFormat??parent.numberFormat;
+ const reduced=reducedMotion??(parent.provided?parent.reducedMotion:osReduced),format=numberFormat??parent.numberFormat;
  // One context value for as long as nothing in it changes. A provider that renders again (a host state change above it) then
  // re-renders no component that reads the context: measured over 500 generated avatars, 25,000 face renders per 50 provider renders became none.
- const value=useMemo(()=>({density,locale,direction,reducedMotion:reduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:decorate,numberFormat:format,marketColors:inheritedMarket,drawPress}),[density,locale,direction,reduced,onAccepted,feedback,accent,resolved,decorate,format,inheritedMarket,drawPress]);
+ const value=useMemo(()=>({provided:true,density,locale,direction,reducedMotion:reduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:decorate,numberFormat:format,marketColors:inheritedMarket,drawPress}),[density,locale,direction,reduced,onAccepted,feedback,accent,resolved,decorate,format,inheritedMarket,drawPress]);
  return <Context.Provider value={value}><div style={theme} data-hig-density={density} data-hig-motion={reduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
 }
 export const useHIG=():HIGContext=>useContext(Context);
@@ -91,8 +91,11 @@ export function useColors():Readonly<Record<keyof typeof nativeSrgb,string>> {co
 export function useMessages():HIGMessages{const overrides=useContext(Context).messages;return useMemo(()=>resolveMessages({...defaultMessages},overrides),[overrides]);}
 /** Controlled values never silently switch to internal state. `intent: null` commits without provider feedback. */
 export function useControllable<T>(value:T|undefined,initial:T,onChange?: (value:T)=>void,intent:FeedbackIntent|null='selection'):[T,(next:T)=>void]{
- const [internal,setInternal]=useState(initial);const current=value===undefined?internal:value;
+ const [internal,setInternal]=useState(initial);const controlled=useRef(value!==undefined).current,last=useRef(initial),warned=useRef(false);
+ if(controlled&&value!==undefined)last.current=value;
+ const current=controlled?last.current:internal;
+ useEffect(()=>{if((value!==undefined)!==controlled&&!warned.current){warned.current=true;if(process.env.NODE_ENV!=='production')console.warn('HIG controlled state cannot change ownership after mount. Remount to reset it.');}},[controlled,value]);
  const {feedback}=useHIG();const id=useId();const sequence=useRef(0);const pending=useRef<{value:T}|null>(null);
  useEffect(()=>{const request=pending.current;if(!request)return;pending.current=null;if(intent&&Object.is(current,request.value)){try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent,origin:'programmatic'});}catch{/* Effects remain optional. */}}});
- return [current,(next)=>{if(Object.is(current,next))return;pending.current={value:next};if(value===undefined)setInternal(next);onChange?.(next);}];
+ return [current,(next)=>{if(Object.is(current,next))return;pending.current={value:next};if(!controlled)setInternal(next);onChange?.(next);}];
 }

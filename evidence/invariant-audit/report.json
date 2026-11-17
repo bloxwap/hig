@@ -1,0 +1,761 @@
+{
+  "title": "HIG unenforced invariant audit",
+  "date": "2026-11-17",
+  "baseCommit": "ec7d456686dccb65398e91d7297620d7fb1283e3",
+  "scope": {
+    "repository": "/Users/joeblau/Developer/bloxwap/src/hig",
+    "sourceFilesIndexed": 172,
+    "areas": [
+      "React components and blocks",
+      "React Native components and blocks",
+      "shared contracts and formatting",
+      "GestureSheet and overlay lifecycle",
+      "chart geometry and default feeds",
+      "feedback adapters/preferences",
+      "token and QR boundaries"
+    ],
+    "limitations": [
+      "A source audit and focused probes cannot prove all invariants are found.",
+      "No production app transaction implementation or server validation was audited.",
+      "Native runtime behavior was inspected; the invariant probes run in jsdom or exercise pure helpers.",
+      "Host-owned policy assumptions are identified separately from implementation defects."
+    ]
+  },
+  "verification": {
+    "regressionTests": "tests/invariants.dom.test.tsx and tests/numeric-invariants.test.ts, plus native swap/provider and chart/confetti regression cases",
+    "web": "1005 passed before final presentation refinements",
+    "native": "running",
+    "build": "packages passed; production docs running",
+    "note": "Original characterization probes have been replaced with acceptance regressions in the normal test suites."
+  },
+  "priorTask": {
+    "gestureSheetEfficiencyFixes": "implemented",
+    "validation": {
+      "webTests": 24,
+      "nativeTestsPassed": 740,
+      "nativeTestsSkipped": 2,
+      "browserCases": {
+        "chromium": 9,
+        "webkit": 9
+      },
+      "typecheck": "passed",
+      "lint": "passed",
+      "finalNativeRetest": "passed after preserving original snap-point values in the memoized copy"
+    },
+    "note": "Existing docs GestureSheet New-tag edits were preserved."
+  },
+  "findings": [
+    {
+      "id": "I01",
+      "priority": "high",
+      "domain": "swap identity",
+      "invariant": "An asset is identified by chain and asset identity, not its display ticker.",
+      "observed": "swapAction classifies equal symbols as send before comparing chains. Different-chain USDC and same-chain assets sharing a symbol are both classified as send.",
+      "enforcement": "Define canonical asset and chain identities; compare them before selecting send, swap or bridge. Normalize numeric/string chain IDs at the boundary.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap/shared.tsx",
+          "line": 38
+        },
+        {
+          "path": "packages/hig/native/src/swap-shared.ts",
+          "line": 43
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Asset identity and normalized chain identity determine send/swap/bridge."
+      }
+    },
+    {
+      "id": "I02",
+      "priority": "high",
+      "domain": "swap balances",
+      "invariant": "A known zero balance is insufficient for a positive amount.",
+      "observed": "The balance check and limitToBalance guard run only when balance > 0. A zero-balance From asset with amount 1 can invoke onSubmit.",
+      "enforcement": "Distinguish unknown balance from finite zero. Validate nonnegative balances and compare every known balance against the requested units.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 158
+        },
+        {
+          "path": "packages/hig/native/src/swap-panel-block.tsx",
+          "line": 154
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Every known balance, including zero, participates in insufficiency checks."
+      }
+    },
+    {
+      "id": "I03",
+      "priority": "high",
+      "domain": "swap input",
+      "invariant": "All entry paths obey the same precision and balance limits.",
+      "observed": "Keypad digits consult decimals and balance; web paste sanitizes the text but bypasses both guards. With decimals 2 and balance 5, pasting 99.1234 reports 99.1234.",
+      "enforcement": "Route keypad, paste, Max, Test and external resync through one amount normalization/validation function.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 174
+        },
+        {
+          "path": "packages/hig/react/src/blocks/swap/shared.tsx",
+          "line": 57
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "All edits apply precision and balance caps; capped external resync reports the corrected amount."
+      }
+    },
+    {
+      "id": "I04",
+      "priority": "high",
+      "domain": "swap lifecycle",
+      "invariant": "Once submitting is true, global amount handlers stop accepting edits.",
+      "observed": "The global keyboard/paste effect captures press/paste and submitting but does not depend on them. After false to true, a global digit still reports a changed amount.",
+      "enforcement": "Read current submission state through a ref/stable event callback, or refresh the registered handlers with all behavioral dependencies.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 172
+        },
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 194
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Global input handlers always read current submission state."
+      }
+    },
+    {
+      "id": "I05",
+      "priority": "high",
+      "domain": "swap precision",
+      "invariant": "The reported transaction amount preserves the amount entered.",
+      "observed": "The string amount is converted through Number and trimNumber defaults to 8 decimals. 0.000000001 reports 0; 9007199254740993 becomes 9007199254740992. Token decimals can exceed 8.",
+      "enforcement": "Keep canonical decimal strings or base-unit integers through editing and callbacks. Restrict floating point conversion to display estimates.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap/shared.tsx",
+          "line": 43
+        },
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 148
+        },
+        {
+          "path": "packages/hig/native/src/swap-panel-block.tsx",
+          "line": 144
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Bounded decimal-string arithmetic preserves token precision; floats are used only for visual estimates."
+      }
+    },
+    {
+      "id": "I06",
+      "priority": "high",
+      "domain": "target submission",
+      "invariant": "A displayed unknown target cannot be submitted by default.",
+      "observed": "The readout treats NaN/Infinity as unknown, while TargetBlock only disables submission for value === null. NaN still invokes onSubmit.",
+      "enforcement": "Use the same finite-value predicate for display and default submit gating, with additional host rules for valid prices and position direction.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/target-block.tsx",
+          "line": 152
+        },
+        {
+          "path": "packages/hig/native/src/target-block.tsx",
+          "line": 189
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Unknown and nonfinite targets cannot be submitted, including when submitDisabled is false."
+      }
+    },
+    {
+      "id": "I07",
+      "priority": "medium",
+      "domain": "provider inheritance",
+      "invariant": "A provider used to override one property preserves the surrounding app environment.",
+      "observed": "A nested HIGProvider that changes only primaryColor resets locale/direction/density/reducedMotion defaults and drops feedback/onAccepted. Native also drops several font settings. Some other properties do inherit.",
+      "enforcement": "Choose and document a uniform inheritance policy, then inherit omitted properties or explicitly require complete root configuration. Preserve explicit false values.",
+      "owner": "HIG API contract",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/provider.tsx",
+          "line": 24
+        },
+        {
+          "path": "packages/hig/native/src/provider.tsx",
+          "line": 35
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Nested providers inherit omitted environment, feedback and font settings."
+      }
+    },
+    {
+      "id": "I08",
+      "priority": "medium",
+      "domain": "controlled state",
+      "invariant": "A component does not silently change controlled/uncontrolled ownership.",
+      "observed": "useControllable chooses ownership on every render. Removing value after it was controlled reverts to the original internal value without warning.",
+      "enforcement": "Pin ownership at mount and warn on transitions, or define an explicit reset/handoff API.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/provider.tsx",
+          "line": 93
+        },
+        {
+          "path": "packages/hig/native/src/provider.tsx",
+          "line": 68
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Controlled ownership is fixed at mount with a warning on attempted handoff."
+      }
+    },
+    {
+      "id": "I09",
+      "priority": "medium",
+      "domain": "controlled accordion",
+      "invariant": "A rejected open change leaves the web accordion in its controlled state.",
+      "observed": "Native details toggles its own open property; the wrapper only notifies onToggle. With open=false and a parent that declines the change, the DOM can remain open.",
+      "enforcement": "Control the summary activation and restore the committed open state when the host declines the request, matching native controlled behavior.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/navigation.tsx",
+          "line": 30
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Accordion summary activation requests a state change; native DOM toggles are reconciled to committed state."
+      }
+    },
+    {
+      "id": "I10",
+      "priority": "medium",
+      "domain": "field accessibility",
+      "invariant": "Field label, description and error refer to the actual input.",
+      "observed": "Input/TextArea spread child props after contextual id/aria-describedby/aria-invalid/required. A different child id detaches the label; multiple inputs under one Field reuse its id.",
+      "enforcement": "Define one control per Field, reserve or merge the naming/validation attributes, and validate conflicting ids in development.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/field.tsx",
+          "line": 17
+        },
+        {
+          "path": "packages/hig/react/src/field.tsx",
+          "line": 19
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Field controls keep contextual identity, descriptions, required and error state; duplicate controls are rejected."
+      }
+    },
+    {
+      "id": "I11",
+      "priority": "medium",
+      "domain": "tab state",
+      "invariant": "The selected tab remains an available item as the list changes.",
+      "observed": "Removing the initially selected tab from uncontrolled Tabs leaves every panel hidden. Disabled selected tabs can retain selection too.",
+      "enforcement": "Reconcile uncontrolled selection on removal/disable. For controlled invalid values, warn or show an explicit invalid/empty state instead of silently implying a valid selection.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/navigation.tsx",
+          "line": 20
+        },
+        {
+          "path": "packages/hig/native/src/navigation.tsx",
+          "line": 13
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Uncontrolled tabs reconcile missing/disabled selections; controlled invalid values remain empty."
+      }
+    },
+    {
+      "id": "I12",
+      "priority": "medium",
+      "domain": "ref lifecycle",
+      "invariant": "A forwarded callback ref preserves React cleanup semantics.",
+      "observed": "SearchInput wraps its ref when onClear is supplied, calls the host callback but drops its cleanup return. The cleanup is not run on unmount; native uses the same forwarding pattern.",
+      "enforcement": "Compose refs with callback cleanup support and stable identity, as GestureSheet already does.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/field.tsx",
+          "line": 31
+        },
+        {
+          "path": "packages/hig/native/src/field.tsx",
+          "line": 48
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "SearchInput composes callback-ref cleanup and uses a stable callback."
+      }
+    },
+    {
+      "id": "I13",
+      "priority": "medium",
+      "domain": "time and formatting",
+      "invariant": "Time values are valid representable instants or finite countdown durations.",
+      "observed": "formatCountdown(NaN) produces NaN clock text. formatZonedTime accepts a finite value such as 1e20 but Intl throws because it is outside Date range. Locale/zone/format options are also not generally validated.",
+      "enforcement": "Validate finite durations, representable Date range and external locale/time-zone/options at their boundary; define an unknown/error display consistently.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/contracts/src/index.ts",
+          "line": 143
+        },
+        {
+          "path": "packages/hig/contracts/src/index.ts",
+          "line": 127
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Invalid or unrepresentable dates, durations and Intl options return the unknown marker."
+      }
+    },
+    {
+      "id": "I14",
+      "priority": "medium",
+      "domain": "feedback identity",
+      "invariant": "Distinct source/id/intent tuples remain distinct deduplication keys.",
+      "observed": "Joining strings with slashes collides: source a/b + id c equals source a + id b/c, suppressing the second valid event.",
+      "enforcement": "Use nested maps or an unambiguous tuple encoding such as JSON.stringify([source,id,intent]).",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/feedback/src/contract.ts",
+          "line": 18
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Feedback keys encode source/id/intent as JSON tuples."
+      }
+    },
+    {
+      "id": "I15",
+      "priority": "medium",
+      "domain": "sheet geometry",
+      "invariant": "A fixed sheet has at least one usable detent after normalization.",
+      "observed": "gesture-sheet-next only checks raw array length. [0,-1,NaN] passes that boundary, while detentHeights returns no positions. The surface then has no valid place to open.",
+      "enforcement": "Validate each detent and ensure normalized geometry contains a positive detent; clamp the initial index against normalized detent count.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/native/src/gesture-sheet-next.tsx",
+          "line": 239
+        },
+        {
+          "path": "packages/hig/native/src/gesture-sheet-model.ts",
+          "line": 13
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Both native sheet backends validate detents and initial indexes; resolved detent indexes are clamped."
+      }
+    },
+    {
+      "id": "I16",
+      "priority": "medium",
+      "domain": "preference persistence",
+      "invariant": "The newest preference update remains newest in storage.",
+      "observed": "FeedbackProvider starts each storage.write independently. A slower old write can finish after a newer write and overwrite it. The read revision guard does not order writes.",
+      "enforcement": "Serialize/coalesce writes or require a revision-aware storage adapter that rejects stale writes.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/feedback/src/react.tsx",
+          "line": 12
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Preference storage writes run serially and recover from rejected writes."
+      }
+    },
+    {
+      "id": "I17",
+      "priority": "medium",
+      "domain": "select state",
+      "invariant": "The selection displayed is the selection held by the app.",
+      "observed": "When a controlled value is absent from options, Select shows and marks the first enabled option as selected without committing that value or notifying the host.",
+      "enforcement": "Render a placeholder/invalid selection for unmatched controlled values; reconcile uncontrolled lists explicitly.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/select.tsx",
+          "line": 14
+        },
+        {
+          "path": "packages/hig/react/src/select.tsx",
+          "line": 123
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Select no longer displays an uncommitted fallback for a controlled missing selection."
+      }
+    },
+    {
+      "id": "I18",
+      "priority": "medium",
+      "domain": "account totals",
+      "invariant": "A displayed complete account total contains no unknown holdings.",
+      "observed": "Unknown per-asset values become zero in the total. One known holding of 5 plus an unknown holding produces a total of 5 without marking it partial.",
+      "enforcement": "Propagate unknown or return total plus completeness metadata, and show partial totals explicitly.",
+      "owner": "HIG/host product policy",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/account-block.tsx",
+          "line": 93
+        },
+        {
+          "path": "packages/hig/native/src/account-block.tsx",
+          "line": 99
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Unknown and nonfinite asset values propagate into aggregate totals."
+      }
+    },
+    {
+      "id": "I19",
+      "priority": "medium",
+      "domain": "feed lifecycle",
+      "invariant": "Unsubscribing prevents future updates from that subscription.",
+      "observed": "bitcoinPrice cleanup closes the socket but onmessage never checks stopped/current socket. A late frame after cleanup still invokes onPrice. Chart feed callbacks also have no generation guard.",
+      "enforcement": "Detach handlers or guard them with active subscription identity; add a generation guard in chart consumers when replacing feeds.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/chart/src/bitcoin-price.ts",
+          "line": 16
+        },
+        {
+          "path": "packages/hig/chart/src/altimeter-chart.tsx",
+          "line": 114
+        },
+        {
+          "path": "packages/hig/chart/src/outcome-chart.tsx",
+          "line": 80
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Feed callbacks and consumers reject stale/unsubscribed generations."
+      }
+    },
+    {
+      "id": "I20",
+      "priority": "medium",
+      "domain": "slippage input",
+      "invariant": "Visible slippage text matches the effective valid tolerance, or is clearly invalid.",
+      "observed": "Typing 99 leaves 99 in the field but does not update the old tolerance and shows no validation error. parseFloat also accepts a valid prefix of malformed multi-dot text.",
+      "enforcement": "Validate the entire decimal, display an error for invalid drafts, and prevent continuing until the effective setting and visible text agree.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap/settings.tsx",
+          "line": 39
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Slippage rejects malformed/out-of-range drafts and resets incomplete drafts on blur/back."
+      }
+    },
+    {
+      "id": "I21",
+      "priority": "medium",
+      "domain": "async notification lifecycle",
+      "invariant": "An async result is still relevant to the active owner when announced.",
+      "observed": "WalletAddress can publish a global success toast after its screen has unmounted. InstallCommand and swap copy handlers have similar unguarded asynchronous reporting.",
+      "enforcement": "Track mount/operation generation, cancel or ignore superseded completions, and decide explicitly whether results should survive navigation.",
+      "owner": "HIG",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/wallet-address-core.tsx",
+          "line": 34
+        },
+        {
+          "path": "packages/hig/react/src/blocks/install-command.tsx",
+          "line": 10
+        },
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 182
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Async copy results are scoped to a mounted owner and the latest operation."
+      }
+    },
+    {
+      "id": "I22",
+      "priority": "high",
+      "domain": "transaction snapshot",
+      "invariant": "The data visible during submission refers to the same immutable operation the host is executing.",
+      "observed": "submitting locks the primary action and some amount inputs, but pair flip, token pickers, destination edit and denomination controls remain callable. A submitting swap can still invoke onFromChange.",
+      "enforcement": "Freeze operation-affecting controls or make the host capture an immutable operation snapshot and present edits as a separate draft. Do not read mutable UI state after awaits.",
+      "owner": "HIG and host transaction layer",
+      "verification": "reproduced",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 180
+        },
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 258
+        },
+        {
+          "path": "packages/hig/native/src/swap-panel-block.tsx",
+          "line": 175
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Submission blocks operation-changing controls. Execution snapshot and idempotency remain host responsibilities."
+      }
+    },
+    {
+      "id": "I23",
+      "priority": "medium",
+      "domain": "numeric control domain",
+      "invariant": "Slider/progress/pagination inputs define finite, coherent ranges.",
+      "observed": "Native Slider divides by step without requiring it > 0; step=0 makes its accessible increment NaN. Progress may expose raw out-of-range values to accessibility while clamping its fill. Pagination accepts noninteger/out-of-range page and total.",
+      "enforcement": "Centralize finite range validation, define zero-step continuous behavior, and use normalized values consistently for visuals, callbacks and accessibility.",
+      "owner": "HIG",
+      "verification": "source-inspected",
+      "locations": [
+        {
+          "path": "packages/hig/native/src/slider.tsx",
+          "line": 18
+        },
+        {
+          "path": "packages/hig/native/src/status.tsx",
+          "line": 114
+        },
+        {
+          "path": "packages/hig/react/src/navigation.tsx",
+          "line": 33
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Slider validates ranges/step; progress and pagination normalize drawing, accessibility and callbacks."
+      }
+    },
+    {
+      "id": "I24",
+      "priority": "medium",
+      "domain": "collection identity",
+      "invariant": "IDs used for state, DOM naming and React keys are unique and stable.",
+      "observed": "OutcomeChart caps count but does not deduplicate ids; two outcomes can share one animation track while rendering two capsules. Tabs, selection controls, List and Table similarly trust host keys.",
+      "enforcement": "Validate identity at collection boundaries (development assertions at minimum). OutcomeChart should reject/deduplicate duplicate IDs as AltimeterChart already does for targets.",
+      "owner": "HIG",
+      "verification": "source-inspected",
+      "locations": [
+        {
+          "path": "packages/hig/chart/src/outcome-chart.tsx",
+          "line": 81
+        },
+        {
+          "path": "packages/hig/chart/src/outcome-chart.tsx",
+          "line": 134
+        },
+        {
+          "path": "packages/hig/react/src/data.tsx",
+          "line": 54
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Collection boundaries reject duplicate keys; OutcomeChart deduplicates outcome IDs."
+      }
+    },
+    {
+      "id": "I25",
+      "priority": "high",
+      "domain": "resource bounds",
+      "invariant": "Visual effects cannot allocate unbounded synchronous work from a valid option.",
+      "observed": "createConfettiBurst caps particleCount at Number.MAX_SAFE_INTEGER, then synchronously creates one object per particle. Both renderers also permit accumulating bursts; the numeric cap is not a practical resource limit.",
+      "enforcement": "Set a documented per-burst and total-active particle budget, bound concurrent bursts, and resolve dropped/cancelled effects deterministically.",
+      "owner": "HIG",
+      "verification": "source-inspected",
+      "locations": [
+        {
+          "path": "packages/hig/contracts/src/confetti.ts",
+          "line": 110
+        },
+        {
+          "path": "packages/hig/react/src/confetti.tsx",
+          "line": 124
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Confetti caps each burst at 500 particles and simultaneous/pre-mount bursts at eight."
+      }
+    },
+    {
+      "id": "I26",
+      "priority": "medium",
+      "domain": "feed freshness",
+      "invariant": "A chart presented as live has a current connection and recent data.",
+      "observed": "The built-in feeds reconnect on close, but have no stale-message deadline/heartbeat state; a socket that remains open without data keeps the last price displayed indefinitely. No freshness state accompanies the price callback.",
+      "enforcement": "Carry observedAt/connection status, define a stale threshold and reconnect policy, and render stale/unknown state separately from live values.",
+      "owner": "HIG feed and host data policy",
+      "verification": "source-inspected",
+      "locations": [
+        {
+          "path": "packages/hig/chart/src/bitcoin-price.ts",
+          "line": 26
+        },
+        {
+          "path": "packages/hig/chart/src/champions-league.ts",
+          "line": 54
+        },
+        {
+          "path": "packages/hig/chart/src/altimeter-chart.tsx",
+          "line": 105
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "Thirty-second freshness deadlines clear stale prices and mark the chart stale; built-in streams reconnect."
+      }
+    },
+    {
+      "id": "I27",
+      "priority": "medium",
+      "domain": "global input ownership",
+      "invariant": "Only the active panel responds to global shortcuts and amount capture.",
+      "observed": "Each mounted SwapPanelBlock registers window shortcuts by default. The shortcut branch does not check event.defaultPrevented or active panel ownership, so retained/hidden or multiple panels can all react.",
+      "enforcement": "Register global handlers only for the active visible panel or use a central shortcut owner/stack, and honor already-handled events.",
+      "owner": "HIG/host screen lifecycle",
+      "verification": "source-inspected",
+      "locations": [
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 187
+        },
+        {
+          "path": "packages/hig/react/src/blocks/swap-panel-block.tsx",
+          "line": 192
+        }
+      ],
+      "resolution": {
+        "status": "implemented",
+        "detail": "One visible active panel owns global input, honors handled events, and supports active=false."
+      }
+    }
+  ],
+  "hostResponsibilities": [
+    {
+      "invariant": "Execution revalidates the exact amount, spendable balance, fees, minimums and chain/recipient constraints.",
+      "reason": "HIG is presentation code. TradeEntry, ConfirmBlock and SwapPanelBlock delegate execution and validation to host callbacks; enabled buttons are not authorization."
+    },
+    {
+      "invariant": "A quote is bound to asset identity, chain, amount, recipient, slippage and expiry.",
+      "reason": "HIG receives independent display props and has no quote revision/expiry token or atomic operation object."
+    },
+    {
+      "invariant": "One operation is executed once, even across double taps, retries, app backgrounding and process restarts.",
+      "reason": "busy/submitting are host-provided UI state, not a transaction mutex or server idempotency key."
+    },
+    {
+      "invariant": "Wallet address text, QR payload, network and copy callback all represent the same intended destination.",
+      "reason": "The API deliberately permits distinct qrValue/custom QR and arbitrary clipboard adapter; semantic binding must happen in the host."
+    },
+    {
+      "invariant": "Optional native/gesture/font dependencies and providers match the installed runtime.",
+      "reason": "HIG cannot prove that externally supplied font registration, safe area/gesture/portal providers and platform color-space setup actually exist; package/type checks are not runtime capability proofs."
+    }
+  ],
+  "recommendedOrder": [
+    "I04",
+    "I05",
+    "I02",
+    "I03",
+    "I06",
+    "I01",
+    "I22",
+    "I25",
+    "I16",
+    "I15",
+    "I08",
+    "I09",
+    "I10",
+    "I12",
+    "I11",
+    "I17",
+    "I19",
+    "I21",
+    "I23",
+    "I24",
+    "I07",
+    "I13",
+    "I14",
+    "I18",
+    "I20",
+    "I26",
+    "I27"
+  ],
+  "hostResponsibilitiesNote": "Execution policies are documented in docs/components/blocks.md; no backend or application transaction implementation is present in this repository."
+}

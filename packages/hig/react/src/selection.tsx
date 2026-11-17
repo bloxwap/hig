@@ -1,4 +1,5 @@
 "use client";
+import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React,{useId,useRef} from 'react';
 import {PressDecoration,useControllable} from './provider.js';
 export interface Choice {value:string;label:string;disabled?:boolean}
@@ -15,8 +16,8 @@ function Segment({name,option,checked,blocked,testID,onSelect}:{name:string;opti
  const input=useRef<HTMLInputElement>(null);
  return <label className='hig-segment'><input ref={input} type='radio' name={name} value={option.value} checked={checked} disabled={option.disabled} data-testid={testID} onChange={()=>{if(!blocked)onSelect();}}/><span>{option.label}</span><PressDecoration kind='segment' disabled={blocked} input={input}/></label>;
 }
-export function RadioGroup({label,options,value,defaultValue='',disabled,onValueChange}:ChoicesProps){const name=useId();const [current,set]=useControllable(value,defaultValue,onValueChange);return <fieldset className='hig-group' disabled={disabled}><legend>{label}</legend>{options.map(o=><label key={o.value} className='hig-choice'><input type='radio' name={name} value={o.value} checked={current===o.value} disabled={o.disabled} onChange={()=>set(o.value)}/><span>{o.label}</span></label>)}</fieldset>;}
-export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,onValueChange}:SegmentedControlProps){
+export function RadioGroup({label,options,value,defaultValue='',disabled,onValueChange}:ChoicesProps){assertUniqueKeys(options,option=>option.value,'Choices');const name=useId();const [current,set]=useControllable(value,defaultValue,onValueChange);return <fieldset className='hig-group' disabled={disabled}><legend>{label}</legend>{options.map(o=><label key={o.value} className='hig-choice'><input type='radio' name={name} value={o.value} checked={current===o.value} disabled={o.disabled} onChange={()=>set(o.value)}/><span>{o.label}</span></label>)}</fieldset>;}
+export function SegmentedControl({label,options,value,defaultValue='',disabled,hideLabel,testID,onValueChange}:SegmentedControlProps){assertUniqueKeys(options,option=>option.value,'Choices');
  const name=useId();const [current,set]=useControllable(value,defaultValue,onValueChange);
  const selected=options.findIndex(option=>option.value===current);
  return <fieldset className='hig-group hig-segmented-control' disabled={disabled} data-testid={testID}><legend className={hideLabel?'hig-sr-only':undefined}>{label}</legend>
@@ -29,7 +30,7 @@ export function SegmentedControl({label,options,value,defaultValue='',disabled,h
 export interface FilterOption extends Choice {/** Image URL shown in the option's circle until it is selected. */icon?:string}
 export interface FilterProps {/** Accessible name of the group; not drawn. */label:string;options:readonly FilterOption[];value?:string;defaultValue?:string;disabled?:boolean;onValueChange?:(value:string)=>void;/** Pixels the row scrolls out past its container on each side (`--hig-filter-bleed`), so the capsules are cut by the container's edge, while the first and last capsule rest this far in: pass the container's side padding. Default 0, or what an ancestor sets in `--hig-filter-bleed`. */bleed?:number}
 /** One row of filter capsules that scrolls sideways. Single choice with radio semantics; the chosen capsule inverts and a check draws into its circle. */
-export function Filter({label,options,value,defaultValue='',disabled,onValueChange,bleed}:FilterProps){
+export function Filter({label,options,value,defaultValue='',disabled,onValueChange,bleed}:FilterProps){assertUniqueKeys(options,option=>option.value,'Choices');
  const name=useId();const [current,set]=useControllable(value,defaultValue,onValueChange);
  return <div className='hig-filter' role='radiogroup' aria-label={label} aria-disabled={disabled||undefined} style={bleed==null?undefined:{'--hig-filter-bleed':`${bleed}px`} as React.CSSProperties}>
   {options.map(o=><label key={o.value} className='hig-filter-chip'><input type='radio' name={name} value={o.value} checked={current===o.value} disabled={disabled||o.disabled} onChange={()=>{if(!disabled&&!o.disabled)set(o.value);}}/><span className='hig-filter-mark' aria-hidden='true'>{o.icon&&<img src={o.icon} alt='' loading='lazy'/>}<svg viewBox='0 0 16 16' focusable='false'><path pathLength='1' d='m3.75 8.5 2.75 2.75 5.75-6.25'/></svg></span><span>{o.label}</span></label>)}

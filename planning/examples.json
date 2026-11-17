@@ -413,6 +413,7 @@
     },
     {
       "name": "GestureSheet",
+      "added": "Unreleased",
       "slug": "gesture-sheet",
       "entry": "gesture-sheet",
       "family": "overlays",

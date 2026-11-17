@@ -91,3 +91,17 @@ it('GestureSheetScrollView is a plain scroller outside a sheet, with bounce and 
  const scroller=root.root.findAll(node=>node.props.testID==='scroller'&&node.props.bounces!==undefined)[0];
  expect(scroller.props).toMatchObject({bounces:false,overScrollMode:'never',scrollEventThrottle:16});
 });
+
+it('does not republish a stable sheet on unrelated parent updates and still propagates changed content',()=>{
+ const renders=jest.fn();
+ function Content({label}){renders();return h(RNText,{testID:'stable-content'},label);}
+ const props={open:true,title:'Review',contentMode:'custom',snapPoints:['50%'],onOpenChange:()=>{},testID:'sheet'};
+ const child=h(Content,{label:'Before'});
+ const render=(tick,children)=>h(HIGProvider,{reducedMotion:true},h(GestureSheetHost,null,h(RNText,null,String(tick)),h(GestureSheet,props,children)));
+ act(()=>{root=create(render(0,child));});layout(root.root);renders.mockClear();
+ act(()=>root.update(render(1,child)));
+ expect(renders).not.toHaveBeenCalled();
+ act(()=>root.update(render(2,h(Content,{label:'After'}))));
+ expect(renders).toHaveBeenCalled();
+ expect(text(all(root.root,'stable-content')[0])).toBe('After');
+});

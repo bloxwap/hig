@@ -96,7 +96,7 @@ export function Confetti({trigger,options,style,testID}:ConfettiProps){
   const resolve=pending.current.get(id);if(resolve){pending.current.delete(id);resolve();}
  },[]);
  const launch=useCallback((burstOptions?:ConfettiOptions)=>{
-  if(confettiSkipped(burstOptions,motion.current))return Promise.resolve();
+  if(pending.current.size>=8||confettiSkipped(burstOptions,motion.current))return Promise.resolve();
   const burst=createConfettiBurst(burstOptions,palette.current);
   if(burst.particles.length===0)return Promise.resolve();
   // Before the layer has been laid out the window stands in for it.
@@ -104,7 +104,7 @@ export function Confetti({trigger,options,style,testID}:ConfettiProps){
   return new Promise<void>(resolve=>{pending.current.set(id,resolve);setRuns(current=>[...current,{id,burst,left:burst.origin.x*width,top:burst.origin.y*height}]);});
  },[]);
  // Until the layer can answer for reduced motion a burst waits, a moment at most.
- const fire=useCallback((burstOptions?:ConfettiOptions)=>ready.current?launch(burstOptions):new Promise<void>(resolve=>{waiting.current.push({options:burstOptions,resolve});}),[launch]);
+ const fire=useCallback((burstOptions?:ConfettiOptions)=>ready.current?launch(burstOptions):new Promise<void>(resolve=>{if(waiting.current.length>=8){resolve();return;}waiting.current.push({options:burstOptions,resolve});}),[launch]);
  const begin=useCallback(()=>{ready.current=true;for(const wait of waiting.current.splice(0))void launch(wait.options).then(wait.resolve);},[launch]);
  const reset=useCallback(()=>{setRuns(current=>current.length?[]:current);settle();},[settle]);
  // One host for the life of the component, so a burst it holds survives React running the effects twice in development.

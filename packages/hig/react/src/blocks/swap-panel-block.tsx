@@ -1,7 +1,9 @@
 "use client";
+import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts';
+import {useAsyncResult} from '../async-result.js';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {PressDecoration,useControllable,useHIG} from '../provider.js';
+import {PressDecoration,useControllable,useHIG,useNumberLocale} from '../provider.js';
 import {Button,IconButton} from '../button.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {notify} from '../notify.js';
@@ -9,7 +11,7 @@ import {VerticalAddress} from '../data.js';
 import {SwapPicker,type SwapWallet} from './swap/picker.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapSettings,type SwapFee} from './swap/settings.js';
-import {SwapIcon,SwapKeypad,SwapNumber,SwapPill,percentNumber,swapArt,swapFigure,usdNumber,type SwapFigure,addressGradient,applyAmountKey,chainsOf,parentView,sanitizeAmount,shortAddress,swapAction,testAmount,trimNumber,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
+import {SwapIcon,SwapKeypad,SwapNumber,SwapPill,percentNumber,swapArt,swapFigure,usdNumber,type SwapFigure,addressGradient,applyAmountKey,chainsOf,parentView,sanitizeAmount,shortAddress,swapAction,testAmount,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export {swapAction,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapToken,type SwapView} from './swap/shared.js';
 export type {SwapWallet} from './swap/picker.js';
 export type {SwapFee} from './swap/settings.js';
@@ -113,12 +115,17 @@ export interface SwapPanelBlockProps {
  shortcuts?:boolean;
  /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */
  captureKeyboard?:boolean;
+ /** Disable global shortcuts and amount capture while a retained screen is inactive. */
+ active?:boolean;
  /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */
  view?:SwapView;onViewChange?:(view:SwapView)=>void;
  /** Host rows for the settings view, such as language or theme. */
  settings?:React.ReactNode;
  className?:string;style?:React.CSSProperties;
 }
+const visiblePanel=(node:HTMLElement)=>{for(let el:HTMLElement|null=node;el;el=el.parentElement){const style=getComputedStyle(el);if(style.display==='none'||style.visibility==='hidden')return false;}return true;};
+const keyboardPanels=new Set<HTMLElement>();
+const ownsKeyboard=(node:HTMLElement|null)=>{const visible=[...keyboardPanels].filter(el=>el.isConnected&&!el.closest('[hidden],[inert],[aria-hidden=true]')&&visiblePanel(el));return !!node&&(visible.find(el=>el.contains(document.activeElement))??visible.at(-1))===node;};
 const textTarget=(target:EventTarget|null)=>{const element=target as HTMLElement|null;return !!element&&(/^(INPUT|TEXTAREA|SELECT)$/.test(element.tagName)||element.isContentEditable);};
 const amountKey=(event:{key:string;metaKey:boolean;ctrlKey:boolean;altKey:boolean})=>event.metaKey||event.ctrlKey||event.altKey?null:/^[0-9.]$/.test(event.key)?event.key:event.key==='Backspace'?'back':null;
 /**
@@ -126,13 +133,14 @@ const amountKey=(event:{key:string;metaKey:boolean;ctrlKey:boolean;altKey:boolea
  * or token units, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,submittingLabel,onReset,destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,view:viewProp,onViewChange,settings,className,style}:SwapPanelBlockProps){
- const {messages}=useHIG();
+export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,submittingLabel,onReset,destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,keypad='auto',shortcuts=true,captureKeyboard=false,active=true,view:viewProp,onViewChange,settings,className,style}:SwapPanelBlockProps){
+ const {messages}=useHIG();const locale=useNumberLocale();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
+ const boundedUnits=(raw:string)=>{const canonical=decimal(raw,from?.decimals??100);return limitToBalance&&from?.balance!=null&&Number.isFinite(from.balance)&&from.balance>=0&&decimalCompare(canonical,from.balance)>0?decimal(from.balance,from?.decimals??100):canonical;};
  const [defaultMode,setDefaultMode]=useControllable<SwapDenomination>(denomination,'usd',onDenominationChange);
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
  // A mounted `amount` seeds the entry, in the default denomination at the initial From token's price.
- const [entry,setEntry]=useState(()=>amount===undefined?'0':unitsToEntry(Number(amount)||0,defaultMode,from?.price??0));const [fromMode,applyFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
+ const [entry,setEntry]=useState(()=>amount===undefined?'0':unitsToEntry(boundedUnits(amount),defaultMode,from?.price??0));const [fromMode,applyFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
  const [view,show]=useControllable<SwapView>(viewProp,'main',onViewChange);const root=useRef<HTMLElement>(null);const previous=useRef<SwapView>('main');
  const openPicker=(side:'from'|'to')=>show(side);const back=()=>show(parentView(view));
  // A push slides in from the trailing edge and a pop from the leading edge. Popping to the cards returns focus to the control that pushed.
@@ -145,20 +153,22 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   return()=>coarse?.removeEventListener('change',update);
  },[]);
  const fromPrice=from?.price??0,toPrice=to?.price??0,input=Number(entry)||0;
- const units=fromMode==='token'?input:fromPrice>0?input/fromPrice:0,usd=units*fromPrice,unitsText=trimNumber(units);
+ const exact=useRef<{entry:string;mode:SwapDenomination;units:string;asset:string|undefined}|null>(amount===undefined?null:{entry,mode:fromMode,units:boundedUnits(amount),asset:from?.id});
+ const unitsText=exact.current&&exact.current.entry===entry&&exact.current.mode===fromMode&&exact.current.asset===from?.id?exact.current.units:fromMode==='token'?decimal(entry,from?.decimals??100):decimalDivide(entry,fromPrice,from?.decimals??18);
+ const units=Number(unitsText),usd=units*fromPrice;
  const showReceive=isReceiving&&!!receive;
  // Report the amount in token units; resync the entry when the host sets a different amount.
  const reported=useRef(amount??'0');
  useEffect(()=>{if(reported.current!==unitsText){reported.current=unitsText;onAmountChange?.(unitsText);}},[unitsText]);
- useEffect(()=>{if(amount===undefined||Number(amount)===Number(reported.current))return;reported.current=trimNumber(Number(amount)||0);setEntry(unitsToEntry(Number(amount)||0,fromMode,fromPrice));},[amount]);
- const sameAsset=!!from&&!!to&&from.id===to.id;
+ useEffect(()=>{if(amount===undefined||boundedUnits(amount)===reported.current)return;const canonical=boundedUnits(amount),next=unitsToEntry(canonical,fromMode,fromPrice);reported.current=canonical;if(decimal(amount)!==canonical)onAmountChange?.(canonical);exact.current={entry:next,mode:fromMode,units:canonical,asset:from?.id};setEntry(next);},[amount]);
+ const sameAsset=!!from&&!!to&&swapAction(from,to)==='send';
  const receivedUnits=sameAsset?units:received??(toPrice>0?usd/toPrice:0);
  const receivedUsd=toPrice>0?receivedUnits*toPrice:sameAsset?usd:0;
  const action=swapAction(from,to);
- const insufficient=!!from&&(from.balance??0)>0&&units>(from.balance??0);
+ const insufficient=!!from&&from.balance!=null&&(!Number.isFinite(from.balance)||from.balance<0||decimalCompare(unitsText,from.balance)>0);
  // A destination or a details card stands in for the To token: one way, and ready from the From side alone.
  const fixed=!!destination||(!!details&&!to);const oneWay=oneWayProp||fixed;
- const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
+ const eligible=!!from&&(!!to||fixed)&&!destination?.pending&&Number.isFinite(units)&&units>0&&!insufficient;const ready=eligible&&!actionDisabled;
  const readyText=actionLabel??(action==='swap'&&!fixed?messages.swapActionSwap??en.swapActionSwap:action==='bridge'&&!fixed?messages.swapActionBridge??en.swapActionBridge:messages.swapActionSend??en.swapActionSend);
  // While the host's submit is in flight the amount may already be cleared: the action keeps its name rather than asking for an amount.
  const actionText=showReceive?(messages.swapSendFromWallet??en.swapSendFromWallet):!from||(!to&&!fixed)?(messages.swapChooseToken??en.swapChooseToken):destination?.pending?(messages.swapChooseDestination??en.swapChooseDestination):submitting?submittingLabel??(actionDisabled&&actionStatus?actionStatus:readyText):units<=0?(messages.swapEnterAmount??en.swapEnterAmount):insufficient?(messages.swapInsufficient??en.swapInsufficient)(from.symbol):actionDisabled&&actionStatus?actionStatus:readyText;
@@ -166,32 +176,34 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  // Updater form: several keys can land before the next render, and each must build on the last.
  const latest=useRef(fromMode);latest.current=fromMode;const latestView=useRef(view);latestView.current=view;
  // Read at key time: several keys can land in one render.
- const limits=useRef({decimals:from?.decimals,balance:from?.balance??0,price:fromPrice,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance??0,price:fromPrice,cap:limitToBalance};
- const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||!(balance>0))return false;const value=Number(next)||0;return (latest.current==='token'?value:price>0?value/price:0)>balance;};
+ const limits=useRef({decimals:from?.decimals,balance:from?.balance,price:fromPrice,cap:limitToBalance});limits.current={decimals:from?.decimals,balance:from?.balance,price:fromPrice,cap:limitToBalance};
+ const over=(next:string)=>{const {balance,price,cap}=limits.current;if(!cap||balance==null)return false;if(!Number.isFinite(balance)||balance<0)return true;const value=latest.current==='token'?next:decimalDivide(next,price,limits.current.decimals??18);return decimalCompare(value,balance)>0;};
  // While the host's submit is in flight the keypad, typed keys, a paste, Max and Test leave the amount as it is.
- const typed:typeof setEntry=next=>{if(!submitting)setEntry(next);};
+ const typed:typeof setEntry=next=>{if(!submitting)setEntry(current=>{const value=typeof next==='function'?next(current):next;if(value.length>1000)return current;const normalized=decimal(value,latest.current==='usd'?2:limits.current.decimals??100);if(over(normalized))return current;exact.current=null;const [whole,fraction]=value.split('.');const places=latest.current==='usd'?2:limits.current.decimals??100;return fraction===undefined?whole:places>0?whole+'.'+fraction.slice(0,places):whole;});};
  const press=(key:string)=>typed(current=>{const next=applyAmountKey(current,key,latest.current,limits.current.decimals);return key!=='back'&&over(next)?current:next;});
- const paste=(text:string)=>{const clean=text.trim().replace(/,/g,'');if(clean===''||!/^[0-9]*\.?[0-9]*$/.test(clean))return false;const next=sanitizeAmount(clean);typed(latest.current==='usd'?trimNumber(Number(next)||0,2):next);return true;};
- const switchFromMode=(mode:SwapDenomination)=>{if(mode===fromMode)return;setEntry(mode==='usd'?trimNumber(usd,2):trimNumber(units));applyFromMode(mode);};
- const changeDenomination=(mode:SwapDenomination)=>{setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
+ const paste=(text:string)=>{const clean=text.trim().replace(/,/g,'');if(clean===''||!/^[0-9]*\.?[0-9]*$/.test(clean))return false;const next=sanitizeAmount(clean);typed(next);return true;};
+ const switchFromMode=(mode:SwapDenomination)=>{if(submitting||mode===fromMode)return;const next=unitsToEntry(unitsText,mode,fromPrice);exact.current={entry:next,mode,units:unitsText,asset:from?.id};setEntry(next);applyFromMode(mode);};
+ const changeDenomination=(mode:SwapDenomination)=>{if(submitting)return;setDefaultMode(mode);switchFromMode(mode);applyToMode(mode);};
  // A new default applies to an untouched entry at once; a typed amount keeps its denomination until reset.
  useEffect(()=>{if(input===0){applyFromMode(defaultMode);applyToMode(defaultMode);}},[defaultMode]);
- const reset=()=>{setEntry('0');applyFromMode(defaultMode);applyToMode(defaultMode);if(isReceiving)setReceiving(false);if(!lockFrom)setFrom(null);if(!lockTo)setTo(null);onReset?.();};
- const flip=()=>{if(!from||!to)return;setFrom(to);setTo(from);};
+ const reset=()=>{if(submitting)return;exact.current=null;setEntry('0');applyFromMode(defaultMode);applyToMode(defaultMode);if(isReceiving)setReceiving(false);if(!lockFrom)setFrom(null);if(!lockTo)setTo(null);onReset?.();};
+ const flip=()=>{if(submitting||!from||!to)return;setFrom(to);setTo(from);};
  const submit=()=>{if(submitting)return;if(showReceive){onConnect?.();return;}if(ready)onSubmit(fixed?'send':action);};
- const copyAddress=()=>{if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>{const text=(messages.addressCopied??en.addressCopied);setCopied(notify(text,{severity:'success',id:'hig-swap-address',dismissName:(messages.dismissNotice??en.dismissNotice)(text,(messages.dismiss??en.dismiss))})?text:'');}).catch(()=>setCopied(''));};
+ const beginCopy=useAsyncResult(receive?.address);
+ const copyAddress=()=>{const current=beginCopy();if(!receive?.onCopy)return;Promise.resolve().then(receive.onCopy).then(()=>{if(!current())return;const text=(messages.addressCopied??en.addressCopied);setCopied(notify(text,{severity:'success',id:'hig-swap-address',dismissName:(messages.dismissNotice??en.dismissNotice)(text,(messages.dismiss??en.dismiss))})?text:'');}).catch(()=>{if(current())setCopied('');});};
+ useEffect(()=>{const node=root.current;if(!active||(!shortcuts&&!captureKeyboard)||!node)return;keyboardPanels.add(node);return()=>{keyboardPanels.delete(node);};},[active,shortcuts,captureKeyboard]);
  useEffect(()=>{
-  if(!shortcuts&&!captureKeyboard)return;
+  if(!active||(!shortcuts&&!captureKeyboard))return;
   const onKeyDown=(event:KeyboardEvent)=>{
-   const key=event.key.toLowerCase();
+   if(submitting||event.defaultPrevented||!ownsKeyboard(root.current))return;const key=event.key.toLowerCase();
    if(shortcuts&&(event.metaKey||event.ctrlKey)&&!event.altKey&&!event.shiftKey&&(key==='f'||key==='k')){const side=key==='f'?'from':'to';if(side==='from'?lockFrom:lockTo||fixed)return;event.preventDefault();show(side);return;}
    if(!captureKeyboard||event.defaultPrevented||textTarget(event.target)||latestView.current!=='main')return;
    const pressed=amountKey(event);if(pressed){event.preventDefault();press(pressed);}
   };
-  const onPaste=(event:ClipboardEvent)=>{if(captureKeyboard&&!event.defaultPrevented&&!textTarget(event.target)&&paste(event.clipboardData?.getData('text')??''))event.preventDefault();};
+  const onPaste=(event:ClipboardEvent)=>{if(!submitting&&ownsKeyboard(root.current)&&captureKeyboard&&!event.defaultPrevented&&!textTarget(event.target)&&paste(event.clipboardData?.getData('text')??''))event.preventDefault();};
   window.addEventListener('keydown',onKeyDown);document.addEventListener('paste',onPaste);
   return()=>{window.removeEventListener('keydown',onKeyDown);document.removeEventListener('paste',onPaste);};
- },[shortcuts,captureKeyboard,lockFrom,lockTo,fixed]);
+ });
  // Keys typed while focus is inside the cards drive the amount; in a pushed view Escape pops it.
  const inPanel=(event:React.SyntheticEvent)=>view==='main'&&!textTarget(event.target);
  const onKeyDown=(event:React.KeyboardEvent)=>{if(view!=='main'&&event.key==='Escape'){event.preventDefault();event.stopPropagation();back();return;}if(captureKeyboard||!inPanel(event))return;const pressed=amountKey(event);if(pressed){event.preventDefault();press(pressed);}};
@@ -204,13 +216,13 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  const account=(side:'from'|'to',token:SwapToken,locked:boolean)=><div className='hig-swap-selected' data-account='true'>
   <span className='hig-swap-stack' aria-hidden='true'>{token.icon?swapArt(token.icon):<span className='hig-swap-initials'>{token.symbol.slice(0,3)}</span>}</span>
   <span className='hig-swap-identity'><strong>{token.name}{!locked&&<SwapIcon name='expand' size={16}/>}</strong><span>{swapFigure(token.caption??'')}</span></span>
-  {side==='from'&&(token.balance??0)>0&&<span className='hig-swap-meta'><SwapPill onClick={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span>}
+  {side==='from'&&(token.balance??0)>0&&<span className='hig-swap-meta'><SwapPill disabled={submitting} onClick={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span>}
  </div>;
  const header=(side:'from'|'to',token:SwapToken)=><div className='hig-swap-selected'>
   <span className='hig-swap-stack' aria-hidden='true'>{wallet?.address&&<span className='hig-swap-avatar' style={{background:addressGradient(wallet.address)}}/>}{token.chainIcon&&swapArt(token.chainIcon)}{token.icon?swapArt(token.icon):<span className='hig-swap-initials'>{token.symbol.slice(0,3)}</span>}</span>
   <span className='hig-swap-identity'>{wallet?.address&&<span>{shortAddress(wallet.address)}</span>}<span>{token.chain}</span><strong>{token.name}</strong></span>
-  {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill onClick={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill onClick={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><SwapNumber value={token.balance} suffix={' '+token.symbol} options={{maximumFractionDigits:6}}/></span>
-   :<span className='hig-swap-meta'><SwapPill onClick={()=>show(onSlippageChange?'slippage':'settings')}><SwapIcon name='sliders' size={14}/><SwapNumber template={messages.swapSlippage??en.swapSlippage} {...percentNumber(slippage)}/></SwapPill><span>{feeLine}</span></span>}
+  {side==='from'?(token.balance??0)>0&&<span className='hig-swap-meta'><span className='hig-swap-pills'><SwapPill disabled={submitting} onClick={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><SwapIcon name='flask' size={14}/>{(messages.swapTest??en.swapTest)}</SwapPill><SwapPill disabled={submitting} onClick={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}>{(messages.swapMax??en.swapMax)}</SwapPill></span><SwapNumber value={token.balance} suffix={' '+token.symbol} options={{maximumFractionDigits:6}}/></span>
+   :<span className='hig-swap-meta'><SwapPill disabled={submitting} onClick={()=>show(onSlippageChange?'slippage':'settings')}><SwapIcon name='sliders' size={14}/><SwapNumber template={messages.swapSlippage??en.swapSlippage} {...percentNumber(slippage)}/></SwapPill><span>{feeLine}</span></span>}
  </div>;
  const receiveView=(view:SwapReceive)=>{const content=<>{view.qr&&<span className='hig-swap-qr'>{view.qr}</span>}<VerticalAddress address={view.address}/></>;return view.onCopy?<button type='button' className='hig-swap-receive' aria-label={(messages.copyAddress??en.copyAddress)+': '+view.address} onClick={copyAddress}>{content}<PressDecoration kind='row'/></button>:<div className='hig-swap-receive'>{content}</div>;};
  const card=(side:'from'|'to')=>{
@@ -219,17 +231,17 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   const shown=side==='from'?input:mode==='token'?receivedUnits:receivedUsd;
   return <div className='hig-swap-card' data-side={side} data-locked={locked||undefined}>
    <div className='hig-swap-slot'>
-    {!locked&&<button type='button' className='hig-swap-hit' aria-label={(messages.swapSelectToken??en.swapSelectToken)(label)} onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
+    {!locked&&<button type='button' disabled={submitting} className='hig-swap-hit' aria-label={(messages.swapSelectToken??en.swapSelectToken)(label)} onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
     <div className='hig-swap-slot-content'>{token?token.caption!==undefined?account(side,token,locked):header(side,token):<><span className='hig-swap-placeholder'>{label}…</span>{shortcuts&&hint&&!locked&&<kbd className='hig-swap-kbd'>{hint==='mac'?'⌘':messages.swapControlKey??en.swapControlKey} {side==='from'?'F':'K'}</kbd>}</>}</div>
    </div>
    {side==='from'&&showReceive&&receive?receiveView(receive):
     !(side==='to'&&showReceive)&&<div className='hig-swap-amount-area'>
-     {!locked&&<button type='button' className='hig-swap-hit' tabIndex={-1} aria-hidden='true' onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
+     {!locked&&<button type='button' disabled={submitting} className='hig-swap-hit' tabIndex={-1} aria-hidden='true' onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
      <div className='hig-swap-amount-content'>
       <div className='hig-swap-amount' data-muted={side==='to'||undefined} {...(side==='from'?{role:'textbox',tabIndex:0,'aria-label':(messages.swapAmount??en.swapAmount)(label)}:{})}>
-       <AnimatedNumberReadout value={shown} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
+       <AnimatedNumberReadout value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&mode==='usd'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
       </div>
-      {denominationSwitch&&<SwapPill aria-label={(messages.swapSwitchDenomination??en.swapSwitchDenomination)} onClick={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
+      {denominationSwitch&&<SwapPill disabled={submitting} aria-label={(messages.swapSwitchDenomination??en.swapSwitchDenomination)} onClick={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
        <span aria-hidden='true' className='hig-swap-equals'>=</span>
        {mode==='token'?<AnimatedNumberReadout value={cardUsd} options={{style:'currency',currency:'USD'}}/>:<AnimatedNumberReadout value={cardUnits} suffix={token?` ${token.symbol}`:''} options={{maximumFractionDigits:8,useGrouping:false}}/>}
        <SwapIcon name='flip' size={14}/>
@@ -241,7 +253,7 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
  // The fixed bottom card is one compact row for the destination (artwork, where it goes, a trailing detail and fee), label and value rows, or both.
  const fixedCard=fixed&&<div className='hig-swap-card' data-side='to' data-compact='true' data-pending={destination?.pending||undefined}>
   {destination&&<div className='hig-swap-slot'>
-   {destination.onPress&&<button type='button' className='hig-swap-hit' aria-label={destination.title} onClick={destination.onPress}><PressDecoration kind='row'/></button>}
+   {destination.onPress&&<button type='button' disabled={submitting} className='hig-swap-hit' aria-label={destination.title} onClick={destination.onPress}><PressDecoration kind='row'/></button>}
    <div className='hig-swap-slot-content'><div className='hig-swap-selected'>
     <span className='hig-swap-stack' aria-hidden='true'>{destination.icon?swapArt(destination.icon):destination.address?<span className='hig-swap-avatar' style={{background:addressGradient(destination.address)}}/>:<span className='hig-swap-initials'>{destination.title.slice(0,2)}</span>}</span>
     <span className='hig-swap-identity'><strong>{destination.title}</strong>{destination.subtitle&&<span>{destination.subtitle}</span>}{destination.address&&<span>{shortAddress(destination.address)}</span>}</span>
@@ -255,20 +267,20 @@ export function SwapPanelBlock({tokens,fromTokens,fromTokensLoading,chains,hotTo
   {title&&<ScreenHeader title={title} onBack={onBack} headingId={headingId}/>}
   {banner}
   {fromCard}
-  <div className='hig-swap-flip'>{oneWay?<span aria-hidden='true'><SwapIcon name='down' size={16}/></span>:<button type='button' aria-label={(messages.swapFlip??en.swapFlip)} disabled={!from||!to} onClick={flip}><SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={!from||!to}/></button>}</div>
+  <div className='hig-swap-flip'>{oneWay?<span aria-hidden='true'><SwapIcon name='down' size={16}/></span>:<button type='button' aria-label={(messages.swapFlip??en.swapFlip)} disabled={submitting||!from||!to} onClick={flip}><SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={submitting||!from||!to}/></button>}</div>
   {toCard}
   {!showReceive&&(keypad==='always'||(keypad==='auto'&&touch))&&<SwapKeypad onKey={press} label={(messages.swapKeypad??en.swapKeypad)} deleteLabel={(messages.swapDelete??en.swapDelete)}/>}
   {note&&<p className='hig-swap-note' data-tone={noteTone} role='note'>{note}</p>}
   <div className='hig-swap-actions'>
-   {controls&&<IconButton className='hig-swap-settings-button' intent='secondary' label={(messages.swapSettings??en.swapSettings)} suppressFeedback onClick={()=>show('settings')}><SwapIcon name='menu'/></IconButton>}
+   {controls&&<IconButton disabled={submitting} className='hig-swap-settings-button' intent='secondary' label={(messages.swapSettings??en.swapSettings)} suppressFeedback onClick={()=>show('settings')}><SwapIcon name='menu'/></IconButton>}
    <Button fullWidth intent={actionIntent} busy={submitting} disabled={!showReceive&&!ready} onClick={submit}>{actionIcon}{actionText}</Button>
    {controls&&<IconButton intent='secondary' label={(messages.swapReset??en.swapReset)} disabled={pristine||submitting} onClick={reset}><SwapIcon name='reset'/></IconButton>}
   </div>
   {footer}
- </>:view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={onConnect} onDisconnect={onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined}/>
- :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={setTo} wallet={wallet} recipient={recipient} onRecipientChange={onRecipientChange} onScanRecipient={onScanRecipient}/>
+ </>:view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={setFrom} wallet={wallet} onConnect={submitting?undefined:onConnect} onDisconnect={submitting?undefined:onDisconnect} receiving={isReceiving} onReceivingChange={receive?setReceiving:undefined}/>
+ :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={setTo} wallet={wallet} recipient={recipient} onRecipientChange={onRecipientChange} onScanRecipient={submitting?undefined:onScanRecipient}/>
  :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={denominationSwitch?changeDenomination:undefined} slippage={slippage} onSlippageChange={onSlippageChange} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
- return <section ref={root} className={`hig-swap-panel${className?` ${className}`:''}`} style={style} data-view={view} data-receiving={showReceive||undefined} onKeyDown={onKeyDown} onPaste={onPaste}>
+ return <section ref={root} className={`hig-swap-panel${className?` ${className}`:''}`} style={style} onClickCapture={event=>{if(submitting){event.preventDefault();event.stopPropagation();}}} data-view={view} data-receiving={showReceive||undefined} onKeyDown={onKeyDown} onPaste={onPaste}>
   <div key={view} className='hig-swap-view' data-direction={direction}>{body}</div>
   <p className='hig-sr-only' role='status'>{copied}</p>
  </section>;

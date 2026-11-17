@@ -258,7 +258,7 @@ One panel covers each flow with the same cards; the catalog page shows every one
 Stake and unstake are one example each: the asset changes only the token data, not the layout.
 
 - **Tokens.** A `SwapToken` is `{id, symbol, name, chain, chainId}` plus optional `icon`, `chainIcon`, `balance` (token units), `price` (USD per unit) and `keywords` (extra search text such as the contract address). `balance` enables Max, Test and the balance check; `price` enables the dollar and unit conversion and the estimate shown before `received` arrives.
-- **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
+- **Amount.** The From amount is typed in dollars or token units; the capsule under it switches denomination and converts the entry. Keys typed while focus is in the panel, a paste, and the keypad all drive it. `onAmountChange` always reports token units as canonical decimal text, preserving up to 100 fractional places (18 for dollar-to-token conversion when token precision is omitted). Estimates use floating point; transaction callbacks do not. Set `amount` only to resync the entry, for example to `'0'` after a submit. `keypad='auto'` shows the keypad for a coarse pointer on web and always on native; `captureKeyboard` (web) lets digits typed anywhere outside a text field drive the amount.
 - **Pushed views.** The token pickers and settings are views pushed inside the panel's own bounds, replacing the cards, each with a Back control; Escape pops one level on web and choosing a token pops to the cards. `view` / `onViewChange` (`'main' | 'from' | 'to' | 'settings' | 'slippage' | 'fees'`) control the stack when the host needs to.
 - **Pickers.** Pressing a card pushes its picker: search, chain filter chips, an optional Hot section from `hotTokenIds`, and the token list with arrow-key and Enter selection on web. The From picker shows the connected wallet with a disconnect control, or Connect wallet and the receive toggle; the To picker shows the recipient field when `onRecipientChange` is set, with a scan button when `onScanRecipient` is set. On web ⌘F / Ctrl+F and ⌘K / Ctrl+K open the From and To pickers while the panel is mounted; pass `shortcuts={false}` to leave the browser's own shortcuts alone.
 - **Settings.** The menu button pushes the settings view: the default denomination, slippage (presets plus a custom percent) and the fee breakdown one level deeper, then any host rows passed as `settings`.
@@ -273,7 +273,8 @@ Stake and unstake are one example each: the asset changes only the token data, n
 - **Locked sides.** `lockFrom` / `lockTo` keep that side's token fixed: its card looks the same but does not open the picker, has no shortcut, and reset leaves the token in place.
 - **Action label.** `actionLabel` names the action once it is ready, in place of Send, Swap or Bridge: Stake, Deposit, Unstake. The host supplies the translated text. The prompts before it is ready (select a token, enter an amount, insufficient balance) do not change.
 - **Host-held action.** `actionDisabled` holds the action for a reason only the host knows (below a minimum, no quote yet, a closed market), and `actionStatus` is what it then says. The panel's own prompts still come first. `actionIntent='destructive'` is for an action that cannot be undone, such as a burn.
-- **Amount limits.** A token's `decimals` caps how many decimal places can be typed in token units (dollars always stop at two). `limitToBalance` refuses a key that would take the amount past the From balance, where the default lets it through and says Insufficient.
+- **Submission.** While `submitting` is true, operation-changing controls stop accepting edits. The host must still capture the exact amount, asset identities, destination, quote and expiry before awaiting execution, revalidate them in its transaction layer, and provide idempotency. An enabled button is not transaction authorization. Web global input belongs to one visible panel; set `active={false}` for a retained inactive screen.
+- **Amount limits.** A token's `decimals` must be an integer from 0 to 100. It caps keypad, pasted and externally supplied token amounts; dollars stop at two places. `limitToBalance` rejects edits above any known balance, including zero, and clamps external resync to that balance. Without the cap, insufficient amounts remain visible but cannot submit. Unknown balances are distinct from zero.
 - **Artwork.** A token's `icon` and `chainIcon` and a destination's `icon` take an image URL or the host's own element, which fills the disc.
 - **Host content.** `banner` sits above the From card (a pending transfer) and `footer` under the action (recent activity).
 - **Starting amount.** A mounted `amount` (token units) seeds the entry in the default denomination.
@@ -360,7 +361,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Assets.** An `AccountAsset` is `{id, name, symbol}` plus optional `icon` (an image URL or a host element), `balance` (token units), `price` (USD per unit) and `value` (dollars). The value shown is `value`, or `balance × price` when both are known, or the unknown dash.
 - **Pinned dollar balance.** The asset whose symbol is `pinnedSymbol` (default `USDC`) is always the first row and is always shown: when the account does not hold it, the row reads $0.00. It shows its dollar value alone, because its units are the same figure.
 - **Order.** Every other asset follows by dollar value, largest first. Unknown values come last and ties sort by name. The host does not sort. `accountRows(assets, pinnedSymbol)` returns the same order for a host-drawn list.
-- **Total.** `balance` is the total in dollars. Without it the card sums the asset values; `null` reads as unknown.
+- **Total.** `balance` is the total in dollars. Without it the card sums the asset values; any unknown or nonfinite constituent makes the total unknown. `null` reads as unknown.
 - **Deposit.** `onDeposit` shows the primary action beside the total. `depositLabel` replaces the built-in text, for example with Add funds.
 - **Header.** `title` replaces the built-in “Account”. `onBack` shows Back; `headerAction` is the trailing control. The title stays centred with either, both or neither. `stickyHeader` pins it (see [pinned headers](#pinned-headers); native also takes `stickyHeaderBackground` and `scrollComponent`), and `headingId` names its heading.
 - **Rows.** `onAssetSelect` makes each row a button that reports its asset. Without it the rows are plain. `selectable: false` on an asset keeps that one row plain.
@@ -395,7 +396,7 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Bars.** `assets` and `chains` are `BarMark` elements: `{label, value}` plus optional `tone`, `color`, `detail` and `id`. Use one unit for both, usually dollars. `chainsTitle` replaces the built-in “Chains”. A `detail` can be a live figure (`{value, options, prefix, suffix}`), which moves place by place on both platforms, like the total.
 - **Actions only.** Both bars are optional: leave out `chains` to draw the assets bar alone, `assets` to draw the chains bar alone, or both for a card of commands with no breakdown. `name` is needed only with `assets`; the ticker stands in without it.
 - **Note.** `note` is a line under the actions, for example why some are missing on a view-only account; `noteTone='warning'` or `'negative'` makes it a tinted capsule, as in `SwapPanelBlock`. It sits 8 units under the actions, or 16 under the bars when there are no actions.
-- **Total.** `value` is the holding in dollars. Without it the card sums the asset values; `null` reads as unknown. It updates place by place.
+- **Total.** `value` is the holding in dollars. Without it the card sums the asset values; any unknown or nonfinite constituent makes the total unknown. `null` reads as unknown. It updates place by place.
 - **Units headline.** For a token with no dollar value, `units` (token units) with `value` left out or `null` takes the total's place on the assets bar, followed by `unitsSuffix` (` BLOX`) and formatted with `unitsOptions` (at most six fraction digits by default). It updates place by place, and an unknown `units` (`null`) reads as the dash. With a dollar `value` the total is shown as before.
 - **Chain count.** The chains bar shows the number of chains with a balance above zero.
 - **Actions.** Each action is `{id, onSelect}` plus optional `label`, `disabled` and `intent`. The ids `send`, `receive`, `stake` and `unstake` take a built-in translated label; any other id needs `label`. They render in the order given, full width, 8 units apart and 16 below the bars. Leave out the actions a token does not support.
@@ -862,6 +863,8 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 
 `@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
 
+Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds without a valid update and display the localized stale marker until the next update. Built-in feeds reconnect after 30 seconds of silence and report connection loss through the optional second callback, onStale. Cleanup invalidates late callbacks from replaced feeds. Controlled data freshness remains the host's responsibility. Outcome IDs are deduplicated in first-seen order.
+
 ## API and anatomy
 
 | Component | Key props and behavior |
@@ -989,6 +992,8 @@ Labeled inputs for text, search, and amounts, with visible help and validation.
 Includes `Field`, `Label`, `Input`, `TextArea`, `SearchInput`, and `TradeEntry`.
 
 Issue #14. Entry: `field`. Import platform entries from `@bloxwap/hig/react/field` or `@bloxwap/hig/native/field` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+
+Field owns its control ID, required state, and error associations; put one Input or TextArea in each Field. Child descriptions are merged with the Field description. SearchInput forwards callback-ref cleanup on detach.
 
 ## API and anatomy
 
@@ -1337,6 +1342,8 @@ Includes `Tabs`, `Accordion`, `Pagination`, `Navigation`, `Search`, `ListGroup`,
 
 Issue #17. Entry: `navigation`. Import platform entries from `@bloxwap/hig/react/navigation` or `@bloxwap/hig/native/navigation` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Uncontrolled Tabs and Select reconcile removed or disabled selections to the first enabled item. Controlled invalid selections stay empty until the host supplies a valid value. Tabs require unique values. Pagination normalizes page and total to positive integers and clamps page to total.
+
 ## API and anatomy
 
 | Component | Key props and behavior |
@@ -1606,6 +1613,8 @@ Includes `Checkbox`, `RadioGroup`, `Switch`, `SegmentedControl`, `Filter`, `Pres
 
 Issue #15. Entry: `selection`. Import platform entries from `@bloxwap/hig/react/selection` or `@bloxwap/hig/native/selection` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
+Slider requires finite ordered bounds and a positive finite step. Displayed values and callbacks are clamped to the range. Choice keys must be unique. Controlled components retain their ownership for their mounted lifetime; remount to change ownership.
+
 ## API and anatomy
 
 | Control | Key props and behavior |
@@ -1672,6 +1681,8 @@ Visible progress, notifications, and recoverable states that keep people informe
 Includes `Badge`, `Alert`, `Callout`, `Toast`, `Toaster` with `toast()`, `Progress`, `Spinner`, `Skeleton`, `EmptyState`, `Avatar`, `StatusIndicator`, and `Confetti`.
 
 Issue #18. Entry: `status`. Import platform entries from `@bloxwap/hig/react/status` or `@bloxwap/hig/native/status` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import. `Confetti` has its own entries, `@bloxwap/hig/react/confetti` and `@bloxwap/hig/native/confetti`; see [Confetti](#confetti).
+
+Progress normalizes its value and maximum consistently for drawing and accessibility. Confetti is bounded to 500 particles per burst and eight simultaneous bursts per renderer (4,000 active particles); at most eight pre-mount requests wait. Overflow requests resolve immediately without drawing.
 
 ## API and anatomy
 
@@ -2593,6 +2604,8 @@ Native Button uses HIG Text for both its label and localized busy suffix, preser
 Source: docs/foundations/platform.md
 
 # Foundation and platform rules
+
+Nested HIGProvider instances inherit omitted environment, feedback and native font settings. Explicit false values, including reducedMotion, override their parent.
 
 ## Color (#6)
 

@@ -219,3 +219,10 @@ describe('confetti on web',()=>{
   expect(mirrorConfetti({angle:60,origin:{x:0}})).toMatchObject({angle:120,origin:{x:1}});
  });
 });
+
+it('bounds simultaneous bursts and resolves overflow without allocating another run',async()=>{
+ const active=Array.from({length:8},()=>confetti({particleCount:500,ticks:20}));
+ const overflow=confetti({particleCount:500,ticks:20});expect(await settled(overflow)).toBe(true);
+ step(0);expect(painted.fills).toHaveLength(4000);
+ confetti.reset();await Promise.all(active);
+});

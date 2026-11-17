@@ -1,4 +1,5 @@
 "use client";
+import {useAsyncResult} from './async-result.js';
 import React,{useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from './provider.js';
@@ -31,7 +32,8 @@ export interface WalletAddressCoreProps {
 export function WalletAddress({address,kind,qr,qrValue,arena,size=196,onCopy,announce=true,className,style}:WalletAddressCoreProps){
  const {messages}=useHIG();const [status,setStatus]=useState('');
  const rows=addressRows(address,kind??addressKind(address)).length;
- const copy=()=>{Promise.resolve().then(onCopy).then(()=>{if(!announce)return;const text=messages.addressCopied??en.addressCopied;setStatus(notify(text,{severity:'success',id:'hig-wallet-address',dismissName:(messages.dismissNotice??en.dismissNotice)(text,messages.dismiss??en.dismiss)})?'':text);}).catch(()=>setStatus(''));};
+ const beginCopy=useAsyncResult(address);
+ const copy=()=>{const current=beginCopy();Promise.resolve().then(onCopy).then(()=>{if(!current()||!announce)return;const text=messages.addressCopied??en.addressCopied;setStatus(notify(text,{severity:'success',id:'hig-wallet-address',dismissName:(messages.dismissNotice??en.dismissNotice)(text,messages.dismiss??en.dismiss)})?'':text);}).catch(()=>{if(current())setStatus('');});};
  const body=<>
   <span className='hig-wallet-address-body'>
    <span className='hig-wallet-address-qr' role='img' aria-label={messages.qrCode??en.qrCode}>{qr??<QRCode value={qrValue??address} arena={arena} size={size} quietZone={0} background='none' color='currentColor' decorative/>}</span>

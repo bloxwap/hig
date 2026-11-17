@@ -9,13 +9,13 @@ beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventLis
 afterEach(()=>{cleanup();restoreAnimation?.();restoreAnimation=undefined;motion.remove();vi.unstubAllGlobals();vi.restoreAllMocks();});
 type MockAnimation={frames:Keyframe[];cancel:ReturnType<typeof vi.fn>;onfinish:(()=>void)|null;oncancel:(()=>void)|null};
 function dynamicEnvironment({waapi=true,observer=true}={}){
- let height=100,panelHeight=100,notify=()=>{};
+ let height=100,panelHeight=100,notify:((height?:number)=>void)=()=>{};
  const observe=vi.fn(),disconnect=vi.fn();
- if(observer)vi.stubGlobal('ResizeObserver',class{constructor(callback:ResizeObserverCallback){notify=()=>callback([],{} as ResizeObserver);}observe(...args:unknown[]){observe(...args);}disconnect(){disconnect();}});
+ if(observer)vi.stubGlobal('ResizeObserver',class{constructor(callback:ResizeObserverCallback){notify=height=>callback(height===undefined?[]:[{borderBoxSize:[{blockSize:height,inlineSize:390}]} as unknown as ResizeObserverEntry],{} as ResizeObserver);}observe(...args:unknown[]){observe(...args);}disconnect(){disconnect();}});
  vi.spyOn(HTMLElement.prototype,'getBoundingClientRect').mockImplementation(function(this:HTMLElement){const value=this.classList.contains('hig-gesture-sheet')?panelHeight:height;return{width:390,height:value,x:0,y:0,top:0,left:0,right:390,bottom:value,toJSON:()=>({})} as DOMRect;});
  const animations:MockAnimation[]=[],animate=vi.fn((frames:Keyframe[])=>{const animation:MockAnimation={frames,cancel:vi.fn(()=>animation.oncancel?.()),onfinish:null,oncancel:null};animations.push(animation);return animation as unknown as Animation;});
  if(waapi){const original=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'animate');Object.defineProperty(HTMLElement.prototype,'animate',{configurable:true,writable:true,value:animate});restoreAnimation=()=>{if(original)Object.defineProperty(HTMLElement.prototype,'animate',original);else Reflect.deleteProperty(HTMLElement.prototype,'animate');};}
- return{animations,animate,observe,disconnect,setHeight:(value:number)=>{height=value;},setPanelHeight:(value:number)=>{panelHeight=value;},resize:()=>act(()=>notify())};
+ return{animations,animate,observe,disconnect,setHeight:(value:number)=>{height=value;},setPanelHeight:(value:number)=>{panelHeight=value;},resize:(height?:number)=>act(()=>notify(height))};
 }
 
 describe('optional web gesture sheet',()=>{
@@ -71,6 +71,19 @@ describe('optional web gesture sheet',()=>{
   view.rerender(<GestureSheet open={false} onOpenChange={()=>{}} title='Review' contentRef={attach}><p>Details</p></GestureSheet>);
   await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());await waitFor(()=>expect(release.mock.calls.length).toBe(attach.mock.calls.filter(([element])=>element!==null).length));
   expect(release).toHaveBeenCalled();
+ });
+ it('uses observer border-box measurements and ignores duplicate resize notifications during a transition',()=>{
+  const env=dynamicEnvironment();
+  render(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing><p>Content</p></GestureSheet>);
+  const read=vi.mocked(HTMLElement.prototype.getBoundingClientRect);read.mockClear();
+  env.resize(220);
+  expect(read).not.toHaveBeenCalled();
+  expect(env.animations[0].frames).toEqual([{height:'100px'},{height:'220px'}]);
+  env.resize(220);
+  expect(read).not.toHaveBeenCalled();expect(env.animations).toHaveLength(1);
+  env.setPanelHeight(160);env.resize(300);
+  expect(env.animations[0].cancel).toHaveBeenCalledOnce();
+  expect(env.animations[1].frames).toEqual([{height:'160px'},{height:'300px'}]);
  });
  it('animates intrinsic grow and shrink with rapid retargeting while retaining input, focus and refs',async()=>{
   const env=dynamicEnvironment(),ref=createRef<HTMLDivElement>();

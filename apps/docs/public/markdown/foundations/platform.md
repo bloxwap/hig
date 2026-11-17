@@ -1,5 +1,7 @@
 # Foundation and platform rules
 
+Nested HIGProvider instances inherit omitted environment, feedback and native font settings. Explicit false values, including reducedMotion, override their parent.
+
 ## Color (#6)
 
 Dark is the only audited mode. Source values retain the commit-pinned monorepo authored OKLCH and brand channels; see [source reconciliation](https://bloxwap.github.io/hig/docs/guides/foundations/source-reconciliation/). Use surface/text/action/focus/buy/sell/warning roles, never infer intent from a hue. Web emits sRGB then P3 in `@supports`. RN uses explicit hex values from HIG's own tables, selected once per app by `HIGProvider colorSpace` (#93); see the native colour space table below. Android and third-party images use sRGB. `evidence/contrast.json` records all 33 approved normal-text pairings. Faint text is restricted to background/surface: faint on nested fails normal-text AA, so use muted on nested instead. Border is decorative; meaningful control edges/focus must use tested text or focus tones. **Do** use onAction on green fills; **don't** put white body text on green.
