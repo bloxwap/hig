@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.8.1 (2026-11-17)
+
+- Fix the npm lockfile to install shared icons from the published registry archive. The 0.8.0 GitHub tag is preserved; its npm publication failed before publishing. Version 0.8.1 is the npm release of the 0.8 feature set.
+- Reject local tarball resolutions in the lockfile gate so clean release runners cannot depend on untracked files.
 
 - Use the published `@bloxwap/icons` package for shared web and native UI symbols. Consumers of these components install `@bloxwap/icons@^0.1.0`; native consumers also install their Expo SDK-compatible `expo-image` version and rebuild their development client. Icons remain decorative unless explicitly labelled.
 - Add a wider, softer glow beneath the gesture sheet handle.
