@@ -31,6 +31,10 @@
     "/docs/guides/components/recipes/#validation-and-citation": {
       "to": "/docs/guides/components/blocks/#validation-and-citation",
       "note": "Recipes are called blocks after 0.5.2; the chapter moved from components/recipes to components/blocks with the same headings."
+    },
+    "/docs/guides/components/blocks/#explainerblock": {
+      "to": "/docs/guides/components/overlays/#api-and-anatomy",
+      "note": "ExplainerBlock was removed in 0.9.1. Compose its replacement with Dialog, Text and Button."
     }
   }
 }

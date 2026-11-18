@@ -33,8 +33,8 @@ export function SwingSignalCard({
         'flex w-full max-w-sm items-center gap-3 rounded-full border-2 bg-background/95 py-2 pl-4 font-[family-name:var(--font-bloxwap-sans)] text-foreground',
         closeInset ? 'pr-12' : 'pr-2',
         long
-          ? 'border-(--hig-up) shadow-[0_0_20px_color-mix(in_srgb,var(--dir-up)_25%,transparent)]'
-          : 'border-(--hig-down) shadow-[0_0_20px_color-mix(in_srgb,var(--dir-down)_25%,transparent)]',
+          ? 'border-(--hig-up) toast-glow-up-soft'
+          : 'border-(--hig-down) toast-glow-down-soft',
       )}
     >
       <SignalStrength level={level} className={long ? 'text-(--hig-up)' : 'text-(--hig-down)'} />

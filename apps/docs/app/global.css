@@ -5,7 +5,7 @@
 @source '../lib';
 @source '../src/*.tsx';
 @source '../src/toast-alternatives';
-@source '../content';
+/* MDX chapters contain prose and fenced code. Their renderers live in mdx-components.tsx. */
 @source '../mdx-components.tsx';
 @import 'fumadocs-ui/css/neutral.css';
 /* Match fumadocs-ui/css/preset.css, omitting the unused Notebook and Flux layouts. */
@@ -14,7 +14,9 @@
 @plugin '@fumadocs/tailwind/typography'; /* what fumadocs-ui/dist/tailwind/typography.js re-exports; resolves under npm and Bun layouts */
 @import 'fumadocs-ui/css/generated/docs.css';
 @import 'fumadocs-ui/css/generated/home.css';
-@import 'fumadocs-ui/css/generated/shared.css';
+/* Compile shared utilities for the MDX, navigation, and search components used here. */
+@source '../../../{node_modules,apps/docs/node_modules}/fumadocs-ui/dist/{layouts/shared,components/{dialog,sidebar,toc,ui}}/**/*.js';
+@source '../../../{node_modules,apps/docs/node_modules}/fumadocs-ui/dist/{mdx,components/{callout,card,codeblock,heading}}.js';
 @import '@bloxwap/hig/tokens/css';
 @import '@bloxwap/hig/react/css/base';
 @import '@bloxwap/hig/react/css';

@@ -1,4 +1,4 @@
-import {DocsBody,DocsDescription,DocsPage,DocsTitle,EditOnGitHub} from 'fumadocs-ui/page';
+import {DocsBody,DocsDescription,DocsPage,DocsTitle,EditOnGitHub} from 'fumadocs-ui/layouts/docs/page';
 import {notFound} from 'next/navigation';
 import {source} from '@/lib/source';
 import {getMDXComponents} from '@/mdx-components';

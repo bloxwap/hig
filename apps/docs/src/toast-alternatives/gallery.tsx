@@ -1,4 +1,5 @@
 'use client';
+import './glows.css';
 import React, {useEffect,useState} from 'react';
 import {NotificationCard, InfoCard, InfoPanel, type NotificationTone} from './notification-card';
 import SpecializedToasts from './specialized';

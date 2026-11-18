@@ -31,12 +31,10 @@ export function NotificationCard({
   /** Makes the whole pill a button; the caller owns dismissal or retry behavior. */
   onClick?: () => void;
 }) {
-  const palette = TONE_PALETTE[tone];
   const iconNode = icon !== undefined ? icon : tone === "neutral" ? <Info className="h-5 w-5" strokeWidth={2.5} /> : DEFAULT_ICON[tone];
   const baseClass = cn(
     "pointer-events-auto flex w-fit max-w-[min(92vw,28rem)] items-center gap-2.5 rounded-full border-2 bg-background/95 py-2 pl-2 pr-5",
-    palette.border,
-    palette.glow,
+    `toast-tone toast-tone-${tone}`,
     onClick && "transition-transform active:scale-[0.98] hover:bg-background"
   );
   const body = (
@@ -45,8 +43,7 @@ export function NotificationCard({
         <span
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-            palette.iconBg,
-            palette.text
+            "toast-tone-tile"
           )}
         >
           {iconNode}
@@ -73,55 +70,6 @@ export function NotificationCard({
   }
   return <div className={baseClass}>{body}</div>;
 }
-
-const TONE_PALETTE: Record<
-  NotificationTone,
-  {
-    border: string;
-    glow: string;
-    text: string;
-    /** Icon tile background for InfoCard and InfoPanel. */
-    iconBg: string;
-    /** Solid background for the primary action pill on `InfoCard`. */
-    button: string;
-  }
-> = {
-  success: {
-    border: "border-bloxwap-green",
-    glow: "shadow-[0_0_24px_color-mix(in_srgb,var(--bloxwap-green)_55%,transparent)]",
-    text: "text-bloxwap-green",
-    iconBg: "bg-bloxwap-green/15",
-    button: "bg-bloxwap-green text-on-brand hover:bg-bloxwap-green/90",
-  },
-  error: {
-    border: "border-bloxwap-pink",
-    glow: "shadow-[0_0_24px_color-mix(in_srgb,var(--bloxwap-pink)_55%,transparent)]",
-    text: "text-bloxwap-pink",
-    iconBg: "bg-bloxwap-pink/15",
-    button: "bg-bloxwap-pink text-on-brand hover:bg-bloxwap-pink/90",
-  },
-  warning: {
-    border: "border-bloxwap-yellow",
-    glow: "shadow-[0_0_24px_color-mix(in_srgb,var(--bloxwap-yellow)_55%,transparent)]",
-    text: "text-bloxwap-yellow",
-    iconBg: "bg-bloxwap-yellow/15",
-    button: "bg-bloxwap-yellow text-on-brand hover:bg-bloxwap-yellow/90",
-  },
-  info: {
-    border: "border-bloxwap-blue",
-    glow: "shadow-[0_0_24px_color-mix(in_srgb,var(--bloxwap-blue)_55%,transparent)]",
-    text: "text-bloxwap-blue",
-    iconBg: "bg-bloxwap-blue/15",
-    button: "bg-bloxwap-blue text-on-brand hover:bg-bloxwap-blue/90",
-  },
-  neutral: {
-    border: "border-border",
-    glow: "shadow-[0_0_20px_rgba(255,255,255,0.12)]",
-    text: "text-foreground",
-    iconBg: "bg-muted",
-    button: "bg-foreground text-background hover:bg-foreground/90",
-  },
-};
 
 const DEFAULT_ICON: Record<NotificationTone, ReactNode> = {
   success: <Check className="h-4 w-4" strokeWidth={3} />,
@@ -162,7 +110,6 @@ export function InfoCard({
   /** Accessible name for the close button. */
   closeLabel?: string;
 }) {
-  const palette = TONE_PALETTE[tone];
   const iconNode =
     icon !== undefined
       ? icon
@@ -174,8 +121,7 @@ export function InfoCard({
     <div
       className={cn(
         "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-        palette.iconBg,
-        palette.text,
+        "toast-tone-tile",
       )}
     >
       {iconNode}
@@ -222,8 +168,8 @@ export function InfoCard({
         stacked && "w-full",
         role === "primary"
           ? a.appearance === "badge"
-            ? cn(palette.iconBg, palette.text, "hover:brightness-110")
-            : palette.button
+            ? cn("toast-tone-tile", "hover:brightness-110")
+            : "toast-tone-button"
           :
             "border border-border bg-transparent text-foreground hover:bg-muted",
       )}
@@ -238,8 +184,7 @@ export function InfoCard({
         className={cn(
           // Outer radius = 18px control radius + 12px inset + 2px border (at the default root size).
           "pointer-events-auto flex w-full max-w-[min(92vw,28rem)] flex-col gap-3 rounded-[calc(1.875rem+2px)] border-2 bg-background/95 p-3",
-          palette.border,
-          palette.glow,
+          `toast-tone toast-tone-${tone}`,
         )}
       >
         <div className="flex items-start gap-3">
@@ -259,8 +204,7 @@ export function InfoCard({
       className={cn(
         "pointer-events-auto flex w-full max-w-[min(92vw,28rem)] items-center gap-3 border-2 bg-background/95 py-2 pl-2 pr-2.5",
         description ? "items-start rounded-2xl py-2.5" : "rounded-full",
-        palette.border,
-        palette.glow,
+        `toast-tone toast-tone-${tone}`,
       )}
     >
       {iconBlock}
@@ -290,7 +234,6 @@ export function InfoPanel({
   /** Layout overrides (margin / max-width) from the calling view. */
   className?: string;
 }) {
-  const palette = TONE_PALETTE[tone];
   const iconNode =
     icon !== undefined
       ? icon
@@ -302,8 +245,7 @@ export function InfoPanel({
       className={cn(
         // Match the 18px control radius plus padding and border.
         "pointer-events-auto flex w-full max-w-[min(92vw,28rem)] flex-col gap-3 rounded-[calc(1.875rem+2px)] border-2 bg-background/95 p-3",
-        palette.border,
-        palette.glow,
+        `toast-tone toast-tone-${tone}`,
         className,
       )}
     >
@@ -312,8 +254,7 @@ export function InfoPanel({
         <div
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-            palette.iconBg,
-            palette.text,
+            "toast-tone-tile",
           )}
         >
           {iconNode}

@@ -1,0 +1,27 @@
+.toast-glow-up{box-shadow:0 0 24px color-mix(in srgb,var(--dir-up) 55%,transparent)}
+.toast-glow-down{box-shadow:0 0 24px color-mix(in srgb,var(--dir-down) 55%,transparent)}
+.toast-glow-up-soft{box-shadow:0 0 20px color-mix(in srgb,var(--dir-up) 25%,transparent)}
+.toast-glow-down-soft{box-shadow:0 0 20px color-mix(in srgb,var(--dir-down) 25%,transparent)}
+.toast-tone-success { --toast-accent: var(--bloxwap-green); }
+.toast-tone-error { --toast-accent: var(--bloxwap-pink); }
+.toast-tone-warning { --toast-accent: var(--bloxwap-yellow); }
+.toast-tone-info { --toast-accent: var(--bloxwap-blue); }
+.toast-tone {
+ border-color: var(--toast-accent);
+ box-shadow: 0 0 24px color-mix(in srgb, var(--toast-accent) 55%, transparent);
+}
+.toast-tone-tile {
+ color: var(--toast-accent);
+ background-color: color-mix(in oklab, var(--toast-accent) 15%, transparent);
+}
+.toast-tone-button { background-color: var(--toast-accent); color: var(--color-on-brand, #111); }
+@media (hover: hover) {
+ .toast-tone-button:hover { background-color: color-mix(in oklab, var(--toast-accent) 90%, transparent); }
+}
+.toast-tone-neutral {
+ --toast-accent: var(--color-fd-foreground);
+ border-color: var(--color-fd-border);
+ box-shadow: 0 0 20px rgb(255 255 255 / 12%);
+}
+.toast-tone-neutral .toast-tone-tile { background-color: var(--color-fd-muted); }
+.toast-tone-neutral .toast-tone-button { color: var(--color-fd-background); }
