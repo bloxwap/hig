@@ -31,7 +31,12 @@ for(const renderer of ['react','native'].filter(renderer=>!process.env.HIG_SEGME
     await indicator.waitFor();
     const aligned=async control=>{
      const box=await control.boundingBox();assert.ok(box);
-     await page.waitForFunction(({selector,box})=>{const pill=document.querySelector(selector)?.getBoundingClientRect();return pill&&Math.abs(pill.x-box.x)<1&&Math.abs(pill.width-box.width)<1&&Math.abs(pill.height-box.height)<1;},{selector,box});
+     // Web radios fill the touch target. The visible pill sits inside its block padding.
+     if(renderer==='react'){
+      const inset=await control.evaluate(input=>parseFloat(getComputedStyle(input.parentElement).paddingBlockStart));
+      box.y+=inset;box.height-=2*inset;
+     }
+     await page.waitForFunction(({selector,box})=>{const pill=document.querySelector(selector)?.getBoundingClientRect();return pill&&Math.abs(pill.x-box.x)<1&&Math.abs(pill.y-box.y)<1&&Math.abs(pill.width-box.width)<1&&Math.abs(pill.height-box.height)<1;},{selector,box});
     };
     await aligned(all);
     const start=await indicator.boundingBox(),destination=await trend.boundingBox();
