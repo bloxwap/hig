@@ -1,5 +1,5 @@
 import { Check } from '@bloxwap/icons/native/check';
-import {filterLanguages as matchLanguages} from '@bloxwap/hig/contracts';
+import {filterLanguages as matchLanguages} from '@bloxwap/hig/contracts/language-search';
 import React,{useEffect,useMemo,useState} from 'react';
 import {Image,Pressable,View,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {ListWithIntro,PickerFlatList,usePickerWindow} from './picker-flat-list.js';

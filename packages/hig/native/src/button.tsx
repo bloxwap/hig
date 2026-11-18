@@ -1,6 +1,6 @@
 import React,{forwardRef,useId,useRef} from 'react';
 import {ActivityIndicator,Pressable,Linking,Platform,View,processColor,type PressableProps} from 'react-native';
-import type {Intent} from '@bloxwap/hig/contracts';
+import type {Intent} from '@bloxwap/hig/contracts/environment';
 import {StaticLoadingRing} from './static-loading-ring.js';
 import {useBusySpinner} from './use-busy-spinner.js';
 import * as en from '@bloxwap/hig/contracts/messages';

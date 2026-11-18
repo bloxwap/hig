@@ -1,6 +1,6 @@
 import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {formatCountdown} from '@bloxwap/hig/contracts';
+import {formatCountdown} from '@bloxwap/hig/contracts/format';
 import {Image,Pressable,View,VirtualizedList,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';

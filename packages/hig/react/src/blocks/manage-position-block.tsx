@@ -1,6 +1,6 @@
 "use client";
 import React,{useId,useState} from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {figureProps,type Figure} from '../figure.js';
 import {Badge} from '../status.js';

@@ -4,7 +4,7 @@ import { TrendingDown } from '@bloxwap/icons/react/trending-down';
 import { TrendingUp } from '@bloxwap/icons/react/trending-up';
 import {RowWindow} from '../row-window.js';
 import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
-import {formatCountdown} from '@bloxwap/hig/contracts';
+import {formatCountdown} from '@bloxwap/hig/contracts/format';
 import {PressDecoration,useHIG,useMessages} from '../provider.js';
 import {SearchInput} from '../field.js';
 import {Filter,SegmentedControl} from '../selection.js';

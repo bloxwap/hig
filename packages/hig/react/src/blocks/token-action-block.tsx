@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import * as en from '@bloxwap/hig/contracts/messages';
 import type {HIGMessages} from '@bloxwap/hig/contracts/messages';
 import {useHIG,useNumberLocale} from '../provider.js';

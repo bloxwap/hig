@@ -1,8 +1,8 @@
 "use client";
 import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
-import {assertUniqueKeys,paginationValue} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys,paginationValue} from '@bloxwap/hig/contracts/invariants';
 import React,{useEffect,useId,useLayoutEffect,useRef} from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useButtonEnvironment,useControllable,useLocale,useLayoutDirection,useMessageOverrides} from './provider.js';
 import {Button,Link} from './button.js';

@@ -1,6 +1,6 @@
 import {usePickerWindow} from './picker-flat-list.js';
 import {memoizedRenderer} from './flat-list-options.js';
-import {assertUniqueKeys,paginationValue} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys,paginationValue} from '@bloxwap/hig/contracts/invariants';
 import React,{useEffect,useRef,useState} from 'react';
 import {Animated,Easing,FlatList,Platform,Pressable,View,useWindowDimensions} from 'react-native';
 import {tokens} from '@bloxwap/hig/tokens';

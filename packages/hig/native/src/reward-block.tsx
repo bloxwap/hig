@@ -1,5 +1,5 @@
 import React from 'react';
-import {formatCountdown,watchCountdown} from '@bloxwap/hig/contracts';
+import {formatCountdown,watchCountdown} from '@bloxwap/hig/contracts/format';
 import {Image,Pressable,View,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
 import {withAlpha} from '@bloxwap/hig/tokens';

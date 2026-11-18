@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Give every native block its own entry. `SwapBlock`, `SwapKeypad`, `SwapCapsule`, `SwapAmountCard`, `SwapPill`, `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` were reachable only through `@bloxwap/hig/native/blocks`, which makes Metro ship all 85 files of every block. They now also come from `@bloxwap/hig/native/swap-block`, `native/swap-parts`, `native/swap-amount-card`, `native/market-row`, `native/trade-entry`, `native/install-command` and `native/marketing-hero`. The aggregate entry is unchanged. `node codemods/native-blocks.mjs` moves a host's named imports from the aggregate to these entries.
+- Ship less with every component on bundlers that keep whole files (Metro, development builds). Providers and controls import the contract module they need instead of the `@bloxwap/hig/contracts` index, so a single Button reaches 43 KB of HIG files instead of 65 KB on web and 57 KB instead of 79 KB on native. The modules are public: `@bloxwap/hig/contracts/environment`, `contracts/format`, `contracts/decimal`, `contracts/invariants`, `contracts/picker-search`, `contracts/language-search` and `contracts/rank-picker-tokens`. `@bloxwap/hig/contracts` still exports all of them.
+- Budget what a bundler without unused-export removal ships. `npm run quality` now sums every HIG file an entry reaches and compares it with `shipped` in `planning/budgets.json`, and fails when a renderer imports the contracts index.
+
 ## 0.9.2
 
 - Improve React and React Native rendering performance for animated readouts, charts, lists, and pickers.

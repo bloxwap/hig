@@ -1,7 +1,7 @@
 "use client";
 import { Check } from '@bloxwap/icons/react/check';
 import {RowWindow} from '../row-window.js';
-import {filterLanguages as matchLanguages} from '@bloxwap/hig/contracts';
+import {filterLanguages as matchLanguages} from '@bloxwap/hig/contracts/language-search';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useMessageOverrides} from '../provider.js';

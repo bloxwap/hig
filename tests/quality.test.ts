@@ -4,7 +4,7 @@ import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {join,resolve} from 'node:path';
 // @ts-expect-error Executable JavaScript gate tested through its public functions.
-import {checkExports,assertBudget,checkPlatformImports,checkChartBoundary} from '../scripts/quality.mjs';
+import {checkExports,assertBudget,checkPlatformImports,checkChartBoundary,checkContractImports} from '../scripts/quality.mjs';
 // @ts-expect-error Executable anti-drift gate.
 import {driftViolations} from '../scripts/drift.mjs';
 it('fails invalid package exports',()=>{const directory=mkdtempSync(join(tmpdir(),'hig-invalid-export-'));writeFileSync(join(directory,'package.json'),JSON.stringify({name:'invalid',exports:{'.':'./missing.js'}}));expect(()=>checkExports(directory)).toThrow('Invalid export');});
@@ -106,4 +106,23 @@ it('keeps the previous swap block names and entry points compatible',async()=>{
   expect(entry.SwapPanelBlock).toBe(entry.SwapBlock);
   expect(entry.SwapPanel).toBe(entry.SwapBlock);
  }
+});
+it('rejects a renderer that imports the contracts index instead of the contract module it needs',()=>{
+ const fixture=(source:string)=>{const root=mkdtempSync(join(tmpdir(),'hig-contract-import-'));mkdirSync(join(root,'native/dist'),{recursive:true});writeFileSync(join(root,'native/dist/button.js'),source);return root;};
+ expect(()=>checkContractImports(fixture("import {formatNumber} from '@bloxwap/hig/contracts/format';"))).not.toThrow();
+ expect(()=>checkContractImports(fixture("import {formatNumber} from '@bloxwap/hig/contracts';"))).toThrow('imports the @bloxwap/hig/contracts index');
+ // The index itself stays whole for hosts: every module it gathers is also an entry of its own.
+ const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
+ const gathered=[...readFileSync('packages/hig/contracts/src/index.ts','utf8').matchAll(/from '\.\/([a-z-]+)\.js'/g)].map(match=>match[1]);
+ expect(gathered).toEqual(expect.arrayContaining(['environment','format','decimal','invariants','picker-search']));
+ for(const name of gathered)expect(exportsMap[`./contracts/${name}`],name).toEqual({types:`./contracts/dist/${name}.d.ts`,import:`./contracts/dist/${name}.js`,default:`./contracts/dist/${name}.js`});
+});
+it('every block the native blocks module gathers has an entry of its own, so no host needs the whole module',()=>{
+ const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
+ const source=readFileSync('packages/hig/native/src/blocks.tsx','utf8');
+ // The module only gathers: a block defined here would be reachable through it alone.
+ expect(source).not.toMatch(/^export (?:function|const) /m);
+ const gathered=[...source.matchAll(/from '\.\/([a-z-]+)\.js'/g)].map(match=>match[1]);
+ expect(gathered).toEqual(expect.arrayContaining(['swap-block','swap-parts','swap-amount-card','market-row','trade-entry','install-command','marketing-hero']));
+ for(const name of gathered)expect(exportsMap[`./native/${name}`],name).toEqual({types:`./native/dist/${name}.d.ts`,import:`./native/dist/${name}.js`,default:`./native/dist/${name}.js`});
 });

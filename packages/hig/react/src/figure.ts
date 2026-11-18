@@ -1,4 +1,4 @@
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 /**
  * A number the host supplies as a number so it updates place by place: `{value:0.53,options:{style:'currency',currency:'USD'}}`.
  * `null` reads as unknown. `formattedValue` is the host's own text for the value, drawn and read in place of Intl's, which

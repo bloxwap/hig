@@ -1,4 +1,4 @@
-import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts';
+import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts/decimal';
 import {useAsyncResult} from './async-result.js';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type StyleProp,type ViewStyle} from 'react-native';

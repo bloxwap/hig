@@ -1,5 +1,5 @@
 "use client";
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React from 'react';
 import {useControllable} from './provider.js';
 import {Button} from './button.js';

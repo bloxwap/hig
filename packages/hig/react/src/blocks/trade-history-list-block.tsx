@@ -4,7 +4,7 @@ import { ArrowUp } from '@bloxwap/icons/react/arrow-up';
 import { ChevronRight } from '@bloxwap/icons/react/chevron-right';
 import {RowWindow} from '../row-window.js';
 import React from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';

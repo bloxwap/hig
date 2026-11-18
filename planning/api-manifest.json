@@ -960,7 +960,7 @@
       },
       "useLayoutDirection": {
         "entry": "provider",
-        "signature": "export declare function useLayoutDirection(): import(\"@bloxwap/hig/contracts\").Direction;"
+        "signature": "export declare function useLayoutDirection(): import(\"@bloxwap/hig/contracts/environment\").Direction;"
       },
       "useBusyLabel": {
         "entry": "provider",
@@ -1605,23 +1605,23 @@
         "signature": "export declare function BarPnl({ entry, mark, liquidation, side, labels, title, description, priceOptions, compact, fit, surface, testID }: BarPnlProps): React.JSX.Element;"
       },
       "MarketRow": {
-        "entry": "blocks",
+        "entry": "market-row",
         "signature": "export declare const MarketRow: React.ForwardRefExoticComponent<MarketRowProps & React.RefAttributes<React.ComponentRef<typeof View>>>;"
       },
       "MarketRowProps": {
-        "entry": "blocks",
+        "entry": "market-row",
         "signature": "export type MarketRowProps = MarketRowContent & ({\n    mode?: 'action';\n    onSelect: () => void;\n    identity?: never;\n} | {\n    mode: 'presentation';\n    onSelect?: never; /** Host market identity in place of `name (symbol)`. */\n    identity?: React.ReactNode;\n});"
       },
       "TradeEntry": {
-        "entry": "blocks",
+        "entry": "trade-entry",
         "signature": "export declare function TradeEntry({ asset, amount, onAmountChange, onConfirm, busy, error, available }: TradeEntryProps): React.JSX.Element;"
       },
       "InstallCommand": {
-        "entry": "blocks",
+        "entry": "install-command",
         "signature": "export declare function InstallCommand({ command, onCopy }: {\n    command: string;\n    onCopy: () => Promise<void> | void;\n}): React.JSX.Element;"
       },
       "MarketingHero": {
-        "entry": "blocks",
+        "entry": "marketing-hero",
         "signature": "export declare function MarketingHero({ title, description, href, cta }: {\n    title: string;\n    description: string;\n    href: string;\n    cta: string;\n}): React.JSX.Element;"
       },
       "LoginBlock": {
@@ -1977,43 +1977,43 @@
         "signature": "export interface PickerRowProps {\n    testID?: string;\n    nativeID?: string;\n    accessibilityHint?: string;\n}"
       },
       "SwapHostContext": {
-        "entry": "blocks",
+        "entry": "swap-parts",
         "signature": "export declare const SwapHostContext: React.Context<{\n    listComponent?: React.ComponentType<FlatListProps<SwapToken>>;\n    animateHeight?: boolean;\n}>;"
       },
       "SwapKeypad": {
-        "entry": "blocks",
+        "entry": "swap-parts",
         "signature": "export declare function SwapKeypad({ onKey, label, deleteLabel }: {\n    onKey: (key: string) => void;\n    label: string;\n    deleteLabel: string;\n}): React.JSX.Element;"
       },
       "SwapCapsule": {
-        "entry": "blocks",
+        "entry": "swap-parts",
         "signature": "export declare function SwapCapsule({ children, onPress, label, testID, disabled, hitSlop, ref }: {\n    children: React.ReactNode;\n    onPress: () => void;\n    label?: string;\n    testID?: string;\n    disabled?: boolean; /** Defaults to a 44dp target, as on the swap card. */\n    hitSlop?: Insets; /** Reaches the capsule, for example to move accessibility focus back to it. */\n    ref?: React.Ref<View>;\n}): React.JSX.Element;"
       },
       "SwapAmountCard": {
-        "entry": "blocks",
+        "entry": "swap-amount-card",
         "signature": "export declare function SwapAmountCard({ name, symbol, icon, chainIcon, context, actions, meta, value, amountLabel, prefix, suffix, fractionDigits, trailingDot, maximumFractionDigits, conversion, onSelect, selectLabel, style, testID }: SwapAmountCardProps): React.JSX.Element;"
       },
       "SwapPill": {
-        "entry": "blocks",
+        "entry": "swap-amount-card",
         "signature": "export declare function SwapPill({ children, onPress, disabled, hitSlop, ...props }: SwapPillProps): React.JSX.Element;"
       },
       "SwapAmountCardProps": {
-        "entry": "blocks",
+        "entry": "swap-amount-card",
         "signature": "export interface SwapAmountCardProps {\n    /** Asset name, drawn in the slot. */\n    name: string;\n    /** Asset symbol; its first letters stand in when there is no `icon`. */\n    symbol: string;\n    /** Asset artwork: an image URL, or an element the host draws. */\n    icon?: SwapArtwork;\n    /** Chain or venue artwork, stacked above the asset. */\n    chainIcon?: string;\n    /** Line above the name: the chain, venue or account the amount comes from. A string is drawn small and muted. */\n    context?: React.ReactNode;\n    /** Capsule actions on the trailing edge, such as Max. Use `SwapPill`. They stay their own targets. */\n    actions?: React.ReactNode;\n    /** Supporting line under the actions, such as the available balance. A string is drawn small and muted; a node, such as a live figure, as given. */\n    meta?: React.ReactNode;\n    /** The entered amount. */\n    value: number;\n    /** Accessible name of the amount: From amount. */\n    amountLabel: string;\n    /** Text before the amount, such as a currency sign. */\n    prefix?: string;\n    /** Text after the amount, such as a percent sign. */\n    suffix?: string;\n    /** Decimal places typed so far, so `1.50` keeps its zero. */\n    fractionDigits?: number;\n    /** Set while the entry ends with a decimal point that has no digits after it yet. */\n    trailingDot?: boolean;\n    /** Most decimal places the amount can show. Defaults to 8. */\n    maximumFractionDigits?: number;\n    /** Capsule under the amount, such as the converted value. Use `SwapPill`. */\n    conversion?: React.ReactNode;\n    /** Makes the slot a button that chooses the asset. Requires `selectLabel`. */\n    onSelect?: () => void;\n    /** Accessible name of the slot's button: Select token, From. */\n    selectLabel?: string;\n    style?: StyleProp<ViewStyle>;\n    /** Prefix of the test IDs: `<testID>` (the card), `-slot`, `-select`, `-name`, `-context`, `-actions`, `-meta`, `-amount` and `-conversion`. Defaults to `swap-amount-card`. */\n    testID?: string;\n}"
       },
       "SwapPillProps": {
-        "entry": "blocks",
+        "entry": "swap-amount-card",
         "signature": "export interface SwapPillProps extends Omit<PressableProps, 'children' | 'style' | 'accessibilityRole' | 'accessibilityState'> {\n    /** The pill's text, drawn small and muted, such as Max; or host nodes drawn as given, such as a live figure. */\n    children: React.ReactNode;\n    /** Called on a press. */\n    onPress?: () => void;\n    /** Dims the pill, ignores presses and reads as unavailable. */\n    disabled?: boolean;\n}"
       },
       "SwapBlock": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export declare function SwapBlock({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, submittingLabel, onReset, keypad, destination, details, note, noteTone, title, onBack, headingId, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, settings, view: viewProp, onViewChange, style }: SwapBlockProps): React.JSX.Element;"
       },
       "SwapPanelBlock": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export declare const SwapPanelBlock: typeof SwapBlock;"
       },
       "SwapPanel": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export declare const SwapPanel: typeof SwapBlock;"
       },
       "swapAction": {
@@ -2021,15 +2021,15 @@
         "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
       },
       "SwapBlockProps": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export interface SwapBlockProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */\n    submitting?: boolean;\n    /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */\n    submittingLabel?: string;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet, drawn as the shared `ScreenHeader` (the title centred, 17/24, in a 44dp row) like every other block. `onBack` adds Back on its leading edge. Test IDs `swap-header`, `swap-back` and `swap-title`. */\n    title?: string;\n    onBack?: () => void;\n    /** With `title`: `nativeID` of the heading, so a sheet around the panel can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
       },
       "SwapPanelBlockProps": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export type SwapPanelBlockProps = SwapBlockProps;"
       },
       "SwapPanelProps": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export type SwapPanelProps = SwapBlockProps;"
       },
       "SwapToken": {
@@ -2065,15 +2065,15 @@
         "signature": "export interface SwapFigure {\n    value: number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n    /** Host-formatted text for `value`, drawn and read in place of Intl's and still moving place by place. Never parsed back. */\n    formattedValue?: string;\n}"
       },
       "SwapReceive": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export interface SwapReceive {\n    address: string;\n    qr?: React.ReactNode; /** Host clipboard adapter. When set, the whole view copies the address. */\n    onCopy?: () => Promise<void> | void;\n}"
       },
       "SwapDestination": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export interface SwapDestination {\n    title: string;\n    /** One muted line under the title, such as the chain or a rate. */\n    subtitle?: string;\n    /** An image URL or the host's own element. Without one, `address` draws the wallet's colour disc. */\n    icon?: SwapArtwork;\n    /** A wallet address; shown shortened under the subtitle. */\n    address?: string;\n    /** Muted trailing text, such as an arrival time or a rate. */\n    detail?: string | SwapFigure;\n    /** Makes the card a button with a trailing chevron, for example to change the recipient. */\n    onPress?: () => void;\n    /** Still to be chosen: the card shows `title` / `subtitle` as a placeholder and the action stays disabled, asking for a destination. */\n    pending?: boolean;\n}"
       },
       "SwapDetail": {
-        "entry": "blocks",
+        "entry": "swap-block",
         "signature": "export interface SwapDetail {\n    label: string; /** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string; /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */\n    formattedValue?: string;\n}"
       },
       "SwapView": {
@@ -2454,7 +2454,7 @@
       },
       "useLayoutDirection": {
         "entry": "provider",
-        "signature": "export declare function useLayoutDirection(): import(\"@bloxwap/hig/contracts\").Direction;"
+        "signature": "export declare function useLayoutDirection(): import(\"@bloxwap/hig/contracts/environment\").Direction;"
       },
       "useRowEnvironment": {
         "entry": "provider",
@@ -2759,6 +2759,70 @@
       "Separator": {
         "entry": "surface",
         "signature": "export declare function Separator(): React.JSX.Element;"
+      },
+      "swapParentView": {
+        "entry": "swap-block",
+        "signature": "export declare const swapParentView: (view: SwapView) => SwapView;"
+      },
+      "DownIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function DownIcon({ color, size }: {\n    color: string;\n    size?: number;\n}): React.JSX.Element;"
+      },
+      "FlipIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function FlipIcon({ color, size }: {\n    color: string;\n    size?: number;\n}): React.JSX.Element;"
+      },
+      "MenuIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function MenuIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ResetIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function ResetIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "DeleteIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function DeleteIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "ScanIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function ScanIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "WalletIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function WalletIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "LockIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function LockIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "LeaveIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function LeaveIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
+      },
+      "TokenArt": {
+        "entry": "swap-parts",
+        "signature": "export declare function TokenArt({ uri, symbol, size, ring }: {\n    uri?: SwapArtwork;\n    symbol?: string;\n    size: number;\n    ring?: string;\n}): React.JSX.Element;"
+      },
+      "TokenIcon": {
+        "entry": "swap-parts",
+        "signature": "export declare function TokenIcon({ token, size }: {\n    token: SwapToken;\n    size?: number;\n}): React.JSX.Element;"
+      },
+      "SwapHeader": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapHeader({ title, onBack }: {\n    title: string;\n    onBack?: () => void;\n}): React.JSX.Element;"
+      },
+      "SmallChevron": {
+        "entry": "swap-parts",
+        "signature": "export declare function SmallChevron({ color, trailing }: {\n    color: string;\n    trailing?: boolean;\n}): React.JSX.Element;"
+      },
+      "SwapSubview": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapSubview({ title, onBack, testID, children }: React.PropsWithChildren<{\n    title: string;\n    onBack: () => void;\n    testID?: string;\n}>): React.JSX.Element;"
+      },
+      "SwapNumberText": {
+        "entry": "swap-parts",
+        "signature": "export declare function SwapNumberText({ template, text, value, options, formattedValue, suffix, align, testID }: {\n    template: (amount: string) => string;\n    text: string;\n    value?: number | null;\n    options?: Intl.NumberFormatOptions;\n    formattedValue?: string;\n    suffix?: string;\n    align?: 'right';\n    testID?: string;\n}): React.JSX.Element;"
       },
       "SwapSheetProps": {
         "entry": "swap-sheet",
@@ -3099,70 +3163,6 @@
       "StickyHeaderLayout": {
         "entry": "sticky-header",
         "signature": "export declare function StickyHeaderLayout({ header, children, background, scrollComponent: Scroll, testID, headerTestID, horizontalInset, bodyStyle }: StickyHeaderLayoutProps): React.JSX.Element;"
-      },
-      "swapParentView": {
-        "entry": "swap-block",
-        "signature": "export declare const swapParentView: (view: SwapView) => SwapView;"
-      },
-      "DownIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function DownIcon({ color, size }: {\n    color: string;\n    size?: number;\n}): React.JSX.Element;"
-      },
-      "FlipIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function FlipIcon({ color, size }: {\n    color: string;\n    size?: number;\n}): React.JSX.Element;"
-      },
-      "MenuIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function MenuIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "ResetIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function ResetIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "DeleteIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function DeleteIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "ScanIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function ScanIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "WalletIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function WalletIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "LockIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function LockIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "LeaveIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function LeaveIcon({ color }: {\n    color: string;\n}): React.JSX.Element;"
-      },
-      "TokenArt": {
-        "entry": "swap-parts",
-        "signature": "export declare function TokenArt({ uri, symbol, size, ring }: {\n    uri?: SwapArtwork;\n    symbol?: string;\n    size: number;\n    ring?: string;\n}): React.JSX.Element;"
-      },
-      "TokenIcon": {
-        "entry": "swap-parts",
-        "signature": "export declare function TokenIcon({ token, size }: {\n    token: SwapToken;\n    size?: number;\n}): React.JSX.Element;"
-      },
-      "SwapHeader": {
-        "entry": "swap-parts",
-        "signature": "export declare function SwapHeader({ title, onBack }: {\n    title: string;\n    onBack?: () => void;\n}): React.JSX.Element;"
-      },
-      "SmallChevron": {
-        "entry": "swap-parts",
-        "signature": "export declare function SmallChevron({ color, trailing }: {\n    color: string;\n    trailing?: boolean;\n}): React.JSX.Element;"
-      },
-      "SwapSubview": {
-        "entry": "swap-parts",
-        "signature": "export declare function SwapSubview({ title, onBack, testID, children }: React.PropsWithChildren<{\n    title: string;\n    onBack: () => void;\n    testID?: string;\n}>): React.JSX.Element;"
-      },
-      "SwapNumberText": {
-        "entry": "swap-parts",
-        "signature": "export declare function SwapNumberText({ template, text, value, options, formattedValue, suffix, align, testID }: {\n    template: (amount: string) => string;\n    text: string;\n    value?: number | null;\n    options?: Intl.NumberFormatOptions;\n    formattedValue?: string;\n    suffix?: string;\n    align?: 'right';\n    testID?: string;\n}): React.JSX.Element;"
       },
       "slippagePresets": {
         "entry": "swap-shared",
