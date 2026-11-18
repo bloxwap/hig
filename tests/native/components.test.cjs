@@ -423,7 +423,8 @@ it('keeps visible native cells stable when a page arrives and refreshes an edite
 it('uses a compact window only when offscreen row offsets are available',()=>{
  const {FlatList,Text}=require('react-native');
  const {List}=require('../../packages/hig/native/src/data');
- const {computeWindowedRenderLimits}=require('@react-native/virtualized-lists/Lists/VirtualizeUtils');
+ const resolveFromReactNative=require('node:module').createRequire(require.resolve('react-native/package.json'));
+ const {computeWindowedRenderLimits}=require(resolveFromReactNative.resolve('@react-native/virtualized-lists/Lists/VirtualizeUtils'));
  const items=Array.from({length:1000},(_,index)=>String(index));
  const props={items,keyFor:String,render:id=>React.createElement(Text,null,id)};
  const tree=mount(React.createElement(List,props));
