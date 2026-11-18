@@ -1,3 +1,4 @@
+import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React from 'react';
 import {View} from 'react-native';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -19,13 +20,14 @@ export interface ClaimRewardBlockProps {
 }
 
 export function ClaimRewardBlock({amount, symbol, walletAddress, chain, details, labels, onClaim, onCancel}: ClaimRewardBlockProps) {
+ const horizontalInset=useBlockHorizontalInset();
   const disabled = !Number.isFinite(amount) || amount <= 0 || !walletAddress.trim() || !chain.trim();
   const info: readonly {label: string; value: string; address?: boolean}[] = [
     ...(details ?? []),
     {label: labels.wallet, value: walletAddress, address: true},
     {label: labels.chain, value: chain},
   ];
-  return <Stack>
+  return <Stack style={{paddingHorizontal:horizontalInset}}>
     <ScreenHeader title={labels.title}/>
     <View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',gap:8}}>
       <AnimatedNumberReadout value={amount} options={{maximumFractionDigits:6}} style={{fontSize:44,lineHeight:50,fontWeight:'700'}}/>

@@ -9,7 +9,8 @@ import {NumberFlow} from '@bloxwap/hig/native/animated-number';
  *  (b) interrupt: one figure given a new value every animation frame for 3 s, so every change interrupts the one before.
  * It logs `[perf] number-flow start`, one line per scenario and `[perf] number-flow done`. A scenario's line carries the frames
  * the JS thread got (requestAnimationFrame) and the frames the UI thread drew (a Reanimated frame callback), with how many ran
- * longer than 1.5 frames at 60 Hz and the longest, and React's commits. Commits read 0 in a release build, where React does
+ * longer than 1.5 frames at 60 Hz and the longest, and React's commits. A fresh 40-figure board then measures
+ * its first animation independently, followed by ten steady ticks. Commits read 0 in a release build, where React does
  * not profile. The figures move whatever the OS says about reduced motion, so a run always measures motion.
  */
 const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2} as const;
@@ -32,6 +33,7 @@ function useUIFrames(){
  return useMemo(()=>({start(){frames.value=0;slow.value=0;worst.value=0;callback.setActive(true);},stop(){callback.setActive(false);return `uiFrames=${frames.value} uiSlow=${slow.value} uiWorstMs=${worst.value.toFixed(1)}`;}}),[callback,frames,slow,worst]);
 }
 export default function NumberFlowPerf({onDone}:{onDone?:()=>void}){
+ const [boardKey,setBoardKey]=useState(0);
  const [values,setValues]=useState<readonly number[]>(()=>starts(40)),commits=useRef(0),ui=useUIFrames(),done=useRef(onDone);done.current=onDone;
  useEffect(()=>{
   // Unmounting stops the run at its next step.
@@ -55,12 +57,38 @@ export default function NumberFlowPerf({onDone}:{onDone?:()=>void}){
    if(!mounted.current)return;
    console.log(`[perf] number-flow interrupt figures=1 updates=${updates} commits=${commits.current} ${gaps(stamps)} ${ui.stop()}`);
    await wait(1500);if(!mounted.current)return;
+   // The first change creates digit strips. Isolate it from subsequent changes on the same board.
+   board=starts(40);setBoardKey(1);setValues(board);
+   await wait(800);if(!mounted.current)return;
+   const phaseRandom=random(20260117);
+   for(const [phase,count] of [['first-tick',1],['steady',10]] as const){
+    if(!mounted.current)return;
+    ui.start();
+    const phaseStamps=[await frame()];
+    if(!mounted.current){ui.stop();return;}
+    let frameId=0;
+    const sample=(time:number)=>{if(mounted.current){phaseStamps.push(time);frameId=requestAnimationFrame(sample);}};
+    frameId=requestAnimationFrame(sample);
+    const start=Date.now();
+    for(let tick=0;tick<count&&mounted.current;tick++){
+     if(tick)await wait(Math.max(0,start+tick*100-Date.now()));
+     if(!mounted.current)break;
+     board=board.map((v,index)=>v+(phaseRandom()*2-1)*formats[index%formats.length].step);
+     setValues(board);
+    }
+    // Include the full first transition and allow the last steady update to land.
+    await wait(Math.max(0,start+(count-1)*100+500-Date.now()));
+    cancelAnimationFrame(frameId);
+    const uiMetrics=ui.stop();
+    if(!mounted.current)return;
+    console.log(`[perf] number-flow ${phase} figures=40 ticks=${count} ${gaps(phaseStamps)} ${uiMetrics}`);
+   }
    console.log('[perf] number-flow done');done.current?.();
   };
   void run();
   return()=>{mounted.current=false;};
  },[ui]);
  return <HIGProvider reducedMotion={false}><Profiler id='number-flow' onRender={()=>{commits.current+=1;}}>
-  <View style={{flexDirection:'row',flexWrap:'wrap',columnGap:16,rowGap:8,padding:16}}>{values.map((value,index)=><View key={index} style={{width:140}}><NumberFlow value={value} options={formats[index%formats.length].options}/></View>)}</View>
+  <View key={boardKey} style={{flexDirection:'row',flexWrap:'wrap',columnGap:16,rowGap:8,padding:16}}>{values.map((value,index)=><View key={index} style={{width:140}}><NumberFlow value={value} options={formats[index%formats.length].options}/></View>)}</View>
  </Profiler></HIGProvider>;
 }

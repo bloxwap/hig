@@ -8,7 +8,7 @@ import {buildOrder,entryGraph,higEntries,orderViolations} from '../scripts/build
 
 const tsconfigDirs=readdirSync('packages/hig',{withFileTypes:true}).filter(d=>d.isDirectory()&&readdirSync(join('packages/hig',d.name)).includes('tsconfig.json')).map(d=>d.name).sort();
 // Copies packages/hig sources (no dist) into a scratch root that higEntries/entryGraph can scan.
-const scratch=()=>{const root=mkdtempSync(join(tmpdir(),'hig-build-order-'));cpSync('packages/hig',join(root,'packages/hig'),{recursive:true,filter:src=>!/[/\\](dist|node_modules|fonts|assets)$/.test(src)});return root;};
+const scratch=()=>{const root=mkdtempSync(join(tmpdir(),'hig-build-order-'));cpSync('packages/hig',join(root,'packages/hig'),{recursive:true,filter:src=>!/[/\\](dist|build|node_modules|fonts|assets)$/.test(src)});return root;};
 
 it('the build covers every packages/hig/*/tsconfig.json in a valid dependency order (#182)',()=>{
   const graph=entryGraph();const order=buildOrder(graph);

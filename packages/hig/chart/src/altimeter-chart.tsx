@@ -1,6 +1,6 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {historyPath,trailFade,visibleFrames} from './chart-renderer.js';
+import {appendLiveTail,beginTrail,fillTrail,historyPath,visibleFrames} from './chart-renderer.js';
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
@@ -97,22 +97,22 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  const trailEnd=Math.max(PAD+40,right-Math.max(100,Math.ceil(widest)+22));
  const history=historyPath(ctx,frame.ticks,frame.now,PAD,trailEnd,yFor,yFor(frame.anchor),spacing,frame.anchor);
  if(!history)return trailEnd;
- const {last,sink,path}=history;
- ctx.strokeStyle=trailFade(ctx,frame.ticks,PAD,trailEnd,frame.colors.line);ctx.lineWidth=2.5;
- // From the newest sample to the live price; level end tangents keep the tail inside both prices.
- const dx=trailEnd-last[0];
- if(dx>0)sink.bezierCurveTo(last[0]+dx/3,last[1],trailEnd-dx/3,center,trailEnd,center);else sink.lineTo(trailEnd,center);
- if(path)ctx.stroke(path);else ctx.stroke();
+ const end=trailEnd-history.dx,tip=center-history.dy;
+ ctx.lineWidth=2.5;
+ beginTrail(ctx,history,frame.ticks,PAD,trailEnd,frame.colors.line);
+ appendLiveTail(ctx,history.last,end,tip);ctx.stroke();
  if(usable(frame.breakEvenPrice)){
   const baseline=yFor(frame.breakEvenPrice);
   if(baseline!==center){
    const bottom=Math.max(0,Math.min(height,baseline));
-   const shade=ctx.createLinearGradient(0,center,0,bottom);
+   const shade=ctx.createLinearGradient(0,tip,0,bottom-history.dy);
    shade.addColorStop(0,frame.colors.line);shade.addColorStop(1,transparent(frame.colors.line));
-   sink.lineTo(trailEnd,baseline);sink.lineTo(history.first,baseline);sink.closePath();
-   ctx.fillStyle=shade;ctx.globalAlpha=.5;if(path){ctx.save();ctx.beginPath();ctx.rect(PAD,0,trailEnd-PAD,height);ctx.clip();ctx.fill(path);ctx.restore();}else ctx.fill();ctx.globalAlpha=1;
+   ctx.fillStyle=shade;ctx.globalAlpha=.5;
+   fillTrail(ctx,history,end,tip,baseline-history.dy,frame.breakEvenPrice,height);
+   ctx.globalAlpha=1;
   }
  }
+ if(history.cached)ctx.restore();
  return trailEnd;
 }
 

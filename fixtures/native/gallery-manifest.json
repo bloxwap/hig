@@ -207,7 +207,8 @@
     {
       "name": "GestureSheet",
       "states": [
-        "default"
+        "default",
+        "scrollable"
       ],
       "support": "renderer"
     },

@@ -46,6 +46,7 @@ it('marks the status with a dot on the avatar: warning by default, another tone 
 });
 it('shows the name as the heading with an edit control only when the host can rename',()=>{
  let view=mount();const name=host(view,'profile-name');
+ expect(text(host(view,'profile-title'))).toBe('Profile');
  expect(text(name)).toBe('5459····6263');expect(name.props.accessibilityRole).toBe('header');expect(name.props.numberOfLines).toBe(1);expect(flat(name)).toMatchObject({fontSize:28,lineHeight:34,fontWeight:'700',color:colors.text});
  expect(has(view,'profile-edit')).toBe(false);
  const edit=jest.fn();view=mount({onEditName:edit});expect(button(view,'profile-edit').props.accessibilityLabel).toBe('Edit name');expect(flat(host(view,'profile-edit'))).toMatchObject({width:44,height:44});

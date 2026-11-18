@@ -28,18 +28,19 @@ export interface DialogProps {
 }
 export interface AlertDialogProps extends Omit<DialogProps,'closeLabel'> {/** Decline button text and accessible name; defaults to HIGProvider `messages.cancel`. */cancelLabel?:string}
 function DialogFrame({open,onOpenChange,title,description,trigger,children,closeLabel,titleHidden,descriptionHidden,contentProps,contentRef,closeButton,alert=false}:DialogProps&{alert?:boolean}){
- const {messages,direction,locale,density}=useHIG();
+ const {messages,direction,locale,density,reducedMotion}=useHIG();
  const themeStyle=useThemeStyle();
  // JavaScript callers receive the same ownership guarantees as typed callers. Copy first;
  // a host may share or freeze its props object across several modal instances.
  const safeContent=Object.fromEntries(Object.entries(contentProps??{}).filter(([key])=>!OWNED_CONTENT_PROPS.has(key))) as DialogContentProps;
  const {className,onPointerDownOutside,style,...content}=safeContent;
+ const modalMotion=className?.split(/\s+/).includes('hig-app-modal')?(reducedMotion?'reduced':'full'):undefined;
  return <Modal.Root open={open} onOpenChange={onOpenChange}>
   {trigger&&<Modal.Trigger asChild>{trigger}</Modal.Trigger>}
   <Modal.Portal>
-   <Modal.Overlay className='hig-backdrop'/>
+   <Modal.Overlay className='hig-backdrop' data-modal-motion={modalMotion}/>
    <Modal.Content {...content} {...(!description?{'aria-describedby':undefined}:{})}
-    ref={contentRef} role={alert?'alertdialog':'dialog'}
+    ref={contentRef} data-modal-motion={modalMotion} role={alert?'alertdialog':'dialog'}
     className={['hig-dialog',className].filter(Boolean).join(' ')} dir={direction} lang={locale} data-hig-density={density} style={{...themeStyle,...style}}
     onPointerDownOutside={event=>{onPointerDownOutside?.(event);if(alert)event.preventDefault();}}>
     <Modal.Title className={titleHidden?'hig-sr-only':'hig-dialog-title'}>{title}</Modal.Title>

@@ -107,9 +107,9 @@ it('takes switch rows and live figures inside the groups',()=>{
 it('splits the header out for a host scroller that pins it, stacking exactly as the whole block',()=>{
  const {PositionBlockHeader}=require('../../packages/hig/native/src/position-block');
  expect(blocks.PositionBlockHeader).toBe(PositionBlockHeader);
- let view=mount({header:false,onClose:()=>{}});expect(has(view,'position-header')).toBe(false);expect(flat(view.findAll(node=>typeof node.type==='string')[0])).toMatchObject({padding:16,paddingTop:0});
+ let view=mount({header:false,onClose:()=>{}});expect(has(view,'position-header')).toBe(false);expect(flat(view.findAll(node=>typeof node.type==='string')[0])).toMatchObject({paddingHorizontal:8,paddingBottom:16,paddingTop:0});
  const close=jest.fn();act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(PositionBlockHeader,{title:'Position',onClose:close,headingId:'position-heading',testID:'pinned',style:{backgroundColor:'#000'}})));});
- view=root.root;expect(flat(host(view,'pinned'))).toMatchObject({paddingTop:16,paddingHorizontal:16,backgroundColor:'#000'});expect(text(host(view,'position-title'))).toBe('Position');expect(host(view,'position-title').props.nativeID).toBe('position-heading');
+ view=root.root;expect(flat(host(view,'pinned'))).toMatchObject({paddingTop:16,paddingHorizontal:8,backgroundColor:'#000'});expect(text(host(view,'position-title'))).toBe('Position');expect(host(view,'position-title').props.nativeID).toBe('position-heading');
  act(()=>{all(view,'position-close').find(node=>node.props.onPress).props.onPress({});});expect(close).toHaveBeenCalledTimes(1);
- view=mount({headingId:'whole'});expect(host(view,'position-title').props.nativeID).toBe('whole');expect(flat(view.findAll(node=>typeof node.type==='string')[0])).toEqual({padding:16});
+ view=mount({headingId:'whole'});expect(host(view,'position-title').props.nativeID).toBe('whole');expect(flat(view.findAll(node=>typeof node.type==='string')[0])).toEqual({paddingHorizontal:8,paddingBottom:16,paddingTop:16});
 });

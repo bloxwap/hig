@@ -164,3 +164,16 @@ it('draws a host-text amount read with a text caption, a node caption that reads
  const slot=host(view,'reward-amount');expect(slot.props.accessible).toBeUndefined();expect(has(host(view,'reward-figure'),'live')).toBe(true);expect(text(host(view,'reward-caption'))).toBe('so far');
  view=mount({promo:{eyebrow:'Soon',headline:'Draws open Monday.'}});expect(has(view,'reward-amount')).toBe(false);
 });
+
+it('rolls the drawing clock to expiry while showing the viewer’s streak multiplier',()=>{
+ jest.useFakeTimers();
+ try{
+  const drawing={at:Date.now()+1500,label:'Prize drawing in',endedLabel:'Drawing time reached'};
+  const view=mount({promo:{eyebrow:'Sweepstakes',drawing,streak:{label:'Current streak',count:{value:7,suffix:' days'},rewardLabel:'Entry multiplier',reward:{value:2,suffix:'×'}}}});
+  expect(text(view)).toContain('Entry multiplier');
+  const timer=()=>view.findByType(require('../../packages/hig/native/src/animated-number').NumberFlow);
+  expect(timer().props.formattedValue).toBe('0:00:02');
+  act(()=>jest.advanceTimersByTime(500));expect(timer().props.value).toBe(1);
+  act(()=>jest.advanceTimersByTime(1000));expect(text(view)).toContain(drawing.endedLabel);
+ }finally{jest.useRealTimers();}
+});

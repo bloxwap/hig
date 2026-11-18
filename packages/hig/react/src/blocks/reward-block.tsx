@@ -1,12 +1,12 @@
 "use client";
 import { CircleCheck } from '@bloxwap/icons/react/circle-check';
 import React from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber,formatCountdown,watchCountdown} from '@bloxwap/hig/contracts';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {figureProps,type Figure} from '../figure.js';
 import {SegmentedControl} from '../selection.js';
 import {Button} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {AnimatedNumberReadout,NumberFlow} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapIcon,SwapNumber} from './swap/shared.js';
@@ -16,6 +16,10 @@ export type RewardLink={label:string;onSelect:()=>void;href?:undefined;target?:u
 export interface RewardPromo {
  /** The small capitals line: Season 01. */
  eyebrow:string;
+ /** Viewer streak and its earned reward. The host supplies the current points or multiplier. */
+ streak?:{label:string;count:Figure;rewardLabel:string;reward:Figure};
+ /** Prize drawing deadline in epoch milliseconds, with host text for the running and finished states. */
+ drawing?:{at:number;label:string;endedLabel:string};
  /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */
  rules?:RewardLink;
  /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */
@@ -101,6 +105,19 @@ export interface RewardBlockProps extends Omit<React.HTMLAttributes<HTMLElement>
  /** Set false to leave the header out, when the host pins its own `ScreenHeader` above the block. */
  header?:boolean;
 }
+function DrawingCountdown({drawing}:{drawing:NonNullable<RewardPromo['drawing']>}){
+ const locale=useNumberLocale();
+ const [seconds,setSeconds]=React.useState<number|null>(null);
+ React.useEffect(()=>watchCountdown(drawing.at,setSeconds),[drawing.at]);
+ const clock=formatCountdown(seconds==null?NaN:seconds*1000,locale);
+ return <div>
+  <dt>{drawing.label}</dt>
+  <dd>{seconds===0?drawing.endedLabel:<span role="timer">
+   <span className="hig-sr-only">{clock.spoken}</span>
+   <span aria-hidden="true"><NumberFlow value={seconds} formattedValue={clock.visible} animateFormatted trend={-1}/></span>
+  </span>}</dd>
+ </div>;
+}
 const wholeDollars={style:'currency',currency:'USD',maximumFractionDigits:0} as const,whole={maximumFractionDigits:0} as const;
 const noEntries:readonly RewardEntry[]=[];
 const skeletons=[0,1,2,3,4];
@@ -140,6 +157,13 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    {caption!=null&&caption!==false&&caption!==''&&(typeof caption==='string'||typeof caption==='number'?<p className='hig-reward-caption hig-number'>{caption}</p>:<div className='hig-reward-caption hig-number'>{caption}</div>)}
    {promo.goal!==undefined&&<div className='hig-reward-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>}
    {(promo.headline||promo.description)&&<p className='hig-reward-summary'>{promo.headline&&<strong>{promo.headline}</strong>}{promo.headline&&promo.description?' ':null}{promo.description}</p>}
+   {(promo.streak||promo.drawing)&&<dl className="hig-reward-streak">
+    {promo.streak&&<>
+    <div><dt>{promo.streak.label}</dt><dd><AnimatedNumberReadout {...figureProps(promo.streak.count)}/></dd></div>
+    <div className="hig-reward-bonus"><dt>{promo.streak.rewardLabel}</dt><dd><AnimatedNumberReadout {...figureProps(promo.streak.reward)}/></dd></div>
+    </>}
+    {promo.drawing&&<DrawingCountdown key={promo.drawing.at} drawing={promo.drawing}/>}
+   </dl>}
    {promo.action&&<Onward link={promo.action} className='hig-reward-action'><span>{promo.action.label}</span><SwapIcon name='chevron' size={16}/></Onward>}
   </section>}
   {tabs&&<SegmentedControl label={tabs.label} options={tabs.options} value={tabs.value} onValueChange={tabs.onValueChange}/>}

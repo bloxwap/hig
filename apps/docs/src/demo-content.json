@@ -399,7 +399,8 @@
       "family": "overlays",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "scrollable"
       ]
     },
     {

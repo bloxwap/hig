@@ -1,3 +1,4 @@
+import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React from 'react';
 import {View,type ScrollViewProps,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
@@ -100,8 +101,9 @@ function HeaderRow({title,onClose,onBack,headerAction,headingId,backProps,closeP
 }
 /** The PositionBlock header on its own: put it in a scroller's sticky header and render `PositionBlock` with `header={false}` under it. It carries the block's top and side padding. */
 export function PositionBlockHeader({style,testID,scrolled,stickyHeaderBackground,...props}:PositionBlockHeaderProps){
+ const horizontalInset=useBlockHorizontalInset();
  const colors=useColors();
- return <View testID={testID} style={[{paddingTop:16,paddingHorizontal:16},scrolled===undefined?undefined:stickyHeaderFill(scrolled,stickyHeaderBackground??colors.background),style]}><HeaderRow {...props}/></View>;
+ return <View testID={testID} style={[{paddingTop:16,paddingHorizontal:horizontalInset},scrolled===undefined?undefined:stickyHeaderFill(scrolled,stickyHeaderBackground??colors.background),style]}><HeaderRow {...props}/></View>;
 }
 function Track({checked,testID}:{checked:boolean;testID?:string}){
  const colors=useColors(),fills=useFills();
@@ -109,6 +111,7 @@ function Track({checked,testID}:{checked:boolean;testID?:string}){
 }
 /** The position being opened or edited as a screen: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,headingId,header=true,stickyHeader,stickyHeaderBackground,scrollComponent,backProps,closeProps,testID}:PositionBlockProps){
+ const horizontalInset=useBlockHorizontalInset();
  const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
  const figure={fontSize:16,lineHeight:24,fontWeight:'500'} as const;
  const shown=groups.filter(group=>group.length>0);
@@ -163,8 +166,8 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
    {shown.map((group,index)=><ListGroup key={index} testID={`position-group-${index}`}>{group.map(row)}</ListGroup>)}
   </View>:null}
  </>;
- if(header&&stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='position-sticky-header' header={headerRow} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{content}</StickyHeaderLayout>;
- return <View testID={testID} style={header?{padding:16}:{padding:16,paddingTop:0}}>
+ if(header&&stickyHeader)return <StickyHeaderLayout horizontalInset={horizontalInset} testID={testID} headerTestID='position-sticky-header' header={headerRow} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{content}</StickyHeaderLayout>;
+ return <View testID={testID} style={{paddingHorizontal:horizontalInset,paddingBottom:16,paddingTop:header?16:0}}>
   {header?headerRow:null}
   {content}
  </View>;

@@ -204,6 +204,7 @@
     "LanguageBlock": "blocks",
     "AltimeterChart": "chart",
     "PositionsBlock": "blocks",
-    "ClaimRewardBlock": "blocks"
+    "ClaimRewardBlock": "blocks",
+    "BottomSheetScrollView": "@gorhom/bottom-sheet"
   }
 }

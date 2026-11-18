@@ -1,5 +1,5 @@
-import React,{memo,useEffect,useMemo,useRef,useState} from 'react';
-import {PixelRatio,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type TextStyle} from 'react-native';
+import React,{memo,useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore} from 'react';
+import {Dimensions,PixelRatio,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type TextStyle} from 'react-native';
 import Reanimated,{cancelAnimation,defineAnimation,Easing,ReduceMotion,useAnimatedStyle,useSharedValue,withTiming} from 'react-native-reanimated';
 import {numberFlowDeltas,numberFlowDigitLength,numberFlowEasingSamples,resolveNumberFlowTimings,type NumberFlowDigits,type NumberFlowTiming} from '@bloxwap/hig/contracts/number-flow';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -55,13 +55,9 @@ const clampedDuration=(duration:number)=>Number.isFinite(duration)&&duration>0?M
 const sameGlyphs=(first:readonly string[],second:readonly string[])=>first===second||(first.length===second.length&&first.every((glyph,index)=>glyph===second[index]));
 /** `styleKey` is the text style as a string: a readout builds a new style array on every render, and a reel is drawn again only when what it says changes. */
 interface DigitReelProps {digits:readonly string[];digit:number;trend:-1|0|1;duration:number;reducedMotion:boolean;width:number;height:number;style:StyleProp<TextStyle>;styleKey:string;script:TextScript;maxFontSizeMultiplier?:number}
-/**
- * One place of a sliding figure: twenty glyphs in a column behind a window one glyph high. A readout draws again for every
- * value (and whenever its parent does), and most of its places have the digit they had, so a reel is drawn again only when its
- * digit, its motion or its face changes. The trend alone does not count: it only matters to a digit that changed.
- */
-const DigitReel=memo(function DigitReel({digits,digit,trend,duration,reducedMotion,width,height,style,styleKey,script,maxFontSizeMultiplier}:DigitReelProps){
- const position=useSharedValue(digit),previousDigit=useRef(digit);
+/** The rolling column starts on the last stationary digit, including on its first turn. */
+function SlideStrip({digits,digit,trend,duration,reducedMotion,width,height,style,styleKey,script,maxFontSizeMultiplier,from}:DigitReelProps&{from:number}){
+ const position=useSharedValue(from),previousDigit=useRef(from);
  const animatedStyle=useAnimatedStyle(()=>{'worklet';return {transform:[{translateY:-position.value*height}]};},[height]);
  useEffect(()=>{
   const motionDuration=clampedDuration(duration);
@@ -82,7 +78,20 @@ const DigitReel=memo(function DigitReel({digits,digit,trend,duration,reducedMoti
  useEffect(()=>()=>cancelAnimation(position),[position]);
  // The rows only change with the face, so they are the same elements while the reel turns: a new digit moves the column and draws no text again.
  const rows=useMemo(()=>Array.from({length:20},(_,index)=>{const glyph=digits[index%10];return <Text accessible={false} key={`${index}:${glyph}`} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[style,{width,height,textAlign:'center'}]}>{glyph}</Text>;}),[digits,width,height,styleKey,script,maxFontSizeMultiplier]);
- return <View collapsable={false} style={{width,height,overflow:'hidden'}}><Reanimated.View style={animatedStyle}>{rows}</Reanimated.View></View>;
+ return <Reanimated.View style={animatedStyle}>{rows}</Reanimated.View>;
+}
+
+/** At rest a place needs one glyph. Allocate its twenty-row column and UI-thread position on its first animated change. */
+const DigitReel=memo(function DigitReel(props:DigitReelProps){
+ const {digit,digits,width,height,style,script,maxFontSizeMultiplier}=props;
+ const [rest,setRest]=useState({digit,turning:false});
+ if(!rest.turning&&rest.digit!==digit){
+  const turning=!props.reducedMotion&&clampedDuration(props.duration)>0;
+  setRest({digit:turning?rest.digit:digit,turning});
+ }
+ return <View collapsable={false} style={{width,height,overflow:'hidden'}}>
+  {rest.turning?<SlideStrip {...props} from={rest.digit}/>:<Text accessible={false} script={script} maxFontSizeMultiplier={maxFontSizeMultiplier} style={[style,{width,height,textAlign:'center'}]}>{digits[digit]}</Text>}
+ </View>;
 },(previous,next)=>previous.digit===next.digit&&previous.duration===next.duration&&previous.reducedMotion===next.reducedMotion&&sameGlyphs(previous.digits,next.digits)&&previous.width===next.width&&previous.height===next.height&&previous.styleKey===next.styleKey&&previous.script===next.script&&previous.maxFontSizeMultiplier===next.maxFontSizeMultiplier);
 
 interface FlowStripProps {glyphs:readonly string[];length:number;from:number;digit:number;delta:number;step:number;enter:boolean;duration:number;samples:readonly number[];fade:number;fadeSamples:readonly number[];width:number;height:number;style:StyleProp<TextStyle>;styleKey:string;script:TextScript;maxFontSizeMultiplier?:number}
@@ -143,12 +152,57 @@ interface FlowTurn {step:number;delta:number;length:number}
 interface FlowStep {key:string;signature:string;canonical:string;value:number|null|undefined;places:ReturnType<typeof numberReelPlaces>;turns:ReadonlyMap<string,FlowTurn>}
 const noTurns:ReadonlyMap<string,FlowTurn>=new Map();
 
-function recordGlyph(measurements:React.MutableRefObject<{key:string;values:Map<number,{width:number;height:number}>}>,key:string,index:number,event:LayoutChangeEvent,setMetrics:React.Dispatch<React.SetStateAction<{key:string;width:number;height:number}|null>>){
- const {width,height}=event.nativeEvent.layout;if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return;
- measurements.current.values.set(index,{width,height});if(measurements.current.values.size!==10)return;
- const values=Array.from(measurements.current.values.values()),measuredWidth=Math.max(...values.map(value=>value.width)),measuredHeight=Math.max(...values.map(value=>value.height));
- if(!Number.isFinite(measuredWidth)||!Number.isFinite(measuredHeight)||measuredWidth<=0||measuredHeight<=0)return;
- setMetrics(current=>current?.key===key&&current.width===measuredWidth&&current.height===measuredHeight?current:{key,width:measuredWidth,height:measuredHeight});
+interface GlyphMetrics {key:string;width:number;height:number}
+interface GlyphProbe {key:string;record:(index:number,event:LayoutChangeEvent)=>void}
+interface GlyphReader {startMeasuring:()=>void;receive:(metrics:GlyphMetrics)=>void}
+interface GlyphGroup {
+ metrics:GlyphMetrics|null;
+ // Insertion order picks a single mounted readout to watch the native font's actual layout.
+ readers:Set<GlyphReader>;
+}
+const glyphGroups=new Map<string,GlyphGroup>();
+function subscribeFontScale(notify:()=>void){
+ const subscription=Dimensions.addEventListener('change',notify);
+ return ()=>subscription.remove();
+}
+function currentFontScale(){
+ try{return PixelRatio.getFontScale();}catch{return 0;}
+}
+function useGlyphMetrics(key:string|null){
+ const [metrics,setMetrics]=useState<GlyphMetrics|null>(null);
+ const [probe,setProbe]=useState<GlyphProbe|null>(null);
+ useLayoutEffect(()=>{
+  if(key===null){setProbe(null);return;}
+  const group:GlyphGroup=glyphGroups.get(key)??{metrics:null,readers:new Set()};
+  glyphGroups.set(key,group);
+  const startMeasuring=()=>{
+   const sizes=new Map<number,{width:number;height:number}>();
+   setProbe({key,record(index,event){
+    // Fabric can deliver a queued event after the measuring readout changed face or unmounted.
+    if(group.readers.values().next().value!==reader)return;
+    const {width,height}=event.nativeEvent.layout;
+    if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)return;
+    sizes.set(index,{width,height});
+    if(sizes.size!==10)return;
+    let widest=0,tallest=0;
+    for(const size of sizes.values()){widest=Math.max(widest,size.width);tallest=Math.max(tallest,size.height);}
+    if(group.metrics?.width===widest&&group.metrics.height===tallest)return;
+    group.metrics={key,width:widest,height:tallest};
+    for(const subscriber of group.readers)subscriber.receive(group.metrics);
+   }});
+  };
+  const reader:GlyphReader={startMeasuring,receive:setMetrics};
+  group.readers.add(reader);
+  if(group.metrics)setMetrics(group.metrics);
+  if(group.readers.size===1)startMeasuring();else setProbe(null);
+  return ()=>{
+   const wasMeasuring=group.readers.values().next().value===reader;
+   group.readers.delete(reader);
+   if(!group.readers.size)glyphGroups.delete(key);
+   else if(wasMeasuring)group.readers.values().next().value?.startMeasuring();
+  };
+ },[key]);
+ return {metrics:metrics?.key===key?metrics:null,probe:probe?.key===key?probe:null};
 }
 
 /** `AnimatedNumberReadout` with NumberFlow's motion by default: the same component and the same props, under the name the product uses for it. */
@@ -170,20 +224,21 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  const reading=useMemo(()=>formatNumberReadout(value,locale,options,formattedValue,prefix,suffix),[value,locale,optionsKey,formattedValue,prefix,suffix]),staleSuffix=stale?` ${messages.stale??en.stale}`:'';
  const previousValue=useRef(value),directionTrend=numberTrendDirection(trend,previousValue.current,value);
  useEffect(()=>{previousValue.current=value;},[value]);
- const typography=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
- if(typography.fontSize!==undefined && typography.lineHeight===undefined) typography.lineHeight=undefined;
+ const typography=useMemo(()=>{
+  const result=Object.fromEntries(Object.entries(StyleSheet.flatten(style)??{}).filter(([key])=>numberTypographyKeys.has(key))) as TextStyle;
+  if(result.fontSize!==undefined && result.lineHeight===undefined)result.lineHeight=undefined;
+  return result;
+ },[style]);
  const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
  const textStyle:StyleProp<TextStyle>=[typography,{color,fontVariant:['tabular-nums']}];
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
  const model=useMemo(()=>createNumberReelModel(value,locale,options,formattedValue,direction,animateFormatted,reading.core),[value,locale,optionsKey,formattedValue,direction,animateFormatted]);
  const safeModel=model&&safeNumberLayout(`${prefix??''}${suffix??''}${staleSuffix}`,direction)?model:null;
- let fontScale=0;try{fontScale=PixelRatio.getFontScale();}catch{/* Static until native font metrics are available. */}
- const measurementKey=JSON.stringify([safeModel?.digits,typography,fontScale,maxFontSizeMultiplier,providerMaxFontSizeMultiplier,script,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript]);
- const measurements=useRef<{key:string;values:Map<number,{width:number;height:number}>}>({key:'',values:new Map()});
- if(measurements.current.key!==measurementKey)measurements.current={key:measurementKey,values:new Map()};
- const [metrics,setMetrics]=useState<{key:string;width:number;height:number}|null>(null);
- const activeModel=safeModel&&fontScale>0&&Number.isFinite(fontScale)&&metrics?.key===measurementKey?safeModel:null;
- const activeMetrics=activeModel?metrics:null;
+ const fontScale=useSyncExternalStore(subscribeFontScale,currentFontScale,currentFontScale);
+ const glyphs=safeModel?.digits;
+ const measurementKey=useMemo(()=>JSON.stringify([glyphs,typography,fontScale,maxFontSizeMultiplier,providerMaxFontSizeMultiplier,script,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript]),[glyphs,typography,fontScale,maxFontSizeMultiplier,providerMaxFontSizeMultiplier,script,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript]);
+ const {metrics:activeMetrics,probe}=useGlyphMetrics(safeModel&&fontScale>0&&Number.isFinite(fontScale)?measurementKey:null);
+ const activeModel=activeMetrics?safeModel:null;
  const align=typography.textAlign==='right'?'right':typography.textAlign==='center'?'center':'left';
  const justifyContent=align==='right'?'flex-end':align==='center'?'center':'flex-start';
  const visualProps={accessible:false,script,maxFontSizeMultiplier};
@@ -209,7 +264,7 @@ export function AnimatedNumberReadout({value,options:requested,formattedValue,an
  }else if(flowStep)setFlowStep(null);
  const styleKey=JSON.stringify([typography,color]),partProps={style:textStyle,styleKey,script,maxFontSizeMultiplier};
  // The ten digits, measured for a face and size: drawn again when what is measured changes, not with every value.
- const probes=useMemo(()=>safeModel?<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>recordGlyph(measurements,measurementKey,index,event,setMetrics)} style={textStyle}>{glyph}</Text>)}</View>:null,[measurementKey,color]);
+ const probes=useMemo(()=>probe&&safeModel?<View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' pointerEvents='none' style={{position:'absolute',opacity:0,flexDirection:'row'}}>{safeModel.digits.map((glyph,index)=><Text {...visualProps} key={`${measurementKey}:${index}`} onLayout={event=>probe.record(index,event)} style={textStyle}>{glyph}</Text>)}</View>:null,[probe,measurementKey,color]);
  // The reels are drawn in the readout's flow, so the readout is exactly as wide as the row it draws: the composed sign, every
  // static part read from the text, each reel at the widest digit's advance and the affixes, each its own text, measured by
  // the layout pass that draws it. The reading they replace leaves the flow (it stays, invisible, for assistive technology).

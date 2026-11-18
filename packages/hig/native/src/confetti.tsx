@@ -1,15 +1,14 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState} from 'react';
-import {AccessibilityInfo,Dimensions,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
-import Reanimated,{cancelAnimation,Easing,ReduceMotion,runOnJS,useAnimatedStyle,useSharedValue,withTiming,type SharedValue} from 'react-native-reanimated';
-import {CONFETTI_FIRST_TICK,confettiBox,confettiBursts,confettiDuration,confettiOpacity,confettiPose,confettiSkipped,confettiStarWedge,createConfettiBurst,type ConfettiBurst,type ConfettiOptions,type ConfettiParticle,type ConfettiPhysics} from '@bloxwap/hig/contracts/confetti';
+import {AccessibilityInfo,Dimensions,Platform,processColor,requireNativeComponent,StyleSheet,UIManager,View,type ViewProps,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
+import Reanimated,{cancelAnimation,Easing,ReduceMotion,runOnJS,useAnimatedProps,useAnimatedStyle,useSharedValue,withTiming,type SharedValue} from 'react-native-reanimated';
+import {CONFETTI_FIRST_TICK,confettiBox,confettiBursts,confettiDuration,confettiOpacity,confettiPose,confettiSkipped,confettiStarPoints,confettiStarWedge,createConfettiBurst,type ConfettiBurst,type ConfettiOptions,type ConfettiParticle,type ConfettiPhysics} from '@bloxwap/hig/contracts/confetti';
 import {useColors,useHIG} from './provider.js';
 export {mirrorConfetti,type ConfettiOptions,type ConfettiShape} from '@bloxwap/hig/contracts/confetti';
 /**
  * HIG's own confetti on Reanimated, with no third-party confetti package. `confetti(options)` fires one burst in the most
  * recently mounted `Confetti` and resolves when it has finished; the options are canvas-confetti's. React renders once when
- * a burst starts and once when it ends. In between one clock per burst runs on the UI thread and every piece, a plain
- * view, reads its transform and opacity from it: nothing is laid out and nothing crosses to JavaScript per frame. The
- * flight itself is `@bloxwap/hig/contracts/confetti`, shared with web.
+ * a burst starts and once when it ends. One UI-thread clock drives an Android canvas or the individual animated views
+ * on other hosts. The shared contract seeds both renderers and the web canvas.
  */
 interface Host {fire:(options?:ConfettiOptions)=>Promise<void>;reset:()=>void;stop:()=>void}
 interface Run {id:number;burst:ConfettiBurst;/** The burst's origin in the layer, in points. */left:number;top:number}
@@ -40,6 +39,21 @@ const Piece=React.memo(function Piece({particle,physics,clock,left,top,color}:{p
  if(particle.shape==='star')return <Reanimated.View needsOffscreenAlphaCompositing style={[styles.piece,{width:box,height:box},motion]}>{starWedges(physics.size,color).map((wedge,fifth)=><View key={fifth} style={wedge}/>)}</Reanimated.View>;
  return <Reanimated.View style={[styles.piece,{width:box,height:box,borderRadius:particle.shape==='circle'?half:0,backgroundColor:color},motion]}/>;
 });
+interface CanvasBurstProps extends ViewProps {
+ burst:Pick<ConfettiBurst,'physics'|'particles'>&{left:number;top:number;colors:readonly number[];starPoints:typeof confettiStarPoints};
+ tick?:number;
+}
+const AndroidCanvas=Platform.OS==='android'&&UIManager.hasViewManagerConfig?.('HIGConfettiCanvas')
+ ?Reanimated.createAnimatedComponent(requireNativeComponent<CanvasBurstProps>('HIGConfettiCanvas')):null;
+
+function CanvasPieces({run,clock}:{run:Run;clock:SharedValue<number>}){
+ const burst=useMemo(()=>({
+  left:run.left,top:run.top,physics:run.burst.physics,particles:run.burst.particles,starPoints:confettiStarPoints,
+  colors:run.burst.colors.map(color=>{const argb=processColor(color);return typeof argb==='number'?argb:0;}),
+ }),[run]);
+ const animatedProps=useAnimatedProps(()=>({tick:clock.value}));
+ return AndroidCanvas&&<AndroidCanvas style={StyleSheet.absoluteFill} burst={burst} animatedProps={animatedProps}/>;
+}
 const Burst=React.memo(function Burst({run,onEnd}:{run:Run;onEnd:(id:number)=>void}){
  const {id,burst,left,top}=run,{physics,particles,colors}=burst;
  const clock=useSharedValue<number>(CONFETTI_FIRST_TICK);
@@ -53,6 +67,7 @@ const Burst=React.memo(function Burst({run,onEnd}:{run:Run;onEnd:(id:number)=>vo
   });
   return()=>cancelAnimation(clock);
  },[clock,id,onEnd,physics]);
+ if(AndroidCanvas)return <CanvasPieces run={run} clock={clock}/>;
  return <>{particles.map((particle,index)=><Piece key={index} particle={particle} physics={physics} clock={clock} left={left} top={top} color={colors[particle.color]}/>)}</>;
 });
 export interface ConfettiFire {

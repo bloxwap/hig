@@ -1,9 +1,10 @@
-import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
-import {AppState,View,type ViewProps} from 'react-native';
-import Svg,{Circle,ClipPath,Defs,G,Line,LinearGradient,Path,Rect,Stop,Text as SvgText} from 'react-native-svg';
+import React,{memo,useCallback,useEffect,useId,useMemo,useRef,useState} from 'react';
+import {AppState,PixelRatio,Platform,StyleSheet,View,type ViewProps} from 'react-native';
+import Reanimated,{useAnimatedStyle,useFrameCallback,useSharedValue} from 'react-native-reanimated';
+import Svg,{Circle,Defs,G,Line,LinearGradient,Path,Rect,Stop,Text as SvgText} from 'react-native-svg';
 import {tokens} from '@bloxwap/hig/tokens';
 import {ALTIMETER_BURST_COOLDOWN_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,
- bitcoinPrice,gridPhase,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,sparkGeometry,
+ bitcoinPrice,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,sparkGeometry,
  targetCrossings,targetLayout,tickSpacingFor,trailPoints,validTargets,
  type AltimeterFeed,type AltimeterPosition,type AltimeterTarget,type AltimeterTargetPosition,type TargetLabelInsets,type AltimeterTick} from '@bloxwap/hig/chart/altimeter-core';
 import {useColors,useHIG,useMessages,useNumberLocale} from './provider.js';
@@ -30,9 +31,19 @@ export interface AltimeterChartProps extends Omit<ViewProps,'children'> {
 const noTargets:readonly AltimeterTarget[]=[];
 const validPrice=(p:number|null|undefined):p is number=>p!=null&&Number.isFinite(p)&&p>0;
 type Burst={start:number;color?:string;direction:'up'|'down'};
-type Frame={now:number;display:number;mark:number|null;spacing:number;anchor:number;ticks:AltimeterTick[];
+type Frame={now:number;wallTime:number;display:number;mark:number|null;spacing:number;anchor:number;ticks:AltimeterTick[];
  levels:Map<string,AltimeterTargetPosition>;burst?:Burst};
-const emptyFrame:Frame={now:0,display:NaN,mark:null,spacing:1,anchor:0,ticks:[],levels:new Map()};
+const emptyFrame:Frame={now:0,wallTime:0,display:NaN,mark:null,spacing:1,anchor:0,ticks:[],levels:new Map()};
+
+
+// As in the mobile chart, a ladder slot keeps its identity as prices scroll. The
+// tick geometry depends only on the viewport; a new shelf changes the text.
+const LadderInk=memo(function LadderInk({rows,hidden,ticks,width,color,font}:{rows:readonly {y:number;label:string}[];hidden:string;ticks:string;width:number;color:string;font?:string}){
+ return <>
+  <Path d={ticks} stroke={color} strokeOpacity={.75}/>
+  {rows.map((row,i)=><SvgText key={i} x={width-32} y={row.y+4} textAnchor="end" fontFamily={font} fontSize={13} fill={color} fillOpacity={hidden[i]==='1'?0:.75}>{row.label}</SvgText>)}
+ </>;
+});
 
 function BurstEffect({burst,now,x,y,width}:{burst:Burst;now:number;x:number;y:number;width:number}){
  const progress=Math.min(1,(now-burst.start)/(tokens.motion.base*2));
@@ -56,54 +67,95 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  useEffect(()=>{const sub=AppState.addEventListener('change',state=>setActive(state==='active'));return ()=>sub.remove();},[]);
  const levels=useMemo(()=>validTargets(targets),[targets]);
  const controlled=price!==undefined,latest=useRef<number|null>(null);
+ const wake=useRef<(()=>void)|null>(null),published=useRef(emptyFrame);
  const settings=useRef({width,height,reducedMotion,degen,levels,targetLabelInsets});
- useEffect(()=>{settings.current={width,height,reducedMotion,degen,levels,targetLabelInsets};if(controlled)latest.current=validPrice(price)?price:null;},[width,height,reducedMotion,degen,levels,targetLabelInsets,controlled,price]);
+ useEffect(()=>{settings.current={width,height,reducedMotion,degen,levels,targetLabelInsets};if(controlled)latest.current=validPrice(price)?price:null;wake.current?.();},[width,height,reducedMotion,degen,levels,targetLabelInsets,controlled,price]);
  useEffect(()=>{
   if(controlled||!active){setStale(false);return;}
   let alive=true,deadline:ReturnType<typeof setTimeout>;
-  const expire=()=>{if(alive){latest.current=null;setStale(true);}};
+  const expire=()=>{if(alive){latest.current=null;setStale(true);wake.current?.();}};
   const arm=()=>{clearTimeout(deadline);deadline=setTimeout(expire,30_000);};
   latest.current=null;setStale(false);arm();
-  const stop=feed(p=>{if(alive&&validPrice(p)){latest.current=p;setStale(false);arm();}},expire);
+  const stop=feed(p=>{if(alive&&validPrice(p)){if(latest.current!==p){latest.current=p;wake.current?.();}setStale(false);arm();}},expire);
   return ()=>{alive=false;clearTimeout(deadline);stop();};
  },[controlled,controlled?undefined:feed,active]);
  const hasSize=width>0&&height>0;
  useEffect(()=>{
   if(!active||!hasSize||paused)return;
-  let raf=0,last=-Infinity,sampled=-Infinity,lastBurst=-Infinity,previous=NaN,anchor=NaN,spacing=0;
+  let raf:number|null=null,sampleTimer:ReturnType<typeof setTimeout>|undefined;
+  let last=-Infinity,sampled=-Infinity,lastBurst=-Infinity,previous=NaN,anchor=NaN,spacing=0,labelMotionUntil=0;
+  let lastSettings:typeof settings.current|undefined;
   let ticks:AltimeterTick[]=[],burst:Burst|undefined;
   const tween=priceTween(),layout=targetLayout(),crossings=targetCrossings();
+  const requestFrame=()=>{
+   clearTimeout(sampleTimer);
+   if(raf===null)raf=requestAnimationFrame(step);
+  };
   const step=(now:number)=>{
-   raf=requestAnimationFrame(step);
+   raf=null;
    const {width,height,reducedMotion,levels,degen,targetLabelInsets}=settings.current,mark=latest.current;
-   // Bound SVG commits to 30 Hz. Reduced motion needs only the price sample cadence.
-   if(now-last<(reducedMotion?ALTIMETER_SAMPLE_MS:1000/30)-1)return;
+   if(mark==null){
+    if(published.current.mark!==null){published.current=emptyFrame;setFrame(emptyFrame);}
+    ticks=[];sampled=last=-Infinity;previous=NaN;spacing=0;
+    tween.reset();crossings.reset();layout.reset();burst=undefined;
+    return; // The next feed value or controlled prop change wakes the driver.
+   }
+   // Price geometry and colliding labels update at most 30 Hz. The independent
+   // display clock handles horizontal travel between these snapshots.
+   const interval=reducedMotion?ALTIMETER_SAMPLE_MS:1000/30;
+   if(now-last<interval-1){
+    if(reducedMotion)sampleTimer=setTimeout(requestFrame,interval-(now-last));
+    else requestFrame();
+    return;
+   }
    const gap=now-last>2000;last=now;
-   if(gap||mark==null){ticks=[];sampled=-Infinity;tween.reset();crossings.reset();layout.reset();burst=undefined;}
-   const display=mark==null?NaN:tween.update(mark,now,reducedMotion||gap);
-   if(mark!=null){
-    if(!spacing||Math.abs(display-anchor)>40*spacing){spacing=tickSpacingFor(display);anchor=Math.round(display/spacing)*spacing;}
-    if(now-sampled>=ALTIMETER_SAMPLE_MS){
-     const keep=width/ALTIMETER_FLOW_PX*1000+2000;
-     if(!ticks.length)ticks=[{t:now-keep,p:display}];
-     ticks=[...ticks,{t:now,p:display}];
-     while(ticks.length>2&&ticks[1].t<now-keep)ticks.shift();
-     sampled=now;
-    }
-    const hit=crossings.update(display,levels).at(-1);
-    if(hit&&degen&&!reducedMotion&&now-lastBurst>=ALTIMETER_BURST_COOLDOWN_MS){
-     burst={start:now,direction:display>previous?'up':'down',color:hit.color};lastBurst=now;
-    }
+   if(gap){ticks=[];sampled=-Infinity;tween.reset();crossings.reset();layout.reset();burst=undefined;}
+   const display=tween.update(mark,now,reducedMotion||gap);
+   if(!spacing||Math.abs(display-anchor)>40*spacing){spacing=tickSpacingFor(display);anchor=Math.round(display/spacing)*spacing;}
+   if(now-sampled>=ALTIMETER_SAMPLE_MS){
+    const keep=width/ALTIMETER_FLOW_PX*1000+2000;
+    if(!ticks.length)ticks=[{t:now-keep,p:display}];
+    ticks=[...ticks,{t:now,p:display}];
+    while(ticks.length>2&&ticks[1].t<now-keep)ticks.shift();
+    sampled=now;
+   }
+   const hit=crossings.update(display,levels).at(-1);
+   if(hit&&degen&&!reducedMotion&&now-lastBurst>=ALTIMETER_BURST_COOLDOWN_MS){
+    burst={start:now,direction:display>previous?'up':'down',color:hit.color};lastBurst=now;
    }
    if(!degen||reducedMotion||(burst&&now-burst.start>=tokens.motion.base*2))burst=undefined;
-   previous=display;
-   setFrame({now,mark,display,anchor,spacing,ticks,levels:layout.update(levels,display,spacing,height,now,reducedMotion||gap,targetLabelInsets),burst});
+   if(!gap&&(previous!==display||lastSettings!==settings.current)&&levels.some(level=>level.label)){
+    labelMotionUntil=now+tokens.motion.base;
+   }
+   const next={now,wallTime:Date.now(),mark,display,anchor,spacing,ticks,levels:layout.update(levels,display,spacing,height,now,reducedMotion||gap,targetLabelInsets),burst};
+   published.current=next;setFrame(next);
+   previous=display;lastSettings=settings.current;
+   if(!reducedMotion&&(display!==mark||burst||now<labelMotionUntil))requestFrame();
+   else sampleTimer=setTimeout(requestFrame,Math.max(0,sampled+ALTIMETER_SAMPLE_MS-now));
   };
-  raf=requestAnimationFrame(step);
-  return ()=>cancelAnimationFrame(raf);
+  wake.current=requestFrame;
+  requestFrame();
+  return ()=>{wake.current=null;clearTimeout(sampleTimer);if(raf!==null)cancelAnimationFrame(raf);};
  },[active,hasSize,paused,controlled,controlled?undefined:feed]);
 
- const {now,display,mark,spacing,anchor,ticks}=frame,center=height/2;
+ const {now,display,mark,spacing,anchor,ticks,wallTime}=frame,center=height/2;
+ const displayTime=useSharedValue(0);
+ const android=Platform.OS==='android',pixelScale=PixelRatio.get();
+ const updateTime=useCallback(()=>{'worklet';displayTime.value=Date.now();},[displayTime]);
+ const clock=useFrameCallback(updateTime,false);
+ const scrolling=active&&hasSize&&!paused&&!reducedMotion&&mark!==null;
+ useEffect(()=>{clock.setActive(scrolling);return ()=>clock.setActive(false);},[clock,scrolling]);
+ const gridMotion=useAnimatedStyle(()=>{
+  'worklet';
+  const offset=-(displayTime.value%1000)*ALTIMETER_FLOW_PX/1000;
+  return {transform:[{translateX:reducedMotion?0:android?Math.round(offset*pixelScale)/pixelScale:offset}]};
+ });
+ const trailMotion=useAnimatedStyle(()=>{
+  'worklet';
+  const elapsed=reducedMotion?0:Math.min(ALTIMETER_SAMPLE_MS,Math.max(0,displayTime.value-wallTime));
+  const offset=-elapsed*ALTIMETER_FLOW_PX/1000;
+  return {transform:[{translateX:android?Math.round(offset*pixelScale)/pixelScale:offset}]};
+ });
  const digits=labelDecimalsFor(spacing,display);
  const optionsKey=JSON.stringify(priceOptions??{});
  const format=useMemo(()=>new Intl.NumberFormat(locale,{style:'currency',currency:'USD',minimumFractionDigits:digits,maximumFractionDigits:digits,...priceOptions}),[locale,digits,optionsKey]);
@@ -132,49 +184,82 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  const shift=history?(display-history.sample.p)/spacing*ALTIMETER_TICK_PX:0;
  const tipX=end-scroll,tipY=center-shift;
  const dx=history?(tipX-history.last[0])/3:0;
- const trail=history?`${history.commands}C${history.last[0]+dx} ${history.last[1]} ${tipX-dx} ${tipY} ${tipX} ${tipY}`:'';
+ const curve=history?`C${history.last[0]+dx} ${history.last[1]} ${tipX-dx} ${tipY} ${tipX} ${tipY}`:'';
+ const tail=history&&android?`M${history.last[0]} ${history.last[1]}${curve}`:'';
+ const trail=history&&!android?history.commands+curve:'';
+ // Continue the live end horizontally beneath its clip while the historical
+ // layer travels to the next sample. The capsule stays fixed at the true tip.
+ const projection=2+ALTIMETER_SAMPLE_MS*ALTIMETER_FLOW_PX/1000;
  const basisY=validPrice(basis)?yFor(basis):center;
  const grid=useMemo(()=>{
   const marks:string[]=[];
   for(let x=25;x<width+54;x+=50)for(let y=25;y<height+3;y+=50)marks.push(`M${x-3} ${y}h6M${x} ${y-3}v6`);
   return marks.join(' ');
  },[width,height]);
+ const centerTick=android&&validPrice(display)?Math.round((display-anchor)/spacing):0;
+ const reference=anchor+centerTick*spacing;
+ const halfRows=Math.ceil(center/ALTIMETER_TICK_PX)+1;
+ const slots=useMemo(()=>android?Array.from({length:2*halfRows+1},(_,slot)=>center+(slot-halfRows)*ALTIMETER_TICK_PX):[],[android,center,halfRows]);
+ const ladderTicks=useMemo(()=>slots.map(y=>`M10 ${y}h8M${width-18} ${y}h8`).join(' '),[slots,width]);
  const reach=(center/ALTIMETER_TICK_PX+1)*spacing;
- // Labels and Intl formatting change only when the visible tick range or its format changes.
- const low=Math.floor((display-reach-anchor)/spacing),high=Math.ceil((display+reach-anchor)/spacing);
- const ladder=useMemo(()=>Number.isFinite(low)&&Number.isFinite(high)
-  ?ladderPrices(anchor,spacing,anchor+low*spacing,anchor+high*spacing).map(price=>{
-    const y=center-(price-anchor)/spacing*ALTIMETER_TICK_PX;
-    return {price,y,label:format.format(price),ticks:`M10 ${y}h8M${width-18} ${y}h8`};
-   })
-  :[],[anchor,spacing,low,high,format,center,width]);
+ const low=android?0:Math.floor((display-reach-anchor)/spacing),high=android?0:Math.ceil((display+reach-anchor)/spacing);
+ const ladder=useMemo(()=>{
+  if(mark===null)return [];
+  if(android)return slots.map((y,slot)=>{
+   const price=anchor+(centerTick+halfRows-slot)*spacing;
+   return {price,y,label:format.format(price),ticks:undefined};
+  });
+  return ladderPrices(anchor,spacing,anchor+low*spacing,anchor+high*spacing).map(price=>{
+   const y=center-(price-anchor)/spacing*ALTIMETER_TICK_PX;
+   return {price,y,label:format.format(price),ticks:`M10 ${y}h8M${width-18} ${y}h8`};
+  });
+ },[mark===null,android,slots,anchor,centerTick,halfRows,spacing,format,low,high,center,width]);
  const targetTexts=useMemo(()=>new Map(levels.map(level=>[level.id,[level.label,format.format(level.price)].filter(Boolean).join(' ')])),[levels,format]);
  const bounds=Array.from(frame.levels.values());
- const ladderShift=validPrice(display)?(display-anchor)/spacing*ALTIMETER_TICK_PX:0;
- const id=useId().replace(/[^a-zA-Z0-9_-]/g,''),fade='trail'+id,shade='basis'+id,clip='trailClip'+id;
+ const ladderShift=validPrice(display)?(display-reference)/spacing*ALTIMETER_TICK_PX:0;
+ const hidden=android?ladder.map(row=>{
+  const y=row.y+ladderShift;
+  return bounds.some(level=>level.labelTop!=null&&y+7>level.labelTop-2&&y-7<level.labelTop+20)?'1':'0';
+ }).join(''):'';
+ const id=useId().replace(/[^a-zA-Z0-9_-]/g,''),fade='trail'+id,shade='basis'+id;
  const status=stale?messages.stale:messages.loadingChart;
  const label=[summary,mark==null?status:reading,...targetTexts.values()].join('. ');
  const burst=degen&&!reducedMotion?frame.burst:undefined;
  const shake=burst&&now-burst.start<tokens.motion.base?Math.sin((now-burst.start)/18)*3*(1-(now-burst.start)/tokens.motion.base):0;
  return <View {...view}><Text>{summary}</Text>
   <View accessible accessibilityLabel={label} accessibilityRole="image" onLayout={e=>setWidth(e.nativeEvent.layout.width)}
-   style={{height,overflow:'hidden',borderRadius:tokens.radius.xl,backgroundColor:colors.background}}>
-   {width>0&&<Svg width={width} height={height} accessible={false}>
-    <Defs>
-     <ClipPath id={clip}><Path d={`M18 0H${Math.max(18,end+2)}V${height}H18Z`}/></ClipPath>
-     <LinearGradient id={fade} gradientUnits="userSpaceOnUse" x1={18-scroll} x2={tipX} y1={0} y2={0}><Stop offset={0} stopColor={lineColor} stopOpacity={0}/><Stop offset={1} stopColor={lineColor}/></LinearGradient>
-     {validPrice(display)&&validPrice(basis)&&basisY!==center&&<LinearGradient id={shade} gradientUnits="userSpaceOnUse" x1={0} x2={0} y1={tipY} y2={Math.min(height,Math.max(0,basisY))-shift}><Stop offset={0} stopColor={lineColor} stopOpacity={.5}/><Stop offset={1} stopColor={lineColor} stopOpacity={0}/></LinearGradient>}
-    </Defs>
-    <Path d={grid} translateX={reducedMotion?0:gridPhase(now)} stroke={colors.nested} fill="none"/>
-    <G translateY={ladderShift}>{ladder.map(({price:p,label,y,ticks})=>{
-     const screenY=y+ladderShift;
-     const covered=bounds.some(l=>l.labelTop!=null&&screenY+7>l.labelTop-2&&screenY-7<l.labelTop+20);
-     return <G key={p} opacity={.75}><Path d={ticks} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fill={colors.muted}>{label}</SvgText>}</G>;
-    })}</G>
-    <G clipPath={`url(#${clip})`}><G translateX={scroll} translateY={shift}>
-    {history&&validPrice(basis)&&basisY!==center?<Path d={`${trail}L${tipX} ${basisY-shift}L${history.first} ${basisY-shift}Z`} fill={`url(#${shade})`}/>:null}
-    {trail?<Path d={trail} stroke={`url(#${fade})`} strokeWidth={2.5} fill="none"/>:null}
-    </G></G>
+   style={{height,direction:'ltr',overflow:'hidden',borderRadius:tokens.radius.xl,backgroundColor:colors.background}}>
+   {width>0&&<>
+    <Reanimated.View pointerEvents="none" style={[styles.layer,gridMotion]}>
+     <Svg width={width+ALTIMETER_FLOW_PX} height={height} accessible={false}><Path d={grid} stroke={colors.nested} fill="none"/></Svg>
+    </Reanimated.View>
+    {ladder.length>0&&<Svg width={width} height={height} style={styles.layer} accessible={false}>
+     <G translateY={ladderShift}>{android
+      ?<LadderInk rows={ladder} hidden={hidden} ticks={ladderTicks} width={width} color={colors.muted} font={monoFontFamily}/>
+      :ladder.map(row=>{
+       const y=row.y+ladderShift,covered=bounds.some(level=>level.labelTop!=null&&y+7>level.labelTop-2&&y-7<level.labelTop+20);
+       return <G key={row.price} opacity={.75}><Path d={row.ticks} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={row.y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fill={colors.muted}>{row.label}</SvgText>}</G>;
+      })}</G>
+    </Svg>}
+    {history&&end+2>18&&<View pointerEvents="none" style={{position:'absolute',top:0,left:18,width:end+2-18,height,overflow:'hidden'}}>
+     <Reanimated.View style={[styles.layer,{left:-18},trailMotion]}>
+      <Svg width={width} height={height} accessible={false}>
+       <Defs>
+        <LinearGradient id={fade} gradientUnits="userSpaceOnUse" x1={18-scroll} x2={tipX} y1={0} y2={0}><Stop offset={0} stopColor={lineColor} stopOpacity={0}/><Stop offset={1} stopColor={lineColor}/></LinearGradient>
+        {validPrice(display)&&validPrice(basis)&&basisY!==center&&<LinearGradient id={shade} gradientUnits="userSpaceOnUse" x1={0} x2={0} y1={tipY} y2={Math.min(height,Math.max(0,basisY))-shift}><Stop offset={0} stopColor={lineColor} stopOpacity={.5}/><Stop offset={1} stopColor={lineColor} stopOpacity={0}/></LinearGradient>}
+       </Defs>
+       <G translateX={scroll} translateY={shift}>
+        {validPrice(basis)&&basisY!==center&&(android?<G fill={`url(#${shade})`}>
+         <Path d={`${history.commands}V${basisY-shift}H${history.first}Z`}/>
+         <Path d={`${tail}h${projection}V${basisY-shift}H${history.last[0]}Z`}/>
+        </G>:<Path d={`${trail}h${projection}V${basisY-shift}H${history.first}Z`} fill={`url(#${shade})`}/>)}
+        {android&&<Path d={history.commands} stroke={`url(#${fade})`} strokeWidth={2.5} fill="none"/>}
+        <Path d={`${android?tail:trail}h${projection}`} stroke={`url(#${fade})`} strokeWidth={2.5} fill="none"/>
+       </G>
+      </Svg>
+     </Reanimated.View>
+    </View>}
+    <Svg width={width} height={height} style={styles.layer} accessible={false}>
     {levels.map(l=>{const pos=frame.levels.get(l.id);if(!pos)return null;const color=l.color??colors.action;
      return <G key={l.id}>{!pos.pinned&&<Line x1={0} x2={width} y1={pos.y} y2={pos.y} stroke={color} strokeDasharray="3 4"/>}
       {l.label&&pos.labelTop!=null&&<SvgText x={width-8} y={pos.labelTop+14} textAnchor="end" fontSize={12} fill={color}>{targetTexts.get(l.id)}</SvgText>}</G>;
@@ -182,7 +267,9 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
     {mark==null?<SvgText x={width/2} y={center} textAnchor="middle" fill={colors.muted}>{status}</SvgText>:
      <G translateX={shake}><Rect x={end} y={center-18} width={pillWidth} height={36} rx={18} fill={colors.background} stroke={pillColor}/><SvgText x={end+pillWidth/2} y={center+5} textAnchor="middle" fontFamily={monoFontFamily} fontSize={16} fontWeight="600" fill={pillColor}>{reading}</SvgText></G>}
     {burst&&<BurstEffect burst={{...burst,color:burst.color??colors.action}} now={now} x={end+pillWidth/2} y={center} width={pillWidth}/>}
-   </Svg>}
+   </Svg></>}
   </View>
  </View>;
 }
+
+const styles=StyleSheet.create({layer:{position:'absolute',left:0,top:0}});

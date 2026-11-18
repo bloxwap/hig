@@ -19,7 +19,7 @@ export interface ClaimRewardBlockProps {
 
 export function ClaimRewardBlock({amount, symbol, walletAddress, chain, details, labels, onClaim, onCancel}: ClaimRewardBlockProps) {
   const disabled = !Number.isFinite(amount) || amount <= 0 || !walletAddress.trim() || !chain.trim();
-  return <section className="hig-confirm">
+  return <section className="hig-confirm hig-claim-reward-block">
     <ScreenHeader title={labels.title}/>
     <p className="hig-confirm-amount"><AnimatedNumberReadout value={amount} options={{maximumFractionDigits:6}}/> <span className="hig-confirm-symbol">{symbol}</span></p>
     <dl className="hig-confirm-details">

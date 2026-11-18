@@ -116,7 +116,7 @@ test('rows are one line each, headingId names the title, and stickyHeader pins t
  expect(vertical(view)).toHaveLength(0);expect(has(view,'assets-sticky-header')).toBe(false);
  view=mount({stickyHeader:true,stickyHeaderBackground:'#123456'});
  expect(vertical(view)).toHaveLength(1);const scroll=vertical(view)[0];expect(scroll.props.stickyHeaderIndices).toEqual([0]);
- expect(flat(host(view,'assets-sticky-header'))).toMatchObject({paddingTop:16,paddingHorizontal:16,backgroundColor:'transparent'});
+ expect(flat(host(view,'assets-sticky-header'))).toMatchObject({paddingTop:16,paddingHorizontal:8,backgroundColor:'transparent'});
  expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-header').length).toBeGreaterThan(0);
  act(()=>scroll.props.onScroll({nativeEvent:{contentOffset:{y:40}}}));expect(flat(host(view,'assets-sticky-header')).backgroundColor).toBe('#123456');
  // The search and the list scroll under the pinned header.
@@ -222,13 +222,13 @@ test('scrolls the selected category capsule fully into view on mount and on chan
  const scroller=host(view,'host-filter');
  const chips=view.findAll(n=>n.props.accessibilityRole==='radio'&&typeof n.props.onLayout==='function'&&typeof n.props.onPress==='function');
  const layout=(node,x,width)=>act(()=>node.props.onLayout({nativeEvent:{layout:{x,y:0,width,height:40}}}));
- // The row bleeds 16 past the block's padding on each side and insets its content by 16, so the capsules run to the container's edge.
- expect(flat(scroller)).toMatchObject({marginHorizontal:-16});expect(StyleSheet.flatten(scroller.props.contentContainerStyle)).toMatchObject({paddingHorizontal:16});
- // All, Crypto, Commodities, Stocks at 100 wide with 8 between after the 16 inset, in a 260-wide row: Stocks (340 to 440) ends the view, 16 clear of its edge.
- chips.forEach((chip,index)=>layout(chip,16+index*108,100));
+ // The row bleeds 8 past the block's padding on each side and insets its content by 8, so the capsules run to the container's edge.
+ expect(flat(scroller)).toMatchObject({marginHorizontal:-8});expect(StyleSheet.flatten(scroller.props.contentContainerStyle)).toMatchObject({paddingHorizontal:8});
+ // All, Crypto, Commodities, Stocks at 100 wide with 8 between after the 8 inset, in a 260-wide row: Stocks (332 to 432) ends the view, 8 clear of its edge.
+ chips.forEach((chip,index)=>layout(chip,8+index*108,100));
  act(()=>scroller.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:260,height:40}}}));
- expect(scrollTo).toHaveBeenLastCalledWith({x:196,animated:false});
- // Choosing a capsule left of the view scrolls back to it, keeping the 16 inset clear.
+ expect(scrollTo).toHaveBeenLastCalledWith({x:180,animated:false});
+ // Choosing a capsule left of the view scrolls back to it, keeping the 8 inset clear.
  act(()=>chips[1].props.onPress());expect(scrollTo).toHaveBeenLastCalledWith({x:108,animated:false});
  // A capsule already whole on screen does not scroll.
  scrollTo.mockClear();act(()=>chips[2].props.onPress());expect(scrollTo).not.toHaveBeenCalled();
