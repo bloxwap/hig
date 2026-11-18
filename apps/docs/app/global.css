@@ -12,10 +12,8 @@
 @import 'fumadocs-ui/css/lib/base.css';
 @import 'fumadocs-ui/css/lib/shiki.css';
 @plugin '@fumadocs/tailwind/typography'; /* what fumadocs-ui/dist/tailwind/typography.js re-exports; resolves under npm and Bun layouts */
-@import 'fumadocs-ui/css/generated/docs.css';
-@import 'fumadocs-ui/css/generated/home.css';
 /* Compile shared utilities for the MDX, navigation, and search components used here. */
-@source '../../../{node_modules,apps/docs/node_modules}/fumadocs-ui/dist/{layouts/shared,components/{dialog,sidebar,toc,ui}}/**/*.js';
+@source '../../../{node_modules,apps/docs/node_modules}/fumadocs-ui/dist/{layouts/{docs,home,shared},components/{dialog,sidebar,toc,ui}}/**/*.js';
 @source '../../../{node_modules,apps/docs/node_modules}/fumadocs-ui/dist/{mdx,components/{callout,card,codeblock,heading}}.js';
 @import '@bloxwap/hig/tokens/css';
 @import '@bloxwap/hig/react/css/base';
