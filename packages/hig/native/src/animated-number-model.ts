@@ -7,7 +7,7 @@ export interface NumberReelToken {key:string;kind:'digit'|'static';type:string;v
 export interface NumberReelModel {canonical:string;digits:readonly string[];tokens:readonly NumberReelToken[]}
 
 const supportedParts=new Set(['integer','fraction','decimal','group','plusSign','minusSign','percentSign','currency','unit','compact','literal','exponentSeparator','exponentInteger','exponentMinusSign','exponentPlusSign','approximatelySign']);
-const nonAscii=/[^\x00-\x7f]/;
+const nonAscii=/[\u0080-\uFFFF]/;
 
 export function formatNumberReadout(value:number|null|undefined,locale:string,options?:Intl.NumberFormatOptions,formattedValue?:string,prefix?:string,suffix?:string):NumberReading{
  const known=typeof value==='number'&&Number.isFinite(value);if(!known)return {known:false,core:'—',text:'—'};

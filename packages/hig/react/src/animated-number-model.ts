@@ -116,7 +116,7 @@ export function createAnimatedNumberModel(value:number|null|undefined,locale:str
 export function createFormattedAnimatedNumberModel(text:string,locale:string,animate:boolean):AnimatedNumberModel{
  if(!animate)return staticModel(text);
  let local:readonly string[]|null=null;
- if(/[^\x00-\x7f]/.test(text)){
+ if(/[\u0080-\uFFFF]/.test(text)){
   try{local=glyphsFor(formatFor(locale));}catch{local=null;}
  }
  let count=0,hasAscii=false;

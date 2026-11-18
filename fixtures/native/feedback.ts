@@ -8,7 +8,9 @@ import {recordingAudioBackend,recordingHapticBackend,dispatchLatency} from './na
 // The recording wrappers only log adapter calls for simulator/emulator verification.
 const names=new Map<unknown,string>([[tick,'tick'],[toggle,'toggle'],[success,'success'],[error,'error']]);
 export const createController=(preferences:FeedbackPreferences)=>{
+ // oxlint-disable-next-line typescript/no-require-imports -- Metro loads Expo audio synchronously on first use.
  const sound=createNativeSoundAdapter(recordingAudioBackend(expoAudioBackend(()=>require('expo-audio') as typeof import('expo-audio')),names),{tick,toggle,success,error});
+ // oxlint-disable-next-line typescript/no-require-imports -- Metro loads Expo haptics synchronously on first use.
  const controller=new FeedbackController({preferences,sound,prepareSound:sound.preload,haptics:createNativeHapticAdapter(recordingHapticBackend(expoHapticBackend(()=>require('expo-haptics') as typeof import('expo-haptics'))))});
  // The Sound switch emits selection immediately after enabling playback.
  if(!preferences.sound||preferences.volume<=0)void sound.preload('tick').catch(()=>{});

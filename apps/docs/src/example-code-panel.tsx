@@ -4,7 +4,7 @@ import {Button} from '@bloxwap/hig/react/button';
 import type {FeedbackPreferences} from '@bloxwap/hig/feedback';
 import {configurationCode} from './configuration-code.mjs';
 import type {Entry,ExampleSource} from './example-code';
-export function ExampleCode({entry,platform,density,state,preferences,source}:{
+export function ExampleCode({platform,density,state,preferences,source}:{
  entry:Entry;platform:'react'|'native';density:string;state:string;preferences?:FeedbackPreferences;source:ExampleSource;
 }){
  const snippet=(source[platform][state]??source[platform].default).replace('density="comfortable"',`density="${platform==='native'?'comfortable':density}"`);
