@@ -1,6 +1,6 @@
 import React,{useEffect,useId,useMemo,useRef,useState} from 'react';
 import {AppState,View,type ViewProps} from 'react-native';
-import Svg,{Circle,Defs,G,Line,LinearGradient,Path,Rect,Stop,Text as SvgText} from 'react-native-svg';
+import Svg,{Circle,ClipPath,Defs,G,Line,LinearGradient,Path,Rect,Stop,Text as SvgText} from 'react-native-svg';
 import {tokens} from '@bloxwap/hig/tokens';
 import {ALTIMETER_BURST_COOLDOWN_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,
  bitcoinPrice,gridPhase,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,sparkGeometry,
@@ -12,6 +12,8 @@ import {Text} from './surface.js';
 export {bitcoinPrice,type AltimeterFeed,type AltimeterPosition,type AltimeterTarget,type TargetLabelInsets};
 export interface AltimeterChartProps extends Omit<ViewProps,'children'> {
  summary:string;
+ /** Suspend chart frames while an opaque overlay covers the plot. */
+ paused?:boolean;
  price?:number|null;
  feed?:AltimeterFeed;
  height?:number;
@@ -47,7 +49,7 @@ function BurstEffect({burst,now,x,y,width}:{burst:Burst;now:number;x:number;y:nu
 }
 
 /** Native SVG price ladder, scrolling trail and position readout. Stops drawing and unsubscribes in the background. */
-export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,dgen,degen=dgen??false,...view}:AltimeterChartProps){
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,dgen,degen=dgen??false,...view}:AltimeterChartProps){
  const colors=useColors(),{reducedMotion,monoFontFamily}=useHIG(),messages=useMessages(),locale=useNumberLocale();
  const [width,setWidth]=useState(0),[frame,setFrame]=useState(emptyFrame),[stale,setStale]=useState(false);
  const [active,setActive]=useState(AppState.currentState==null||AppState.currentState==='active');
@@ -67,7 +69,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
  },[controlled,controlled?undefined:feed,active]);
  const hasSize=width>0&&height>0;
  useEffect(()=>{
-  if(!active||!hasSize)return;
+  if(!active||!hasSize||paused)return;
   let raf=0,last=-Infinity,sampled=-Infinity,lastBurst=-Infinity,previous=NaN,anchor=NaN,spacing=0;
   let ticks:AltimeterTick[]=[],burst:Burst|undefined;
   const tween=priceTween(),layout=targetLayout(),crossings=targetCrossings();
@@ -99,7 +101,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
   };
   raf=requestAnimationFrame(step);
   return ()=>cancelAnimationFrame(raf);
- },[active,hasSize,controlled,controlled?undefined:feed]);
+ },[active,hasSize,paused,controlled,controlled?undefined:feed]);
 
  const {now,display,mark,spacing,anchor,ticks}=frame,center=height/2;
  const digits=labelDecimalsFor(spacing,display);
@@ -116,11 +118,22 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
  const lineColor=position?tone(mark!=null&&validPrice(basis)?(mark-basis)*(position.side==='short'?-1:1):0):colors.action;
  const pillWidth=Math.min(Math.max(0,width-8),Math.max(110,reading.length*10+20)),end=Math.max(0,width-8-pillWidth);
  const yFor=(p:number)=>center-(p-display)/spacing*ALTIMETER_TICK_PX;
- const points=trailPoints(ticks,now,18,end,yFor),parts:string[]=[];
- smoothTrail(points,{moveTo:(x,y)=>parts.push(`M${x} ${y}`),lineTo:(x,y)=>parts.push(`L${x} ${y}`),bezierCurveTo:(a,b,c,d,x,y)=>parts.push(`C${a} ${b} ${c} ${d} ${x} ${y}`)});
- const last=points.at(-1);
- if(last){const dx=(end-last[0])/3;parts.push(`C${last[0]+dx} ${last[1]} ${end-dx} ${center} ${end} ${center}`);}
- const trail=parts.join(' '),basisY=validPrice(basis)?yFor(basis):center;
+ // Historical SVG commands are stable between heartbeats. Translate that geometry and
+ // append only the short live connector as price and time advance.
+ const history=useMemo(()=>{
+  const sample=ticks.at(-1);if(!sample)return null;
+  const points=trailPoints(ticks,sample.t,18,end,p=>center-(p-sample.p)/spacing*ALTIMETER_TICK_PX);
+  const last=points.at(-1);if(!last)return null;
+  const parts:string[]=[];
+  smoothTrail(points,{moveTo:(x,y)=>parts.push(`M${x} ${y}`),lineTo:(x,y)=>parts.push(`L${x} ${y}`),bezierCurveTo:(a,b,c,d,x,y)=>parts.push(`C${a} ${b} ${c} ${d} ${x} ${y}`)});
+  return {commands:parts.join(' '),sample,last,first:points[0][0]};
+ },[ticks,end,center,spacing]);
+ const scroll=history?(history.sample.t-now)*ALTIMETER_FLOW_PX/1000:0;
+ const shift=history?(display-history.sample.p)/spacing*ALTIMETER_TICK_PX:0;
+ const tipX=end-scroll,tipY=center-shift;
+ const dx=history?(tipX-history.last[0])/3:0;
+ const trail=history?`${history.commands}C${history.last[0]+dx} ${history.last[1]} ${tipX-dx} ${tipY} ${tipX} ${tipY}`:'';
+ const basisY=validPrice(basis)?yFor(basis):center;
  const grid=useMemo(()=>{
   const marks:string[]=[];
   for(let x=25;x<width+54;x+=50)for(let y=25;y<height+3;y+=50)marks.push(`M${x-3} ${y}h6M${x} ${y-3}v6`);
@@ -134,7 +147,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
   :[],[anchor,spacing,low,high,format]);
  const targetTexts=useMemo(()=>new Map(levels.map(level=>[level.id,[level.label,format.format(level.price)].filter(Boolean).join(' ')])),[levels,format]);
  const bounds=Array.from(frame.levels.values());
- const id=useId().replace(/[^a-zA-Z0-9_-]/g,''),fade='trail'+id,shade='basis'+id;
+ const id=useId().replace(/[^a-zA-Z0-9_-]/g,''),fade='trail'+id,shade='basis'+id,clip='trailClip'+id;
  const status=stale?messages.stale:messages.loadingChart;
  const label=[summary,mark==null?status:reading,...targetTexts.values()].join('. ');
  const burst=degen&&!reducedMotion?frame.burst:undefined;
@@ -144,15 +157,18 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
    style={{height,overflow:'hidden',borderRadius:tokens.radius.xl,backgroundColor:colors.background}}>
    {width>0&&<Svg width={width} height={height} accessible={false}>
     <Defs>
-     <LinearGradient id={fade} gradientUnits="userSpaceOnUse" x1={18} x2={end} y1={0} y2={0}><Stop offset={0} stopColor={lineColor} stopOpacity={0}/><Stop offset={1} stopColor={lineColor}/></LinearGradient>
-     {validPrice(display)&&validPrice(basis)&&basisY!==center&&<LinearGradient id={shade} gradientUnits="userSpaceOnUse" x1={0} x2={0} y1={center} y2={Math.min(height,Math.max(0,basisY))}><Stop offset={0} stopColor={lineColor} stopOpacity={.5}/><Stop offset={1} stopColor={lineColor} stopOpacity={0}/></LinearGradient>}
+     <ClipPath id={clip}><Path d={`M18 0H${Math.max(18,end+2)}V${height}H18Z`}/></ClipPath>
+     <LinearGradient id={fade} gradientUnits="userSpaceOnUse" x1={18-scroll} x2={tipX} y1={0} y2={0}><Stop offset={0} stopColor={lineColor} stopOpacity={0}/><Stop offset={1} stopColor={lineColor}/></LinearGradient>
+     {validPrice(display)&&validPrice(basis)&&basisY!==center&&<LinearGradient id={shade} gradientUnits="userSpaceOnUse" x1={0} x2={0} y1={tipY} y2={Math.min(height,Math.max(0,basisY))-shift}><Stop offset={0} stopColor={lineColor} stopOpacity={.5}/><Stop offset={1} stopColor={lineColor} stopOpacity={0}/></LinearGradient>}
     </Defs>
     <Path d={grid} translateX={reducedMotion?0:gridPhase(now)} stroke={colors.nested} fill="none"/>
     {ladder.map(({price:p,label})=>{const y=yFor(p),covered=bounds.some(l=>l.labelTop!=null&&y+7>l.labelTop-2&&y-7<l.labelTop+20);
      return <G key={p} opacity={.75}><Path d={`M10 ${y}h8M${width-18} ${y}h8`} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fill={colors.muted}>{label}</SvgText>}</G>;
     })}
-    {trail&&validPrice(basis)&&basisY!==center?<Path d={`${trail}L${end} ${basisY}L${points[0][0]} ${basisY}Z`} fill={`url(#${shade})`}/>:null}
+    <G clipPath={`url(#${clip})`}><G translateX={scroll} translateY={shift}>
+    {history&&validPrice(basis)&&basisY!==center?<Path d={`${trail}L${tipX} ${basisY-shift}L${history.first} ${basisY-shift}Z`} fill={`url(#${shade})`}/>:null}
     {trail?<Path d={trail} stroke={`url(#${fade})`} strokeWidth={2.5} fill="none"/>:null}
+    </G></G>
     {levels.map(l=>{const pos=frame.levels.get(l.id);if(!pos)return null;const color=l.color??colors.action;
      return <G key={l.id}>{!pos.pinned&&<Line x1={0} x2={width} y1={pos.y} y2={pos.y} stroke={color} strokeDasharray="3 4"/>}
       {l.label&&pos.labelTop!=null&&<SvgText x={width-8} y={pos.labelTop+14} textAnchor="end" fontSize={12} fill={color}>{targetTexts.get(l.id)}</SvgText>}</G>;

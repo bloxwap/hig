@@ -164,3 +164,13 @@ it('keeps a capsule inside the new bounds during its first-price animation',()=>
  expect(center(capsules()[0])).toBe(245);
  frame(300);expect(center(capsules()[0])).toBeLessThan(245);
 });
+
+it('reuses trail gradients across frames and suspends painting under an overlay',()=>{
+ const chart=(paused:boolean)=><HIGProvider><OutcomeChart summary='Market' outcomes={sample} paused={paused}/></HIGProvider>;
+ const {rerender}=render(chart(false));frame(0);
+ expect(context.calls.filter(([name])=>name==='createLinearGradient')).toHaveLength(sample.length);
+ frame(16);expect(context.calls.some(([name])=>name==='stroke')).toBe(true);
+ expect(context.calls.some(([name])=>name==='createLinearGradient')).toBe(false);
+ rerender(chart(true));frame(500);expect(context.calls).toHaveLength(0);
+ rerender(chart(false));frame(600);expect(context.calls.some(([name])=>name==='stroke')).toBe(true);
+});

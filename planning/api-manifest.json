@@ -2114,11 +2114,11 @@
       },
       "AltimeterChartProps": {
         "entry": "chart",
-        "signature": "export interface AltimeterChartProps extends Omit<ViewProps, 'children'> {\n    summary: string;\n    price?: number | null;\n    feed?: AltimeterFeed;\n    height?: number;\n    priceOptions?: Intl.NumberFormatOptions;\n    position?: AltimeterPosition;\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    degen?: boolean;\n    /** @deprecated Use degen. */\n    dgen?: boolean;\n}"
+        "signature": "export interface AltimeterChartProps extends Omit<ViewProps, 'children'> {\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    price?: number | null;\n    feed?: AltimeterFeed;\n    height?: number;\n    priceOptions?: Intl.NumberFormatOptions;\n    position?: AltimeterPosition;\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    degen?: boolean;\n    /** @deprecated Use degen. */\n    dgen?: boolean;\n}"
       },
       "AltimeterChart": {
         "entry": "chart",
-        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, ...view }: AltimeterChartProps): React.JSX.Element;"
+        "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, ...view }: AltimeterChartProps): React.JSX.Element;"
       },
       "Checkbox": {
         "entry": "checkbox",
@@ -3124,11 +3124,11 @@
       },
       "AltimeterChart": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
+        "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
       },
       "AltimeterChartProps": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Shade the trail to break-even and color the capsule by actual P&L. */\n    position?: AltimeterPosition;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Horizontal dotted levels with optional right-aligned labels and CSS colors. Offscreen labels pin and stack at the edges. Use stable, unique IDs. */\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */\n    degen?: boolean;\n    /** @deprecated Use degen. */\n    dgen?: boolean;\n}"
+        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Shade the trail to break-even and color the capsule by actual P&L. */\n    position?: AltimeterPosition;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Horizontal dotted levels with optional right-aligned labels and CSS colors. Offscreen labels pin and stack at the edges. Use stable, unique IDs. */\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */\n    degen?: boolean;\n    /** @deprecated Use degen. */\n    dgen?: boolean;\n}"
       },
       "AltimeterTarget": {
         "entry": "@bloxwap/hig/chart",
@@ -3136,11 +3136,11 @@
       },
       "OutcomeChart": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function OutcomeChart({ summary, outcomes, feed, height, targetLabelInsets, style, ...props }: OutcomeChartProps): React.JSX.Element;"
+        "signature": "export declare function OutcomeChart({ summary, paused, outcomes, feed, height, targetLabelInsets, style, ...props }: OutcomeChartProps): React.JSX.Element;"
       },
       "OutcomeChartProps": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface OutcomeChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example the question and where its prices come from. */\n    summary: string;\n    /** Two to ten outcomes, owned by the host. `null` or empty reads as waiting. Omit it to use `feed`. */\n    outcomes?: readonly Outcome[] | null;\n    /** Live source of outcomes, used only while `outcomes` is omitted. Defaults to `championsLeagueWinner`. Keep its identity stable. */\n    feed?: OutcomeFeed;\n    /** Chart height in pixels. Default 360. */\n    height?: number;\n    /** Clearance for outcome capsules in pixels. Defaults to zero on both edges. */\n    targetLabelInsets?: TargetLabelInsets;\n}"
+        "signature": "export interface OutcomeChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example the question and where its prices come from. */\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    /** Two to ten outcomes, owned by the host. `null` or empty reads as waiting. Omit it to use `feed`. */\n    outcomes?: readonly Outcome[] | null;\n    /** Live source of outcomes, used only while `outcomes` is omitted. Defaults to `championsLeagueWinner`. Keep its identity stable. */\n    feed?: OutcomeFeed;\n    /** Chart height in pixels. Default 360. */\n    height?: number;\n    /** Clearance for outcome capsules in pixels. Defaults to zero on both edges. */\n    targetLabelInsets?: TargetLabelInsets;\n}"
       },
       "outcomeColors": {
         "entry": "@bloxwap/hig/chart",
@@ -3261,6 +3261,18 @@
       "remainder": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function remainder(prices: readonly (number | null)[]): number | null;"
+      },
+      "trailFade": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailFade(ctx: CanvasRenderingContext2D, ticks: readonly AltimeterTick[], start: number, end: number, color: string): CanvasGradient;"
+      },
+      "historyPath": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function historyPath(ctx: CanvasRenderingContext2D, ticks: readonly AltimeterTick[], now: number, start: number, end: number, yFor: (p: number) => number, origin: number, scale: number, low?: number, high?: number): {\n    sink: CanvasRenderingContext2D;\n    last: import(\"./altimeter-model.js\").AltimeterPoint;\n    first: number;\n    path?: undefined;\n} | {\n    path: Path2D;\n    sink: Path2D;\n    last: number[];\n    first: number;\n} | undefined;"
+      },
+      "visibleFrames": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function visibleFrames(container: Element, step: (now: number) => void, paused: boolean): {\n    setPaused(value: boolean): void;\n    stop(): void;\n};"
       },
       "OutcomeTrail": {
         "entry": "@bloxwap/hig/chart",

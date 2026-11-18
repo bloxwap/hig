@@ -1,10 +1,11 @@
 "use client";
 import React,{useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
+import {historyPath,trailFade,visibleFrames} from './chart-renderer.js';
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
 import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
-import {ALTIMETER_EASE_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,easeInOut,gridPhase,smoothTrail,trailPoints,type AltimeterTick} from './altimeter-model.js';
+import {ALTIMETER_EASE_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,easeInOut,gridPhase,type AltimeterTick} from './altimeter-model.js';
 import {OUTCOME_LIMIT,capsuleCenters,labelBounds,type TargetLabelInsets,outcomeChance,outcomeColors,outcomeScale,outcomeTicks,outcomeY,type Outcome,type OutcomeFeed,type OutcomeScale} from './outcome-model.js';
 import {championsLeagueWinner} from './champions-league.js';
 import {drawPlusGrid,monoFont} from './plus-grid.js';
@@ -12,6 +13,8 @@ import {drawPlusGrid,monoFont} from './plus-grid.js';
 export interface OutcomeChartProps extends Omit<React.HTMLAttributes<HTMLElement>,'children'> {
  /** Text alternative shown as the figure's caption, for example the question and where its prices come from. */
  summary:string;
+ /** Suspend chart frames while an opaque overlay covers the plot. */
+ paused?:boolean;
  /** Two to ten outcomes, owned by the host. `null` or empty reads as waiting. Omit it to use `feed`. */
  outcomes?:readonly Outcome[]|null;
  /** Live source of outcomes, used only while `outcomes` is omitted. Defaults to `championsLeagueWinner`. Keep its identity stable. */
@@ -40,7 +43,6 @@ const PAD=18;
 const capsuleWidth=(width:number)=>Math.min(width*.55,200);
 /** Capsules read to three decimals, the precision outcome prices move in; the ladder stays in whole percents. */
 const CHANCE:Intl.NumberFormatOptions={style:'percent',minimumFractionDigits:3,maximumFractionDigits:3};
-const transparent=(color:string)=>/^#[0-9a-f]{6}$/i.test(color)?`${color}00`:'transparent';
 
 export interface OutcomeTrail {color:string;ticks:readonly AltimeterTick[];
  /** Eased chance at the trail's tip, 0 to 1. */
@@ -56,16 +58,15 @@ export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;he
  drawPlusGrid(ctx,width,height,frame.phase,frame.grid,outcomeTicks(frame.scale).map(yFor));
  ctx.lineWidth=2.5;
  for(const trail of frame.trails){
-  const points=trailPoints(trail.ticks,frame.now,PAD,trailEnd,yFor),last=points.at(-1),tip=yFor(trail.value);
-  if(!last)continue;
-  const fade=ctx.createLinearGradient(PAD,0,trailEnd,0);fade.addColorStop(0,transparent(trail.color));fade.addColorStop(1,trail.color);
-  ctx.strokeStyle=fade;
-  ctx.beginPath();smoothTrail(points,ctx);
+  const history=historyPath(ctx,trail.ticks,frame.now,PAD,trailEnd,yFor,0,height,frame.scale?.low,frame.scale?.high);
+  if(!history)continue;
+  const {last,path,sink}=history,tip=yFor(trail.value);
+  ctx.strokeStyle=trailFade(ctx,trail.ticks,PAD,trailEnd,trail.color);
   const dx=trailEnd-last[0];
-  if(dx>0)ctx.bezierCurveTo(last[0]+dx/3,last[1],trailEnd-dx/3,tip,trailEnd,tip);else ctx.lineTo(trailEnd,tip);
+  if(dx>0)sink.bezierCurveTo(last[0]+dx/3,last[1],trailEnd-dx/3,tip,trailEnd,tip);else sink.lineTo(trailEnd,tip);
   // From the live chance to the capsule, which may sit off the line to clear its neighbors.
-  ctx.bezierCurveTo(trailEnd+CONNECTOR/2,tip,trailEnd+CONNECTOR/2,trail.capsule,trailEnd+CONNECTOR,trail.capsule);
-  ctx.stroke();
+  sink.bezierCurveTo(trailEnd+CONNECTOR/2,tip,trailEnd+CONNECTOR/2,trail.capsule,trailEnd+CONNECTOR,trail.capsule);
+  if(path)ctx.stroke(path);else ctx.stroke();
  }
 }
 
@@ -74,8 +75,11 @@ export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;he
  * second, on a ladder zoomed to the range the chances occupy. Each outcome's trail ends in a stroked capsule
  * with its label and its chance. It draws no positions or controls. Web canvas only.
  */
-export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height=360,targetLabelInsets,style,...props}:OutcomeChartProps){
+export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeagueWinner,height=360,targetLabelInsets,style,...props}:OutcomeChartProps){
  const {locale,messages,reducedMotion}=useHIG();const colors=useColors();
+ const pauseFrames=useRef<((paused:boolean)=>void)|undefined>(undefined);
+ const initiallyPaused=useRef(paused);
+ useEffect(()=>{initiallyPaused.current=paused;pauseFrames.current?.(paused);},[paused]);
  const box=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null),list=useRef<HTMLUListElement>(null);
  const [stale,setStale]=useState(false);
  const controlled=outcomes!==undefined;
@@ -120,7 +124,7 @@ export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height
    const move=state.moving.get(outcome.id);
    if(move){const progress=(now-move.start)/ARRIVE_MS;if(progress>=1||reducedMotion)state.moving.delete(outcome.id);else {const start=Math.max(bounds.top+CAPSULE/2,Math.min(bounds.bottom-CAPSULE/2,move.from));centers[index]=start+(centers[index]-start)*easeInOut(progress);}}
    state.at.set(outcome.id,centers[index]);
-   const item=items?.[index] as HTMLElement|undefined;if(item)item.style.transform=`translateY(${+(centers[index]-rest[index]).toFixed(2)}px)`;
+   const item=items?.[index] as HTMLElement|undefined;if(item){const transform=`translateY(${+(centers[index]-rest[index]).toFixed(2)}px)`;if(item.style.transform!==transform)item.style.transform=transform;}
   }
   return centers;
  };
@@ -129,12 +133,11 @@ export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height
   const surface=canvas.current,container=box.current;if(!surface||!container)return;
   let context:CanvasRenderingContext2D|null=null;
   try{context=surface.getContext('2d');}catch{/* No canvas: the caption, ladder and capsules remain. */}
-  let width=container.clientWidth,raf=0,sampled=-Infinity;
+  let width=container.clientWidth,sampled=-Infinity;
   const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(entries=>{width=entries[0].contentRect.width;});
   observer?.observe(container);
   const tracks=eased.current;
   const step=(now:number)=>{
-   raf=requestAnimationFrame(step);
    const {shown,scale,colors,reducedMotion}=settings.current,sample=now-sampled>=ALTIMETER_SAMPLE_MS,keep=(Math.max(width,0)/ALTIMETER_FLOW_PX)*1000+2000;
    // After a pause (a hidden tab stops the frames) the trails start flat again, so no line bridges the gap.
    if(sample&&now-sampled>2000)for(const track of tracks.values())track.ticks=[];
@@ -161,8 +164,9 @@ export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height
    context.setTransform(ratio,0,0,ratio,0,0);
    drawOutcomes(context,{width,height,now,phase:reducedMotion?0:gridPhase(now),grid:colors.nested,scale,trails:shown.flatMap((outcome,index)=>{const track=tracks.get(outcome.id);return track?[{color:outcome.color??outcomeColors[index%outcomeColors.length],ticks:track.ticks,value:track.value,capsule:centers[index]}]:[];})});
   };
-  raf=requestAnimationFrame(step);
-  return ()=>{cancelAnimationFrame(raf);observer?.disconnect();};
+  const frames=visibleFrames(container,step,initiallyPaused.current);
+  pauseFrames.current=frames.setPaused;
+  return ()=>{pauseFrames.current=undefined;frames.stop();observer?.disconnect();};
  },[height]);
  return <figure {...props} style={{margin:0,inlineSize:'100%',minInlineSize:0,...style}}>
   <figcaption style={{marginBlockEnd:tokens.space.sm}}>{summary}</figcaption>
