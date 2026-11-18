@@ -12,10 +12,10 @@ for(const engine of ['chromium','webkit']){
   const requests=()=>page.evaluate(()=>window.higSimulation.requests);
   await page.getByRole('switch',{name:'Sound',exact:true}).check();await page.getByRole('switch',{name:'Haptics',exact:true}).check();await reset();
   await page.getByRole('button',{name:'Review order',exact:true}).click();
-  assert.equal(await page.getByRole('dialog').count(),1);assert.deepEqual((await requests()).map(r=>r.channel),['sound','haptics']);
+  await page.getByRole('dialog').waitFor({state:'visible'});assert.equal(await page.getByRole('dialog').count(),1);assert.deepEqual((await requests()).map(r=>r.channel),['sound','haptics']);
   await page.keyboard.press('Escape');await reset();await page.waitForTimeout(100);
   await page.getByRole('button',{name:'Review order',exact:true}).focus();await page.keyboard.press('Enter');
-  assert.equal(await page.getByRole('dialog').count(),1);assert.deepEqual((await requests()).map(r=>r.channel),['sound','haptics']);
+  await page.getByRole('dialog').waitFor({state:'visible'});assert.equal(await page.getByRole('dialog').count(),1);assert.deepEqual((await requests()).map(r=>r.channel),['sound','haptics']);
   await reset();await page.getByRole('button',{name:'Confirm order',exact:true}).click();
   const outcomes=(await requests()).filter(r=>r.intent==='success');assert.deepEqual(outcomes.map(r=>r.channel),['sound','haptics']);
   await page.keyboard.press('Escape');await reset();
@@ -27,7 +27,7 @@ for(const engine of ['chromium','webkit']){
   await page.getByRole('button',{name:'Selection menu',exact:true}).click();await page.getByRole('menuitem',{name:'Cancel sample',exact:true}).click();assert.deepEqual(await requests(),[]);await page.keyboard.press('Escape');
   await page.getByRole('switch',{name:'Sound',exact:true}).uncheck();await page.getByRole('switch',{name:'Haptics',exact:true}).uncheck();await page.reload();
   assert.equal(await page.getByRole('switch',{name:'Sound',exact:true}).isChecked(),false);assert.equal(await page.getByRole('switch',{name:'Haptics',exact:true}).isChecked(),false);
-  await page.getByRole('button',{name:'Review order',exact:true}).click();assert.equal(await page.getByRole('dialog').count(),1);assert.deepEqual(await requests(),[]);assert.deepEqual(errors,[]);
+  await page.getByRole('button',{name:'Review order',exact:true}).click();await page.getByRole('dialog').waitFor({state:'visible'});assert.equal(await page.getByRole('dialog').count(),1);assert.deepEqual(await requests(),[]);assert.deepEqual(errors,[]);
   results.push({engine,version:browser.version(),checks:['pointer and Enter: one activation request per enabled channel','outcome distinct from activation','disabled/busy dispatched clicks silent','switch/range/menu selections dispatch one request per enabled channel','menu disclosure and canceled selection are silent','persisted mute survives reload and preserves action'],adapter:'simulated host sound/haptic dispatch; no physical audio or tactile observations'});
  }finally{await browser.close();}
 }
