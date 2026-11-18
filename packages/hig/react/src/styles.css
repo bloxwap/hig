@@ -98,18 +98,18 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 /* Keep centering independent of the animated scale. */
 .hig-dialog.hig-app-modal[data-modal-motion] { translate:-50% -50%; transform:none; }
 @media (prefers-reduced-motion: no-preference) {
-  [data-modal-motion="full"] {
+  :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"] {
     --hig-modal-duration:var(--hig-motion-duration-base,260ms);
     transition:opacity var(--hig-modal-duration) var(--hig-motion-easing-standard,cubic-bezier(.22,1,.36,1));
   }
   .hig-app-modal[data-modal-motion="full"] { transition-property:opacity,transform; }
-  [data-modal-motion="full"][data-state="closed"] {
+  :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"] {
     --hig-modal-duration:var(--hig-motion-duration-fast,180ms);
     opacity:0;
   }
   .hig-app-modal[data-modal-motion="full"][data-state="closed"] { transform:translateY(8px) scale(.96); }
   @starting-style {
-    [data-modal-motion="full"][data-state="open"] { opacity:0; }
+    :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="open"] { opacity:0; }
     .hig-app-modal[data-modal-motion="full"][data-state="open"] { transform:translateY(8px) scale(.96); }
   }
   /* Radix Presence waits for animationend. The transitions above can reverse mid-flight. */
@@ -1115,10 +1115,10 @@ span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
 [data-hig-motion='reduced'] .hig-button-spinner,[data-hig-motion='reduced'] .hig-skeleton,[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'] .hig-popover,[data-hig-motion='reduced'].hig-popover,[data-hig-motion='reduced'] .hig-progress progress:not([value]),[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before,[data-hig-motion='reduced'] .hig-swap-view,[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { animation:none; }
 @media(prefers-reduced-motion:reduce) {
 :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"],.hig-gesture-sheet[data-vaul-snap-points='false'][data-hig-motion='full'],.hig-gesture-backdrop[data-vaul-overlay][data-state][data-hig-motion='full'] { animation:none; }
-[data-modal-motion="full"],.hig-app-modal[data-modal-motion="full"] { transition:none; }
+:is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"],.hig-app-modal[data-modal-motion="full"] { transition:none; }
 }
 [data-hig-motion='reduced'] :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"],[data-hig-motion='reduced'] .hig-gesture-sheet[data-vaul-snap-points='false'][data-hig-motion='full'],[data-hig-motion='reduced'] .hig-gesture-backdrop[data-vaul-overlay][data-state][data-hig-motion='full'] { animation:none; }
-[data-hig-motion='reduced'] [data-modal-motion="full"],[data-hig-motion='reduced'] .hig-app-modal[data-modal-motion="full"] { transition:none; }
+[data-hig-motion='reduced'] :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"],[data-hig-motion='reduced'] .hig-app-modal[data-modal-motion="full"] { transition:none; }
 /* Sonner honours the OS preference itself; this covers a provider that asks for reduced motion on its own. */
 [data-hig-motion='reduced'] [data-sonner-toast],[data-hig-motion='reduced'] [data-sonner-toast] > * { transition:none!important;animation:none!important; }
 /* Selectors some engines do not parse stay in rules of their own, so they cannot drop the lists above. */

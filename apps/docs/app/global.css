@@ -10,6 +10,8 @@
 @import 'fumadocs-ui/css/neutral.css';
 /* Match fumadocs-ui/css/preset.css, omitting the unused Notebook and Flux layouts. */
 @import 'fumadocs-ui/css/lib/base.css';
+/* This site mounts only the Docs and Home layouts. */
+@custom-variant layout (:is(#nd-docs-layout, #nd-home-layout):has(&));
 @import 'fumadocs-ui/css/lib/shiki.css';
 @plugin '@fumadocs/tailwind/typography'; /* what fumadocs-ui/dist/tailwind/typography.js re-exports; resolves under npm and Bun layouts */
 /* Compile shared utilities for the MDX, navigation, and search components used here. */
