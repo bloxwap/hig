@@ -75,7 +75,7 @@ it('lists the host figures three to a line, a label over its value: a number is 
  expect(host(view,'trade-detail-Held').findAllByType(AnimatedNumberReadout)).toHaveLength(0);
  expect(host(view,'trade-detail-Held').findAll(node=>node.type==='Text').map(text)).toEqual(['Held','38m 20s']);
  expect(host(view,'trade-detail-Entry').findAll(node=>node.type==='Text'&&text(node)==='Entry').map(node=>flat(node).color)).toEqual([nativeSrgb.muted]);
- expect(flat(host(view,'trade-detail-Entry'))).toMatchObject({width:'33.333%',gap:2});
+ expect(flat(host(view,'trade-detail-Entry'))).toMatchObject({width:'50%',gap:2});
  view=mount({details:[]});expect(has(view,'trade-details')).toBe(false);
 });
 it('puts the host actions side by side in order, secondary unless told otherwise, and leaves the row out without any',()=>{

@@ -67,7 +67,7 @@ describe('TradeHistoryDetailBlock',()=>{
   expect(bar()!.dataset.result).toBe('loss');expect([...bar()!.querySelectorAll('dd')].map(spoken)).toEqual(['$64,523','$64,700']);
   // Without both prices there is no bar.
   view.rerender(<TradeHistoryDetailBlock {...base} entry={267.6}/>);expect(bar()).toBeNull();view.rerender(<TradeHistoryDetailBlock {...base}/>);expect(bar()).toBeNull();
-  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toMatch(/\.hig-trade-details \{ display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toMatch(/\.hig-trade-details \{ display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
  });
  it('lists the trade figures as a grid of labels over values: numbers formatted and live, strings as given',()=>{
   const view=render(<TradeHistoryDetailBlock {...base}/>);const rows=()=>[...document.querySelectorAll('.hig-trade-details > div')];

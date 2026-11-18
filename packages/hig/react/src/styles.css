@@ -927,7 +927,7 @@ button.hig-trade-row:active { background:var(--hig-fill-raised); }
 .hig-trade-avatar { flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--hig-fill);color:var(--hig-muted);font-size:.5625rem;font-weight:600;overflow:hidden; }
 .hig-trade-figure { font-size:clamp(2rem,10vw,2.5rem);line-height:1.2;font-weight:700;overflow-wrap:anywhere; }
 .hig-trade-return { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
-.hig-trade-details { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 12px;margin:0; }
+.hig-trade-details { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px;margin:0; }
 .hig-trade-details > div { display:flex;flex-direction:column;gap:2px;min-width:0; }
 .hig-trade-details dt { color:var(--hig-muted);font-size:.75rem;line-height:1.33; }
 .hig-trade-details dd { margin:0;font-weight:600;overflow-wrap:anywhere; }

@@ -103,7 +103,7 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
  const fill=summaryBackground===true?colors.background:typeof summaryBackground==='string'&&summaryBackground?summaryBackground:undefined;
  const wrap=(summary:React.ReactElement)=>summaryRef?<View ref={summaryRef} collapsable={false} testID='trade-summary' style={fill?{backgroundColor:fill}:undefined}>{summary}</View>:summary;
  // Three figures to a line: a small label over its value.
- const rows=details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{width:'33.333%',paddingEnd:8,gap:2}}>
+ const rows=details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{width:'50%',paddingEnd:8,gap:2}}>
   <Text numberOfLines={1} style={{fontSize:12,lineHeight:16,color:colors.muted}}>{detail.label}</Text>
   {typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} tone='text' style={{fontSize:15,lineHeight:22,fontWeight:'600'}}/>:<Text style={{fontSize:15,lineHeight:22,fontWeight:'600',color:colors.text}}>{detail.value}</Text>}
  </View>);
