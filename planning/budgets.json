@@ -1,21 +1,21 @@
 {
   "button": {
-    "gzip": 1114
+    "gzip": 1126
   },
   "field": {
     "gzip": 440
   },
   "nativeSwitch": {
-    "gzip": 3007
+    "gzip": 3049
   },
   "feedbackContract": {
     "gzip": 1200
   },
   "docsJS": {
-    "gzip": 780588
+    "gzip": 788394
   },
   "docsCSS": {
-    "raw": 214868
+    "raw": 217017
   },
   "fonts": {
     "raw": 600000
