@@ -1,6 +1,6 @@
 import {launchBrowser} from './browser-launcher.mjs';
 import {workspaceVersion} from './workspace-version.mjs';
-import {chromium,webkit} from '@playwright/test';
+import {chromium,webkit,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import {writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
@@ -17,9 +17,9 @@ await page.goto(process.env.HIG_PREVIEW_URL??'http://localhost:4173',{waitUntil:
 // Plain CSS host: @font-face registers the literal families the token font roles fall back to (#65).
 await assertLoadedFace(page,'.hig-button',/^Bloxwap Sans$/);await assertLoadedFace(page,'.hig-number',/^Bloxwap Mono$/);
 await page.getByRole('button',{name:'Review order',exact:true}).click();
-assert.equal(await page.getByRole('dialog').count(),1);
+await expect(page.getByRole('dialog')).toBeVisible();
 await page.keyboard.press('Escape');
-assert.equal(await page.getByRole('dialog').count(),0);
+await expect(page.getByRole('dialog')).toHaveCount(0);
 await page.getByRole('tab',{name:'Preview',exact:true}).focus();
 await page.keyboard.press('ArrowRight');
 assert.equal(await page.getByRole('tab',{name:'Code',exact:true}).getAttribute('aria-selected'),'true');
