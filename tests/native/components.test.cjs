@@ -443,7 +443,7 @@ it('uses a compact window only when offscreen row offsets are available',()=>{
   expect(list().props.accessibilityState).toBe(accessibilityState);
   const limits=windowSize=>computeWindowedRenderLimits({data:items,getItemCount:data=>data.length},list().props.maxToRenderPerBatch,windowSize,
    {first:0,last:999},{getCellMetricsApprox:index=>({index,offset:index*60,length:60})},{dt:16,offset:30001,velocity:1,visibleLength:viewport,zoomScale:1});
-  const {windowSizeOrDefault}=require('@react-native/virtualized-lists/Lists/VirtualizedListProps');
+  const {windowSizeOrDefault}=require(resolveFromReactNative.resolve('@react-native/virtualized-lists/Lists/VirtualizedListProps'));
   const previous=limits(windowSizeOrDefault(undefined));
   expect(previous.last-previous.first+1).toBe(21*viewport/60+1);
   const window=limits(list().props.windowSize);
