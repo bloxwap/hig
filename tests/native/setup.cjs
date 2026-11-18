@@ -10,7 +10,7 @@ jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
  return {
   __esModule:true,
-  default:{View:RN.View,Text:RN.Text,createAnimatedComponent:component=>component},
+  default:{View:RN.View,Text:RN.Text,ScrollView:RN.ScrollView,createAnimatedComponent:component=>component},
   cancelAnimation:mockNumberReanimated.cancel,
   withTiming:mockNumberReanimated.timing,
   useSharedValue(initial){
@@ -23,6 +23,8 @@ jest.mock('react-native-reanimated',()=>{
    return ref.current;
   },
   useAnimatedStyle:updater=>updater(),
+  // Inert stand-ins for a block that draws inside the gesture sheet; the sheet's own tests replace this module.
+  runOnJS:fn=>fn,useDerivedValue:fn=>({get value(){return fn();}}),useAnimatedProps:()=>({}),useAnimatedScrollHandler:handler=>handler,useAnimatedReaction:()=>{},
   useFrameCallback:()=>React.useRef({setActive:jest.fn()}).current,
   Easing:{cubic:value=>value,out:easing=>easing,bezier:(...points)=>({bezier:points})},
   ReduceMotion:{Never:'never',System:'system',Always:'always'},

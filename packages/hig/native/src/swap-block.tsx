@@ -1,5 +1,6 @@
 import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts/decimal';
 import {useAsyncResult} from './async-result.js';
+import {SeverityIcon} from './icons.js';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type StyleProp,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
@@ -284,7 +285,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    </View>
   </View>
   {toCard}
-  {note?<View testID='swap-note' style={tone?{marginTop:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{marginTop:8,paddingHorizontal:4}}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
+  {note?<View testID='swap-note' style={tone?{marginTop:8,flexDirection:'row',alignItems:'flex-start',gap:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{marginTop:8,paddingHorizontal:4}}>{tone&&<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><SeverityIcon kind={noteTone==='warning'?'warning':'error'} color={tone}/></View>}<Text style={{flexShrink:1,fontSize:14,lineHeight:21,color:tone?colors.text:colors.muted}}>{note}</Text></View>:null}
   {!showReceive&&keypad!=='never'?<SwapKeypad onKey={press} label={t.swapKeypad} deleteLabel={t.swapDelete}/>:null}
   <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:16}}>
    {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' disabled={submitting} onPress={()=>!submitting&&show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}
@@ -324,12 +325,3 @@ function SwapStage({view,children}:React.PropsWithChildren<{view:SwapView}>){
  </View>;
 }
 
-/** @deprecated Renamed `SwapBlock`. The old name keeps working until the next major release. */
-export const SwapPanel=SwapBlock;
-/** @deprecated Renamed `SwapBlockProps`. */
-export type SwapPanelProps=SwapBlockProps;
-
-/** @deprecated Use SwapBlock. */
-export const SwapPanelBlock=SwapBlock;
-/** @deprecated Use SwapBlockProps. */
-export type SwapPanelBlockProps=SwapBlockProps;

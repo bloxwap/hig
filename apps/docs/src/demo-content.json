@@ -532,6 +532,18 @@
       ]
     },
     {
+      "name": "InlineNotice",
+      "route": "components/inline-notice",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "success",
+        "warning",
+        "error"
+      ]
+    },
+    {
       "name": "Callout",
       "route": "components/callout",
       "family": "status",
@@ -1193,6 +1205,16 @@
       "nativeSupport": "renderer",
       "states": [
         "default"
+      ]
+    },
+    {
+      "name": "AdvancedBlock",
+      "route": "components/advanced-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "completed"
       ]
     }
   ]

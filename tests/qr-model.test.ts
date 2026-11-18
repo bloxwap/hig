@@ -1,17 +1,15 @@
 // HIG's QR encoder and drawing geometry (@bloxwap/hig/contracts/qr), checked against the specification's published
-// constants, against the encoders installed in this workspace (Cuer's, and Kazuhiko Arase's where present), and by decoding:
+// constants, against the encoders installed in this workspace (Paul Miller's `qr`, and Kazuhiko Arase's where present), and by decoding:
 // from a bitmap of the modules, and from the SVG a renderer writes, rasterised by librsvg (sharp).
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {describe,expect,it} from 'vitest';
-import {create as cuer} from 'cuer/QrCode';
 import sharp from 'sharp';
 import {QRCapacityError,QR_QUIET_ZONE,encodeQR,qrAlignmentCentres,qrArenaSize,qrCodeGeometry,qrErrorCorrection,qrErrorCorrectionCodewords,qrFormatBits,qrFrame,qrGeometry,qrMaskAt,qrMode,qrPenalty,qrRows,qrUtf8,qrVersionBits,type QRErrorCorrection,type QRMatrix} from '../packages/hig/contracts/src/qr';
 const require=createRequire(import.meta.url);
-// `qr` is Cuer's encoder, installed as its dependency: resolved from Cuer so the test does not lean on hoisting.
-const fromCuer=createRequire(require.resolve('cuer/package.json'));
-const {encodeQR:reference}=await import(pathToFileURL(fromCuer.resolve('qr')).href) as {encodeQR:(text:string,output:'raw',options:{ecc?:QRErrorCorrection;version?:number;mask?:number;encoding?:'numeric'|'alphanumeric'|'byte';border:number;scale:number})=>boolean[][]};
-const {decodeQR}=await import(pathToFileURL(fromCuer.resolve('qr/decode.js')).href) as {decodeQR:(image:{width:number;height:number;data:Uint8Array})=>string};
+// `qr` is the reference encoder and decoder, a development dependency of this workspace only.
+const {encodeQR:reference}=await import(pathToFileURL(require.resolve('qr')).href) as {encodeQR:(text:string,output:'raw',options:{ecc?:QRErrorCorrection;version?:number;mask?:number;encoding?:'numeric'|'alphanumeric'|'byte';border:number;scale:number})=>boolean[][]};
+const {decodeQR}=await import(pathToFileURL(require.resolve('qr/decode.js')).href) as {decodeQR:(image:{width:number;height:number;data:Uint8Array})=>string};
 /** The reference matrix without its one-module border (`qr` refuses a border of zero). */
 const referenceRows=(value:string,options:{ecc?:QRErrorCorrection;version?:number;mask?:number;encoding?:'numeric'|'alphanumeric'|'byte'}={})=>reference(value,'raw',{...options,border:1,scale:1}).slice(1,-1).map(row=>row.slice(1,-1));
 const levels:readonly QRErrorCorrection[]=['low','medium','quartile','high'];
@@ -30,7 +28,7 @@ function bitmap(size:number,scale:number,dark:(x:number,y:number)=>boolean){
 /** What an arena can put over the centre: a solid dark mark, or a busy pattern. */
 const arenaFills:Record<string,(x:number,y:number)=>boolean>={dark:()=>true,checker:(x,y)=>(Math.floor(x*2)+Math.floor(y*2))%2===0,stripes:x=>Math.floor(x)%2===0};
 const squares=(matrix:QRMatrix)=>bitmap(matrix.size,6,(x,y)=>x>=0&&y>=0&&x<matrix.size&&y<matrix.size&&matrix.modules[Math.floor(y)*matrix.size+Math.floor(x)]===1);
-/** The Cuer drawing as pixels: the dots read back from the path, the finder patterns as a rounded ring and core. */
+/** The drawing as pixels: the dots read back from the path, the finder patterns as a rounded ring and core. */
 function dots(geometry:NonNullable<ReturnType<typeof qrCodeGeometry>>,arenaFill:((x:number,y:number)=>boolean)|null=null){
  const centres=[...geometry.path.matchAll(/M([\d.]+) ([\d.]+)a0\.4 0\.4 0 1 0 0\.8 0a0\.4 0\.4 0 1 0 -0\.8 0/g)].map(match=>[Number(match[1])+0.4,Number(match[2])] as const);
  expect(centres).toHaveLength(geometry.dots);
@@ -163,15 +161,15 @@ describe('QR payload packing',()=>{
  });
 });
 describe('QR matrix against the installed encoders',()=>{
- it('matches Cuer module for module: addresses, payment URIs, links, digits, upper case and UTF-8 at every level',()=>{
+ it('matches the reference encoder module for module: addresses, payment URIs, links, digits, upper case and UTF-8 at every level',()=>{
   const payloads=['',' ','1','A','a',eth,sol,`ethereum:${eth}@8453`,`solana:${sol}?amount=1&label=Bloxwap`,'https://bloxwap.com/invite/9e0fD0622874','HTTPS://BLOXWAP.COM/INVITE','0123456789012345678901234567890123456789','HELLO WORLD','bitcoin:bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq?amount=0.001','Zażółć gęślą jaźń','日本語のテキスト','🚀🚀🚀 to the moon','WIFI:T:WPA;S:hig;P:"p4ss;word";;','x'.repeat(300),'9'.repeat(700)];
   for(const value of payloads)for(const errorCorrection of levels){
-   const matrix=encodeQR(value,{errorCorrection}),theirs=cuer(value,{errorCorrection});
-   expect(matrix.size,`${JSON.stringify(value.slice(0,24))} ${errorCorrection}`).toBe(theirs.edgeLength);
-   expect(qrRows(matrix),`${JSON.stringify(value.slice(0,24))} ${errorCorrection}`).toEqual(theirs.grid);
+   const matrix=encodeQR(value,{errorCorrection}),theirs=referenceRows(value,{ecc:errorCorrection});
+   expect(matrix.size,`${JSON.stringify(value.slice(0,24))} ${errorCorrection}`).toBe(theirs.length);
+   expect(qrRows(matrix),`${JSON.stringify(value.slice(0,24))} ${errorCorrection}`).toEqual(theirs);
   }
  },slow);
- it('matches Cuer for 600 generated payloads of every mode and many lengths, choosing the same version and mask',()=>{
+ it('matches the reference encoder for 600 generated payloads of every mode and many lengths, choosing the same version and mask',()=>{
   const next=random(20261116);
   const alphabets=['0123456789','0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:','abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:/?&=._-','héllo wörld ✓ 日本語 🚀 ك'].map(text=>[...text]);
   const seen={versions:new Set<number>(),masks:new Set<number>(),modes:new Set<string>()};
@@ -180,7 +178,7 @@ describe('QR matrix against the installed encoders',()=>{
    let value='';for(let k=0;k<length;k++)value+=alphabet[Math.floor(next()*alphabet.length)];
    const errorCorrection=levels[Math.floor(index/4)%4]!;
    const matrix=encodeQR(value,{errorCorrection});seen.versions.add(matrix.version);seen.masks.add(matrix.mask);seen.modes.add(matrix.mode);
-   expect(qrRows(matrix),`payload ${index} (${length} characters, ${errorCorrection})`).toEqual(cuer(value,{errorCorrection}).grid);
+   expect(qrRows(matrix),`payload ${index} (${length} characters, ${errorCorrection})`).toEqual(referenceRows(value,{ecc:errorCorrection}));
   }
   expect([...seen.masks].sort()).toEqual([0,1,2,3,4,5,6,7]);expect([...seen.modes].sort()).toEqual(['alphanumeric','byte','numeric']);expect(seen.versions.size).toBeGreaterThan(20);
  },slow);
@@ -206,7 +204,7 @@ describe('QR matrix against the installed encoders',()=>{
  });
  it('refuses the values the reference refuses',()=>{
   for(const [value,errorCorrection] of [['a'.repeat(2954),'low'],['a'.repeat(1274),'high'],['7'.repeat(7090),'low'],['é'.repeat(1500),'low']] as const){
-   expect(()=>encodeQR(value,{errorCorrection})).toThrow(QRCapacityError);expect(()=>cuer(value,{errorCorrection})).toThrow();
+   expect(()=>encodeQR(value,{errorCorrection})).toThrow(QRCapacityError);expect(()=>referenceRows(value,{ecc:errorCorrection})).toThrow();
   }
  });
  // Kazuhiko Arase's encoder ships inside qrcode-terminal, which Expo's CLI installs: a second, unrelated implementation.

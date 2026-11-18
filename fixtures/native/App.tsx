@@ -4,7 +4,7 @@ import React,{useState,useEffect} from 'react';
 import {ScrollView,View,KeyboardAvoidingView,AppState,Linking,I18nManager,PixelRatio,Platform,AccessibilityInfo,useWindowDimensions} from 'react-native';
 import {SafeAreaView,SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {GestureSheetHost} from '@bloxwap/hig/native/gesture-sheet';
 import {nativeColors as colors} from '@bloxwap/hig/tokens';
 import {FeedbackProvider,useFeedback,useFeedbackRuntime} from '@bloxwap/hig/feedback/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -81,4 +81,4 @@ function Gallery(){
 const storage=jsonStorage(AsyncStorage);
 // Metro asset dependencies must be statically analyzable.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-export default function App(){const [loaded,error]=useFonts({BloxwapSansRegular:require('@bloxwap/hig/native-fonts/fonts/BloxwapSans.ttf'),BloxwapSansSemiBold:require('@bloxwap/hig/native-fonts/fonts/BloxwapSans-SemiBold.ttf'),BloxwapMonoRegular:require('@bloxwap/hig/native-fonts/fonts/BloxwapMono.ttf')});if(error)return <Text accessibilityRole='alert'>Font loading failed: {error.message}</Text>;if(!loaded)return <Text>Loading Bloxwap fonts…</Text>;return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><BottomSheetModalProvider><FeedbackProvider createController={createController} storage={storage}><Gallery/></FeedbackProvider></BottomSheetModalProvider></SafeAreaProvider></GestureHandlerRootView>;}
+export default function App(){const [loaded,error]=useFonts({BloxwapSansRegular:require('@bloxwap/hig/native-fonts/fonts/BloxwapSans.ttf'),BloxwapSansSemiBold:require('@bloxwap/hig/native-fonts/fonts/BloxwapSans-SemiBold.ttf'),BloxwapMonoRegular:require('@bloxwap/hig/native-fonts/fonts/BloxwapMono.ttf')});if(error)return <Text accessibilityRole='alert'>Font loading failed: {error.message}</Text>;if(!loaded)return <Text>Loading Bloxwap fonts…</Text>;return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><GestureSheetHost><FeedbackProvider createController={createController} storage={storage}><Gallery/></FeedbackProvider></GestureSheetHost></SafeAreaProvider></GestureHandlerRootView>;}

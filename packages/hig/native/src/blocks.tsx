@@ -23,11 +23,12 @@ export {RewardBlock,rewardProgress,type RewardBlockProps,type RewardPromo,type R
 export {SoundHapticsBlock,soundLevel,type SoundHapticsBlockProps,type SoundSection,type SoundVolume,type SettingAction} from './sound-haptics-block.js';
 export {SignalsBlock,type SignalsBlockProps,type SignalsGroup,type SignalsItem} from './signals-block.js';
 export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} from './notifications-block.js';
-export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps,SwapHostContext} from './pickers.js';
+export {FromPickerBlock,ToPickerBlock,type FromPickerBlockProps,type ToPickerBlockProps,type PickerListProps,type PickerInputProps,type PickerRowProps,SwapHostContext} from './pickers.js';
 export {SwapKeypad,SwapCapsule} from './swap-parts.js';
 export {SwapAmountCard,SwapPill,type SwapAmountCardProps,type SwapPillProps} from './swap-amount-card.js';
-export {SwapBlock,SwapPanelBlock,SwapPanel,swapAction,type SwapBlockProps,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-block.js';
+export {SwapBlock,swapAction,type SwapBlockProps,type SwapToken,type SwapArtwork,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapFigure,type SwapReceive,type SwapDestination,type SwapDetail,type SwapView} from './swap-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom,type PresetPickerAdjustable} from './preset-picker-block.js';
 export {PositionsBlock,type PositionsBlockProps,type OpenPosition} from './positions-block.js';
 export {ClaimRewardBlock,type ClaimRewardBlockProps} from './claim-reward-block.js';
+export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWallet} from './advanced-block.js';

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.10.0
+
+- Add `AdvancedBlock` on React and React Native: the unified-exchange switch, setup tasks with their completion, a warning callout, wallet export rows and account deletion.
+- Add `InlineNotice`, an inline card with a decorative icon in its own leading column, for `info`, `success`, `warning` and `error`.
+- Draw primary and destructive buttons with their accent as the label and a 15% tint as the fill.
+- Draw the altimeter chart in Display P3 where the host supports it: a P3 canvas on web, and the P3 palette on iOS under `HIGProvider colorSpace="display-p3"`. sRGB stays the fallback and the Android palette.
+- Move the native sheet on one curve: opening, closing, snapping and resizing use the measured Vaul Dynamic Drawer curve, `cubic-bezier(.26,.08,.25,1)`, over 270 ms.
+- Make HIG's own engine the one native gesture sheet. `@bloxwap/hig/native/gesture-sheet` no longer wraps `@gorhom/bottom-sheet`, which is no longer a peer; the `@bloxwap/hig/native/gesture-sheet-next` path is removed. Hosts mount `GestureSheetHost` in place of `BottomSheetModalProvider` and scroll sheet content with `GestureSheetScrollView`. The backend-typed props are gone: `modalRef`, `sheetRef`, `handleComponent`, `backgroundComponent`, `backdropComponent`, `animationConfigs`, `containerStyle`, `keyboardBehavior`, `keyboardBlurBehavior`, `android_keyboardInputMode` and `enableContentPanningGesture`. The native `SwapSheet` draws in the same sheet.
+- Hand a list inside the native sheet its own scroll events, so a windowed list keeps drawing rows, and keep hearing close requests after a host declines one.
+- Draw `WalletAddress` with HIG's own `QRCode` on web and native. `cuer` is no longer a peer, and the native `wallet-address` entry no longer exports the `qrGeometry` helper of the earlier drawing. The `@bloxwap/hig/react/wallet-address-core` path and its `WalletAddressCoreProps` name are removed, since `react/wallet-address` is the same component; `@bloxwap/hig/native/wallet-address-core` stays as the entry that loads no SVG library.
+- Remove the grey highlight native sheets drew in the top-left corner behind the handle and header. A pinned header still fades the content that scrolls under it.
+- Export `Avatar` from the avatar entries alone. `@bloxwap/hig/react/status` and `@bloxwap/hig/native/status` no longer export it; the native status one was the frame without the generated face, so a native host now needs `react-native-svg` to draw an `Avatar`.
+- Remove every superseded name and path instead of carrying it: the `recipes` import paths (`react/recipes`, `react/recipes/<name>`, `native/recipes`), `SwapPanelBlock`, `SwapPanel` and their props types with the `react/blocks/swap-panel-block` and `react/blocks/swap-panel` paths, `FromPicker` and `ToPicker` with their props types, and the chart prop `dgen` (use `degen`). Nothing in the package is marked deprecated any more. `node codemods/superseded.mjs --write <files>` rewrites a host's imports to the current paths and names.
+
 ## 0.9.3
 
 - First npm release of the 0.9.2 changes below. The 0.9.2 GitHub tag is preserved; its npm publication stopped at a native test that resolved a React Native helper only under a hoisted install, which is fixed here.

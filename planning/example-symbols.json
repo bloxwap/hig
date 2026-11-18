@@ -97,12 +97,14 @@
     "NumberFlowGroup": "animated-number",
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
+    "InlineNotice": "status",
     "ListRow": "list-group",
     "LoginBlock": "blocks",
     "DepositBlock": "blocks",
     "LanguageBlock": "blocks",
     "PositionsBlock": "blocks",
-    "ClaimRewardBlock": "blocks"
+    "ClaimRewardBlock": "blocks",
+    "AdvancedBlock": "blocks"
   },
   "native": {
     "ScreenHeader": "screen-header",
@@ -198,6 +200,7 @@
     "NumberFlowGroup": "animated-number",
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
+    "InlineNotice": "status",
     "ListRow": "list-group",
     "LoginBlock": "blocks",
     "DepositBlock": "blocks",
@@ -205,6 +208,8 @@
     "AltimeterChart": "chart",
     "PositionsBlock": "blocks",
     "ClaimRewardBlock": "blocks",
-    "BottomSheetScrollView": "@gorhom/bottom-sheet"
+    "GestureSheetScrollView": "gesture-sheet",
+    "GestureSheetHost": "gesture-sheet",
+    "AdvancedBlock": "blocks"
   }
 }

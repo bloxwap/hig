@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,cpSync,rmSync,symlinkSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,cpSync,rmSync,symlinkSync,readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {join,resolve} from 'node:path';
@@ -85,27 +85,20 @@ it.each(['chapter', 'examples'])('post-build drift gate rejects stale %s outputs
   expect(node('check-generated-drift').status).toBe(1);
  } finally {rmSync(directory,{recursive:true,force:true});}
 },30000);
-it('blocks entries exist for every block, and each published recipes path is a deprecated alias of the same files',()=>{
+it('blocks entries exist for every block, and nothing is published under the earlier recipes name',()=>{
  const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
- const published=['./react/recipes','./react/recipes/market-row','./react/recipes/trade-entry','./react/recipes/swap-panel','./react/recipes/pickers','./react/recipes/swap-sheet','./react/recipes/install-command','./react/recipes/marketing-hero','./native/recipes'];
- // The paths that shipped through 0.5.2 keep working, except the removed BalanceCard, CodeWindow and ActivityList; nothing new is added under the old name.
- expect(Object.keys(exportsMap).filter(key=>key.includes('/recipes')).sort()).toEqual([...published].sort());
- for(const key of published){const twin=key.replace('/recipes','/blocks');expect(exportsMap[twin],twin).toBeDefined();expect(exportsMap[key],key).toEqual(exportsMap[twin]);expect(JSON.stringify(exportsMap[twin])).not.toContain('recipes');}
+ expect(Object.keys(exportsMap).filter(key=>key.includes('/recipes'))).toEqual([]);
  for(const key of ['./react/blocks/account-block','./react/blocks/token-action-block','./react/blocks/manage-position-block','./react/blocks/trade-history-list-block','./react/blocks/trade-history-detail-block','./react/blocks/target-block','./native/target-block','./react/blocks/position-block','./native/position-block','./react/blocks/profile-block','./native/profile-block','./react/blocks/assets-block','./native/assets-block','./react/blocks/confirm-block','./native/confirm-block','./react/blocks/preset-picker-block','./native/preset-picker-block','./react/blocks/reward-block','./native/reward-block','./react/blocks/sound-haptics-block','./native/sound-haptics-block','./react/blocks/signals-block','./native/signals-block','./react/blocks/notifications-block','./native/notifications-block','./react/blocks/language-block','./native/language-block','./react/blocks/screen-header','./native/screen-header'])expect(exportsMap[key],key).toBeDefined();
 });
-it('FromPicker and ToPicker keep working as deprecated aliases of the picker blocks',async()=>{
- const web=await import('../packages/hig/react/src/blocks/pickers'),aggregate=await import('../packages/hig/react/src/blocks');
- expect(web.FromPicker).toBe(web.FromPickerBlock);expect(web.ToPicker).toBe(web.ToPickerBlock);expect(aggregate.FromPicker).toBe(aggregate.FromPickerBlock);expect(aggregate.ToPicker).toBe(aggregate.ToPickerBlock);
- for(const file of ['packages/hig/react/src/blocks/pickers.tsx','packages/hig/native/src/pickers.tsx']){const source=readFileSync(file,'utf8');expect(source).toMatch(/@deprecated Renamed `FromPickerBlock`[\s\S]*export const FromPicker=FromPickerBlock;/);expect(source).toMatch(/@deprecated Renamed `ToPickerBlock`[\s\S]*export const ToPicker=ToPickerBlock;/);}
-});
-it('keeps the previous swap block names and entry points compatible',async()=>{
- const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
- for(const key of ['./react/blocks/swap-panel-block','./react/blocks/swap-panel','./react/recipes/swap-panel'])expect(exportsMap[key],key).toEqual(exportsMap['./react/blocks/swap-block']);
- const web=await import('../packages/hig/react/src/blocks/swap-block'),aggregate=await import('../packages/hig/react/src/blocks');
- for(const entry of [web,aggregate]){
-  expect(entry.SwapPanelBlock).toBe(entry.SwapBlock);
-  expect(entry.SwapPanel).toBe(entry.SwapBlock);
- }
+it('publishes each renamed block under its one name and path: the superseded names and paths are gone',async()=>{
+ const manifest=JSON.parse(readFileSync('packages/hig/package.json','utf8'));const exportsMap=manifest.exports as Record<string,unknown>;
+ for(const key of ['./react/blocks/swap-panel-block','./react/blocks/swap-panel','./native/gesture-sheet-next','./react/wallet-address-core'])expect(exportsMap[key],key).toBeUndefined();
+ for(const key of ['./react/blocks/swap-block','./native/gesture-sheet','./react/wallet-address'])expect(exportsMap[key],key).toBeDefined();
+ const web=await import('../packages/hig/react/src/blocks/swap-block'),pickers=await import('../packages/hig/react/src/blocks/pickers'),aggregate=await import('../packages/hig/react/src/blocks');
+ for(const name of ['SwapPanelBlock','SwapPanel','FromPicker','ToPicker'])for(const entry of [web,pickers,aggregate])expect(name in entry,name).toBe(false);
+ // Nothing in the package is marked deprecated: a superseded name is removed, not carried.
+ const sources=['react','native','chart','contracts','feedback','tokens'].flatMap(entry=>readdirSync(`packages/hig/${entry}/src`,{recursive:true}).map(String).filter(file=>/\.tsx?$/.test(file)).map(file=>`packages/hig/${entry}/src/${file}`));
+ expect(sources.filter(file=>readFileSync(file,'utf8').includes('@deprecated'))).toEqual([]);
 });
 it('rejects a renderer that imports the contracts index instead of the contract module it needs',()=>{
  const fixture=(source:string)=>{const root=mkdtempSync(join(tmpdir(),'hig-contract-import-'));mkdirSync(join(root,'native/dist'),{recursive:true});writeFileSync(join(root,'native/dist/button.js'),source);return root;};

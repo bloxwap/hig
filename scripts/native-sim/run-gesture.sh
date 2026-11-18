@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Rebuilds the prepared app with the optional GestureSheet entry (fixtures/native/index-gesture.js:
-# Gorhom bottom sheet + Reanimated 4 + Worklets) and observes detent drag, canceled dismissal,
+# HIG's own sheet on Reanimated 4 + Gesture Handler + Worklets) and observes detent drag, canceled dismissal,
 # drag dismissal and Android back on the iOS Simulator and Android emulator.
 # Usage: run-gesture.sh <app-dir> <udid> <xctestrun> <out-dir>   (ANDROID_SERIAL selects the emulator)
 set -uo pipefail

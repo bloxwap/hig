@@ -47,7 +47,7 @@ it('fills the Custom row with its value when the host holds a custom value, and 
  const view=mount({selected:null,value:75,custom:{label:'Custom amount',value:'$75',onSelect:()=>{}}});
  const row=pressable(view,'preset-picker-custom');
  expect(row.props.accessibilityState).toEqual({selected:true});expect(row.props.accessibilityLabel).toBe('Custom amount, $75');
- expect(flat(row).backgroundColor).toBe(nativeSrgb.action);expect(text(host(view,'preset-picker-custom-value'))).toBe('$75');
+ expect(flat(row).backgroundColor).toBe(nativeSrgb.action+'26');expect(text(host(view,'preset-picker-custom-value'))).toBe('$75');
  // A host accessibility label and test ID replace the defaults.
  const own=mount({custom:{label:'Custom amount',value:'$75',selected:false,onSelect:()=>{},accessibilityLabel:'Edit custom size, current $75',testID:'my-custom'}});
  expect(pressable(own,'my-custom').props.accessibilityLabel).toBe('Edit custom size, current $75');expect(pressable(own,'my-custom').props.accessibilityState).toEqual({selected:false});

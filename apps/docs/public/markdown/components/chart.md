@@ -128,6 +128,8 @@ Consumers: an org-wide GitHub code search (default branches) on 2026-10-16 found
 
 ## Platform mapping and limits
 
+The altimeter defaults to Bloxwap green for gains and pink-red for losses. Web requests a Display P3 canvas and uses the sRGB palette when P3 colours are unsupported. React Native uses the Display P3 palette on iOS when the host renders in P3 and sets `HIGProvider colorSpace="display-p3"`. Android uses the sRGB equivalents.
+
 The React Native altimeter uses `react-native-svg` on iOS and Android. Its renderer limits SVG updates to 30 Hz, keeps a bounded sample history, caches ladder labels, and uses the price sample cadence under reduced motion. Physical-device frame times are unmeasured. For outcome and candle charts, native consumers use labeled readouts or lists.
 
 ## Validation and citation

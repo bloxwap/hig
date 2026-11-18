@@ -61,24 +61,14 @@ export function releaseTarget(position:number,velocity:number,positions:readonly
  if(dismissible&&position>lowest+(closed-lowest)/2)return -1;
  return nearest;
 }
-/**
- * The spring every settle uses: critically damped (damping = 2·√(stiffness·mass)), so the sheet lands without a bounce and
- * without a slow tail, in about a third of a second. An overdamped spring creeps to rest and keeps drawing frames long
- * after the sheet looks still (measured on a Seeker: animating almost a second per settle).
- */
-export const SHEET_SPRING={damping:36,stiffness:320,mass:1,overshootClamping:true} as const;
 /** Backdrop strength for a position: full at the lowest detent and above, fading to none at closed. */
 export function backdropProgress(position:number,lowest:number,closed:number):number{
  'worklet';
  if(closed<=lowest)return position>=closed?0:1;
  return Math.max(0,Math.min(1,(closed-position)/(closed-lowest)));
 }
-/**
- * How a content-sized sheet moves when its content changes height while it rests: one curve with no spring and no
- * overshoot, a short ease in and a long ease out, the values of Vaul's Dynamic Drawer. Drag releases, opening and closing
- * use the spring.
- */
-export const SHEET_RESIZE={duration:270,curve:[0.26,0.08,0.25,1]} as const;
+/** Sheet travel follows the height transition measured from Vaul's Dynamic Drawer. */
+export const SHEET_TRANSITION={duration:270,curve:[0.26,0.08,0.25,1]} as const;
 
 /** Invalid fixed detents are programmer errors, before they reach either sheet backend. */
 export function validateSnapPoints(points:readonly SheetSnapPoint[],initialIndex=0){

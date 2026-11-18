@@ -429,7 +429,7 @@
       "variants": {
         "scrollable": {
           "web": "<C.GestureSheet open={open} onOpenChange={setOpen} trigger={<C.Button>Open scrollable account</C.Button>} title='Account' labelledBy='scrollable-account-title' closeButton={null} enableDynamicSizing maxDynamicContentSize={380} contentProps={{style:{maxWidth:390,marginInline:'auto'}}}><C.AccountBlock headingId='scrollable-account-title' headerAction={<C.IconButton label='Close account' intent='ghost' onClick={()=>setOpen(false)}><C.Text>×</C.Text></C.IconButton>} assets={[['USDC','USD Coin'],['BTC','Bitcoin'],['ETH','Ether'],['SOL','Solana'],['HYPE','Hyperliquid'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['ADA','Cardano'],['LTC','Litecoin'],['UNI','Uniswap'],['AAVE','Aave']].map(([symbol,name])=>({id:symbol,symbol,name,balance:0,price:1}))}/></C.GestureSheet>",
-          "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open scrollable account</C.Button><C.GestureSheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Account' labelledBy='scrollable-account-title' contentMode='custom' snapPoints={['50%','80%']}><C.AccountBlock stickyHeader scrollComponent={({children,...props})=><C.BottomSheetScrollView {...props}>{children}</C.BottomSheetScrollView>} headingId='scrollable-account-title' headerAction={<C.IconButton label='Close account' intent='ghost' onPress={()=>setOpen(false)}><C.Text>×</C.Text></C.IconButton>} assets={[['USDC','USD Coin'],['BTC','Bitcoin'],['ETH','Ether'],['SOL','Solana'],['HYPE','Hyperliquid'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['ADA','Cardano'],['LTC','Litecoin'],['UNI','Uniswap'],['AAVE','Aave']].map(([symbol,name])=>({id:symbol,symbol,name,balance:0,price:1}))}/></C.GestureSheet></C.Stack>"
+          "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open scrollable account</C.Button><C.GestureSheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Account' labelledBy='scrollable-account-title' contentMode='custom' snapPoints={['50%','80%']}><C.AccountBlock stickyHeader scrollComponent={({children,...props})=><C.GestureSheetScrollView {...props}>{children}</C.GestureSheetScrollView>} headingId='scrollable-account-title' headerAction={<C.IconButton label='Close account' intent='ghost' onPress={()=>setOpen(false)}><C.Text>×</C.Text></C.IconButton>} assets={[['USDC','USD Coin'],['BTC','Bitcoin'],['ETH','Ether'],['SOL','Solana'],['HYPE','Hyperliquid'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['ADA','Cardano'],['LTC','Litecoin'],['UNI','Uniswap'],['AAVE','Aave']].map(([symbol,name])=>({id:symbol,symbol,name,balance:0,price:1}))}/></C.GestureSheet></C.Stack>"
         }
       }
     },
@@ -655,6 +655,38 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "InlineNotice",
+      "added": "0.10.0",
+      "slug": "inline-notice",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.InlineNotice severity='info' title='Transfer timing' description='Bank transfers usually arrive within three business days.'/>",
+      "native": "<C.InlineNotice severity='info' title='Transfer timing' description='Bank transfers usually arrive within three business days.'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "success",
+        "warning",
+        "error"
+      ],
+      "a11y": "The icon is decorative. The title and description are readable static text.",
+      "feedback": "No feedback.",
+      "variants": {
+        "success": {
+          "web": "<C.InlineNotice severity='success' title='Transfer complete' description='Your funds are available.'/>",
+          "native": "<C.InlineNotice severity='success' title='Transfer complete' description='Your funds are available.'/>"
+        },
+        "warning": {
+          "web": "<C.InlineNotice severity='warning' title='Transfer delayed' description='Allow an extra business day.'/>",
+          "native": "<C.InlineNotice severity='warning' title='Transfer delayed' description='Allow an extra business day.'/>"
+        },
+        "error": {
+          "web": "<C.InlineNotice severity='error' title='Transfer failed' description='Check the account details before trying again.'/>",
+          "native": "<C.InlineNotice severity='error' title='Transfer failed' description='Check the account details before trying again.'/>"
+        }
+      }
+    },
+    {
       "name": "Callout",
       "slug": "callout",
       "entry": "status",
@@ -688,8 +720,8 @@
       "entry": "toast",
       "family": "status",
       "added": "0.8.0",
-      "web": "<><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>",
-      "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "web": "<><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -1951,8 +1983,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.3' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.9.3')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.3' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.10.0')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -2053,6 +2085,22 @@
       ],
       "a11y": "The prize amount and the Claim and Cancel buttons are named.",
       "feedback": "Claim opens the host confirmation screen. Cancel dismisses the prize."
+    },
+    {
+      "name": "AdvancedBlock",
+      "added": "0.10.0",
+      "slug": "advanced-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "completed"
+      ],
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "web": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:state===\"completed\",onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>",
+      "native": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:state===\"completed\",onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "0.9.3",
+  "version": "0.10.0",
   "components": [
     {
       "name": "Button",
@@ -391,6 +391,18 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
+        "error"
+      ]
+    },
+    {
+      "name": "InlineNotice",
+      "route": "components/inline-notice",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "success",
+        "warning",
         "error"
       ]
     },
@@ -1056,6 +1068,16 @@
       "nativeSupport": "renderer",
       "states": [
         "default"
+      ]
+    },
+    {
+      "name": "AdvancedBlock",
+      "route": "components/advanced-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "completed"
       ]
     }
   ]

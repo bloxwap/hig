@@ -130,10 +130,10 @@ describe('picker token rows',()=>{
  });
 });
 
-describe('SwapPanelBlock title',()=>{
+describe('SwapBlock title',()=>{
  it('draws the shared ScreenHeader, named by headingId',async()=>{
   const back=vi.fn();
-  render(<blocks.SwapPanelBlock tokens={[]} onSubmit={()=>{}} title='Withdraw from Papertrade' headingId='withdraw-title' onBack={back}/>);
+  render(<blocks.SwapBlock tokens={[]} onSubmit={()=>{}} title='Withdraw from Papertrade' headingId='withdraw-title' onBack={back}/>);
   const heading=screen.getByRole('heading',{level:2,name:'Withdraw from Papertrade'});
   expect(heading.id).toBe('withdraw-title');expect(heading.className).toBe('hig-screen-title');expect(heading.closest('.hig-screen-header')).toBeTruthy();
   expect(document.querySelector('.hig-swap-view-header')).toBeNull();
@@ -145,8 +145,9 @@ describe('Button market fills',()=>{
  it('takes intent up or down, following the provider market colours',()=>{
   render(<><Button intent='up'>Long</Button><Button intent='down'>Short</Button></>);
   expect(screen.getByRole('button',{name:'Long'}).dataset.intent).toBe('up');expect(screen.getByRole('button',{name:'Short'}).dataset.intent).toBe('down');
-  expect(rule(".hig-button[data-intent='up']")).toContain('background:var(--hig-up,var(--hig-buy));color:var(--hig-background)');
-  expect(rule(".hig-button[data-intent='down']")).toContain('background:var(--hig-down,var(--hig-sell));color:var(--hig-background)');
+  expect(rule(".hig-button")).toContain("background:color-mix(in srgb,var(--hig-glow,var(--hig-action)) 15%,transparent)");
+  expect(rule(".hig-button[data-intent='up']")).toContain('color:var(--hig-up,var(--hig-buy))');
+  expect(rule(".hig-button[data-intent='down']")).toContain('color:var(--hig-down,var(--hig-sell))');
  });
 });
 

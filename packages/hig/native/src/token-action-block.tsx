@@ -1,3 +1,4 @@
+import {SeverityIcon} from './icons.js';
 import React from 'react';
 import {View,type ScrollViewProps} from 'react-native';
 import {StickyHeaderLayout} from './sticky-header.js';
@@ -46,7 +47,7 @@ export interface TokenActionBlockProps {
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
  headerAction?:React.ReactNode;
- /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */
+ /** A line above the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
  /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
  stickyHeader?:boolean;
@@ -83,10 +84,10 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
    {assets?<BarMark testID='token-assets' surface={false} title={name??symbol} elements={assets} description={headline}/>:null}
    {showChains?<BarMark testID='token-chains' surface={false} title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>:null}
   </View></BarMarkFigureContext.Provider>:null}
-  {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:16}}>
+  {note!=null&&note!==false?<View testID='token-note' style={[{marginTop:16},tone?{flexDirection:'row',alignItems:'flex-start',gap:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{paddingHorizontal:4}]}>{tone&&<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><SeverityIcon kind={noteTone==='warning'?'warning':'error'} color={tone}/></View>}<Text style={{flexShrink:1,fontSize:14,lineHeight:21,color:tone?colors.text:colors.muted}}>{note}</Text></View>:null}
+  {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:note!=null&&note!==false?8:16}}>
    {actions.map(action=><Button key={action.id} testID={`token-action-${action.id}`} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onPress={action.onSelect}>{tokenActionLabel(action,t)}</Button>)}
   </View>:null}
-  {note!=null&&note!==false?<View testID='token-note' style={[{marginTop:actions.length>0?8:16},tone?{paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{paddingHorizontal:4}]}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
  </>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='token-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
  return <View testID={testID} style={{padding:16}}>

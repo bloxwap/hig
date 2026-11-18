@@ -1,6 +1,5 @@
 import React from 'react';
 import {Text,View} from 'react-native';
-import type BottomSheet from '@gorhom/bottom-sheet';
 import {GestureSheet,type GestureSheetProps} from '../../packages/hig/native/src/gesture-sheet.js';
 
 const common={open:true,onOpenChange:()=>{},title:'Size and leverage',children:null};
@@ -10,12 +9,12 @@ const title=React.createRef<React.ComponentRef<typeof Text>>(),trigger=React.cre
 void <GestureSheet {...fixed}/>;
 void <GestureSheet {...fixed} contentMode='custom' titleRef={title} returnFocusRef={trigger}/>;
 void <GestureSheet {...fixed} initialIndex={0}/>;
-void <GestureSheet {...content} enableContentPanningGesture={false} keyboardBlurBehavior='none' android_keyboardInputMode='adjustPan'/>;
-void <GestureSheet {...common} snapPoints={['50%']} presentation='inline' sheetRef={React.createRef<BottomSheet>()}/>;
-// @ts-expect-error Inline has the actual persistent sheet ref, without modal present/dismiss methods.
-void <GestureSheet {...common} snapPoints={['50%']} presentation='inline' modalRef={React.createRef()}/>;
-// @ts-expect-error Modal callers use modalRef.
-void <GestureSheet {...common} snapPoints={['50%']} sheetRef={React.createRef<BottomSheet>()}/>;
+void <GestureSheet {...fixed} presentation='inline'/>;
+void <GestureSheet {...content}/>;
+// @ts-expect-error HIG's own sheet has no backend to configure: the bottom sheet library's props went with it.
+void <GestureSheet {...fixed} animationConfigs={{duration:250}}/>;
+// @ts-expect-error No backend ref either; the sheet is driven by `open`.
+void <GestureSheet {...fixed} modalRef={React.createRef()}/>;
 // @ts-expect-error Content sizing must not add a competing fixed detent.
 void <GestureSheet {...common} enableDynamicSizing snapPoints={['50%']}/>;
 // @ts-expect-error The fixed default continues to require a snap point list.

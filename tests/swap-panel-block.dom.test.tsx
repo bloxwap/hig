@@ -4,7 +4,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {SwapPanelBlock,swapAction,type SwapPanelBlockProps,type SwapToken} from '../packages/hig/react/src/blocks/swap-block';
+import {SwapBlock,swapAction,type SwapBlockProps,type SwapToken} from '../packages/hig/react/src/blocks/swap-block';
 import {SwapSheet} from '../packages/hig/react/src/blocks/swap-sheet';
 import {readFileSync} from 'node:fs';
 import {applyAmountKey,fuzzyMatch,sanitizeAmount,testAmount,unitsToEntry} from '../packages/hig/react/src/blocks/swap/shared';
@@ -18,9 +18,9 @@ const baseUsdc:SwapToken={id:'8453-usdc',symbol:'USDC',name:'USD Coin',chain:'Ba
 const baseEth:SwapToken={id:'8453-eth',symbol:'ETH',name:'Ether',chain:'Base',chainId:8453,price:2000};
 const tokens=[eth,usdc,baseUsdc,baseEth];
 /** Controlled host: owns the pair like a real app would. */
-function Host(props:Partial<SwapPanelBlockProps>&{initialFrom?:SwapToken|null;initialTo?:SwapToken|null}){
+function Host(props:Partial<SwapBlockProps>&{initialFrom?:SwapToken|null;initialTo?:SwapToken|null}){
  const {initialFrom=null,initialTo=null,...rest}=props;const [from,setFrom]=useState(initialFrom);const [to,setTo]=useState(initialTo);
- return <SwapPanelBlock tokens={tokens} from={from} to={to} onFromChange={setFrom} onToChange={setTo} onSubmit={()=>{}} keypad='never' {...rest}/>;
+ return <SwapBlock tokens={tokens} from={from} to={to} onFromChange={setFrom} onToChange={setTo} onSubmit={()=>{}} keypad='never' {...rest}/>;
 }
 const action=()=>screen.getAllByRole('button').find(button=>button.matches('.hig-swap-actions > .hig-button:not(.hig-icon-button)'))!;
 const amount=()=>screen.getByRole('textbox',{name:'From amount'});
@@ -46,7 +46,7 @@ describe('swap helpers',()=>{
   expect(fuzzyMatch('usdc','USD Coin USDC')).toBe(true);expect(fuzzyMatch('ucn','USD Coin')).toBe(true);expect(fuzzyMatch('btc','USD Coin')).toBe(false);
  });
 });
-describe('SwapPanelBlock',()=>{
+describe('SwapBlock',()=>{
  it('starts empty: placeholders, a disabled action that says what is missing, nothing to reset',()=>{
   render(<Host/>);
   expect(screen.getByRole('button',{name:'Select From token'})).toBeTruthy();expect(document.querySelector('.hig-swap-panel')?.getAttribute('data-view')).toBe('main');
@@ -75,7 +75,7 @@ describe('SwapPanelBlock',()=>{
  });
  it('pushes the token picker as a view: search, chain filter, hot section and keyboard',async()=>{
   const from=vi.fn();
-  render(<SwapPanelBlock tokens={tokens} hotTokenIds={['8453-eth','1-usdc']} onFromChange={from} onSubmit={()=>{}} keypad='never'/>);
+  render(<SwapBlock tokens={tokens} hotTokenIds={['8453-eth','1-usdc']} onFromChange={from} onSubmit={()=>{}} keypad='never'/>);
   await userEvent.click(screen.getByRole('button',{name:'Select From token'}));
   const sheet=screen.getByRole('group',{name:'From'});expect(screen.queryByRole('dialog')).toBeNull();
   // The picker replaces the cards inside the panel; the title takes focus without a hardware pointer to type with.
@@ -286,8 +286,8 @@ describe('SwapPanelBlock',()=>{
   await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(reading(amount())).toBe('$7');
  });
 });
-describe('SwapPanelBlock live numbers',()=>{
- const panel=(props:Partial<SwapPanelBlockProps>)=><SwapPanelBlock tokens={tokens} from={eth} to={usdc} onFromChange={()=>{}} onToChange={()=>{}} onSubmit={()=>{}} keypad='never' {...props}/>;
+describe('SwapBlock live numbers',()=>{
+ const panel=(props:Partial<SwapBlockProps>)=><SwapBlock tokens={tokens} from={eth} to={usdc} onFromChange={()=>{}} onToChange={()=>{}} onSubmit={()=>{}} keypad='never' {...props}/>;
  const meta=(side:string)=>document.querySelector(`.hig-swap-card[data-side='${side}'] .hig-swap-meta`)!;
  it('rolls the balance, fee and slippage in place and keeps their sentences',()=>{
   mockAnimate();const view=render(panel({fee:0.27,slippage:0.005}));
@@ -330,7 +330,7 @@ describe('SwapSheet',()=>{
  let motion:HTMLStyleElement;
  beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventListener:vi.fn(),removeEventListener:vi.fn()})));motion=document.createElement('style');motion.textContent='[data-vaul-drawer],[data-vaul-overlay]{animation-name:none!important}';document.head.append(motion);});
  afterEach(()=>{motion.remove();vi.unstubAllGlobals();});
- function Sheet(props:Partial<SwapPanelBlockProps>){const [open,setOpen]=useState(false);return <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<button>Open swap</button>} tokens={tokens} onSubmit={()=>{}} keypad='never' {...props}/>;}
+ function Sheet(props:Partial<SwapBlockProps>){const [open,setOpen]=useState(false);return <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<button>Open swap</button>} tokens={tokens} onSubmit={()=>{}} keypad='never' {...props}/>;}
  it('presents the panel in a gesture sheet and pushes views inside that one sheet',async()=>{
   render(<Sheet/>);expect(screen.queryByRole('dialog')).toBeNull();
   await userEvent.click(screen.getByRole('button',{name:'Open swap'}));
@@ -374,7 +374,7 @@ describe('SwapAmountCard',()=>{
   cleanup();render(<SwapAmountCard name='Bitcoin' symbol='BTC' value={12} suffix='%' trailingDot amountLabel='Target'/>);expect(screen.getByRole('textbox',{name:'Target'}).textContent).toContain('12.%');
  });
 });
-describe('SwapPanelBlock host control',()=>{
+describe('SwapBlock host control',()=>{
  it('lets the host hold the action with its own reason, after the panel\'s own checks',()=>{
   const account:SwapToken={...usdc,balance:100,caption:'$100 available'};
   let view=render(<Host initialFrom={account} destination={{title:'Papertrade'}} denomination='token' actionLabel='Deposit' actionDisabled actionStatus='Below minimum'/>);
@@ -427,7 +427,7 @@ describe('SwapPanelBlock host control',()=>{
  });
 });
 
-describe('SwapPanelBlock note contrast',()=>{
+describe('SwapBlock note contrast',()=>{
  it('keeps a tinted note readable on the page, a surface and an overlay',()=>{
   // The grounds a panel sits on: the page, a Surface, and a Dialog or sheet. It is never placed on a control well (`nested`).
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');const share=Number(/\.hig-swap-note:not\(\[data-tone='muted'\]\) \{[^}]*var\(--hig-swap-tone\) (\d+)%/.exec(css)![1])/100;
@@ -435,7 +435,7 @@ describe('SwapPanelBlock note contrast',()=>{
   const rgb=(hex:string)=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
   const luminance=(channels:number[])=>{const [r,g,b]=channels.map(value=>{const c=value/255;return c<=0.03928?c/12.92:((c+0.055)/1.055)**2.4;});return 0.2126*r+0.7152*g+0.0722*b;};
   for(const tone of ['negative','warning'])for(const ground of ['background','surface','overlay']){
-   const text=rgb(tokens[tone].srgb),under=rgb(tokens[ground].srgb),tint=text.map((value,i)=>under[i]+share*(value-under[i]));
+   const text=rgb(tokens.text.srgb),under=rgb(tokens[ground].srgb),tint=rgb(tokens[tone].srgb).map((value,i)=>under[i]+share*(value-under[i]));
    const ratio=(luminance(text)+0.05)/(luminance(tint)+0.05);expect(ratio,`${tone} note on ${ground}: ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
   }
  });

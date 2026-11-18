@@ -138,6 +138,6 @@ describe('ConfirmBlock',()=>{
  it('draws confirmIntent warning as a Button in the warning intent, whose stylesheet fill is the warning role',()=>{
   render(<HIGProvider><ConfirmBlock title='Send anyway?' confirmLabel='Send anyway' confirmIntent='warning' warning='This address is new to you.' onConfirm={()=>{}} onCancel={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('button',{name:'Send anyway'}).dataset.intent).toBe('warning');
-  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-button[data-intent='warning'] { --hig-glow:var(--hig-warning);background:var(--hig-warning);color:var(--hig-background); }");
+  expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain(".hig-button[data-intent='warning'] { --hig-glow:var(--hig-warning);color:var(--hig-warning); }");
  });
 });

@@ -36,7 +36,7 @@ describe('VerticalAddress',()=>{
  });
 });
 describe('WalletAddress',()=>{
- it('draws a Cuer QR code beside the address, sized so the column matches the code',()=>{
+ it('draws HIG\'s QR code beside the address, sized so the column matches the code',()=>{
   const view=render(<WalletAddress address={eth} size={140}/>);
   const root=view.container.querySelector('.hig-wallet-address') as HTMLElement;
   expect(root.tagName).toBe('DIV');expect(root.style.getPropertyValue('--hig-qr')).toBe('140px');
@@ -52,7 +52,8 @@ describe('WalletAddress',()=>{
   const plain=render(<WalletAddress address={eth}/>);const base=plain.container.querySelector('svg')!.innerHTML;plain.unmount();
   const view=render(<WalletAddress address={eth} qrValue={`ethereum:${eth}@8453`} arena='/eth.png'/>);
   const svg=view.container.querySelector('svg')!;expect(svg.innerHTML).not.toBe(base);
-  expect(svg.querySelector('img')?.getAttribute('src')).toBe('/eth.png');expect(rowsOf(view.container).join('')).toBe(eth);
+  // The arena is an HTML box over the drawing, so every browser paints the image.
+  expect(view.container.querySelector('.hig-qr-code-arena img')?.getAttribute('src')).toBe('/eth.png');expect(rowsOf(view.container).join('')).toBe(eth);
  });
  it('copies through the host adapter as one button, with a hint and a notice',async()=>{
   const copy=vi.fn();render(<HIGProvider><WalletAddress address={eth} onCopy={copy}/><Toaster/></HIGProvider>);
@@ -73,8 +74,10 @@ describe('WalletAddress',()=>{
   render(<HIGProvider messages={{tapToCopy:'Toucher pour copier',copyAddress:'Copier l’adresse',qrCode:'Code QR'}}><WalletAddress address={eth} onCopy={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('button',{name:`Copier l’adresse: ${eth}`}).textContent).toContain('Toucher pour copier');expect(screen.getByRole('img',{name:'Code QR'})).toBeTruthy();
  });
- it('keeps the QR dependency in its own entry',()=>{
-  for(const file of ['data.tsx','blocks/swap-block.tsx','blocks.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/from 'cuer/);
-  expect(readFileSync('packages/hig/react/src/wallet-address.tsx','utf8')).toContain("from 'cuer'");
+ it('needs no QR package: the code is HIG\'s own, on the one web path',()=>{
+  for(const file of ['data.tsx','blocks/swap-block.tsx','blocks.tsx','wallet-address.tsx','qr-code.tsx'])expect(readFileSync(`packages/hig/react/src/${file}`,'utf8')).not.toMatch(/from 'cuer/);
+  const manifest=JSON.parse(readFileSync('packages/hig/package.json','utf8'));
+  expect(Object.keys({...manifest.peerDependencies,...manifest.peerDependenciesMeta})).not.toContain('cuer');
+  expect(manifest.exports['./react/wallet-address-core']).toBeUndefined();expect(manifest.exports['./react/wallet-address']).toBeDefined();
  });
 });

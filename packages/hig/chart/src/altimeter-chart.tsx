@@ -36,8 +36,6 @@ export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLEleme
  targetLabelInsets?:TargetLabelInsets;
  /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */
  degen?:boolean;
- /** @deprecated Use degen. */
- dgen?:boolean;
 }
 
 /** Inset of the ladder's tick marks from the chart edges. */
@@ -45,6 +43,8 @@ const PAD=18;
 /** Length of a ladder tick mark, and the gap between the pill and the trailing edge. */
 const EDGE=8;
 const NO_TARGETS:readonly AltimeterTarget[]=[];
+const gainP3=`color(display-p3 ${tokens.colors.positive.p3.join(' ')})`;
+const lossP3=`color(display-p3 ${tokens.colors.negative.p3.join(' ')})`;
 const transparent=(color:string)=>/^#[0-9a-f]{6}$/i.test(color)?`${color}00`:'transparent';
 const usable=(price:number|null|undefined):price is number=>price!=null&&Number.isFinite(price)&&price>0;
 const positionColor=(value:number,colors:ReturnType<typeof useColors>)=>
@@ -121,8 +121,12 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  * price ladder that keeps the current price at the vertical center, and the current price at the trail's tip. It
  * accepts optional target lines and opt-in DEGEN crossing feedback. Web only.
  */
-export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,dgen,degen=dgen??false,style,...props}:AltimeterChartProps){
- const {locale,messages,reducedMotion}=useHIG();const colors=useColors();
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,degen=false,style,...props}:AltimeterChartProps){
+ const {locale,messages,reducedMotion,primaryColor}=useHIG();
+ const theme=useColors();
+ const [supportsP3,setSupportsP3]=useState(false);
+ useEffect(()=>{const wide=globalThis.CSS?.supports?.('color',gainP3)??false;setSupportsP3(wide);},[]);
+ const colors=useMemo(()=>supportsP3?{...theme,positive:gainP3,negative:lossP3,action:primaryColor?theme.action:gainP3}:theme,[theme,supportsP3,primaryColor]);
  const pauseFrames=useRef<((paused:boolean)=>void)|undefined>(undefined);
  const initiallyPaused=useRef(paused);
  useEffect(()=>{initiallyPaused.current=paused;pauseFrames.current?.(paused);},[paused]);
@@ -158,7 +162,8 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  useEffect(()=>{
   const surface=canvas.current,container=box.current;if(!surface||!container)return;
   let context:CanvasRenderingContext2D|null=null;
-  try{context=surface.getContext('2d');}catch{/* No canvas: the caption and the price reading remain. */}
+  try{context=surface.getContext('2d',{colorSpace:'display-p3'});}catch{/* Older engines may reject the colour space. */}
+  if(!context){try{context=surface.getContext('2d');}catch{/* The caption and price reading remain available. */}}
   let width=container.clientWidth,sampled=-Infinity,shown:number|null|undefined;
   let lastFrame=-Infinity,lastBurst=-Infinity;
   crossings.reset();

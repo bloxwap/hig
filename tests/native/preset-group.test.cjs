@@ -92,7 +92,7 @@ it('draws each label on one line that shrinks to fit its column instead of wrapp
   expect(label.props).toMatchObject({numberOfLines:1,adjustsFontSizeToFit:true,minimumFontScale:0.75});
   expect(flat(label)).toMatchObject({fontSize:16,fontWeight:'600',textAlign:'center',alignSelf:'stretch'});
  }
- // The chip is still read by its label, and the colours follow Button: text, the selected intent's dark label, muted when dimmed.
+ // The chip is still read by its label, and the colours follow Button: text, the selected intent's accent label, muted when dimmed.
  expect(host(tree,'price-63000').props.accessibilityLabel).toBe('$63,000');
  const [plain,selected,dimmed]=labels.map(label=>flat(label).color);
  expect(new Set([plain,selected,dimmed]).size).toBe(3);

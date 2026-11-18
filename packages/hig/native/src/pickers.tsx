@@ -1,3 +1,4 @@
+import {primaryButtonInk} from '@bloxwap/hig/tokens';
 import React,{useContext,useEffect,useMemo,useState} from 'react';
 import {createPickerSearch} from '@bloxwap/hig/contracts/picker-search';
 import {FlatList,Pressable,View,useWindowDimensions,type FlatListProps,type StyleProp,type TextInput,type TextInputProps,type ViewStyle} from 'react-native';
@@ -157,7 +158,7 @@ export function FromPickerBlock({wallet,onConnect,onDisconnect,generateAddress=f
     {onDisconnect?<IconButton intent='secondary' label={t.swapDisconnect} testID='picker-disconnect' onPress={onDisconnect} style={{minWidth:48,minHeight:48}}><LeaveIcon color={colors.text}/></IconButton>:null}
    </View>
    :wallet&&(onConnect||onGenerateAddressChange)?<View testID='picker-connect-row' style={{flexDirection:'row',alignItems:'stretch',gap:8}}>
-    {onConnect?<Button testID='picker-connect' onPress={onConnect} style={{flex:1,alignSelf:'auto'}}><View key='icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><WalletIcon color={colors.onAction}/></View>{t.swapConnectWallet}</Button>:null}
+    {onConnect?<Button testID='picker-connect' onPress={onConnect} style={{flex:1,alignSelf:'auto'}}><View key='icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><WalletIcon color={primaryButtonInk(colors)}/></View>{t.swapConnectWallet}</Button>:null}
     {/* One named switch: the label and the drawn track inside the capsule are decoration. */}
     {onGenerateAddressChange?<SwitchRow label={t.swapGenerateAddress} checked={generateAddress} onCheckedChange={onGenerateAddressChange} testID='picker-generate' style={{flex:onConnect?undefined:1,minHeight:44,alignItems:'center',paddingStart:16,paddingEnd:12,borderRadius:9999,backgroundColor:fills.well}}>
      <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}><Text numberOfLines={1} style={{fontWeight:'500'}}>{t.swapGenerateAddress}</Text><View style={{width:40,height:24,borderRadius:12,padding:3,backgroundColor:generateAddress?colors.action:colors.border,alignItems:generateAddress?'flex-end':'flex-start'}}><View style={{width:18,height:18,borderRadius:9,backgroundColor:generateAddress?colors.onAction:colors.text}}/></View></View>
@@ -197,11 +198,3 @@ export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan
  </View>;
 }
 
-/** @deprecated Renamed `FromPickerBlock`. The old name keeps working until the next major release. */
-export const FromPicker=FromPickerBlock;
-/** @deprecated Renamed `FromPickerBlockProps`. */
-export type FromPickerProps=FromPickerBlockProps;
-/** @deprecated Renamed `ToPickerBlock`. The old name keeps working until the next major release. */
-export const ToPicker=ToPickerBlock;
-/** @deprecated Renamed `ToPickerBlockProps`. */
-export type ToPickerProps=ToPickerBlockProps;

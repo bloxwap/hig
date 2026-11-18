@@ -207,11 +207,3 @@ export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan
  </div>;
 }
 
-/** @deprecated Renamed `FromPickerBlock`. The old name keeps working until the next major release. */
-export const FromPicker=FromPickerBlock;
-/** @deprecated Renamed `FromPickerBlockProps`. */
-export type FromPickerProps=FromPickerBlockProps;
-/** @deprecated Renamed `ToPickerBlock`. The old name keeps working until the next major release. */
-export const ToPicker=ToPickerBlock;
-/** @deprecated Renamed `ToPickerBlockProps`. */
-export type ToPickerProps=ToPickerBlockProps;

@@ -24,3 +24,42 @@ it('maps every name the native blocks module exports to an entry the package pub
  expect(entries.get('SwapBlock')).toBe('swap-block');expect(entries.get('TradeEntry')).toBe('trade-entry');expect(entries.size).toBeGreaterThan(100);
  for(const entry of new Set(entries.values()))expect(exportsMap[`./native/${entry}`],entry).toBeDefined();
 });
+// @ts-expect-error JavaScript codemod is exercised as an executable migration artifact.
+import {replaceSuperseded,supersededPaths,supersededNames} from '../codemods/superseded.mjs';
+it('moves a host off the removed paths and names without touching the code below its imports',()=>{
+ const input=[
+  "import { SwapPanelBlock, type SwapPanelBlockProps, swapAction } from '@bloxwap/hig/react/blocks/swap-panel-block';",
+  "import { GestureSheet as Sheet } from '@bloxwap/hig/native/gesture-sheet-next';",
+  "import { MarketRow } from \"@bloxwap/hig/react/recipes/market-row\";",
+  "import { WalletAddress, type WalletAddressCoreProps } from '@bloxwap/hig/react/wallet-address-core';",
+  "export { FromPicker as Source } from '@bloxwap/hig/native/pickers';",
+  "jest.mock('@bloxwap/hig/native/gesture-sheet-next', () => ({}));",
+  "const lazy = () => import('@bloxwap/hig/react/blocks/swap-panel');",
+  "const rawAmount = '0.00001'; const UI = (props: SwapPanelBlockProps) => <SwapPanelBlock {...props}/>;",
+ ].join('\n');
+ const result=replaceSuperseded(input);
+ expect(result.code).toBe([
+  "import { SwapBlock as SwapPanelBlock, type SwapBlockProps as SwapPanelBlockProps, swapAction } from '@bloxwap/hig/react/blocks/swap-block';",
+  "import { GestureSheet as Sheet } from '@bloxwap/hig/native/gesture-sheet';",
+  "import { MarketRow } from \"@bloxwap/hig/react/blocks/market-row\";",
+  "import { WalletAddress, type WalletAddressProps as WalletAddressCoreProps } from '@bloxwap/hig/react/wallet-address';",
+  "export { FromPickerBlock as Source } from '@bloxwap/hig/native/pickers';",
+  "jest.mock('@bloxwap/hig/native/gesture-sheet', () => ({}));",
+  "const lazy = () => import('@bloxwap/hig/react/blocks/swap-block');",
+  "const rawAmount = '0.00001'; const UI = (props: SwapPanelBlockProps) => <SwapPanelBlock {...props}/>;",
+ ].join('\n'));
+ expect(result.warnings).toEqual([]);
+});
+it('leaves the native core entry and unrelated imports alone, and reports what it cannot rename',()=>{
+ const kept="import { WalletAddress, type WalletAddressCoreProps } from '@bloxwap/hig/native/wallet-address-core';\nimport { SwapPanel } from './local-swap-panel';";
+ expect(replaceSuperseded(kept)).toMatchObject({code:kept,changed:false,warnings:[]});
+ const chart=replaceSuperseded("const chart = <AltimeterChart dgen/>;");expect(chart.changed).toBe(false);expect(chart.warnings.join(' ')).toContain('degen');
+ expect(replaceSuperseded("import * as Old from '@bloxwap/hig/react/recipes';").warnings).toHaveLength(1);
+});
+it('maps only to paths and names the package still publishes',async()=>{
+ const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,unknown>;
+ for(const [old,next] of Object.entries(supersededPaths as Record<string,string>)){expect(exportsMap[old.replace('@bloxwap/hig','.')],old).toBeUndefined();expect(exportsMap[next.replace('@bloxwap/hig','.')],next).toBeDefined();}
+ const web={...await import('../packages/hig/react/src/blocks/swap-block'),...await import('../packages/hig/react/src/blocks/pickers')} as Record<string,unknown>;
+ const source=readFileSync('packages/hig/react/src/blocks/swap-block.tsx','utf8')+readFileSync('packages/hig/react/src/blocks/pickers.tsx','utf8');
+ for(const [old,next] of Object.entries(supersededNames as Record<string,string>)){expect(old in web,old).toBe(false);expect(next in web||new RegExp(`export (?:type|interface) ${next}\\b`).test(source),next).toBe(true);}
+});

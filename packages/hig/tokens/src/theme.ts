@@ -23,3 +23,13 @@ export function resolvePrimaryColor(primaryColor:string,colorSpace:'srgb'|'displ
  ].map(gamma)):normalized;
  return {action,focus:action,onAction};
 }
+
+/** Lift dark custom brand colours toward white so their labels read on a dark tinted surface. */
+export function primaryButtonInk(colors:Pick<PrimaryColors,'action'|'onAction'>){
+ if(colors.onAction!=='#ffffff')return colors.action;
+ const channels=[1,3,5].map(offset=>{
+  const channel=parseInt(colors.action.slice(offset,offset+2),16);
+  return Math.round((channel+255)/2).toString(16).padStart(2,'0');
+ });
+ return '#'+channels.join('');
+}

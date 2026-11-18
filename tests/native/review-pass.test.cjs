@@ -10,7 +10,8 @@ const {Input,SearchInput}=require('../../packages/hig/native/src/field');
 const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
 const {Dialog}=require('../../packages/hig/native/src/overlay');
 const {Tabs,Accordion}=require('../../packages/hig/native/src/navigation');
-const {Badge,Toast,Skeleton,EmptyState,Avatar,StatusIndicator}=require('../../packages/hig/native/src/status');
+const {Badge,Toast,Skeleton,EmptyState,StatusIndicator}=require('../../packages/hig/native/src/status');
+const {Avatar}=require('../../packages/hig/native/src/avatar');
 const {Button}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
 const flat=node=>StyleSheet.flatten(typeof node.props.style==='function'?node.props.style({pressed:false}):node.props.style);
@@ -136,7 +137,7 @@ it('an unavailable button is a neutral well with muted text; busy keeps its inte
  for(const intent of ['primary','secondary','destructive']){const tree=mount(h(Button,{intent,disabled:true},'Go'));expect(flat(button(tree))).toMatchObject({backgroundColor:colors.surface,opacity:1});expect(label(tree)).toBe(colors.muted);}
  const inCard=mount(h(Surface,null,h(Button,{disabled:true},'Go')));expect(flat(button(inCard)).backgroundColor).toBe(colors.nested);
  const ghost=mount(h(Button,{intent:'ghost',disabled:true},'Go'));expect(flat(button(ghost)).backgroundColor).toBe('transparent');expect(label(ghost)).toBe(colors.faint);
- const busy=mount(h(Button,{busy:true},'Go'));expect(flat(button(busy))).toMatchObject({backgroundColor:colors.action,opacity:0.7});expect(label(busy)).toBe(colors.onAction);
+ const busy=mount(h(Button,{busy:true},'Go'));expect(flat(button(busy))).toMatchObject({backgroundColor:colors.action+'26',opacity:0.7});expect(label(busy)).toBe(colors.action);
 });
 it('the selected tab is a raised neutral capsule and the others are bare muted labels',()=>{
  const tabs=tree=>tree.findAll(n=>n.props.accessibilityRole==='tab'&&typeof n.props.style==='function'),label=tab=>StyleSheet.flatten(tab.findAllByType(RNText).at(-1).props.style).color;

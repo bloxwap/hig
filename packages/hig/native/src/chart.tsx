@@ -24,8 +24,6 @@ export interface AltimeterChartProps extends Omit<ViewProps,'children'> {
  /** Top and bottom clearance for target text only. Defaults to 8 per edge. */
  targetLabelInsets?:TargetLabelInsets;
  degen?:boolean;
- /** @deprecated Use degen. */
- dgen?:boolean;
 }
 
 const noTargets:readonly AltimeterTarget[]=[];
@@ -60,7 +58,7 @@ function BurstEffect({burst,now,x,y,width}:{burst:Burst;now:number;x:number;y:nu
 }
 
 /** Native SVG price ladder, scrolling trail and position readout. Stops drawing and unsubscribes in the background. */
-export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,dgen,degen=dgen??false,...view}:AltimeterChartProps){
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,degen=false,...view}:AltimeterChartProps){
  const colors=useColors(),reducedMotion=useReducedMotion(),monoFontFamily=useMonoFontFamily(),messages=useMessages(),locale=useNumberLocale();
  const [width,setWidth]=useState(0),[frame,setFrame]=useState(emptyFrame),[stale,setStale]=useState(false);
  const [active,setActive]=useState(AppState.currentState==null||AppState.currentState==='active');

@@ -74,14 +74,16 @@ it('draws both bars without a card, further apart than cards would be',()=>{
  const group=all(view,'token-bars').find(node=>typeof node.type==='string');expect(Object.assign({},...[].concat(group.props.style).flat(Infinity).filter(Boolean))).toMatchObject({gap:20,marginTop:16,paddingHorizontal:4});
 });
 const styleOf=node=>Object.assign({},...[].concat(node.props.style).flat(Infinity).filter(Boolean));
-it('draws a note under the actions, 8 below them, tinted by noteTone',()=>{
+it('draws a note above the actions, 8 units apart, tinted by noteTone',()=>{
  const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
  const actions=[{id:'send',onSelect(){}}];
  let view=mount({actions,note:'View-only account'});
  const note=()=>all(view,'token-note').find(node=>typeof node.type==='string');
- expect(text(note())).toBe('View-only account');expect(styleOf(note())).toMatchObject({marginTop:8,paddingHorizontal:4});
- const children=note().parent.children.map(child=>child.props?.testID);expect(children.indexOf('token-note')).toBe(children.indexOf('token-actions')+1);
- view=mount({note:'View-only account',noteTone:'warning'});expect(styleOf(note())).toMatchObject({marginTop:16,borderRadius:16});expect(styleOf(note().findAll(node=>node.type==='Text')[0]).color).toBe(colors.warning);
+ expect(text(note())).toBe('View-only account');expect(styleOf(note())).toMatchObject({marginTop:16,paddingHorizontal:4});
+ const order=view.findAll(node=>typeof node.type==='string'&&['token-note','token-actions'].includes(node.props.testID)).map(node=>node.props.testID);
+ expect(order).toEqual(['token-note','token-actions']);
+ expect(styleOf(all(view,'token-actions').find(node=>typeof node.type==='string')).marginTop).toBe(8);
+ view=mount({note:'View-only account',noteTone:'warning'});expect(styleOf(note())).toMatchObject({marginTop:16,borderRadius:16});expect(styleOf(note().findAll(node=>node.type==='Text')[0]).color).toBe(colors.text);
  view=mount({actions});expect(has(view,'token-note')).toBe(false);
 });
 it('draws actions only without bars, or one bar without the other',()=>{

@@ -73,7 +73,7 @@ describe('DOM behavior contracts',()=>{
   const tone=(severity:string)=>css.match(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{ --hig-alert-tone:var\\(--hig-([a-z]+)\\)`))?.[1];
   for(const [severity,role] of [['tip','positive'],['success','positive'],['warning','warning'],['error','negative'],['default','text']])expect(tone(severity)).toBe(role);
   expect(css).toMatch(/:where\(\.hig-surface\)\[data-severity\] \{ --hig-alert-tone:var\(--hig-info\);background:color-mix\(in srgb,var\(--hig-alert-tone\) 10%,var\(--hig-surface\)\); \}/);
-  expect(css).toContain(':where(.hig-surface)[data-severity] > strong { color:var(--hig-alert-tone); }');
+  expect(css).toContain(':where(.hig-surface)[data-severity] > strong { color:var(--hig-text); }');
   expect(css).toMatch(/\[data-severity='default'\][^{]*\{[^}]*background:color-mix\(in srgb,var\(--hig-text\) 6%,var\(--hig-surface\)\)/);
   expect(css).not.toMatch(/\[data-severity[^{]*\{[^}]*(border:|box-shadow|border-radius)/);
   // A toast notice is its own strokeless capsule row, not an Alert: symbol, message, close.

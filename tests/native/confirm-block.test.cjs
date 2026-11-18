@@ -32,7 +32,7 @@ it('shows the heading, the amount with its ticker, the address in full, the netw
  expect(host(view,'confirm-to').findAll(node=>typeof node.type==='string'&&typeof node.props.children==='string').map(node=>[node.props.children,flat(node).color])).toEqual([['0x1111',nativeSrgb.text],['111111111111111',nativeSrgb.muted],['11111111111111111',nativeSrgb.muted],['1111',nativeSrgb.text]]);expect(text(host(view,'confirm-network'))).toBe('HyperEVM');expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM']);
  // The details are read-only text: no rows and nothing to press.
  expect(view.findAllByType(ListRow)).toHaveLength(0);
- expect(text(host(view,'confirm-warning-title'))).toBe('Double-check the address.');expect(flat(host(view,'confirm-warning-title')).color).toBe(nativeSrgb.warning);
+ expect(text(host(view,'confirm-warning-title'))).toBe('Double-check the address.');expect(flat(host(view,'confirm-warning-title')).color).toBe(nativeSrgb.text);
  expect(text(host(view,'confirm-warning-body'))).toBe("HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong.");
  expect(button(view,'confirm-confirm').props.intent??'primary').toBe('primary');expect(has(view,'confirm-cancel')).toBe(false);
 });
@@ -145,10 +145,10 @@ it('takes a test ID per action, Pressable props for Back, and cancelDisabled hol
  expect(button(held,'delete-account-export').props.disabled).toBe(true);expect(button(held,'delete-account-withdraw').props.disabled).toBeFalsy();expect(button(held,'delete-account-anyway').props.disabled).toBe(false);
 });
 
-it('fills the confirming action in the warning role with a dark label for confirmIntent warning',()=>{
+it('fills the confirming action in the warning role with an accent label for confirmIntent warning',()=>{
  if(root)act(()=>root.unmount());
  act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Send anyway?',confirmLabel:'Send anyway',confirmIntent:'warning',warning:'This address is new to you.',onConfirm:()=>{},onCancel:()=>{}})));});
  const confirm=button(root.root,'confirm-confirm');expect(confirm.props.intent).toBe('warning');
- const pressable=confirm.findAll(node=>typeof node.props.style==='function')[0];expect(StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe(nativeSrgb.warning);
- expect(flat(confirm.findAll(node=>node.type==='Text'&&node.props.children==='Send anyway')[0]).color).toBe(nativeSrgb.background);
+ const pressable=confirm.findAll(node=>typeof node.props.style==='function')[0];expect(StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe(nativeSrgb.warning+'26');
+ expect(flat(confirm.findAll(node=>node.type==='Text'&&node.props.children==='Send anyway')[0]).color).toBe(nativeSrgb.warning);
 });

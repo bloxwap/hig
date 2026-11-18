@@ -169,10 +169,10 @@ it('shows the custom value on the Custom row, which then reads as selected in pl
  expect(host(view,'target-custom').props.accessibilityState?.selected).toBeFalsy();expect(has(view,'target-custom-value')).toBe(false);expect(button(view,'target-preset-2').props.accessibilityState.selected).toBe(true);
  view=mount({value:2,presets:[1,2],onCustom:custom,customValue:2});
  const row=host(view,'target-custom');expect(row.props.accessibilityLabel).toBe('Custom, +$2.00');expect(row.props.accessibilityState).toMatchObject({selected:true});
- expect(text(host(view,'target-custom-value'))).toBe('+$2.00');expect(flat(host(view,'target-custom-value')).color).toBe(nativeSrgb.onAction);expect(flat(row)).toMatchObject({backgroundColor:nativeSrgb.action,minHeight:48});expect(flat(row).borderWidth).toBeUndefined();
+ expect(text(host(view,'target-custom-value'))).toBe('+$2.00');expect(flat(host(view,'target-custom-value')).color).toBe(nativeSrgb.action);expect(flat(row)).toMatchObject({backgroundColor:nativeSrgb.action+'26',minHeight:48});expect(flat(row).borderWidth).toBeUndefined();
  expect([1,2].map(value=>button(view,`target-preset-${value}`).props.accessibilityState.selected)).toEqual([false,false]);
  act(()=>{all(view,'target-custom').find(node=>'onPress' in node.props&&typeof node.type!=='string').props.onPress({});});expect(custom).toHaveBeenCalledTimes(1);
- view=mount({kind:'stop-loss',unit:'percent',value:-0.035,onCustom:custom,customValue:-0.035});expect(text(host(view,'target-custom-value'))).toBe('-3.5%');expect(flat(host(view,'target-custom')).backgroundColor).toBe(nativeSrgb.negative);expect(flat(host(view,'target-custom-value')).color).toBe(nativeSrgb.background);
+ view=mount({kind:'stop-loss',unit:'percent',value:-0.035,onCustom:custom,customValue:-0.035});expect(text(host(view,'target-custom-value'))).toBe('-3.5%');expect(flat(host(view,'target-custom')).backgroundColor).toBe(nativeSrgb.negative+'26');expect(flat(host(view,'target-custom-value')).color).toBe(nativeSrgb.negative);
 });
 
 it('formats dollar presets and the custom value with the provider money presentation',()=>{

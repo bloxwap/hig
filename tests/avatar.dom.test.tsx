@@ -30,8 +30,8 @@ describe('Avatar entries',()=>{
   const exportsMap=JSON.parse(readFileSync('packages/hig/package.json','utf8')).exports as Record<string,{types:string;import:string;default:string}>;
   for(const [key,file] of [['./react/avatar','./react/dist/avatar'],['./native/avatar','./native/dist/avatar'],['./contracts/avatar','./contracts/dist/avatar']] as const)expect(exportsMap[key],key).toEqual({types:`${file}.d.ts`,import:`${file}.js`,default:`${file}.js`});
  });
- it('the status entry still exports the same component',()=>{
-  expect(status.Avatar).toBe(Avatar);
+ it('is exported by the avatar entry alone: the status entry no longer carries it',()=>{
+  expect('Avatar' in status).toBe(false);
  });
 });
 

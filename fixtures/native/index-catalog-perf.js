@@ -8,7 +8,7 @@ import { useFonts } from "expo-font";
 import { documentDirectory, writeAsStringAsync } from "expo-file-system/legacy";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureSheetHost } from "@bloxwap/hig/native/gesture-sheet";
 import { HIGProvider } from "@bloxwap/hig/native/provider";
 import { Toaster } from "@bloxwap/hig/native/toast";
 import { Example } from "./gallery";
@@ -145,7 +145,7 @@ function App() {
   return ready ? (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <BottomSheetModalProvider>
+        <GestureSheetHost>
           <HIGProvider
             reducedMotion={false}
             fontFamily="BloxwapSansRegular"
@@ -154,7 +154,7 @@ function App() {
             <Sweep />
             <Toaster />
           </HIGProvider>
-        </BottomSheetModalProvider>
+        </GestureSheetHost>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   ) : null;

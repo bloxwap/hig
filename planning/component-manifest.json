@@ -100,6 +100,7 @@
       "components": [
         "Badge",
         "Alert/Callout",
+        "InlineNotice",
         "Toast",
         "Toaster",
         "Progress",
@@ -186,7 +187,8 @@
         "SwapBlock",
         "FromPickerBlock",
         "ToPickerBlock",
-        "ClaimRewardBlock"
+        "ClaimRewardBlock",
+        "AdvancedBlock"
       ],
       "docs": "docs/components/blocks.md",
       "web": "implemented",

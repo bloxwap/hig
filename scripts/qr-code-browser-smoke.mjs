@@ -13,8 +13,8 @@ import {chromium,webkit} from '@playwright/test';
 import {launchBrowser} from './browser-launcher.mjs';
 
 const require=createRequire(import.meta.url);
-// `qr` is the encoder and decoder behind Cuer, installed as its dependency.
-const {default:decodeQR}=await import(pathToFileURL(createRequire(require.resolve('cuer/package.json')).resolve('qr/decode.js')).href);
+// `qr` is the reference decoder, a development dependency of this workspace only.
+const {default:decodeQR}=await import(pathToFileURL(require.resolve('qr/decode.js')).href);
 const css=readFileSync('packages/hig/tokens/generated/tokens.css','utf8')+readFileSync('packages/hig/react/src/styles.css','utf8');
 const output='.validation-tmp/qr-code';mkdirSync(output,{recursive:true});
 const ethereum='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688',solana='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ';
@@ -32,7 +32,7 @@ const sources={
  react:`import React from 'react';import {createRoot} from 'react-dom/client';
  import {HIGProvider} from './packages/hig/react/src/provider';
  import {QRCode} from './packages/hig/react/src/qr-code';
- import {WalletAddress} from './packages/hig/react/src/wallet-address-core';
+ import {WalletAddress} from './packages/hig/react/src/wallet-address';
  // Positioned, translucent and transformed: each makes WebKit paint foreignObject content at the SVG's corner.
  const mark=<span style={{display:'block',position:'relative',width:28,height:28,borderRadius:6,opacity:.95,transform:'rotate(8deg)',background:'rgb(230,0,122)'}}/>;
  createRoot(document.getElementById('root')).render(<HIGProvider direction={window.direction}>

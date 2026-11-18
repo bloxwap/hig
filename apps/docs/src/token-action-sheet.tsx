@@ -12,7 +12,7 @@ type AccountRenderer = typeof import('@bloxwap/hig/react/blocks/account-block').
 const DepositBlock=lazy(()=>import('@bloxwap/hig/react/blocks/deposit-block').then(module=>({default:module.DepositBlock})));
 const SwapBlock=lazy(()=>import('@bloxwap/hig/react/blocks/swap-block').then(module=>({default:module.SwapBlock})));
 const TokenActionBlock=lazy(()=>import('@bloxwap/hig/react/blocks/token-action-block').then(module=>({default:module.TokenActionBlock})));
-const WalletAddress=lazy(()=>import('@bloxwap/hig/react/wallet-address-core').then(module=>({default:module.WalletAddress})));
+const WalletAddress=lazy(()=>import('@bloxwap/hig/react/wallet-address').then(module=>({default:module.WalletAddress})));
 
 type Wallet = {chain: string; address: string};
 const ethereum = {chain: 'Ethereum', address: '0x1234567890abcdef1234567890abcdef12345678'};

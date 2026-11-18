@@ -34,10 +34,10 @@ it('shows the host title as the heading, Back only with onBack, and the ranked r
  expect(text(host(view,'reward-title'))).toBe('Leaderboard');expect(host(view,'reward-title').props.accessibilityRole).toBe('header');expect(has(view,'reward-back')).toBe(false);
  expect(readings(view)).toEqual(['1, 0x4e79…949f, $1,789,061 vol, 795,407','2, you, $1,090,779 vol, 418,450','3, Zed, —']);
  expect(flat(host(view,'reward-rows'))).toMatchObject({gap:2,borderRadius:20,overflow:'hidden'});expect(flat(host(view,'reward-row-a'))).toMatchObject({minHeight:64,paddingHorizontal:20,backgroundColor:nativeSrgb.surface});
- // The viewer's row takes the action colour for the name and the positive tone for the score; others stay text.
- expect(flat(host(view,'reward-row-me-name')).color).toBe(nativeSrgb.action);expect(flat(host(view,'reward-row-a-name')).color).toBe(nativeSrgb.text);
+ // Names and scores use the same text colour for every standing.
+ expect(flat(host(view,'reward-row-me-name')).color).toBe(nativeSrgb.text);expect(flat(host(view,'reward-row-a-name')).color).toBe(nativeSrgb.text);
  const score=id=>view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID===`reward-row-${id}-score`).props;
- expect(score('me')).toMatchObject({value:418450,tone:'positive'});expect(score('a').tone).toBe('text');expect(score('c').value).toBeNull();
+ expect(score('me')).toMatchObject({value:418450,tone:'text'});expect(score('a').tone).toBe('text');expect(score('c').value).toBeNull();
  // Without artwork the avatar shows the first letters; nothing else is drawn without its props.
  expect(host(view,'reward-row-c').findAll(node=>node.type==='Text'&&node.props.children==='Ze')).toHaveLength(1);
  for(const id of ['reward-promo','reward-you','reward-tabs','reward-list-title','reward-footnote'])expect(has(view,id)).toBe(false);
@@ -50,7 +50,7 @@ it('draws a prize pool: a muted eyebrow, one large figure, the goal in the capti
  let view=mount({promo:pool});
  expect(text(host(view,'reward-eyebrow'))).toBe('Season 01');expect(flat(host(view,'reward-eyebrow'))).toMatchObject({textTransform:'uppercase',color:nativeSrgb.muted});
  expect(host(view,'reward-amount').props.accessibilityLabel).toBe('$4,037 of $250,000 prize pool');expect(text(host(view,'reward-caption'))).toBe('of $250,000 prize pool');
- const figure=host(view,'reward-amount').findAllByType(AnimatedNumberReadout)[0];expect(figure.props).toMatchObject({value:4037,tone:'positive',options:{style:'currency',currency:'USD',maximumFractionDigits:0}});// The same size as the SwapPanel and TargetBlock headline figures.
+ const figure=host(view,'reward-amount').findAllByType(AnimatedNumberReadout)[0];expect(figure.props).toMatchObject({value:4037,tone:'text',options:{style:'currency',currency:'USD',maximumFractionDigits:0}});// The same size as the SwapPanel and TargetBlock headline figures.
  expect(flat(figure)).toMatchObject({fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9});
  expect(flat(host(view,'reward-track'))).toMatchObject({height:4,borderRadius:2});expect(parseFloat(flat(host(view,'reward-fill')).width)).toBeCloseTo(1.6148,3);expect(flat(host(view,'reward-fill')).backgroundColor).toBe(nativeSrgb.action);expect(host(view,'reward-track').props.importantForAccessibility).toBe('no-hide-descendants');
  // One paragraph: the headline in the text colour, the description continuing it in the muted colour.
@@ -80,7 +80,7 @@ it('pins the viewer on a tinted row above the list, with column headings, a stan
  const change=jest.fn();
  const view=mount({you:{id:'me',rank:2,name:'you',detail:'$1,090,779 vol',score:418450},listTitle:'Top 25 by volume',scoreTitle:'Entries',footnote:'Entries are provisional until audited.',tabs:{label:'Standings',options:[{value:'upcoming',label:'Upcoming draw'},{value:'winners',label:'Top winners'}],value:'upcoming',onValueChange:change}});
  const you=host(view,'reward-you');expect(you.props.accessibilityLabel).toBe('2, you, $1,090,779 vol, 418,450');
- expect(flat(you)).toMatchObject({marginTop:16,borderRadius:20});expect(flat(you).backgroundColor).not.toBe(nativeSrgb.surface);expect(flat(host(view,'reward-you-name')).color).toBe(nativeSrgb.action);
+ expect(flat(you)).toMatchObject({marginTop:16,borderRadius:20});expect(flat(you).backgroundColor).not.toBe(nativeSrgb.surface);expect(flat(host(view,'reward-you-name')).color).toBe(nativeSrgb.text);
  expect(text(host(view,'reward-list-title'))).toBe('Top 25 by volume');expect(text(host(view,'reward-score-title'))).toBe('Entries');expect(text(host(view,'reward-footnote'))).toBe('Entries are provisional until audited.');
  const control=view.findByType(SegmentedControl);expect(control.props).toMatchObject({label:'Standings',value:'upcoming'});act(()=>{control.props.onValueChange('winners');});expect(change).toHaveBeenCalledWith('winners');
 });
@@ -155,7 +155,7 @@ describe('host slots (Unreleased)',()=>{
 it('draws a host-text amount read with a text caption, a node caption that reads itself, a host figure, and no list without entries',()=>{
  let view=mount({entries:undefined,promo:{eyebrow:'Sweepstakes',amount:'$500',caption:'top prize'}});
  const amount=host(view,'reward-amount');expect(amount.props.accessibilityLabel).toBe('$500 top prize');expect(view.findAllByType(AnimatedNumberReadout)).toHaveLength(0);
- expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('$500')).map(node=>flat(node).color)).toContain(nativeSrgb.positive);
+ expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('$500')).map(node=>flat(node).color)).toContain(nativeSrgb.text);
  expect(has(view,'reward-list')).toBe(false);expect(has(view,'reward-rows')).toBe(false);
  view=mount({promo:{eyebrow:'Sweepstakes',amount:500,caption:h(View,{testID:'countdown'})}});
  expect(host(view,'reward-amount').props.accessibilityLabel).toBe('$500');

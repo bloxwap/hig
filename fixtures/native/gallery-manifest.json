@@ -315,6 +315,16 @@
       "support": "renderer"
     },
     {
+      "name": "InlineNotice",
+      "states": [
+        "default",
+        "success",
+        "warning",
+        "error"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "Callout",
       "states": [
         "default"
@@ -853,6 +863,14 @@
       "name": "ClaimRewardBlock",
       "states": [
         "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "AdvancedBlock",
+      "states": [
+        "default",
+        "completed"
       ],
       "support": "renderer"
     }

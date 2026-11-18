@@ -1,3 +1,5 @@
+import {primaryButtonInk} from '@bloxwap/hig/tokens';
+import {buttonTint} from './button-tint.js';
 import React,{useState} from 'react';
 import {Pressable,View,type ScrollViewProps} from 'react-native';
 import {formatNumber} from './number-format.js';
@@ -139,7 +141,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
- const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const,onFill=stop?colors.background:colors.onAction;
+ const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const,onFill=stop?colors.negative:primaryButtonInk(colors);
  const triggerLeads=(positions.trigger??0)<(positions.entry??0);
  const align=(index:number)=>order.length>1&&index===order.length-1?'flex-end' as const:order.length===3&&index===1?'center' as const:'flex-start' as const;
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:fills.raised});
@@ -174,7 +176,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <Text numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
   </Pressable>:null}
-  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:stop?colors.negative:colors.action,opacity:pressed?0.9:1,marginTop:16})}>
+  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:buttonTint(stop?colors.negative:colors.action),opacity:pressed?0.9:1,marginTop:16})}>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:onFill}}>{labels.custom}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>
     <Text testID='target-custom-value' numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:onFill}}>{customText}</Text>

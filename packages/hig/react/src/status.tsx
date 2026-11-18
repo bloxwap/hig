@@ -18,8 +18,27 @@ export const Badge=React.forwardRef<HTMLSpanElement,BadgeProps>(function Badge({
 /** `note` and `tip` are documentation callout severities: note uses the `info` token role and tip the `positive` role, like info and success. `default` is the neutral variant: a faint `text` tint with the title in `text`. */
 export type AlertSeverity='default'|'info'|'success'|'warning'|'error'|'note'|'tip';
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning → warning, error → negative; default → 6% of text), with no stroke or glow. The title may be any inline node, such as text with a code span. */
-export function Alert({title,children,severity='info',action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;action?:React.ReactNode;announce?:boolean}>){return <section className='hig-surface hig-alert' data-severity={severity} role={announce?(severity==='error'?'alert':'status'):undefined}><strong>{title}</strong>{children}{action!=null&&<div className='hig-alert-actions'>{action}</div>}</section>;}
+export function Alert({title,children,severity='info',action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;action?:React.ReactNode;announce?:boolean}>){const Symbol=noticeSymbol[severity==='tip'?'success':severity==='note'||severity==='default'?'info':severity];return <section className='hig-surface hig-alert' data-severity={severity} role={announce?(severity==='error'?'alert':'status'):undefined}><strong><Symbol size={20} aria-hidden="true"/><span>{title}</span></strong>{children}{action!=null&&<div className='hig-alert-actions'>{action}</div>}</section>;}
 export const Callout=Alert;
+
+export interface InlineNoticeProps {
+ /** Selects the decorative icon and surface tint. Defaults to info. */
+ severity?:Notice['severity'];
+ icon?:React.ReactNode;
+ title:string;
+ description:React.ReactNode;
+}
+/** An inline severity card with a decorative leading icon beside a stacked title and description. */
+export function InlineNotice({severity='info',icon,title,description}:InlineNoticeProps){
+ const Symbol=noticeSymbol[severity];
+ return <section role="note" className="hig-surface hig-inline-notice" data-severity={severity}>
+  <span className="hig-inline-notice-icon" aria-hidden="true">{icon??<Symbol size={20}/>}</span>
+  <div className="hig-inline-notice-copy">
+   <strong>{title}</strong><p>{description}</p>
+  </div>
+ </section>;
+}
+
 export interface Notice {id:string;message:string;severity:'info'|'success'|'warning'|'error';action?:React.ReactNode}
 const noticeSymbol={info:Info,success:CircleCheck,warning:TriangleAlert,error:CircleX};
 /** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the Sonner-backed `toast()`; it announces nothing itself. */
@@ -66,6 +85,4 @@ export function Skeleton({label}: {label?:string}){const messages=useMessageOver
 const emptySymbol=<Inbox size={48}/>;
 /** Centred stack: symbol, title, optional description, optional action. Decorative `illustration` replaces the default symbol (same prop as native); `null` omits it. */
 export function EmptyState({title,description,action,illustration}: {title:string;description?:string;action?:React.ReactNode;illustration?:React.ReactNode}){return <section className='hig-surface hig-empty-state'>{illustration!==null&&<span className='hig-empty-state-icon' aria-hidden='true'>{illustration??emptySymbol}</span>}<h3>{title}</h3>{description&&<p>{description}</p>}{action}</section>;}
-/** `Avatar` is its own entry, `@bloxwap/hig/react/avatar`; this entry keeps exporting it for the imports that predate that one. */
-export {Avatar,type AvatarProps} from './avatar.js';
 export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const messages=useMessageOverrides();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;return <span className='hig-status-indicator' data-state={state}>{label}: {text}</span>;}

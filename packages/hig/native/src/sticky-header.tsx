@@ -1,4 +1,4 @@
-import {GestureSheetHeaderContext,SheetHeaderGlow} from './sheet-header-glow.js';
+import {GestureSheetHeaderContext,SheetHeaderScrim} from './sheet-header-glow.js';
 import React,{useCallback,useRef,useState} from 'react';
 import {ScrollView,View,type NativeScrollEvent,type NativeSyntheticEvent,type ScrollViewProps,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors} from './provider.js';
@@ -43,7 +43,7 @@ export interface StickyHeaderLayoutProps {
 }
 export function StickyHeaderSlot({header,headerTestID,horizontalInset=16,background,scrolled}:Pick<StickyHeaderLayoutProps,'header'|'headerTestID'|'horizontalInset'|'background'>&{scrolled:boolean}){
  const inSheet=React.useContext(GestureSheetHeaderContext),colors=useColors();
- return <View testID={headerTestID} style={[{flexGrow:1,paddingHorizontal:horizontalInset,paddingTop:16},stickyHeaderFill(scrolled&&!inSheet,background??colors.background)]}>{scrolled&&inSheet?<SheetHeaderGlow backdrop={background??colors.background}/>:null}{header}</View>;
+ return <View testID={headerTestID} style={[{flexGrow:1,paddingHorizontal:horizontalInset,paddingTop:16},stickyHeaderFill(scrolled&&!inSheet,background??colors.background)]}>{scrolled&&inSheet?<SheetHeaderScrim backdrop={background??colors.background}/>:null}{header}</View>;
 }
 /** A block as its own scroll view with its header pinned: 16dp around the content as the block draws it, the header transparent until content scrolls under it. Place it in a bounded container, such as a sheet body. */
 export function StickyHeaderLayout({header,children,background,scrollComponent:Scroll=ScrollView,testID,headerTestID,horizontalInset=16,bodyStyle}:StickyHeaderLayoutProps){

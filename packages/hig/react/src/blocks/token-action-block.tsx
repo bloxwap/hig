@@ -1,4 +1,6 @@
 "use client";
+import {TriangleAlert} from '@bloxwap/icons/react/triangle-alert';
+import {CircleX} from '@bloxwap/icons/react/circle-x';
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts/format';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -45,7 +47,7 @@ export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLEle
  stickyHeader?:boolean;
  /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
  headingId?:string;
- /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */
+ /** A line above the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
 }
 const usd={style:'currency',currency:'USD'} as const,unitsFormat={maximumFractionDigits:6} as const,held=(value:number)=>Number.isFinite(value)&&value>0;
@@ -64,7 +66,7 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
    {assets&&<BarMark surface={false} title={name??symbol} description={headline} elements={assets}/>}
    {showChains&&<BarMark surface={false} title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>}
   </div>}
+  {note!=null&&note!==false&&<p className='hig-swap-note hig-token-note' data-tone={noteTone} role='note'>{noteTone==='muted'?note:<>{noteTone==='warning'?<TriangleAlert size={20} aria-hidden='true'/>:<CircleX size={20} aria-hidden='true'/>}<span>{note}</span></>}</p>}
   {actions.length>0&&<div className='hig-token-actions'>{actions.map(action=><Button key={action.id} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onClick={action.onSelect}>{tokenActionLabel(action,messages)}</Button>)}</div>}
-  {note!=null&&note!==false&&<p className='hig-swap-note hig-token-note' data-tone={noteTone} role='note'>{note}</p>}
  </section>;
 }

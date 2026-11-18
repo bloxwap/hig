@@ -14,7 +14,7 @@ import {ManagePositionBlock} from '../packages/hig/react/src/blocks/manage-posit
 import {TargetBlock} from '../packages/hig/react/src/blocks/target-block';
 import {RewardBlock} from '../packages/hig/react/src/blocks/reward-block';
 import {TradeHistoryListBlock} from '../packages/hig/react/src/blocks/trade-history-list-block';
-import {SwapPanelBlock} from '../packages/hig/react/src/blocks/swap-block';
+import {SwapBlock} from '../packages/hig/react/src/blocks/swap-block';
 afterEach(cleanup);
 const french:HIGProviderProps={locale:'fr-FR',numberFormat:{currencyDisplay:'narrowSymbol'}};
 const nbsp=/[  ]/g,plain=(text:string|null|undefined)=>(text??'').replace(nbsp,' ');
@@ -78,7 +78,7 @@ describe('HIGProvider numberFormat',()=>{
  });
  it('applies to the swap pieces and is inherited by nested providers unless they set their own',()=>{
   const token={id:'hype',symbol:'HYPE',name:'Hyperliquid',chain:'Hyperliquid',chainId:999,balance:2,price:10};
-  render(<HIGProvider {...french}><HIGProvider locale='fr-FR' density='compact'><SwapPanelBlock tokens={[token]} defaultFrom={token} denomination='token' amount='1' onSubmit={()=>{}}/></HIGProvider><HIGProvider numberFormat={{currencyDisplay:'code'}}><Usd value={1}/></HIGProvider></HIGProvider>);
+  render(<HIGProvider {...french}><HIGProvider locale='fr-FR' density='compact'><SwapBlock tokens={[token]} defaultFrom={token} denomination='token' amount='1' onSubmit={()=>{}}/></HIGProvider><HIGProvider numberFormat={{currencyDisplay:'code'}}><Usd value={1}/></HIGProvider></HIGProvider>);
   const all=reading();
   expect(all).toContain('10,00 $');expect(all.some(text=>text.includes('$US'))).toBe(false);
   // The locale is the nested provider's own (en-US by default); the money presentation is replaced, not merged.

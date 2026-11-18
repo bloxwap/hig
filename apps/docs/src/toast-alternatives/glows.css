@@ -14,9 +14,11 @@
  color: var(--toast-accent);
  background-color: color-mix(in oklab, var(--toast-accent) 15%, transparent);
 }
-.toast-tone-button { background-color: var(--toast-accent); color: var(--color-on-brand, #111); }
+.toast-tone-button { color: var(--toast-accent); }
+.toast-secondary-button { color: var(--hig-muted); }
+:is(.toast-tone-button, .toast-secondary-button) { background-color: color-mix(in srgb, currentColor 15%, transparent); }
 @media (hover: hover) {
- .toast-tone-button:hover { background-color: color-mix(in oklab, var(--toast-accent) 90%, transparent); }
+ :is(.toast-tone-button, .toast-secondary-button):hover { background-color: color-mix(in srgb, currentColor 22%, transparent); }
 }
 .toast-tone-neutral {
  --toast-accent: var(--color-fd-foreground);
@@ -24,4 +26,3 @@
  box-shadow: 0 0 20px rgb(255 255 255 / 12%);
 }
 .toast-tone-neutral .toast-tone-tile { background-color: var(--color-fd-muted); }
-.toast-tone-neutral .toast-tone-button { color: var(--color-fd-background); }

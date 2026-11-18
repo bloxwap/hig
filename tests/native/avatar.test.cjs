@@ -208,8 +208,8 @@ describe('Avatar in a list whose parent renders again',()=>{
   // A prop that is passed as undefined and one that is left out are the same props.
   mount({seed:address});before=sized();update({seed:address,source:undefined,colors:undefined,variant:undefined});expect(sized()-before).toBe(0);
  });
- it('the status entry does not render again either',()=>{
-  const {Avatar:Plain}=require('../../packages/hig/native/src/status');
+ it('an avatar without a seed does not render again either',()=>{
+  const {Avatar:Plain}=require('../../packages/hig/native/src/avatar');
   let commits=0;const onRender=()=>{commits++;};
   act(()=>{root=render(board(seeds,onRender,Plain));});
   const mounted=sized(),before=hosts();
@@ -259,32 +259,19 @@ describe('Avatar size, shape, image and accessibility',()=>{
  });
 });
 
-describe('Avatar from the status entry',()=>{
- it('loads no SVG peer: neither the entry nor the frame it shares with the avatar entry imports react-native-svg',()=>{
+describe('Avatar without a generated face',()=>{
+ it('keeps the SVG peer in the avatar entry: the status entry and the frame the Avatar draws in import no react-native-svg',()=>{
   const loads=file=>/from 'react-native-svg[/']|require\('react-native-svg/.test(readFileSync(`packages/hig/native/src/${file}`,'utf8'));
   expect(['status.tsx','avatar-frame.tsx','surface.tsx','icons.tsx','provider.tsx'].filter(loads)).toEqual([]);expect(loads('brand.tsx')).toBe(true);
   expect(readFileSync('packages/hig/native/src/avatar.tsx','utf8')).toMatch(/from 'react-native-svg'/);
  });
- it('renders with react-native-svg absent',()=>{
-  jest.isolateModules(()=>{
-   jest.doMock('react-native-svg',()=>{throw new Error('Cannot find module react-native-svg');});
-   // A fresh registry has its own React, so the renderer comes from it too.
-   const renderer=require('react-test-renderer'),isolated=require('../../packages/hig/native/src/status');
-   expect(()=>require('react-native-svg')).toThrow('Cannot find module');
-   let tree;renderer.act(()=>{tree=renderer.create(require('react').createElement(isolated.Avatar,{name:'Demo account',size:24,square:true}));});
-   expect(require('react-native').StyleSheet.flatten(tree.root.findAll(node=>node.props.accessibilityRole==='image')[0].props.style)).toMatchObject({width:24,height:24,borderRadius:0});
-   renderer.act(()=>tree.unmount());
-   jest.dontMock('react-native-svg');
-  });
- });
- it('is the same frame: size, square, decorative and the image fallback, and no generated face',()=>{
-  const {Avatar:Plain}=require('../../packages/hig/native/src/status');
+ it('without a seed is the plain frame: size, square, decorative and the image fallback, and no generated face',()=>{
+  const {Avatar:Plain}=require('../../packages/hig/native/src/avatar');
   const plain=props=>{if(root)act(()=>root.unmount());act(()=>{root=render(h(Plain,{name:'Joe',...props}));});return root.root;};
   expect(flat(box(plain({})))).toEqual({width:40,height:40,borderRadius:20,backgroundColor:nativeSrgb.surface,alignItems:'center',justifyContent:'center'});
   expect(flat(box(plain({size:64,square:true})))).toMatchObject({width:64,height:64,borderRadius:0});
   expect(box(plain({decorative:true})).props).toMatchObject({accessible:false,importantForAccessibility:'no-hide-descendants'});
   const view=plain({source:{uri:'https://example.com/joe.png'}});act(()=>view.findByType(RN.Image).props.onError({nativeEvent:{error:'404'}}));expect(view.findByType(RN.Text).props.children).toBe('Jo');
-  // Untyped JavaScript that passes a seed here gets the initials; the face is in the avatar entry.
-  const seeded=plain({seed:address,variant:'beam'});expect(seeded.findAllByType(Svg)).toHaveLength(0);expect(seeded.findByType(RN.Text).props.children).toBe('Jo');
+  expect(plain({}).findAllByType(Svg)).toHaveLength(0);
  });
 });

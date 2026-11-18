@@ -1,5 +1,6 @@
 "use client";
 
+import { singleRowLayout, toastWidth } from './toast-layout';
 import type { ReactNode } from "react";
 import { AlertTriangle, Check, Info, X } from "lucide-react";
 const cn = (...values: (string | false | undefined)[]) => values.filter(Boolean).join(" ");
@@ -33,7 +34,8 @@ export function NotificationCard({
 }) {
   const iconNode = icon !== undefined ? icon : tone === "neutral" ? <Info className="h-5 w-5" strokeWidth={2.5} /> : DEFAULT_ICON[tone];
   const baseClass = cn(
-    "pointer-events-auto flex w-fit max-w-[min(92vw,28rem)] items-center gap-2.5 rounded-full border-2 bg-background/95 py-2 pl-2 pr-5",
+    "pointer-events-auto flex w-fit max-w-[min(92vw,28rem)] items-center gap-2.5 rounded-full border-2 bg-background/95 pl-2 pr-5",
+    description ? "py-2" : singleRowLayout,
     `toast-tone toast-tone-${tone}`,
     onClick && "transition-transform active:scale-[0.98] hover:bg-background"
   );
@@ -164,14 +166,11 @@ export function InfoCard({
       onClick={a.onClick}
       className={cn(
         "inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-3 transition-colors",
-        a.appearance === "badge" ? "text-sm font-extrabold" : "text-xs font-bold",
+        "text-sm font-extrabold",
         stacked && "w-full",
         role === "primary"
-          ? a.appearance === "badge"
-            ? cn("toast-tone-tile", "hover:brightness-110")
-            : "toast-tone-button"
-          :
-            "border border-border bg-transparent text-foreground hover:bg-muted",
+          ? "toast-tone-button"
+          : "toast-secondary-button",
       )}
     >
       {a.icon && <span aria-hidden="true" className="shrink-0">{a.icon}</span>}
@@ -183,7 +182,8 @@ export function InfoCard({
       <div
         className={cn(
           // Outer radius = 18px control radius + 12px inset + 2px border (at the default root size).
-          "pointer-events-auto flex w-full max-w-[min(92vw,28rem)] flex-col gap-3 rounded-[calc(1.875rem+2px)] border-2 bg-background/95 p-3",
+          "pointer-events-auto flex flex-col gap-3 rounded-[calc(1.875rem+2px)] border-2 bg-background/95 p-3",
+          toastWidth,
           `toast-tone toast-tone-${tone}`,
         )}
       >
@@ -202,8 +202,9 @@ export function InfoCard({
   return (
     <div
       className={cn(
-        "pointer-events-auto flex w-full max-w-[min(92vw,28rem)] items-center gap-3 border-2 bg-background/95 py-2 pl-2 pr-2.5",
-        description ? "items-start rounded-2xl py-2.5" : "rounded-full",
+        "pointer-events-auto flex items-center gap-3 border-2 bg-background/95 pl-2 pr-2.5",
+        toastWidth,
+        description ? "items-start rounded-2xl py-2.5" : `${singleRowLayout} rounded-full`,
         `toast-tone toast-tone-${tone}`,
       )}
     >
@@ -244,7 +245,8 @@ export function InfoPanel({
     <div
       className={cn(
         // Match the 18px control radius plus padding and border.
-        "pointer-events-auto flex w-full max-w-[min(92vw,28rem)] flex-col gap-3 rounded-[calc(1.875rem+2px)] border-2 bg-background/95 p-3",
+        "pointer-events-auto flex flex-col gap-3 rounded-[calc(1.875rem+2px)] border-2 bg-background/95 p-3",
+        toastWidth,
         `toast-tone toast-tone-${tone}`,
         className,
       )}
@@ -275,7 +277,7 @@ export function InfoPanel({
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex h-9 w-full items-center justify-center rounded-full border border-border bg-transparent px-3 text-xs font-bold text-foreground transition-colors hover:bg-muted"
+          className="inline-flex h-9 w-full items-center justify-center rounded-full toast-tone-button px-3 text-sm font-extrabold transition-colors"
         >
           Close
         </button>

@@ -143,7 +143,7 @@ const Standing=React.memo(function Standing({entry,id,style,lead,pinned,scoreOpt
  const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),monoFontFamily=useMonoFontFamily(),locale=useNumberLocale(),present=usePresentNumber();
   const figure=entry.detail!=null&&typeof entry.detail==='object'?entry.detail:null,detail=typeof entry.detail==='string'?entry.detail:undefined,score=entry.scoreOptions??scoreOptions;
   const said=figure?formatNumberReadout(figure.value,locale,present(figure.options),figure.formattedValue,figure.prefix,figure.suffix).text:detail;
-  const mine=pinned||!!entry.you,reading=[lead,String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,said,formatNumberReadout(entry.score,locale,present(score)).text].filter(Boolean).join(', ');
+  const reading=[lead,String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,said,formatNumberReadout(entry.score,locale,present(score)).text].filter(Boolean).join(', ');
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   // An interactive host mark stays in the accessibility tree: the row's reading moves to the name, and the mark follows as its own element.
   const split=!!entry.verified&&verifiedMark!=null&&!!verifiedMarkInteractive;
@@ -152,13 +152,13 @@ const Standing=React.memo(function Standing({entry,id,style,lead,pinned,scoreOpt
    <View {...hidden}>{typeof entry.avatar==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:entry.avatar}} style={disc as object}/>:<View style={disc}>{entry.avatar??<Text maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{entry.name.slice(0,2)}</Text>}</View>}</View>
    <View {...(split?null:hidden)} style={{flex:1,flexShrink:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
-     <Text testID={`${id}-name`} accessible={split} accessibilityLabel={split?reading:undefined} numberOfLines={1} style={{flexShrink:1,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:mine?colors.action:colors.text}}>{entry.name}</Text>
+     <Text testID={`${id}-name`} accessible={split} accessibilityLabel={split?reading:undefined} numberOfLines={1} style={{flexShrink:1,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{entry.name}</Text>
      {entry.verified?(verifiedMark!=null?<View testID={`${id}-verified`}>{verifiedMark}</View>:<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>):null}
     </View>
     {figure?<View {...hidden} style={{alignItems:'flex-start'}}><AnimatedNumberReadout testID={`${id}-detail`} {...figureProps(figure)} tone='muted' style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20}}/></View>
      :detail?<Text {...hidden} numberOfLines={1} style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:null}
    </View>
-   <View {...hidden}><AnimatedNumberReadout value={entry.score} options={score} tone={mine?'positive':'text'} testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
+   <View {...hidden}><AnimatedNumberReadout value={entry.score} options={score} tone='text' testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
   </View>;
 });
 const firstStanding:ViewStyle={borderTopLeftRadius:20,borderTopRightRadius:20,overflow:"hidden"};
@@ -211,7 +211,7 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
     <View testID={tid('figure')} style={{alignItems:'flex-start'}}>{hostFigure}</View>
     {captionText?<Text testID={tid('caption')} style={captionStyle}>{captionText}</Text>:null}
    </View>:amount!==undefined||captionText?<View testID={tid('amount')} accessible accessibilityLabel={[amount===undefined?null:typeof amount==='string'?amount:formatNumberReadout(amount,locale,present(money)).text,captionText].filter(Boolean).join(' ')} style={{gap:4}}>
-    {amount===undefined?null:<View {...hidden} style={{alignItems:'flex-start'}}>{typeof amount==='string'?<Text style={{...figureStyle,color:colors.positive}}>{amount}</Text>:<AnimatedNumberReadout value={amount} options={money} tone='positive' style={figureStyle}/>}</View>}
+    {amount===undefined?null:<View {...hidden} style={{alignItems:'flex-start'}}>{typeof amount==='string'?<Text style={{...figureStyle,color:colors.text}}>{amount}</Text>:<AnimatedNumberReadout value={amount} options={money} tone='text' style={figureStyle}/>}</View>}
     {captionText?<Text {...hidden} testID={tid('caption')} style={captionStyle}>{captionText}</Text>:null}
    </View>:null}
    {captionNode?<View testID={tid('caption')} style={{marginTop:-8}}>{captionNode}</View>:null}
@@ -220,7 +220,7 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    {promo.streak||promo.drawing?<View style={{direction,flexDirection:'row',gap:8}}>
     {promo.streak?<>
     <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.label}</Text><AnimatedNumberReadout {...figureProps(promo.streak.count)}/></View>
-    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.rewardLabel}</Text><AnimatedNumberReadout tone="positive" {...figureProps(promo.streak.reward)}/></View>
+    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.rewardLabel}</Text><AnimatedNumberReadout {...figureProps(promo.streak.reward)} tone="text"/></View>
     </>:null}
     {promo.drawing&&<DrawingCountdown key={promo.drawing.at} drawing={promo.drawing}/>}
    </View>:null}

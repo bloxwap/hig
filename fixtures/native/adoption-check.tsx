@@ -3,7 +3,6 @@ import {getLoadedFonts,useFonts} from 'expo-font';
 import {Linking,ScrollView,View,Text as RNText,useWindowDimensions} from 'react-native';
 import {SafeAreaProvider,SafeAreaView} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModalProvider,BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {HIGProvider,useColors,useHIG} from '@bloxwap/hig/native/provider';
 import {Heading,Text,Stack} from '@bloxwap/hig/native/surface';
 import {Button} from '@bloxwap/hig/native/button';
@@ -11,7 +10,7 @@ import {RadioGroup} from '@bloxwap/hig/native/radio-group';
 import {NumberReadout} from '@bloxwap/hig/native/data';
 import {AnimatedNumberReadout} from '@bloxwap/hig/native/animated-number';
 import {Toast,type Notice} from '@bloxwap/hig/native/status';
-import {GestureSheet} from '@bloxwap/hig/native/gesture-sheet';
+import {GestureSheet,GestureSheetHost,GestureSheetScrollView} from '@bloxwap/hig/native/gesture-sheet';
 
 type Section='type'|'number'|'toast'|'sheet';
 type NumberLocale='en-US'|'ar-EG'|'fa-IR'|'en-u-nu-arab';
@@ -81,7 +80,7 @@ function Checks(){
   <GestureSheet open={open} onOpenChange={setOpen} contentMode='custom' title={title} titleRef={titleRef} snapPoints={isAccount?['45%','85%']:['70%']} returnFocusRef={triggerRef}>
    <View style={{flex:1,paddingHorizontal:16,paddingBottom:16}}>
     <View style={{gap:12,paddingBottom:12}}><Heading ref={titleRef} testID='adoption-card-title'>{title}</Heading><View style={{flexDirection:'row',flexWrap:'wrap',gap:12}}><Button testID='adoption-switch-card' intent='secondary' onPress={()=>setCard(isAccount?'activity':'account')}>{isAccount?'Activity':'Back to account'}</Button><Button testID='adoption-close-sheet' intent='secondary' onPress={()=>{setOpen(false);setResult('Sheet closed');}}>Done</Button></View></View>
-    <BottomSheetScrollView key={card} testID='adoption-card-scroll' contentContainerStyle={{gap:12,paddingBottom:24}}>{Array.from({length:30},(_,index)=><Text key={index}>{`${title} row ${index+1}`}</Text>)}<Button testID='adoption-card-end' onPress={()=>setResult(`Reached ${card} end`)}>{`End ${card}`}</Button></BottomSheetScrollView>
+    <GestureSheetScrollView key={card} testID='adoption-card-scroll' contentContainerStyle={{gap:12,paddingBottom:24}}>{Array.from({length:30},(_,index)=><Text key={index}>{`${title} row ${index+1}`}</Text>)}<Button testID='adoption-card-end' onPress={()=>setResult(`Reached ${card} end`)}>{`End ${card}`}</Button></GestureSheetScrollView>
    </View>
   </GestureSheet>
  </SafeAreaView>;
@@ -94,5 +93,5 @@ export default function AdoptionCheck(){
  /* eslint-enable @typescript-eslint/no-require-imports */
  if(error)return <Text accessibilityRole='alert'>{`Adoption fonts failed: ${error.message}`}</Text>;
  if(!loaded)return <Text>Loading adoption faces…</Text>;
- return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><HIGProvider locale='en-US' fontFamily='BloxwapSansRegular' fontFamilies={families} fontFamiliesByScript={scriptFamilies} monoFontFamily='BloxwapMonoRegular'><BottomSheetModalProvider><Checks/></BottomSheetModalProvider></HIGProvider></SafeAreaProvider></GestureHandlerRootView>;
+ return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><HIGProvider locale='en-US' fontFamily='BloxwapSansRegular' fontFamilies={families} fontFamiliesByScript={scriptFamilies} monoFontFamily='BloxwapMonoRegular'><GestureSheetHost><Checks/></GestureSheetHost></HIGProvider></SafeAreaProvider></GestureHandlerRootView>;
 }

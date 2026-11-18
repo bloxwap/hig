@@ -31,8 +31,7 @@ The override sets `action` and `focus`, plus `onAction` to black or white for th
 higher text contrast (at least 4.5:1 on the primary fill). Buttons, links,
 selection controls, progress indicators, action tones, and chart crosshair
 labels follow the accent. Success/error/warning/info and buy/sell roles keep
-their existing meanings and colours. Destructive buttons keep their dark label
-on the negative fill. The approved Bloxwap mark retains its original colours;
+their existing meanings and colours. Primary and destructive buttons use their accent for the label and a 15% tint for the fill. The approved Bloxwap mark retains its original colours;
 another brand supplies its own logo.
 
 Web applies scoped CSS variables on the provider wrapper and on HIG portalled

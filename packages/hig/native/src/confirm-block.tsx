@@ -1,7 +1,7 @@
+import {InlineNotice} from './status.js';
 import {AddressReadout} from './address-readout.js';
 import React from 'react';
 import {View,type ScrollViewProps} from 'react-native';
-import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
@@ -126,10 +126,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
     <Text style={{flexShrink:1,fontSize:16,lineHeight:24,color:colors.muted}}>{point}</Text>
    </View>)}</View>:null}
   </View>:null}
-  {note!=null&&note!==false?<View testID={id('warning')} accessible style={{gap:8,paddingVertical:20,paddingHorizontal:20,borderRadius:20,backgroundColor:withAlpha(colors.warning,0.16)}}>
-   <Text testID={id('warning-title')} style={{fontSize:24,lineHeight:30,fontWeight:'700',color:colors.warning}}>{warningTitle??t.sendWarningTitle}</Text>
-   <Text testID={id('warning-body')} style={{fontSize:16,lineHeight:24,color:colors.text}}>{note}</Text>
-  </View>:null}
+  {note!=null&&note!==false?<InlineNotice accessible testID={id('warning')} severity='warning' title={warningTitle??t.sendWarningTitle} description={note}/>:null}
   {notice}
   <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
    {onCancel?<Button testID={cancelTestID??id('cancel')} intent='secondary' disabled={held||!!cancelDisabled} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}

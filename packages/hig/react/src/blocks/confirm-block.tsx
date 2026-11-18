@@ -1,4 +1,5 @@
 "use client";
+import {InlineNotice} from '../status.js';
 import {AddressReadout} from './address-readout.js';
 import React from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
@@ -100,7 +101,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
    {details?.map(detail=><div key={detail.label}><dt>{detail.label}</dt><dd>{detail.valueLabel?<><span className='hig-sr-only'>{detail.valueLabel}</span><span aria-hidden='true'>{detail.value}</span></>:detail.value}</dd></div>)}
   </dl>}
   {(children!=null&&children!==false||!!points?.length)&&<div className='hig-confirm-body'>{children}{points?.length?<ul className='hig-confirm-points'>{points.map((point,index)=><li key={index}>{point}</li>)}</ul>:null}</div>}
-  {body!=null&&body!==false&&<div className='hig-confirm-warning' role='note'><strong>{warningTitle??messages.sendWarningTitle??en.sendWarningTitle}</strong><p>{body}</p></div>}
+  {body!=null&&body!==false&&<InlineNotice severity='warning' title={warningTitle??messages.sendWarningTitle??en.sendWarningTitle} description={body}/>}
   {notice}
   <div className='hig-confirm-actions'>
    {onCancel&&<Button intent='secondary' disabled={held||cancelDisabled} data-testid={cancelTestID} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}

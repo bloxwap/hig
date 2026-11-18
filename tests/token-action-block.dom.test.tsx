@@ -54,14 +54,14 @@ describe('TokenActionBlock',()=>{
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');const rule=(start:string)=>css.find(line=>line.startsWith(start)||(start.endsWith(' {')&&line.includes(' { ')&&line.slice(0,line.indexOf(' { ')).split(',').includes(start.slice(0,-2))))??'';
   expect(rule(".hig-bar-mark[data-size='small']")).toMatch(/height:12px;border-radius:6px/);expect(rule('.hig-token-card {')).toContain('gap:16px');expect(rule('.hig-token-bars {')).toContain('gap:8px');expect(rule('.hig-token-actions {')).toContain('gap:8px');
  });
- it('draws a note under the actions with an optional tone, 8 below the actions',()=>{
+ it('draws a note above the actions with an optional tone and an 8-unit gap',()=>{
   const view=render(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={four()} note='View-only account'/>);
   const note=screen.getByRole('note');expect(note.textContent).toBe('View-only account');expect(note.dataset.tone).toBe('muted');expect(note.classList.contains('hig-token-note')).toBe(true);
-  expect(document.querySelector('.hig-token-actions')!.nextElementSibling).toBe(note);
+  expect(document.querySelector('.hig-token-actions')!.previousElementSibling).toBe(note);
   view.rerender(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={[]} note='View-only account' noteTone='warning'/>);expect(screen.getByRole('note').dataset.tone).toBe('warning');
   view.rerender(<TokenActionBlock symbol='SOL' name='Solana' assets={assets} chains={chains} actions={four()}/>);expect(screen.queryByRole('note')).toBeNull();
   const css=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n');
-  expect(css).toContain('.hig-token-card > .hig-token-actions + .hig-token-note { margin-block-start:-8px; }');
+  expect(css).toContain('.hig-token-card > .hig-token-note + .hig-token-actions { margin-block-start:-8px; }');
  });
  it('draws actions only when the host leaves out both bars, or one bar when it leaves out the other',()=>{
   const view=render(<TokenActionBlock symbol='USDC' actions={four()}/>);

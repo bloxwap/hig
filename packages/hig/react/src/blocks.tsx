@@ -20,9 +20,10 @@ export {SignalsBlock,type SignalsBlockProps,type SignalsGroup,type SignalsItem} 
 export {NotificationsBlock,type NotificationsBlockProps,type NotificationsItem} from './blocks/notifications-block.js';
 export {TradeHistoryListBlock,tradeHistorySide,type TradeHistoryListBlockProps,type TradeHistoryListLabels,type TradeHistoryItem} from './blocks/trade-history-list-block.js';
 export {TradeHistoryDetailBlock,type TradeHistoryDetailBlockProps,type TradeHistoryDetailLabels,type TradeHistoryDetail,type TradeHistoryAction} from './blocks/trade-history-detail-block.js';
-export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockProps,type ToPickerBlockProps,type FromPickerProps,type ToPickerProps,type PickerListProps,type PickerInputProps,type PickerRowProps} from './blocks/pickers.js';
-export {SwapBlock,SwapPanelBlock,SwapPanel,swapAction,type SwapBlockProps,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-block.js';
+export {FromPickerBlock,ToPickerBlock,type FromPickerBlockProps,type ToPickerBlockProps,type PickerListProps,type PickerInputProps,type PickerRowProps} from './blocks/pickers.js';
+export {SwapBlock,swapAction,type SwapBlockProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './blocks/confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom} from './blocks/preset-picker-block.js';
 export {PositionsBlock,type PositionsBlockProps,type OpenPosition} from './blocks/positions-block.js';
 export {ClaimRewardBlock,type ClaimRewardBlockProps} from './blocks/claim-reward-block.js';
+export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWallet} from './blocks/advanced-block.js';

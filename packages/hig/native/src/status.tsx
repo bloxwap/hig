@@ -6,7 +6,6 @@ import {tokens,nativeMetrics} from '@bloxwap/hig/tokens';
 import {capsuleRadius} from './modal-radius.js';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {AvatarFrame,sameFrame,type AvatarFrameProps} from './avatar-frame.js';
 import {ActivityIndicator,Animated,Easing,View,ScrollView,useWindowDimensions,Platform,type DimensionValue,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
@@ -31,8 +30,34 @@ export function Badge({children,tone='neutral',dot,testID}:BadgeProps){const fil
 /** Opaque sRGB blend of `tone` into `base` (both `#rrggbb`): the native counterpart of CSS `color-mix`. */
 const tint=(tone:string,base:string,amount:number)=>'#'+[1,3,5].map(i=>Math.round(parseInt(base.slice(i,i+2),16)*(1-amount)+parseInt(tone.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning, error → negative; default → 6% of `text`), with no stroke or glow; `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. A string or number child is drawn in a HIG `Text`. `announce` (default true) speaks the title and body when they appear or change; pass `false` for guidance that is present from the start. */
-export function Alert({title,children:body,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;/** Speaks the alert when it appears or changes (iOS announcement, Android live region). Defaults to true. */announce?:boolean}>){const children=React.Children.map(body,child=>typeof child==='string'||typeof child==='number'?<Text>{child}</Text>:child);const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.text:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderRadius:nativeMetrics.space.xl+capsuleRadius,backgroundColor:tint(accent,colors.surface,neutral?0.06:0.1)}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading style={{color:accent}}>{title}</Heading>{children}{action}</Surface>;}
+export function Alert({title,children:body,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;/** Speaks the alert when it appears or changes (iOS announcement, Android live region). Defaults to true. */announce?:boolean}>){const children=React.Children.map(body,child=>typeof child==='string'||typeof child==='number'?<Text>{child}</Text>:child);const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.text:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderRadius:nativeMetrics.space.xl+capsuleRadius,backgroundColor:tint(accent,colors.surface,neutral?0.06:0.1)}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><View style={{flexDirection:"row",alignItems:"center",gap:8}}><View accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><SeverityIcon kind={severity==='tip'?'success':severity==='note'||severity==='default'?'info':severity} color={accent}/></View><Heading style={{color:colors.text,flexShrink:1}}>{title}</Heading></View>{children}{action}</Surface>;}
 export const Callout=Alert;
+
+export interface InlineNoticeProps {
+ /** Selects the decorative icon and surface tint. Defaults to info. */
+ severity?:Notice['severity'];
+ icon?:React.ReactNode;
+ title:string;
+ description:React.ReactNode;
+ testID?:string;
+ accessible?:boolean;
+}
+/** An inline severity card with a decorative leading icon beside a stacked title and description. */
+export function InlineNotice({severity='info',icon,title,description,testID,accessible}:InlineNoticeProps){
+ const colors=useColors();
+ const accent=colors[severityRole[severity]];
+ const padding=nativeMetrics.space.xl;
+ return <Surface testID={testID} accessible={accessible} style={{padding,borderRadius:capsuleRadius+padding,flexDirection:'row',gap:12,alignItems:'flex-start',backgroundColor:tint(accent,colors.surface,0.1)}}>
+  <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{width:capsuleRadius*2,height:capsuleRadius*2,borderRadius:capsuleRadius,alignItems:'center',justifyContent:'center',backgroundColor:tint(accent,colors.surface,0.2)}}>
+   {icon??<SeverityIcon kind={severity} color={accent}/>}
+  </View>
+  <View style={{flex:1,minWidth:0,gap:4}}>
+   <Heading testID={testID&&testID+'-title'} style={{fontSize:17,lineHeight:24}}>{title}</Heading>
+   <Text testID={testID&&testID+'-body'}>{description}</Text>
+  </View>
+ </Surface>;
+}
+
 export interface Notice {
  id:string;
  message:string;
@@ -183,14 +208,6 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
-/** The Avatar frame, kept while its props are the same: a list that renders again renders no frame for the rows that did not change. */
-const StillFrame=React.memo(AvatarFrame,sameFrame);
-/**
- * A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet).
- * `size`, `square` and `decorative` are as in `@bloxwap/hig/native/avatar`, whose `Avatar` also draws a face generated from a seed; that entry needs `react-native-svg` and this one does not.
- * It renders again only when one of its props changes.
- */
-export function Avatar(props:AvatarFrameProps){return <StillFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

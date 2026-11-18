@@ -1,3 +1,5 @@
+import {primaryButtonInk} from '@bloxwap/hig/tokens';
+import {buttonTint} from './button-tint.js';
 import React from 'react';
 import {Pressable,View,type ScrollViewProps} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
@@ -118,7 +120,7 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
 export function PresetPickerBlock<T extends string|number=number>({title,value,valueOptions,valuePrefix,valueSuffix,valueLabel,formattedValue,animateFormatted,presets,selected,onPresetChange,presetsLabel,columns,adjustable,custom,intent='primary',children,onSubmit,submitLabel,submitDisabled,busy,onCancel,cancelLabel,suppressFeedback,onBack,backProps,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID='preset-picker'}:PresetPickerBlockProps<T>){
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
- const destructive=intent==='destructive',onFill=destructive?colors.background:colors.onAction;
+ const destructive=intent==='destructive',onFill=destructive?colors.negative:primaryButtonInk(colors);
  const customSelected=custom?(custom.selected??custom.value!==undefined):false;
  const chevron=(color:string)=><View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={color}/></View>;
  const label=presetsLabel??title;
@@ -146,7 +148,7 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const header=title!==undefined?<PickerHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
   <View style={{alignItems:'center'}}><AnimatedNumberReadout testID={id('headline')} value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
-  {custom?<Pressable {...custom.pressProps} testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
+  {custom?<Pressable {...custom.pressProps} testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?buttonTint(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:customSelected?onFill:colors.text}}>{custom.label}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>
     {custom.value!==undefined?<Text testID={id('custom-value')} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:customSelected?onFill:colors.muted}}>{custom.value}</Text>:null}
