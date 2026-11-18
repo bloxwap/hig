@@ -9,6 +9,8 @@ import {ALTIMETER_BURST_COOLDOWN_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIME
  type AltimeterFeed,type AltimeterPosition,type AltimeterTarget,type AltimeterTargetPosition,type TargetLabelInsets,type AltimeterTick} from '@bloxwap/hig/chart/altimeter-core';
 import {useColors,useReducedMotion,useMonoFontFamily,useMessages,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
+import {NumberFlow} from './animated-number.js';
+import type {NumberTone} from './data.js';
 
 export {bitcoinPrice,type AltimeterFeed,type AltimeterPosition,type AltimeterTarget,type TargetLabelInsets};
 export interface AltimeterChartProps extends Omit<ViewProps,'children'> {
@@ -172,8 +174,11 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  const value=typeof capsule==='object'?capsule.returnRatio:capsule==='pnl'?position?.pnl:mark;
  const readingFormat=capsuleFormat??format;
  const reading=useMemo(()=>value!=null&&Number.isFinite(value)?readingFormat.format(value):'—',[value,readingFormat]);
+ // The pill's figure rolls its digits as web's NumberFlow does, in the same format as the reading.
+ const pillOptions=useMemo<Intl.NumberFormatOptions>(()=>mode==='percent'?{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'}:mode==='pnl'?{style:'currency',currency,signDisplay:'exceptZero'}:{style:'currency',currency:'USD',minimumFractionDigits:digits,maximumFractionDigits:digits,...priceOptions},[mode,currency,digits,optionsKey]);
  const tone=(n:number)=>!Number.isFinite(n)||n===0?colors.muted:n>0?colors.positive:colors.negative;
  const pillColor=position?tone(position.pnl):colors.action;
+ const pillTone:NumberTone=!position?'action':!Number.isFinite(position.pnl)||position.pnl===0?'muted':position.pnl>0?'positive':'negative';
  const basis=position?.breakEvenPrice;
  const lineColor=position?tone(mark!=null&&validPrice(basis)?(mark-basis)*(position.side==='short'?-1:1):0):colors.action;
  const pillWidth=Math.min(Math.max(0,width-8),Math.max(110,reading.length*10+20)),end=Math.max(0,width-8-pillWidth);
@@ -270,12 +275,17 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
     <Svg width={width} height={height} style={styles.layer} accessible={false}>
     {levels.map(l=>{const pos=frame.levels.get(l.id);if(!pos)return null;const color=l.color??colors.action;
      return <G key={l.id}>{!pos.pinned&&<Line x1={0} x2={width} y1={pos.y} y2={pos.y} stroke={color} strokeDasharray="3 4"/>}
-      {l.label&&pos.labelTop!=null&&<SvgText x={width-8} y={pos.labelTop+14} textAnchor="end" fontSize={12} fill={color}>{targetTexts.get(l.id)}</SvgText>}</G>;
+      {/* A thin outline in the chart's background colour lifts the label off the grid and the trail: a stroked copy drawn behind the fill, as web paints its stroke under the text. */}
+      {l.label&&pos.labelTop!=null&&<><SvgText x={width-8} y={pos.labelTop+14} textAnchor="end" fontSize={13} fill={colors.background} stroke={colors.background} strokeWidth={2} strokeLinejoin="round">{targetTexts.get(l.id)}</SvgText><SvgText x={width-8} y={pos.labelTop+14} textAnchor="end" fontSize={13} fill={color}>{targetTexts.get(l.id)}</SvgText></>}</G>;
     })}
     {mark==null?<SvgText x={width/2} y={center} textAnchor="middle" fill={colors.muted}>{status}</SvgText>:
-     <G translateX={shake}><Rect x={end} y={center-18} width={pillWidth} height={36} rx={18} fill={colors.background} stroke={pillColor}/><SvgText x={end+pillWidth/2} y={center+5} textAnchor="middle" fontFamily={monoFontFamily} fontSize={16} fontWeight="600" fill={pillColor}>{reading}</SvgText></G>}
+     <G translateX={shake}><Rect x={end} y={center-18} width={pillWidth} height={36} rx={18} fill={colors.background} stroke={pillColor}/></G>}
     {burst&&<BurstEffect burst={{...burst,color:burst.color??colors.action}} now={now} x={end+pillWidth/2} y={center} width={pillWidth}/>}
-   </Svg></>}
+   </Svg>
+   {/* The figure sits over the pill drawn above, as native text so its digits can roll. */}
+   {mark!=null&&<View pointerEvents="none" style={{position:'absolute',left:end,top:center-18,width:pillWidth,height:36,alignItems:'center',justifyContent:'center',transform:[{translateX:shake}]}}>
+    <NumberFlow motion="slide" value={value} options={pillOptions} tone={pillTone} maxFontSizeMultiplier={1} style={{fontFamily:monoFontFamily,fontSize:16,fontWeight:'600'}}/>
+   </View>}</>}
   </View>
  </View>;
 }

@@ -7,13 +7,14 @@ import {formatNumber} from './number-format.js';
 import {Raised,useColors,useControllable,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {figureProps} from './figure.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
 import {ScreenHeader} from './screen-header.js';
+import {HeaderInfo} from './header-info.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
 import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
@@ -37,7 +38,7 @@ export interface SwapDestination {
  pending?:boolean;
 }
 /** One label and value row of the details card. */
-export interface SwapDetail {label:string;/** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;/** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */formattedValue?:string}
+export interface SwapDetail {label:string;/** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `NumberFlow` when it changes. */value:string|number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;/** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */formattedValue?:string}
 /** The receive view: the host's address and its rendered QR code. HIG ships no QR encoder. */
 export interface SwapReceive {address:string;qr?:React.ReactNode;/** Host clipboard adapter. When set, the whole view copies the address. */onCopy?:()=>Promise<void>|void}
 export interface SwapBlockProps {
@@ -84,6 +85,8 @@ export interface SwapBlockProps {
  details?:readonly SwapDetail[];
  /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
+ /** With `title`: accessible name of an info button on the trailing edge of the header that shows `note` in a popover instead of under the cards: About unstaking. */
+ noteInfo?:string;
  /** Heading above the cards, for a panel that is its own screen or sheet, drawn as the shared `ScreenHeader` (the title centred, 17/24, in a 44dp row) like every other block. `onBack` adds Back on its leading edge. Test IDs `swap-header`, `swap-back` and `swap-title`. */
  title?:string;onBack?:()=>void;
  /** With `title`: `nativeID` of the heading, so a sheet around the panel can name itself with `accessibilityLabelledBy` (Android). */
@@ -128,7 +131,7 @@ export interface SwapBlockProps {
  * or token units through the keypad, token pickers, settings, and one action that names itself from the chosen pair.
  * Presentation only. The host owns tokens, balances, prices, the quote, the wallet and the transaction.
  */
-export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,submittingLabel,onReset,keypad='auto',destination,details,note,noteTone='muted',title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapBlockProps){
+export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenIds,from:fromProp,to:toProp,defaultFrom=null,defaultTo=null,onFromChange,onToChange,amount,onAmountChange,received,fee,fees,quoteLoading,slippage=0.005,onSlippageChange,denomination,onDenominationChange,wallet,onConnect,onDisconnect,recipient,onRecipientChange,onScanRecipient,receive,receiving,onReceivingChange,onSubmit,submitting=false,submittingLabel,onReset,keypad='auto',destination,details,note,noteTone='muted',noteInfo,title,onBack,headingId,controls=true,actionIcon,lockFrom=false,lockTo=false,actionLabel,actionDisabled=false,actionStatus,actionIntent='primary',limitToBalance=false,banner,footer,oneWay:oneWayProp=false,denominationSwitch=true,settings,view:viewProp,onViewChange,style}:SwapBlockProps){
  const env=useHIG();const {direction}=env;const locale=useNumberLocale();const present=usePresentNumber();const colors=useColors();const t=useMessages();
  const [from,setFrom]=useControllable<SwapToken|null>(fromProp,defaultFrom,onFromChange);const [to,setTo]=useControllable<SwapToken|null>(toProp,defaultTo,onToChange);
  const boundedUnits=(raw:string)=>{const canonical=decimal(raw,from?.decimals??100);return limitToBalance&&from?.balance!=null&&Number.isFinite(from.balance)&&from.balance>=0&&decimalCompare(canonical,from.balance)>0?decimal(from.balance,from?.decimals??100):canonical;};
@@ -194,7 +197,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><TokenArt uri={token.icon} symbol={token.symbol} size={40}/></View>
    <View style={{flex:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:4}}><Text style={{fontWeight:'600',lineHeight:21,flexShrink:1}}>{token.name}</Text>{locked?null:<View testID={`swap-account-chevron-${side}`}><SmallChevron color={colors.muted}/></View>}</View>
-    {typeof token.caption==='object'?<AnimatedNumberReadout testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
+    {typeof token.caption==='object'?<NumberFlow motion="slide" testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
    </View>
   </View>
   {side==='from'&&(token.balance??0)>0?<SwapCapsule disabled={submitting} testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
@@ -211,7 +214,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
      <SwapCapsule disabled={submitting} testID='swap-test' onPress={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
      <SwapCapsule disabled={submitting} testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
     </View>
-    <View pointerEvents='none'><AnimatedNumberReadout testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
+    <View pointerEvents='none'><NumberFlow motion="slide" testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
    </View>:null)
    :<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
     <SwapCapsule disabled={submitting} testID='swap-slippage' label={t.swapSlippage(slippageText)} onPress={()=>!submitting&&show(onSlippageChange?'slippage':'settings')}><SwapNumberText template={t.swapSlippage} text={slippageText} value={slippage*100} formattedValue={slippageText.slice(0,-1)} suffix='%'/></SwapCapsule>
@@ -244,11 +247,11 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
     {locked?null:<Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>!submitting&&show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{alignItems:'center',gap:8,paddingTop:4,paddingHorizontal:16,paddingBottom:20}}>
      <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:formattedEntry??`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
-      <AnimatedNumberReadout value={shown} formattedValue={formattedEntry} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+      <NumberFlow motion="slide" value={shown} formattedValue={formattedEntry} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
      </View>
      {denominationSwitch&&<SwapCapsule disabled={submitting} label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>!submitting&&(side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd'))}>
       <Text accessible={false} style={[small,{opacity:0.5}]}>=</Text>
-      {mode==='token'?<AnimatedNumberReadout testID={`swap-conversion-${side}`} value={cardUsd} options={usdOptions} tone='muted' style={smallType}/>:<AnimatedNumberReadout testID={`swap-conversion-${side}`} value={cardUnits} options={{maximumFractionDigits:8,useGrouping:false}} suffix={token?` ${token.symbol}`:''} tone='muted' style={smallType}/>}
+      {mode==='token'?<NumberFlow motion="slide" testID={`swap-conversion-${side}`} value={cardUsd} options={usdOptions} tone='muted' style={smallType}/>:<NumberFlow motion="slide" testID={`swap-conversion-${side}`} value={cardUnits} options={{maximumFractionDigits:8,useGrouping:false}} suffix={token?` ${token.symbol}`:''} tone='muted' style={smallType}/>}
       <FlipIcon color={colors.muted} size={14}/>
      </SwapCapsule>}
     </View>
@@ -263,19 +266,21 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{art}</View>
    <View style={{flex:1,minWidth:0}}><Text testID='swap-destination-title' style={{fontWeight:destination.pending?'500':'600',lineHeight:21}}>{destination.title}</Text>{destination.subtitle?<Text style={small}>{destination.subtitle}</Text>:null}{destination.address?<Text style={small}>{shortAddress(destination.address)}</Text>:null}</View>
    {destination.detail||fee!==undefined||destination.onPress?<View style={{flexDirection:'row',alignItems:'center',gap:8,maxWidth:'60%'}}>
-    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<AnimatedNumberReadout testID='swap-destination-detail' {...figureProps(destination.detail)} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
+    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<NumberFlow motion="slide" testID='swap-destination-detail' {...figureProps(destination.detail)} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
     {destination.onPress?<View testID='swap-destination-chevron'><SmallChevron color={colors.muted} trailing/></View>:null}
    </View>:null}
   </View>:null;
-  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
+  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<NumberFlow motion="slide" value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
   const shape:ViewStyle={backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'};
   // With a pressable destination the whole card is the button; the rows inside it are read as part of it.
   return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' disabled={submitting} onPress={()=>{if(!submitting)destination.onPress?.();}} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;
  };
  const fromCard=card('from'),toCard=fixedCard()??card('to');
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
+ // With a header, the note can move into a popover behind an info button on its trailing edge.
+ const info=title&&note&&noteInfo?<HeaderInfo label={noteInfo} tone={noteTone} testID='swap-info'>{note}</HeaderInfo>:null;
  const main=<View testID='swap-view-main'>
-  {title?<View style={{marginBottom:12}}><ScreenHeader testID='swap' title={title} onBack={onBack} headingId={headingId}/></View>:null}
+  {title?<View style={{marginBottom:12,zIndex:1}}><ScreenHeader testID='swap' title={title} onBack={onBack} headingId={headingId} action={info}/></View>:null}
   {banner?<View testID='swap-banner' style={{marginBottom:8}}>{banner}</View>:null}
   {fromCard}
   <View style={{height:8,zIndex:1,alignItems:'center'}}>
@@ -285,7 +290,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    </View>
   </View>
   {toCard}
-  {note?<View testID='swap-note' style={tone?{marginTop:8,flexDirection:'row',alignItems:'flex-start',gap:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{marginTop:8,paddingHorizontal:4}}>{tone&&<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><SeverityIcon kind={noteTone==='warning'?'warning':'error'} color={tone}/></View>}<Text style={{flexShrink:1,fontSize:14,lineHeight:21,color:tone?colors.text:colors.muted}}>{note}</Text></View>:null}
+  {note&&!info?<View testID='swap-note' style={tone?{marginTop:8,flexDirection:'row',alignItems:'flex-start',gap:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{marginTop:8,paddingHorizontal:4}}>{tone&&<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><SeverityIcon kind={noteTone==='warning'?'warning':'error'} color={tone}/></View>}<Text style={{flexShrink:1,fontSize:14,lineHeight:21,color:tone?colors.text:colors.muted}}>{note}</Text></View>:null}
   {!showReceive&&keypad!=='never'?<SwapKeypad onKey={press} label={t.swapKeypad} deleteLabel={t.swapDelete}/>:null}
   <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:16}}>
    {controls?<IconButton intent='secondary' label={t.swapSettings} suppressFeedback testID='swap-settings-button' disabled={submitting} onPress={()=>!submitting&&show('settings')}><MenuIcon color={colors.text}/></IconButton>:null}

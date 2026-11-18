@@ -507,3 +507,19 @@ it('does not mutate the pair or denomination during submission',()=>{
  press(tree,'swap-flip');press(tree,'swap-slot-from');press(tree,'swap-mode-from');
  expect(changed).not.toHaveBeenCalled();expect(amount(tree)).toBe('1');expect(has(tree,'swap-keypad')).toBe(true);
 });
+
+it('moves a titled note into a popover behind a header info button with noteInfo, keeping its tone',()=>{
+ const note='Undelegating does not start the exit clock.';
+ const tree=mount({title:'Unstake HYPE',note,noteTone:'negative',noteInfo:'About unstaking'});
+ expect(tree.findAll(n=>n.props.testID==='swap-note')).toHaveLength(0);
+ const button=tree.findAll(n=>n.props.accessibilityLabel==='About unstaking'&&typeof n.props.onPress==='function')[0];
+ expect(button).toBeTruthy();
+ act(()=>button.props.onPress());
+ const popover=tree.findAll(n=>n.props.testID==='swap-info-popover'&&typeof n.props.onPress==='function')[0];
+ expect(texts(popover)).toContain(note);
+ // A negative note leads with the error symbol in its colour.
+ expect(popover.findAll(n=>n.props.tintColor===colors.negative||n.props.color===colors.negative).length).toBeGreaterThan(0);
+ // Without a title there is no header to hold the button, so the note stays under the cards.
+ const plain=mount({note,noteInfo:'About unstaking'});
+ expect(plain.findAll(n=>n.props.testID==='swap-note').length).toBeGreaterThan(0);
+});

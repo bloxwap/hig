@@ -297,7 +297,7 @@ const MemoNumberReadout=memo(function NativeNumberReadout({requestedOptionsKey,r
   if(result.fontSize!==undefined && result.lineHeight===undefined)result.lineHeight=undefined;
   return result;
  },[style]);
- const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
+ const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'||tone==='action'?tone:'text'];
  const textStyle=useMemo<StyleProp<TextStyle>>(()=>[typography,{color,fontVariant:['tabular-nums']}],[typography,color]);
  const script=detectScript(`${reading.text}${staleSuffix}`,locale);
  const safeAffixes=useMemo(()=>safeNumberLayout(`${prefix??''}${suffix??''}${staleSuffix}`,direction),[prefix,suffix,staleSuffix,direction]);

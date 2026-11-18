@@ -97,3 +97,23 @@ it('moves live legend figures place by place inside the block',()=>{
  const figure=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='token-assets-detail-staked');expect(figure.props).toMatchObject({value:320,tone:'faint'});
  expect(all(view,'token-assets-legend-staked').find(node=>typeof node.type==='string').props.accessibilityLabel).toBe('Staked, $320.00, 57.2%');
 });
+
+it('moves the note into a popover behind a header info button with noteInfo, beside any headerAction',()=>{
+ const note='PAPER cannot be sent or received.';
+ let view=mount({note,noteInfo:'About Papertrade',actions:[{id:'stake',onSelect:()=>{}}]});
+ expect(has(view,'token-note')).toBe(false);
+ const button=view.findAll(node=>node.props.accessibilityLabel==='About Papertrade'&&typeof node.props.onPress==='function')[0];
+ expect(button).toBeTruthy();
+ expect(has(view,'token-info-popover')).toBe(false);
+ act(()=>button.props.onPress());
+ const popover=all(view,'token-info-popover').find(node=>typeof node.props.onPress==='function');
+ expect(text(popover)).toContain(note);
+ act(()=>popover.props.onPress());
+ expect(has(view,'token-info-popover')).toBe(false);
+ // Without noteInfo the note stays inline above the actions.
+ view=mount({note,actions:[{id:'stake',onSelect:()=>{}}]});
+ expect(has(view,'token-note')).toBe(true);expect(has(view,'token-info')).toBe(false);
+ // Beside a host control both stay in the header, the info button first.
+ view=mount({note,noteInfo:'About',headerAction:h(View,{testID:'host-action'})});
+ expect(has(view,'token-info')&&has(view,'host-action')).toBe(true);
+});

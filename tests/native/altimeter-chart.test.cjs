@@ -4,6 +4,7 @@ const {AppState,Platform}=require('react-native');
 const {Rect,Stop,Circle,Path,Text:SvgText}=require('react-native-svg');
 const {nativeSrgb}=require('@bloxwap/hig/tokens');
 const {AltimeterChart}=require('../../packages/hig/native/src/chart');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const h=React.createElement;
 let root,callback,appChange;
@@ -139,4 +140,16 @@ it('reports a DEGEN crossing with its target and the direction the price moved',
  act(()=>root.update(tree({...props,price:100.02})));frame(1200);frame(1500);
  expect(root.root.findAllByType(Circle)).toHaveLength(48);
  expect(onTargetCross).toHaveBeenCalledTimes(1);expect(onTargetCross).toHaveBeenLastCalledWith(expect.objectContaining({id:'entry'}),'up');
+});
+
+it('rolls the pill figure with NumberFlow, as web does, in the pill tone and format',()=>{
+ mount({price:100});frame(1000);
+ const readout=()=>root.root.findAllByType(NumberFlow)[0];
+ // Without a position the pill reads the mark in the action colour, as currency.
+ expect(readout().props).toMatchObject({value:100,tone:'action',options:{style:'currency',currency:'USD'}});
+ // The pill's SVG holds only its shape; no 16pt static reading is drawn under the rolling one.
+ expect(root.root.findAllByType(SvgText).some(node=>node.props.fontSize===16)).toBe(false);
+ // With a position it reads the return, signed, in the PnL tone.
+ act(()=>root.update(tree({price:101,position:{side:'long',breakEvenPrice:100,pnl:1,capsule:{returnRatio:.01}}})));frame(2000);
+ expect(readout().props).toMatchObject({value:.01,tone:'positive',options:{style:'percent',signDisplay:'exceptZero'}});
 });

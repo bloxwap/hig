@@ -9,7 +9,8 @@ import {useColors,useMessageOverrides,useMonoFontFamily,useReadoutFormat} from '
 import {Text,Surface,Separator} from './surface.js';
 import {Button} from './button.js';
 /** `up`/`down` are market direction (rising/long/gain, falling/short/loss) and follow `HIGProvider marketColors`; `positive`/`negative` stay success/error. */
-export type NumberTone='text'|'positive'|'negative'|'warning'|'muted'|'faint'|'up'|'down';
+/** `action` is the brand action colour, for a figure that stands for the live mark (the chart's price pill). */
+export type NumberTone='text'|'positive'|'negative'|'warning'|'muted'|'faint'|'up'|'down'|'action';
 /** Typography only: semantic tone owns colour and numeric glyphs remain tabular. */
 export type NumberReadoutStyle=Pick<TextStyle,'fontFamily'|'fontSize'|'fontWeight'|'lineHeight'|'letterSpacing'|'textAlign'|'textDecorationLine'|'textDecorationColor'|'textDecorationStyle'>;
 const numberTypographyKeys=new Set(['fontFamily','fontSize','fontWeight','lineHeight','letterSpacing','textAlign','textDecorationLine','textDecorationColor','textDecorationStyle']);
@@ -17,7 +18,7 @@ const tabularStyle:TextStyle={fontVariant:['tabular-nums']};
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;/** Host-owned display text for a finite value. Empty text falls back to locale formatting; never parse this text for submission. */formattedValue?:string;stale?:boolean;label?:string;/** Explicit semantic meaning; sign alone never chooses the tone. */tone?:NumberTone;/** Text typography, including an explicitly registered mono face. Does not style the animated wrapper. */style?:StyleProp<NumberReadoutStyle>;testID?:string;/** Font-scale cap for dense readouts, e.g. 2 for 200% at AX5. */maxFontSizeMultiplier?:number;/** Display-only affixes, omitted for unknown values. */prefix?:string;suffix?:string}
 export const NumberReadout=React.memo(function NumberReadout({value,options,formattedValue,stale,label,tone='text',style,testID,maxFontSizeMultiplier,prefix,suffix}:NumberProps){
  const {locale,numberFormat,staleLabel}=useReadoutFormat(options?.style==='currency');const colors=useColors();const reading=formatNumberReadout(value,locale,presentNumberFormat(options,numberFormat),formattedValue,prefix,suffix).text;const staleSuffix=stale?` ${staleLabel??en.stale}`:'';
- const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'?tone:'text'];
+ const color=colors[tone==='positive'||tone==='negative'||tone==='warning'||tone==='muted'||tone==='faint'||tone==='up'||tone==='down'||tone==='action'?tone:'text'];
  const textStyle=React.useMemo(()=>{
   const base=color===colors.text?tabularStyle:{...tabularStyle,color};
   if(!style)return base;

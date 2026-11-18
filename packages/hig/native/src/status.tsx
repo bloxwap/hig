@@ -147,13 +147,14 @@ export function ToastNotice({message,description,severity='info',action,secondar
  const row={flexDirection:'row' as const,alignItems:stacked?'flex-start' as const:'center' as const,gap:12};
  const lead=onPress?<Button intent='ghost' contentMode='custom' accessibilityLabel={pressName??message} onPress={onPress} style={[row,{flexShrink:1,flexGrow:hug&&!stacked?0:1,minWidth:0,paddingHorizontal:0,paddingVertical:0,minHeight:36,backgroundColor:'transparent'}]}>{tile}{text}</Button>:<>{tile}{text}</>;
  const actions=(rank:'primary'|'secondary',node:React.ReactNode)=>node?<ToastActionContext.Provider value={{accent:frame.accent,rank}}>{node}</ToastActionContext.Provider>:null;
+ const primary=actions('primary',action),secondary=actions('secondary',secondaryAction);
  if(stacked)return <View accessibilityLiveRegion='none' style={[{direction,gap:12,padding:12},frame.style,style]}>
   <View style={row}>{lead}{close}</View>
-  {action||secondaryAction?<View style={{flexDirection:'row',gap:8}}>{action?<View style={{flex:1}}>{actions('primary',action)}</View>:null}{secondaryAction?<View style={{flex:1}}>{actions('secondary',secondaryAction)}</View>:null}</View>:null}
+  {action||secondaryAction?<View style={{flexDirection:'row',gap:8}}>{primary?<View style={{flex:1}}>{primary}</View>:null}{secondary?<View style={{flex:1}}>{secondary}</View>:null}</View>:null}
  </View>;
  return <View accessibilityLiveRegion='none' style={[{direction,...row,minHeight:52,paddingVertical:4,paddingLeft:8,paddingRight:8},frame.style,style]}>
   {lead}
-  {actions('primary',action)}
+  {primary}
   {close}
  </View>;
 }
