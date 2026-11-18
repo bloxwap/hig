@@ -2817,7 +2817,7 @@
         "signature": "export declare function AvatarFrame({ name, source, size, square, decorative, face }: AvatarFrameProps & {\n    face?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "BackdropBlur": {
-        "entry": "backdrop-blur",
+        "entry": "backdrop-blur-view",
         "signature": "export declare function BackdropBlur(): React.JSX.Element | null;"
       },
       "Figure": {
