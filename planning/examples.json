@@ -413,7 +413,7 @@
     },
     {
       "name": "GestureSheet",
-      "added": "Unreleased",
+      "added": "0.8.0",
       "slug": "gesture-sheet",
       "entry": "gesture-sheet",
       "family": "overlays",
@@ -1747,7 +1747,7 @@
       "slug": "login-block",
       "entry": "blocks",
       "family": "blocks",
-      "added": "Unreleased",
+      "added": "0.9.0",
       "web": "<C.GestureSheet open={open} onOpenChange={setOpen} trigger={<C.Button>Log in</C.Button>} title=\"Log in\" titleHidden enableDynamicSizing closeButton={null} contentProps={{style:{maxWidth:390,marginInline:'auto'}}}><C.LoginBlock lastUsed={value==='apple'||value==='twitter'||value==='email'||value==='wallet'?value:'google'} analyticsEnabled={checked} onAnalyticsChange={setChecked} onLogin={provider=>{setValue(provider);setMessage('Selected '+(provider==='twitter'?'X':provider==='apple'?'Apple':'Google'));setOpen(false);}} onMoreLogin={provider=>{setValue(provider);setMessage(provider==='email'?'Selected Email':'Selected wallet');setOpen(false);}} onClose={()=>setOpen(false)}/></C.GestureSheet>",
       "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Log in</C.Button><C.GestureSheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title=\"Log in\" contentMode=\"custom\" enableDynamicSizing><View style={{padding:16}}><C.LoginBlock lastUsed={value==='apple'||value==='google'?value:'twitter'} analyticsEnabled={checked} onAnalyticsChange={setChecked} onLogin={provider=>{setValue(provider);setMessage('Selected '+(provider==='twitter'?'X':provider==='apple'?'Apple':'Google'));setOpen(false);}} onClose={()=>setOpen(false)}/></View></C.GestureSheet></C.Stack>",
       "nativeSupport": "renderer",
@@ -1951,8 +1951,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.9.2')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.3' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.9.3')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.3' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
