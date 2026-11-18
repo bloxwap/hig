@@ -9,8 +9,10 @@ const {Text:RNText,PixelRatio}=require('react-native');
 jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
  const shared=initial=>{const ref=React.useRef(null);if(ref.current===null){let current=initial;ref.current={get value(){return current;},set value(next){current=next&&next.__mockAnimation?next.toValue??current:next;}};}return ref.current;};
- return {__esModule:true,default:{View:RN.View,Text:RN.Text},cancelAnimation:()=>{},defineAnimation:starting=>({__mockAnimation:true,toValue:starting}),withTiming:toValue=>({__mockAnimation:true,toValue}),
-  useSharedValue:shared,useAnimatedStyle:updater=>updater(),useFrameCallback:()=>React.useRef({setActive:()=>{}}).current,Easing:{bezier:(...points)=>({bezier:points})},ReduceMotion:{Never:'never',System:'system',Always:'always'}};
+ return {__esModule:true,default:{View:RN.View,Text:RN.Text,createAnimatedComponent:component=>component},cancelAnimation:()=>{},defineAnimation:starting=>({__mockAnimation:true,toValue:starting}),withTiming:toValue=>({__mockAnimation:true,toValue}),
+  useSharedValue:shared,useAnimatedStyle:updater=>updater(),useFrameCallback:callback=>React.useRef({setActive(active){
+   if(active)for(const interval of [null,8.0,8.6,16.7,33.4])callback({timeSincePreviousFrame:interval});
+  }}).current,Easing:{bezier:(...points)=>({bezier:points})},ReduceMotion:{Never:'never',System:'system',Always:'always'}};
 });
 // The fixture workspace installs the React its Expo SDK pins; under jest it has to be the React the test renderer runs.
 // (Where the workspace shares the root's React there is no second copy and nothing to point elsewhere.)
@@ -38,7 +40,7 @@ it('runs the tickers and then the interrupted figure by itself, and logs its sta
  expect(lines[5]).toBe('[perf] number-flow done');
  // Fifty ticks of forty figures are fifty commits. (React Native's jest frame is a zero timeout, so the interrupted figure gets
  // a value every millisecond here and React batches them by the 50 ms this test advances at a time; on a device it is one a frame.)
- expect(lines[1]).toMatch(/^\[perf\] number-flow tickers figures=40 ticks=50 updates=2000 commits=50 jsFrames=\d+ jsSlow=\d+ jsWorstMs=[\d.]+ uiFrames=\d+ uiSlow=\d+ uiWorstMs=[\d.]+$/);
+ expect(lines[1]).toMatch(/^\[perf\] number-flow tickers figures=40 ticks=50 updates=2000 commits=50 jsFrames=\d+ jsSlow=\d+ jsWorstMs=[\d.]+ jsNear120=\d+ uiFrames=5 uiSlow=1 uiWorstMs=33\.4 uiNear120=2$/);
  const interrupt=/^\[perf\] number-flow interrupt figures=1 updates=(\d+) commits=(\d+) jsFrames=(\d+) /.exec(lines[2]);
  expect(interrupt).not.toBeNull();expect(Number(interrupt[1])).toBeGreaterThan(150);expect(Number(interrupt[2])).toBeGreaterThan(30);expect(Number(interrupt[2])).toBeLessThanOrEqual(Number(interrupt[1]));expect(Number(interrupt[3])).toBe(Number(interrupt[1])-1);
  expect(root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function')).toHaveLength(10);

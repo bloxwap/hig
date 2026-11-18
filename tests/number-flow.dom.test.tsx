@@ -39,7 +39,7 @@ const of=(kind:'spin'|'slide'|'fade'|'clip')=>animations.filter(animation=>kind=
 const place=(key:string)=>document.querySelector<HTMLElement>(`[data-hig-flow-key="${key}"]`) as HTMLElement;
 /** The glyphs of a place's strip from top to bottom, which is the order they pass through the window going up. */
 const row=(glyph:HTMLElement)=>parseFloat(glyph.style.transform.slice('translateY('.length));
-const strip=(key:string)=>Array.from(place(key).querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).sort((first,second)=>row(first)-row(second)).map(glyph=>glyph.textContent).join('');
+const strip=(key:string)=>Array.from(place(key).querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).sort((first,second)=>row(first)-row(second)).map(glyph=>glyph.textContent?.replaceAll('\n','')).join('');
 /** What the figure reads once everything that is only passing through is taken away. */
 const drawn=(root:ParentNode=document)=>{const copy=(root.querySelector('.hig-animated-number-visual') as HTMLElement).cloneNode(true) as HTMLElement;copy.querySelectorAll('.hig-number-flow-window,.hig-number-flow-ghosts').forEach(node=>node.remove());return copy.textContent;};
 const flow=(props:Partial<AnimatedNumberProps>&{value:AnimatedNumberProps['value']},provider:React.ComponentProps<typeof HIGProvider>={})=><HIGProvider {...provider}><NumberFlow label='Price' {...props}/></HIGProvider>;
@@ -57,10 +57,11 @@ describe('NumberFlow on web',()=>{
   // Old value on top, new at the bottom: the strip travels up through 3, 4, 5 and 6.
   expect(strip('digit:number:0')).toBe('234567');expect(place('digit:number:0').hasAttribute('data-spinning')).toBe(true);
   expect(of('spin')).toHaveLength(1);expect(of('spin')[0].keyframes).toEqual({transform:['translateY(500%)','translateY(0%)']});
-  expect(of('spin')[0].options).toEqual({composite:'add',duration:900,easing:`linear(${numberFlowCurve.join(',')})`});
+  expect(of('spin')[0].options).toEqual({composite:'add',duration:500,easing:`linear(${numberFlowCurve.join(',')})`});
   expect((place('digit:number:0').querySelector('.hig-number-flow-strip') as HTMLElement).style.transform).toBe('translateY(-500%)');
-  // Each glyph sits on its row by a transform, the unit the strip travels in, so the last one lands exactly where the digit is drawn.
-  expect(Array.from(place('digit:number:0').querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).map(glyph=>[glyph.textContent,glyph.style.transform,glyph.style.top])).toEqual([['2','translateY(0%)',''],['3','translateY(100%)',''],['4','translateY(200%)',''],['5','translateY(300%)',''],['6','translateY(400%)',''],['7','translateY(500%)','']]);
+  // Endpoints use the same transform unit as the strip. Intermediate glyphs share a paragraph.
+  const groups=Array.from(place('digit:number:0').querySelectorAll<HTMLElement>('.hig-number-flow-glyph')).sort((a,b)=>row(a)-row(b));
+  expect(groups.map(glyph=>[glyph.textContent,glyph.style.transform,glyph.style.top])).toEqual([['2\n3\n4\n5\n6','translateY(0%)',''],['7','translateY(500%)','']]);
   // The reading is already final for assistive technology and for the layout.
   expect(screen.getByLabelText('Price: 7')).toBeTruthy();expect(drawn()).toBe('7');
   finishAll();expect(document.querySelector('.hig-number-flow-window')).toBeNull();expect(place('digit:number:0').hasAttribute('data-spinning')).toBe(false);expect(document.querySelector('.hig-animated-number-visual')?.textContent).toBe('7');
@@ -84,18 +85,50 @@ describe('NumberFlow on web',()=>{
   rerender(flow({value:4}));expect(strip('digit:number:0')).toBe('3456');
   const running=animations.slice();unmount();expect(running[0].cancel).not.toHaveBeenCalled();expect(running.slice(1).map(animation=>animation.cancel.mock.calls.length)).toEqual([1,1]);
  });
+ it('keeps intermediate rows on an extended turn and gives an interrupted destination its own aligned row',()=>{
+  const view=(value:number)=>flow({value,trend:0});
+  const {rerender}=render(view(1));rerender(view(8));
+  const middle=Array.from(place('digit:number:0').querySelectorAll('.hig-number-flow-glyph')).find(node=>node.textContent?.includes('\n'))!;
+  rerender(view(9));expect(strip('digit:number:0')).toBe('123456789');expect(middle.isConnected).toBe(true);
+  rerender(view(5));expect(strip('digit:number:0')).toBe('123456789');expect(middle.isConnected).toBe(false);
+  act(()=>{of('spin')[0].onfinish?.();});
+  rerender(view(6));expect(strip('digit:number:0')).toBe('456789');
+ });
+ it('reuses glyph elements that fall outside the visible travel of a turning reel',()=>{
+  const {rerender}=render(flow({value:1}));rerender(flow({value:3}));rerender(flow({value:6}));
+  const elements=()=>Array.from(place('digit:number:0').querySelectorAll('.hig-number-flow-glyph'));
+  const original=elements();
+  act(()=>{of('spin')[0].onfinish?.();});
+  rerender(flow({value:8}));
+  expect(strip('digit:number:0')).toBe('345678');
+  expect(new Set(elements())).toEqual(new Set(original));
+ });
  it('lands a reel that turns faster than it settles rather than growing without bound',()=>{
   const {rerender}=render(flow({value:0,trend:1}));
   for(let turn=1;turn<=8;turn++)rerender(flow({value:(turn*9)%10,trend:1}));
   expect(place('digit:number:0').querySelectorAll('.hig-number-flow-glyph').length).toBeLessThanOrEqual(41);expect(drawn()).toBe('2');
+ });
+ it('slides persistent places and clips the digits when a glyph changes width',()=>{
+  const {rerender}=render(flow({value:12,suffix:' USD'}));
+  vi.spyOn(HTMLElement.prototype,'getBoundingClientRect').mockImplementation(function(this:HTMLElement){
+   const box=partRect(this);
+   const wide=place('digit:number:1')?.firstElementChild?.textContent==='8';
+   if(!wide)return box;
+   if(this.classList.contains('hig-number-flow-digits'))return rect(box.left,box.width+4);
+   return rect(box.left+(this.dataset.higFlowKey==='affix:suffix'||this.dataset.higFlowKey==='digit:number:0'?4:0),box.width);
+  });
+  rerender(flow({value:82,suffix:' USD'}));
+  expect(of('slide').map(animation=>animation.target.dataset.higFlowKey)).toEqual(['digit:number:0','affix:suffix']);
+  expect(of('slide')[0].keyframes.transform[0]).toBe('translateX(-4px)');
+  expect(of('clip')[0].keyframes.clipPath[0]).toBe('inset(-1em 4px -1em 0px)');
  });
  it('slides the parts closed when the figure gains a place, fades the new place in and moves the clip with it',()=>{
   const {rerender}=render(<div data-start='100'>{flow({value:999,prefix:'$',suffix:' USD'})}</div>);rerender(<div data-start='100'>{flow({value:1000,prefix:'$',suffix:' USD'})}</div>);
   // `1,` arrives in front: the three old places and the suffix are 20px further right and start from where they were.
   const slides=Object.fromEntries(of('slide').map(animation=>[animation.target.dataset.higFlowKey,animation.keyframes.transform[0]]));
   expect(slides).toEqual({'digit:number:3':'translateX(-20px)','sep:number:2':'translateX(-20px)','digit:number:2':'translateX(-20px)','digit:number:1':'translateX(-20px)','digit:number:0':'translateX(-20px)','affix:suffix':'translateX(-20px)'});
-  expect(of('slide').every(animation=>animation.options.composite==='add'&&animation.options.duration===900&&animation.keyframes.transform[1]==='translateX(0px)')).toBe(true);
-  expect(of('fade').map(animation=>[animation.target.dataset.higFlowKey,animation.keyframes.opacity,animation.options.duration,animation.options.easing])).toEqual([['digit:number:3',[0,1],450,'cubic-bezier(0,0,0.58,1)'],['sep:number:2',[0,1],450,'cubic-bezier(0,0,0.58,1)']]);
+  expect(of('slide').every(animation=>animation.options.composite==='add'&&animation.options.duration===500&&animation.keyframes.transform[1]==='translateX(0px)')).toBe(true);
+  expect(of('fade').map(animation=>[animation.target.dataset.higFlowKey,animation.keyframes.opacity,animation.options.duration,animation.options.easing])).toEqual([['digit:number:3',[0,1],250,'cubic-bezier(0,0,0.58,1)'],['sep:number:2',[0,1],250,'cubic-bezier(0,0,0.58,1)']]);
   // The digits' box grew 20px on the right: its clip starts 20px in and opens with the slide.
   expect(of('clip')).toHaveLength(1);expect(of('clip')[0].target.className).toBe('hig-number-flow-digits');expect(of('clip')[0].keyframes.clipPath).toEqual(['inset(-1em 20px -1em 0px)','inset(-1em 0px -1em 0px)']);
   // The new place rolls up from zero, and the carried places roll on.
@@ -211,9 +244,9 @@ describe('one component under two names',()=>{
 });
 
 describe('NumberFlowGroup',()=>{
- const clock=(minutes:number,seconds:number)=><HIGProvider><NumberFlowGroup><span data-start='0'><NumberFlow value={minutes} trend={-1}/></span><span data-start={minutes>9?'20':'10'} id='seconds'><NumberFlow value={seconds} trend={-1} options={{minimumIntegerDigits:2}}/></span></NumberFlowGroup></HIGProvider>;
- it('slides a neighbour that only moved because another figure changed width',()=>{
-  const {rerender}=render(clock(10,0));rerender(clock(9,0));
+ const clock=(minutes:number,seconds:number,duration:number,spinOnly=false)=><HIGProvider><NumberFlowGroup><span data-start='0'><NumberFlow value={minutes} trend={-1} duration={duration} spinTiming={spinOnly?{duration:200}:undefined}/></span><span data-start={minutes>9?'20':'10'} id='seconds'><NumberFlow value={seconds} trend={-1} options={{minimumIntegerDigits:2}}/></span></NumberFlowGroup></HIGProvider>;
+ it.each([[0,false],[0,true],[500,false]] as const)('slides a neighbour when a figure changes width (duration %s, spin only %s)',(duration,spinOnly)=>{
+  const {rerender}=render(clock(10,0,duration,spinOnly));rerender(clock(9,0,duration,spinOnly));
   const seconds=of('slide').filter(animation=>document.querySelector('#seconds')?.contains(animation.target));
   expect(seconds.map(animation=>animation.keyframes.transform[0])).toEqual(['translateX(10px)','translateX(10px)']);expect(document.querySelector('#seconds .hig-number-flow-window')).toBeNull();
  });

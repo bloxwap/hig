@@ -101,3 +101,31 @@ it('reports min, max and now on the adjustable group with a range, and draws the
  view=mount({testID:'size',value:1250.5,formattedValue:'$1,250.50',valueLabel:'Size'});
  const readout=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='size-headline');expect(readout.props.formattedValue).toBe('$1,250.50');
 });
+
+it('keeps preset choices mounted without rereading them on headline updates',()=>{
+ let reads=0;
+ const presets=steps.map(value=>({value,get label(){reads++;return String(value);}}));
+ const tree=value=>h(HIGProvider,{reducedMotion:true},h(PresetPickerBlock,{...base,presets,value}));
+ act(()=>{root=render(tree(100));});
+ expect(reads).toBeGreaterThan(0);
+ reads=0;
+ act(()=>root.update(tree(125)));
+ expect(reads).toBe(0);
+ expect(text(host(root.root,'preset-picker-headline'))).toBe('$125');
+});
+
+it('reuses unchanged Back and action buttons across preset selections',()=>{
+ const props={...base,title:'Size',onBack:jest.fn(),onCancel:jest.fn()};
+ const update=changes=>h(HIGProvider,{reducedMotion:true},h(PresetPickerBlock,{...props,...changes}));
+ act(()=>{root=render(update({}));});
+ const controls=['preset-picker-back','preset-picker-cancel','preset-picker-confirm'];
+ const previous=controls.map(id=>button(root.root,id).props);
+ act(()=>root.update(update({selected:50,value:50})));
+ const changed=controls.filter((id,index)=>button(root.root,id).props!==previous[index]);
+ expect(changed).toEqual([]);
+ const submit=jest.fn();
+ act(()=>root.update(update({selected:50,value:50,onSubmit:submit,submitLabel:'Confirm'})));
+ expect(text(host(root.root,'preset-picker-confirm'))).toBe('Confirm');
+ act(()=>button(root.root,'preset-picker-confirm').props.onPress());
+ expect(submit).toHaveBeenCalledTimes(1);
+});

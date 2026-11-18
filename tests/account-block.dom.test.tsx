@@ -141,3 +141,159 @@ describe('AccountBlock host options',()=>{
   view.rerender(<AssetBalanceRow name='Bloxwap' symbol='BLOX' value={null} balance={1234.5}/>);expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('—1,234.5');
  });
 });
+it('updates the total independently of holdings and refreshes rows when the holdings change',()=>{
+ const value=vi.fn(()=>20);
+ const holdings=[{...sol,get value(){return value();}}];
+ const view=render(<AccountBlock assets={holdings} balance={20}/>);
+ expect(value).toHaveBeenCalled();
+ value.mockClear();
+ view.rerender(<AccountBlock assets={holdings} balance={21}/>);
+ expect(spoken(view.container.querySelector('.hig-account-balance')!)).toContain('21');
+ expect(value).not.toHaveBeenCalled();
+ view.rerender(<AccountBlock assets={[hype]} balance={759}/>);
+ expect(screen.getByText(hype.name)).toBeTruthy();
+});
+
+it.each([false,true])('windows 1,000 holdings and tabs past non-selectable rows (sectioned=%s)',async(sectioned)=>{
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Holding '+i,symbol:i===0?'USDC':'A'+i,value:i,selectable:i===10||i===900||i===990}));
+ const section={id:'wallet',title:'Wallet',assets,order:'given' as const};
+ const select=vi.fn();
+ render(<AccountBlock {...(sectioned?{sections:[section]}:{assets})} order='given' onAssetSelect={select}/>);
+ const rows=await screen.findAllByRole('listitem');
+ expect(rows.length).toBeLessThan(25);
+ expect(rows[0].getAttribute('aria-setsize')).toBe('1000');
+ expect(rows[0].getAttribute('data-pinned')).toBe('true');
+ const user=userEvent.setup();
+ await user.tab();expect(document.activeElement?.textContent).toContain('Holding 10');
+ await user.tab();expect(document.activeElement?.textContent).toContain('Holding 900');
+ await user.keyboard('{Enter}');
+ expect(select.mock.calls[0]).toEqual(sectioned?[assets[900],section]:[assets[900]]);
+ await user.tab();expect(document.activeElement?.textContent).toContain('Holding 990');
+ await user.tab({shift:true});expect(document.activeElement?.textContent).toContain('Holding 900');
+});
+
+it('windows the initial server render when small sections collectively exceed 50 holdings',async()=>{
+ const {renderToStaticMarkup}=await import('react-dom/server');
+ const assets=Array.from({length:40},(_,i)=>({id:String(i),name:'Holding '+i,symbol:'A'+i,value:i}));
+ const sections=Array.from({length:25},(_,i)=>({id:String(i),title:'Wallet '+i,assets}));
+ const html=renderToStaticMarkup(<AccountBlock sections={sections} order='given'/>);
+ expect((html.match(/<li\b/g)??[]).length).toBe(16);
+ expect((html.match(/<h3\b/g)??[]).length).toBe(25);
+});
+
+it('reads each holding value once when ranking and skips it for host order',()=>{
+ const read=vi.fn((i:number)=>i%3===0?null:i);
+ const holdings=Array.from({length:1000},(_,i)=>({id:String(i),symbol:'A',name:'Asset '+i,get value(){return read(i);}}));
+ const {rest}=accountRows(holdings);
+ expect(rest[0]).toBe(holdings[998]);
+ expect(read).toHaveBeenCalledTimes(holdings.length);
+ read.mockClear();
+ expect(accountRows(holdings,'USDC',{order:'given'}).rest).toEqual(holdings);
+ expect(read).not.toHaveBeenCalled();
+});
+
+it.each([false,true])('keeps holdings when the selection handler changes (sectioned=%s)',async(sectioned)=>{
+ const read=vi.fn((i:number)=>i);
+ const holdings=Array.from({length:1000},(_,i)=>({id:String(i),symbol:'A',name:'Asset '+i,get value(){return read(i);}}));
+ const section={id:'wallet',title:'Wallet',assets:holdings};
+ const data=sectioned?{sections:[section]}:{assets:holdings};
+ const first=vi.fn(),second=vi.fn();
+ const {rerender}=render(<AccountBlock {...data} onAssetSelect={first}/>);
+ await screen.findByRole('button',{name:/Asset 999/});
+ read.mockClear();
+ rerender(<AccountBlock {...data} onAssetSelect={second}/>);
+ expect(read).not.toHaveBeenCalled();
+ await userEvent.click(screen.getByRole('button',{name:/Asset 999/}));
+ expect(second.mock.calls).toEqual([sectioned?[holdings[999],section]:[holdings[999]]]);
+ expect(first).not.toHaveBeenCalled();
+ rerender(<AccountBlock {...data}/>);
+ expect(screen.queryByRole('button',{name:/Asset 999/})).toBeNull();
+});
+
+it('reuses each section valuation for its heading and the account balance',async()=>{
+ const read=vi.fn(()=>9);
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Token '+i,symbol:'T',get value(){return read();}}));
+ const sections=[{id:'wallet',title:'Wallet',order:'given' as const,assets}];
+ const {container,rerender}=render(<AccountBlock sections={sections}/>);
+ const rows=await screen.findAllByRole('listitem');
+ expect(read).toHaveBeenCalledTimes(assets.length+rows.length);
+ expect(spoken(container.querySelector('.hig-account-section-total')!)).toContain('9,000');
+ read.mockClear();
+ rerender(<AccountBlock sections={sections} balance={20}/>);
+ expect(read).not.toHaveBeenCalled();
+ rerender(<AccountBlock sections={[{...sections[0],assets:[{...usdc,value:13}]}]}/>);
+ expect(spoken(container.querySelector('.hig-account-section-total')!)).toContain('13');
+ expect(spoken(container.querySelector('.hig-account-balance')!)).toContain('13');
+});
+
+it('updates a wallet without reading holdings in an unchanged wallet',async()=>{
+ const read=vi.fn((i:number)=>i);
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Holding '+i,symbol:'A',get value(){return read(i);}}));
+ const stable={id:'stable',title:'Stable',assets};
+ const wallet={id:'wallet',title:'Wallet',assets:[sol],total:10};
+ const {rerender,container}=render(<AccountBlock sections={[stable,wallet]}/>);
+ await screen.findByText('Holding 999');
+ expect(read).toHaveBeenCalled();
+ read.mockClear();
+ rerender(<AccountBlock sections={[stable,{...wallet,total:20}]}/>);
+ expect(read).not.toHaveBeenCalled();
+ expect(spoken(container.querySelectorAll('.hig-account-section-total')[1])).toContain('20');
+ rerender(<AccountBlock sections={[{...stable,pinnedId:'800'},wallet]}/>);
+ expect(container.querySelector('[data-pinned]')?.textContent).toContain('Holding 800');
+});
+
+it('updates an explicit wallet total without ranking unchanged holdings again',async()=>{
+ const read=vi.fn((i:number)=>i),select=vi.fn();
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Token '+i,symbol:'T',get value(){return read(i);}}));
+ const wallet={id:'wallet',title:'Wallet',total:20,assets};
+ const {rerender}=render(<AccountBlock sections={[wallet]} onAssetSelect={select}/>);
+ await screen.findByRole('button',{name:/Token 999/});
+ read.mockClear();
+ const updated={...wallet,total:30};
+ rerender(<AccountBlock sections={[updated]} onAssetSelect={select}/>);
+ expect(read).not.toHaveBeenCalled();
+ await userEvent.click(screen.getByRole('button',{name:/Token 999/}));
+ expect(select.mock.calls[0][1]).toBe(updated);
+});
+
+it('preserves holding order for equal names, unknown values and numeric extremes',()=>{
+ const names=['é','e\u0301','ß','SS','한','東京','A','a','A2','😀'];
+ const values=[Number.MAX_VALUE,-Number.MAX_VALUE,Number.MIN_VALUE,-0,0,1.25,-4.5,null,NaN,Infinity,-Infinity];
+ const holdings=Array.from({length:441},(_,i)=>({id:String(i),symbol:'T',name:names[i*7%names.length],value:values[i*5%values.length]}));
+ const expected=[...holdings].sort((a,b)=>{
+  const x=assetValue(a),y=assetValue(b);
+  return x===y?a.name.localeCompare(b.name):x===null?1:y===null?-1:y-x;
+ });
+ const actual=accountRows(holdings).rest;
+ expect(actual).toHaveLength(expected.length);
+ expect(actual.every((asset,i)=>asset===expected[i])).toBe(true);
+});
+
+it('finds the tab boundaries without indexing every selectable holding on open',()=>{
+ const selectable=vi.fn(()=>true);
+ const assets=Array.from({length:10000},(_,i)=>({id:String(i),name:'Holding '+i,symbol:'T',value:i,get selectable(){return selectable();}}));
+ const {container}=render(<AccountBlock balance={1} assets={assets} order='given' onAssetSelect={()=>{}}/>);
+ const mounted=container.querySelectorAll('li').length;
+ expect(selectable.mock.calls.length).toBeLessThanOrEqual(mounted+2);
+});
+
+it('includes the initial window of a large unsectioned wallet in server HTML',async()=>{
+ const {renderToString}=await import('react-dom/server');
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Asset '+i,symbol:'T'+i,value:i}));
+ const html=renderToString(<AccountBlock assets={assets}/>);
+ expect(html).toContain('Asset 999');
+ expect(html).toContain('aria-setsize="1001"');
+ expect(html.match(/<li\b/g)?.length).toBeLessThan(50);
+});
+
+it('reuses a calculated wallet balance after an explicit override clears',async()=>{
+ const read=vi.fn(()=>2);
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Asset '+i,symbol:'T',get value(){return read();}}));
+ const view=render(<AccountBlock assets={assets} order="given"/>);
+ await screen.findAllByRole('listitem');
+ view.rerender(<AccountBlock assets={assets} order="given" balance={42}/>);
+ read.mockClear();
+ view.rerender(<AccountBlock assets={assets} order="given"/>);
+ expect(spoken(view.container.querySelector('.hig-account-balance')!)).toContain('2,000');
+ expect(read).not.toHaveBeenCalled();
+});

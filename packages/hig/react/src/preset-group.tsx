@@ -25,11 +25,26 @@ export interface PresetGroupProps<T extends string|number=string> {
  /** The group's `data-testid`. */
  testID?:string;
 }
+function PresetChip<T extends string|number>({option,selected,blocked,intent,selection}:{
+ option:PresetOption<T>;selected:boolean;blocked:boolean;intent:NonNullable<PresetGroupProps<T>['selectedIntent']>;
+ selection:React.RefObject<(value:T|null)=>void>;
+}){
+ const choose=()=>{if(!blocked&&!selected)selection.current(option.value);};
+ return <Button data-testid={option.testID} fullWidth intent={selected?intent:'secondary'} aria-pressed={selected} disabled={blocked} suppressFeedback onClick={choose}>{option.label}</Button>;
+}
+const Chip=React.memo(PresetChip) as typeof PresetChip;
+
 /** A set of quick choices as chips in an equal-width grid, such as order sizes or leverage steps. Single choice, or none; each chip is a toggle button that reads pressed when selected, at least 44px tall, in the interface face. TargetBlock draws its presets with it. */
-export function PresetGroup<T extends string|number=string>({label,options,value,defaultValue=null,onValueChange,columns,selectedIntent='primary',disabled,suppressFeedback,className,testID}:PresetGroupProps<T>){assertUniqueKeys(options,option=>option.value,'Choices');
+export function PresetGroup<T extends string|number=string>({label,options,value,defaultValue=null,onValueChange,columns,selectedIntent='primary',disabled,suppressFeedback,className,testID}:PresetGroupProps<T>){
+ const choices=React.useMemo(()=>{
+  assertUniqueKeys(options,option=>option.value,'Choices');
+  return options;
+ },[options]);
  const [current,set]=useControllable<T|null>(value,defaultValue,onValueChange as ((value:T|null)=>void)|undefined,suppressFeedback?null:'selection');
+ const selection=React.useRef(set);
+ React.useLayoutEffect(()=>{selection.current=set;},[set]);
  const count=Math.max(1,Math.floor(columns??options.length)||1);
  return <div role='group' aria-label={label} aria-disabled={disabled||undefined} className={`hig-preset-group${className?` ${className}`:''}`} data-testid={testID} style={{'--hig-preset-columns':count} as React.CSSProperties}>
-  {options.map(option=>{const selected=current!==null&&Object.is(current,option.value),blocked=!!disabled||!!option.disabled;return <Button key={String(option.value)} data-testid={option.testID} fullWidth intent={selected?selectedIntent:'secondary'} aria-pressed={selected} disabled={blocked} suppressFeedback onClick={()=>{if(!blocked&&!selected)set(option.value);}}>{option.label}</Button>;})}
+  {choices.map(option=><Chip key={String(option.value)} option={option} selected={Object.is(current,option.value)} blocked={!!disabled||!!option.disabled} intent={selectedIntent} selection={selection}/>)}
  </div>;
 }

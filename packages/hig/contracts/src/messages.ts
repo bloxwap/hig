@@ -385,14 +385,17 @@ export const messageKeys = /* @__PURE__ */ Object.keys(defaultMessages) as reado
 /**
  * Overlays host overrides on a base catalog (both may be partial). `undefined` entries keep the base copy, and a
  * value of the wrong kind (a string for a formatter key, or the reverse) is ignored, so a partial or untyped catalog
- * never blanks a label or throws while rendering.
+ * never blanks a label or throws while rendering. Providers opt into reusing the base object when every effective override matches it.
  */
-export function resolveMessages<T extends Partial<HIGMessages>>(base: T, overrides?: Partial<HIGMessages>): T {
+export function resolveMessages<T extends Partial<HIGMessages>>(base: T, overrides?: Partial<HIGMessages>, reuseBase = false): T {
  if (!overrides) return base;
  const formatters = ['dismissNotice', 'pageOf', 'resultCount', 'progressValue', 'reviewAssetOrder', 'amountInAsset', 'availableAmount', 'confirmOrderDescription', 'swapSelectToken', 'swapAmount', 'swapInsufficient', 'swapSlippage', 'swapFee', 'sendWarning'];
- const resolved: Record<string, unknown> = {...base};
+ let resolved: Record<string, unknown> | undefined = reuseBase ? undefined : {...base};
  for (const [key, value] of Object.entries(overrides)) {
-  if (value !== undefined && typeof value === (formatters.includes(key) ? 'function' : 'string')) resolved[key] = value;
+  if (typeof value !== (formatters.includes(key) ? 'function' : 'string')) continue;
+  if (!resolved && Object.prototype.hasOwnProperty.call(base, key) && base[key as keyof HIGMessages] === value) continue;
+  resolved ??= {...base};
+  resolved[key] = value;
  }
- return resolved as T;
+ return (resolved ?? base) as T;
 }

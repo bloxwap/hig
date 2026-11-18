@@ -3,8 +3,8 @@ import React from 'react';
 import {afterEach,describe,expect,it} from 'vitest';
 import {cleanup,render,screen} from '@testing-library/react';
 import {presentNumberFormat} from '../packages/hig/contracts/src/index';
-import {HIGProvider,type HIGProviderProps} from '../packages/hig/react/src/provider';
-import {Usd,Percent} from '../packages/hig/react/src/data';
+import {HIGProvider,useNumberLocale,usePresentNumber,type HIGProviderProps} from '../packages/hig/react/src/provider';
+import {NumberReadout,Usd,Percent} from '../packages/hig/react/src/data';
 import {AnimatedNumberReadout} from '../packages/hig/react/src/animated-number';
 import {AssetBalanceRow} from '../packages/hig/react/src/asset-balance-row';
 import {BarPnl} from '../packages/hig/react/src/bar-pnl';
@@ -29,6 +29,20 @@ describe('presentNumberFormat',()=>{
  });
 });
 describe('HIGProvider numberFormat',()=>{
+ it('updates numeric subscribers independently',()=>{
+  const locales:string[]=[],displays:(string|undefined)[]=[];
+  function Locale(){locales.push(useNumberLocale());return null;}
+  function Display(){const options:Intl.NumberFormatOptions={style:'currency',currency:'USD'};displays.push(usePresentNumber()(options).currencyDisplay);return null;}
+  const children=<><Locale/><Display/></>;
+  const view=render(<HIGProvider locale="en-US">{children}</HIGProvider>);
+  view.rerender(<HIGProvider locale="en-US" messages={{stale:'Delayed'}}>{children}</HIGProvider>);
+  expect(locales).toEqual(['en-US']);expect(displays).toEqual([undefined]);
+  const format={currencyDisplay:'code'} as const;
+  view.rerender(<HIGProvider locale="en-US" numberFormat={format}>{children}</HIGProvider>);
+  expect(locales).toEqual(['en-US']);expect(displays).toEqual([undefined,'code']);
+  view.rerender(<HIGProvider locale="fr-FR" numberFormat={format}>{children}</HIGProvider>);
+  expect(locales).toEqual(['en-US','fr-FR']);expect(displays).toEqual([undefined,'code']);
+ });
  it('leaves every format as it was without the setting: French dollars read $US',()=>{
   render(<HIGProvider locale='fr-FR'><Usd value={12.5}/><AccountBlock assets={[]} balance={1042.09}/></HIGProvider>);
   expect(plain(document.querySelector('.hig-number')?.textContent)).toBe('12,50 $US');
@@ -89,4 +103,33 @@ describe('numberFormat.locale and formattedValue (Unreleased)',()=>{
   // Unknown values still read as the dash whatever the host text says.
   view.rerender(<AnimatedNumberReadout value={null} formattedValue='0' animateFormatted/>);expect(reading()).toEqual(['—']);
  });
+});
+
+it('formats only changed readouts when a quote moves',()=>{
+ const touched=new Set<number>();
+ const options=Array.from({length:24},(_,index)=>({get maximumFractionDigits(){touched.add(index);return 2;}}));
+ const scene=(first:number)=>options.map((format,index)=>{
+  const Readout=[NumberReadout,Usd,Percent][index%3]!;
+  return <Readout key={index} options={format} value={index===0?first:index}/>;
+ });
+ const view=render(<>{scene(10)}</>);
+ expect(touched.size).toBe(24);
+ touched.clear();
+ view.rerender(<>{scene(11)}</>);
+ expect([...touched]).toEqual([0]);
+ expect(view.container.querySelector('.hig-number')?.textContent).toBe('11');
+});
+
+it('keeps numeric work scoped to readout settings across nested providers',()=>{
+ const touched=new Set<number>();
+ const quotes=Array.from({length:24},(_,index)=><NumberReadout key={index} stale value={1234.5} options={{get maximumFractionDigits(){touched.add(index);return 2;}}}/>);
+ const scene=(compact:boolean,locale:string,stale:string)=><HIGProvider density={compact?'compact':'comfortable'} locale={locale} messages={{stale}}><HIGProvider>{quotes}</HIGProvider></HIGProvider>;
+ const view=render(scene(false,'en-US','Old'));
+ expect(touched.size).toBe(24);
+ touched.clear();
+ view.rerender(scene(true,'en-US','Old'));
+ expect(touched.size).toBe(0);
+ view.rerender(scene(true,'de-DE','Alt'));
+ expect(touched.size).toBe(24);
+ expect(view.container.querySelector('.hig-number')?.textContent).toBe('1.234,5 Alt');
 });

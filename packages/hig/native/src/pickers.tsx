@@ -1,4 +1,5 @@
-import React,{useContext,useMemo,useState} from 'react';
+import React,{useContext,useEffect,useMemo,useState} from 'react';
+import {createPickerSearch} from '@bloxwap/hig/contracts';
 import {FlatList,Pressable,View,useWindowDimensions,type FlatListProps,type StyleProp,type TextInput,type TextInputProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
@@ -50,35 +51,87 @@ export interface PickerRowProps {testID?:string;nativeID?:string;accessibilityHi
 function chainsOf(tokens:readonly SwapToken[]):SwapChain[]{const seen=new Map<string|number,SwapChain>();for(const token of tokens)if(!seen.has(token.chainId))seen.set(token.chainId,{chainId:token.chainId,name:token.chain,icon:typeof token.chainIcon==='string'?token.chainIcon:undefined});return [...seen.values()];}
 /** A row shows a known balance above zero, or a zero one when the host asks for it. */
 const showBalance=(token:SwapToken,zero?:boolean)=>token.balance!=null&&Number.isFinite(token.balance)&&(token.balance>0||(!!zero&&token.balance===0));
-function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,search=true,zeroBalances,searchLabel,searchRef,searchInputProps,listComponent,tokenRowProps,side,title}:PickerListProps&{side:'from'|'to';title:string}){
- const {direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();const window=useWindowDimensions();
+const minimumTokenRowHeight=64; // 44-point icon, 16 points of padding and a 4-point gap.
+const TokenPickerRow=React.memo(function TokenPickerRow({token,isSelected,heading,onSelect,tokenRowProps,zeroBalances}:
+ Pick<PickerListProps,'onSelect'|'tokenRowProps'|'zeroBalances'>&{token:SwapToken;isSelected:boolean;heading?:string}){
+ const {direction}=useHIG();const colors=useColors();const fills=useFills();const t=useMessages();
+ const balance=token.balance??0,price=token.price??0,host=tokenRowProps?.(token);
+ return <View>
+  {heading!==undefined&&<Text accessibilityRole='header' style={{paddingHorizontal:8,paddingTop:12,paddingBottom:6,fontSize:12,lineHeight:18,fontWeight:'600',letterSpacing:1,textTransform:'uppercase',color:colors.muted}}>{heading}</Text>}
+  <Pressable nativeID={host?.nativeID} accessibilityHint={host?.accessibilityHint} accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={host?.testID??`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
+   <TokenIcon token={token}/>
+   <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.detail??token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
+   {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
+  </Pressable>
+ </View>;
+});
+const TokenList=React.memo(function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,search=true,zeroBalances,searchLabel,searchRef,searchInputProps,listComponent,tokenRowProps,side,title}:PickerListProps&{side:'from'|'to';title:string}){
+ const colors=useColors();const t=useMessages();const window=useWindowDimensions();
  // A sheet passes its backend's list, through the prop or the host context, so drags hand off to the sheet.
  const host=useContext(SwapHostContext).listComponent;const List=listComponent??host??FlatList;
  const [query,setQuery]=useState('');const [chain,pickChain]=useState('');
- const options=useMemo(()=>chains??chainsOf(tokens),[chains,tokens]);
+ const [previousQuery,setPreviousQuery]=useState<string|null>(null);
+ const waiting=previousQuery!==null&&tokens.length>50;
+ const filterQuery=waiting?previousQuery:query;
+ function editQuery(next:string){
+  if(next===query)return;
+  setPreviousQuery(tokens.length>50&&next.trim()!==''?filterQuery:null);
+  setQuery(next);
+ }
+ useEffect(()=>{
+  if(previousQuery===null)return;
+  if(!waiting){setPreviousQuery(null);return;}
+  const timer=setTimeout(()=>setPreviousQuery(null),150);
+  return ()=>clearTimeout(timer);
+ },[previousQuery,query,waiting]);
+ const needsChains=chainFilter||chain!=='';
+ const options=useMemo(()=>needsChains?(chains??chainsOf(tokens)):[],[needsChains,chains,tokens]);
  // The filter speaks in strings; an empty value is every chain.
- const chainId=chain===''?null:options.find(item=>String(item.chainId)===chain)?.chainId??null;
- const {rows,hotCount}=useMemo(()=>pickerRows(tokens,query,chainId,hotTokenIds),[tokens,hotTokenIds,query,chainId]);
- const section=(heading:string)=><Text accessibilityRole='header' style={{paddingHorizontal:8,paddingTop:12,paddingBottom:6,fontSize:12,lineHeight:18,fontWeight:'600',letterSpacing:1,textTransform:'uppercase',color:colors.muted}}>{heading}</Text>;
- const chainOptions=useMemo(()=>[{value:'',label:t.swapAllChains},...options.map(item=>({value:String(item.chainId),label:item.name,icon:item.icon}))],[options,t.swapAllChains]);
- const empty=<Text accessibilityLiveRegion='polite' testID={`swap-empty-${side}`} style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:21,color:colors.muted}}>{loading?`${t.loading}…`:t.swapNoTokens}</Text>;
+ const chainId=useMemo(()=>chain===''?null:options.find(item=>String(item.chainId)===chain)?.chainId??null,[chain,options]);
+ const searchCatalog=useMemo(()=>createPickerSearch(tokens),[tokens]);
+ const {rows,hotCount}=useMemo(()=>searchCatalog(filterQuery,chainId,hotTokenIds),[searchCatalog,hotTokenIds,filterQuery,chainId]);
+ const pendingSearch=React.useRef<string|null>(null);
+ React.useLayoutEffect(()=>{pendingSearch.current=waiting?query:null;},[waiting,query]);
+ const selectVisible=React.useCallback((token:SwapToken)=>{
+  const pending=pendingSearch.current;
+  if(pending!==null){
+   setPreviousQuery(null);
+   if(!pickerRows([token],pending,chainId).rows.length)return;
+  }
+  onSelect(token);
+ },[chainId,onSelect]);
+ const chainOptions=useMemo(()=>{
+  if(!chainFilter||options.length<2)return null;
+  return [{value:'',label:t.swapAllChains},...options.map(item=>({value:String(item.chainId),label:item.name,icon:item.icon}))];
+ },[chainFilter,options,t.swapAllChains]);
+ const chainControl=useMemo(()=>chainOptions&&<Filter label={t.swapChains} options={chainOptions} value={chain} onValueChange={pickChain}/>,
+  [chainOptions,t.swapChains,chain]);
+ const listHeight=Math.max(240,Math.round(window.height*0.5));
+ // A token has a 44-point icon, two text lines (24 and 21), vertical padding and a bottom gap.
+ // Use this stride for overscan only. FlatList measures the actual wrapped rows and section headings.
+ const rowEstimate=20+Math.max(44,45*(window.fontScale||1));
+ const large=rows.length>50;
+ const selectedId=selected?.id;
+ const busy=loading||waiting;
+ const list=useMemo(()=>{
+  const empty=<Text accessibilityLiveRegion='polite' testID={`swap-empty-${side}`} style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:21,color:colors.muted}}>{loading?`${t.loading}…`:t.swapNoTokens}</Text>;
+  return <List style={{height:listHeight}} data={rows} accessibilityState={{busy}} keyExtractor={token=>token.id} keyboardShouldPersistTaps='handled' accessibilityLabel={title} testID={`swap-list-${side}`} initialNumToRender={large?Math.ceil(listHeight/minimumTokenRowHeight)+4:12} ListEmptyComponent={empty}
+   // Reserve the minimum scroll range so a fling can land beyond the measured cells.
+   contentContainerStyle={large?{minHeight:rows.length*minimumTokenRowHeight}:undefined}
+   windowSize={large?1+8*rowEstimate/listHeight:undefined} maxToRenderPerBatch={large?4:undefined} updateCellsBatchingPeriod={large?16:undefined}
+   renderItem={({item,index})=><TokenPickerRow token={item} isSelected={selectedId===item.id}
+    heading={hotCount>0&&index===0?t.swapHot:hotCount>0&&index===hotCount?t.swapAllTokens:undefined}
+    onSelect={selectVisible} tokenRowProps={tokenRowProps} zeroBalances={zeroBalances}/>}/>;
+ },[List,listHeight,large,rowEstimate,rows,busy,title,side,colors.muted,loading,t.loading,t.swapNoTokens,selectedId,hotCount,t.swapHot,t.swapAllTokens,selectVisible,tokenRowProps,zeroBalances]);
  // A visible label names the field through the Field context instead of the built-in name.
- const field=<SearchInput ref={searchRef} accessibilityLabel={searchLabel?undefined:t.swapSearchTokens} placeholder={t.swapSearchTokens} testID={`swap-search-${side}`} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false} {...searchInputProps} value={query} onChangeText={setQuery}/>;
+ const field=<SearchInput ref={searchRef} accessibilityLabel={searchLabel?undefined:t.swapSearchTokens} placeholder={t.swapSearchTokens} testID={`swap-search-${side}`} autoCapitalize='none' autoCorrect={false} autoComplete='off' spellCheck={false} {...searchInputProps} value={query} onChangeText={editQuery} onSubmitEditing={event=>{setPreviousQuery(null);searchInputProps?.onSubmitEditing?.(event);}}/>;
  return <>
   {search?searchLabel?<Field label={searchLabel}>{field}</Field>:field:null}
-  {chainFilter&&options.length>1?<Filter label={t.swapChains} options={chainOptions} value={chain} onValueChange={pickChain}/>:null}
-  {/* A bounded height so the list scrolls inside its panel or sheet instead of stretching it. */}
-  <List style={{height:Math.max(240,Math.round(window.height*0.5))}} data={rows} keyExtractor={token=>token.id} keyboardShouldPersistTaps='handled' accessibilityLabel={title} testID={`swap-list-${side}`} initialNumToRender={12} ListEmptyComponent={empty}
-   renderItem={({item:token,index})=>{const isSelected=selected?.id===token.id,balance=token.balance??0,price=token.price??0,host=tokenRowProps?.(token);return <View>
-    {hotCount>0&&index===0?section(t.swapHot):null}{hotCount>0&&index===hotCount?section(t.swapAllTokens):null}
-    <Pressable nativeID={host?.nativeID} accessibilityHint={host?.accessibilityHint} accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={host?.testID??`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
-     <TokenIcon token={token}/>
-     <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.detail??token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
-     {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
-    </Pressable>
-   </View>;}}/>
+  {chainControl}
+  {list}
+
  </>;
-}
+});
 export interface FromPickerBlockProps extends PickerListProps {
  /** The connected wallet. Omit for a list with no wallet row at all. */
  wallet?:SwapWallet;

@@ -292,3 +292,17 @@ it.each(['up','down'] as const)('biases the visible spark trajectories on a %s c
   clear();expect(layer.childElementCount).toBe(0);
  }finally{HTMLElement.prototype.animate=original;}
 });
+
+it('leaves settled target transforms alone while the canvas keeps scrolling',()=>{
+ const targets=[{id:'entry',price:100,label:'Entry'}];
+ const view=(price:number)=><AltimeterChart summary="Price" price={price} targets={targets}/>;
+ const {rerender}=render(view(100));frame(0);
+ const label=document.querySelector<HTMLElement>('[data-hig-altimeter-target-label]')!;
+ const write=vi.spyOn(label.style,'transform','set');
+ context.calls.length=0;
+ for(let i=1;i<=60;i++)frame(i*1000/60);
+ expect(context.calls.some(([name])=>name==='stroke')).toBe(true);
+ expect(write).not.toHaveBeenCalled();
+ rerender(view(100.01));frame(1016);frame(1066);
+ expect(write).toHaveBeenCalled();
+});

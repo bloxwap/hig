@@ -1,11 +1,11 @@
 "use client";
 import React,{useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
-import {appendLiveTail,beginTrail,historyPath,visibleFrames} from './chart-renderer.js';
+import {appendTrailSample,appendLiveTail,beginTrail,historyPath,visibleFrames} from './chart-renderer.js';
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
 import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
-import {ALTIMETER_EASE_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,easeInOut,gridPhase,type AltimeterTick} from './altimeter-model.js';
+import {priceTween,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,easeInOut,gridPhase,type AltimeterTick} from './altimeter-model.js';
 import {OUTCOME_LIMIT,capsuleCenters,labelBounds,type TargetLabelInsets,outcomeChance,outcomeColors,outcomeScale,outcomeTicks,outcomeY,type Outcome,type OutcomeFeed,type OutcomeScale} from './outcome-model.js';
 import {championsLeagueWinner} from './champions-league.js';
 import {drawPlusGrid,monoFont} from './plus-grid.js';
@@ -26,7 +26,7 @@ export interface OutcomeChartProps extends Omit<React.HTMLAttributes<HTMLElement
 }
 
 /** How long a capsule takes to glide from the waiting stack to its place once its first price arrives. */
-const ARRIVE_MS=600;
+const ARRIVE_MS=500;
 /** Width of the curve that carries a trail into its capsule. */
 const CONNECTOR=40;
 /** Room above 100% and below 0%, so the end ticks and a capsule at either end fit. */
@@ -91,7 +91,16 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
   const stop=feed(next=>{if(!alive)return;setFed(next);setStale(false);clearTimeout(deadline);deadline=setTimeout(expire,30_000);},expire);
   return()=>{alive=false;clearTimeout(deadline);stop();};
  },[controlled,feed]);
- const shown=useMemo(()=>((controlled?outcomes:fed)??[]).filter((item,index,all)=>item.id!==''&&all.findIndex(candidate=>candidate.id===item.id)===index).slice(0,OUTCOME_LIMIT),[controlled,outcomes,fed]);
+ const shown=useMemo(()=>{
+  const visible:Outcome[]=[],seen=new Set<string>();
+  for(const item of (controlled?outcomes:fed)??[]){
+   const id=item.id;
+   if(id===''||seen.has(id))continue;
+   seen.add(id);visible.push(item);
+   if(visible.length===OUTCOME_LIMIT)break;
+  }
+  return visible;
+ },[controlled,outcomes,fed]);
  const paint=(outcome:Outcome,index:number)=>outcome.color??outcomeColors[index%outcomeColors.length];
  const percent=useMemo(()=>new Intl.NumberFormat(locale,{style:'percent',maximumFractionDigits:0}),[locale]);
  // Where each capsule rests: at its outcome's chance, moved apart from close neighbors.
@@ -106,7 +115,7 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
  const rest=capsuleCenters(shown.map(outcome=>outcomeY(outcomeChance(outcome.price)??scale.low,height,INSET,scale)),height,CAPSULE,6,false,bounds);
  // The frame loop reads the newest props without restarting, so a re-render never clears the trails.
  const settings=useRef({shown,rest,scale,gridRows,colors,reducedMotion});
- const eased=useRef(new Map<string,{from:number;to:number;start:number;value:number;ticks:AltimeterTick[]}>());
+ const eased=useRef(new Map<string,{tween:ReturnType<typeof priceTween>;value:number;ticks:AltimeterTick[]}>());
  // Capsules render at rest; while a chance eases, an offset carries each one along its trail's tip.
  // Outcomes wait for their first price stacked at the bottom; when it arrives, the capsule glides from the stack to its place.
  const arrival=useRef({clock:NaN,priced:new Map<string,boolean>(),at:new Map<string,number>(),moving:new Map<string,{from:number;start:number}>()});
@@ -154,13 +163,10 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
     const target=outcomeChance(outcome.price);
     if(target==null){tracks.delete(outcome.id);continue;}
     let track=tracks.get(outcome.id);
-    if(!track||reducedMotion){track={from:target,to:target,start:now,value:target,ticks:track?.ticks??[]};tracks.set(outcome.id,track);}
-    else if(target!==track.to){if(now-track.start>=ALTIMETER_EASE_MS){track.from=track.value;track.start=now;}track.to=target;}
-    track.value=now-track.start>=ALTIMETER_EASE_MS?track.to:track.from+(track.to-track.from)*easeInOut((now-track.start)/ALTIMETER_EASE_MS);
+    if(!track){track={tween:priceTween(),value:target,ticks:[]};tracks.set(outcome.id,track);}
+    track.value=track.tween.update(target,now,reducedMotion);
     if(sample){
-     if(track.ticks.length===0)track.ticks.push({t:now-keep,p:track.value});
-     track.ticks.push({t:now,p:track.value});
-     while(track.ticks.length>2&&track.ticks[1].t<now-keep)track.ticks.shift();
+     appendTrailSample(track.ticks,{t:now,p:track.value},now-keep);
     }
    }
    if(sample)sampled=now;

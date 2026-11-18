@@ -10,7 +10,7 @@ import {HIGProvider} from './packages/hig/react/src/provider';import {Select} fr
 const options=[{value:'buy',label:'Buy'},{value:'disabled',label:'Unavailable',disabled:true},{value:'sell',label:'Sell'}];
 function Example(){const [value,setValue]=useState('buy'),[open,setOpen]=useState(false);return <HIGProvider direction={window.direction}>
 <div className='clip'><Select label='Side' options={options} value={value} onValueChange={setValue}/></div>
-<button onClick={()=>setOpen(true)}>Open dialog</button><Select label='Disabled side' options={options} disabled/>
+<Select label='Markets' options={Array.from({length:1000},(_,index)=>({value:String(index),label:index===501?'Wrapped '.repeat(40):'Market '+index,disabled:index===998}))}/><button onClick={()=>setOpen(true)}>Open dialog</button><Select label='Disabled side' options={options} disabled/>
 <Dialog open={open} onOpenChange={setOpen} title='Order'><Select label='Dialog side' options={options} defaultValue='buy'/></Dialog>
 </HIGProvider>;};createRoot(document.getElementById('root')).render(<Example/>);`;
 const bundle=await build({stdin:{contents:source,resolveDir:process.cwd(),loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'}});
@@ -39,6 +39,25 @@ for(const [engine,type] of Object.entries({chromium,webkit})){
    await page.getByRole('option',{name:'Sell',exact:true}).click();assert.equal(await dialogSide.textContent(),'Sell');assert.equal(await dialog.isVisible(),true);
    await dialogSide.click();await page.keyboard.press('Escape');assert.equal(await page.getByRole('listbox').count(),0);assert.equal(await dialog.isVisible(),true);
    await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
+   const markets=page.getByRole('combobox',{name:'Markets'});
+   await markets.click();
+   const marketList=page.getByRole('listbox',{name:'Markets'});
+   assert.ok(await marketList.getByRole('option').count()<25);
+   await marketList.evaluate(el=>{el.scrollTop=el.scrollHeight;});
+   const last=marketList.getByRole('option',{name:'Market 999',exact:true});
+   await last.waitFor();
+   assert.equal(await last.getAttribute('aria-posinset'),'1000');
+   assert.equal(await last.getAttribute('aria-setsize'),'1000');
+   const activeId=await markets.getAttribute('aria-activedescendant');
+   assert.equal(await page.evaluate(id=>!!document.getElementById(id),activeId),true);
+   await markets.press('End');await markets.press('ArrowUp');
+   assert.equal(await markets.getAttribute('aria-activedescendant'),await marketList.getByRole('option',{name:'Market 997',exact:true}).getAttribute('id'));
+   await markets.press('Home');await markets.pressSequentially('Wrapped');
+   const wrapped=marketList.getByRole('option',{name:/^Wrapped/});
+   await wrapped.waitFor();
+   assert.ok(await wrapped.evaluate(el=>el.offsetHeight)>48);
+   await markets.press('Enter');
+   assert.match(await markets.textContent(),/^Wrapped/);
    assert.deepEqual(errors,[]);console.log(`${engine}/${width}/${direction}: custom popup, clipped parent, keyboard, disabled, focus and modal Escape passed`);
   }finally{await context.close();}
  }}finally{await browser.close();}

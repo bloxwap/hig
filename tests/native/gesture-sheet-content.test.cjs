@@ -35,7 +35,7 @@ it('custom content owns its full-height layout, nested scrolling and dismissal a
  const node=mount({description:'A default description must not appear',closeLabel:'Default close'});
  const card=root.root.findAll(n=>n.props.testID==='card')[0];
  expect(root.root.findAllByType(ScrollView)).toHaveLength(1);
- expect(StyleSheet.flatten(card.parent.props.style)).toMatchObject({flex:1});
+ expect(StyleSheet.flatten(card.parent.props.style)).toMatchObject({flex:1,paddingHorizontal:16});
  expect(StyleSheet.flatten(card.parent.props.style).padding).toBeUndefined();
  expect(root.root.findAll(n=>n.props.accessibilityRole==='button')).toHaveLength(0);
  expect(JSON.stringify(root.toJSON())).not.toContain('A default description must not appear');

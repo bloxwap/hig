@@ -48,3 +48,44 @@ it('retries failed native configuration and isolates pause/remove failures durin
  const sound=createNativeSoundAdapter({configure,create:()=>({play,pause:()=>{throw Error('paused');},seekTo:async()=>{},remove,volume:1})},{tick:1,toggle:2});
  await expect(sound.preload()).rejects.toThrow('interruption');await sound.play(event,prefs);expect(play).toHaveBeenCalledOnce();expect(()=>sound.dispose?.()).not.toThrow();expect(remove).toHaveBeenCalledTimes(2);
 });
+
+it('prepares four native players only after sound and volume are both enabled',async()=>{
+ const create=vi.fn(()=>({play:vi.fn(),pause:vi.fn(),seekTo:vi.fn(async()=>{}),remove:vi.fn(),volume:1}));
+ const configure=vi.fn(async()=>{});
+ const sound=createNativeSoundAdapter({create,configure},{tick:1,toggle:2,success:3,error:4});
+ const prepareSound=vi.fn(sound.preload);
+ const controller=new FeedbackController({sound,prepareSound});
+ controller.updatePreferences({sound:true,volume:0});
+ expect(configure).not.toHaveBeenCalled();expect(create).not.toHaveBeenCalled();
+ controller.updatePreferences({volume:.4});await prepareSound.mock.results[0].value;
+ controller.updatePreferences({motion:false,volume:.5});
+ expect(prepareSound).toHaveBeenCalledTimes(1);expect(create).toHaveBeenCalledTimes(4);
+ controller.emit(event);expect(create.mock.results[0].value.play).toHaveBeenCalledOnce();
+ controller.dispose();
+});
+
+it('drops pending native player creation when sound is muted during configuration',async()=>{
+ let configured!:()=>void;
+ const create=vi.fn(()=>({play:vi.fn(),pause:vi.fn(),seekTo:vi.fn(async()=>{}),remove:vi.fn(),volume:1}));
+ const sound=createNativeSoundAdapter({create,configure:()=>new Promise<void>(resolve=>{configured=resolve;})},{tick:1});
+ const prepareSound=vi.fn(sound.preload);
+ const controller=new FeedbackController({preferences:{sound:true},sound,prepareSound});
+ controller.updatePreferences({volume:0});
+ configured();await prepareSound.mock.results[0].value;
+ expect(create).not.toHaveBeenCalled();
+ controller.updatePreferences({volume:.4});await prepareSound.mock.results[1].value;
+ expect(create).toHaveBeenCalledOnce();
+ controller.dispose();
+});
+
+it('dispatches the enabling cue immediately while other native players warm',async()=>{
+ const create=vi.fn(()=>({play:vi.fn(),pause:vi.fn(),seekTo:vi.fn(async()=>{}),remove:vi.fn(),volume:1}));
+ const sound=createNativeSoundAdapter({create},{tick:1,toggle:2,success:3,error:4});
+ const prepareSound=vi.fn(sound.preload);
+ const controller=new FeedbackController({sound,prepareSound});
+ await sound.preload('tick');expect(create).toHaveBeenCalledTimes(1);
+ controller.updatePreferences({sound:true});controller.emit({...event,intent:'selection'});
+ expect(create.mock.results[0].value.play).toHaveBeenCalledOnce();
+ await prepareSound.mock.results[0].value;expect(create).toHaveBeenCalledTimes(4);
+ controller.dispose();
+});

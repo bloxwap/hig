@@ -1,0 +1,9 @@
+// Generated from planning/examples.json.
+import React,{useState} from 'react';
+import {LanguageBlock} from '@bloxwap/hig/react/blocks';
+import {Text,Stack} from '@bloxwap/hig/react/surface';
+const components={Stack,Text,LanguageBlock};
+export function Example({name,state='default'}:{name:string;state?:string;previewDialog?:typeof import('@bloxwap/hig/react/overlay').Dialog}){const C=components;const [value,setValue]=useState('buy');
+const [message,setMessage]=useState('');
+function preview(){switch(name){case "LanguageBlock":return state==="disabled"?<C.LanguageBlock disabled search={false} description='Choose the language used throughout the app.' languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'fr',name:'Français',description:'French'}]} value='es' onSelect={language=>setMessage(language.name+' selected')}/>:state==="no-search"?<C.LanguageBlock search={false} languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}].slice(0,3)} value='es' onSelect={language=>setMessage(language.name+' selected')}/>:<C.LanguageBlock languages={[{code:'en',name:'English',description:'English'},{code:'es',name:'Español',description:'Spanish'},{code:'zh-Hans',name:'简体中文',description:'Chinese'},{code:'ko',name:'한국어',description:'Korean'},{code:'fr',name:'Français',description:'French'},{code:'pt-BR',name:'Português (Brasil)',description:'Portuguese'}]} value={value==='buy'?'en':value} onSelect={language=>setValue(language.code)} onBack={()=>setMessage('The host goes back')}/>;
+default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack>{preview()}{message&&<C.Text>{message}</C.Text>}</C.Stack>;}

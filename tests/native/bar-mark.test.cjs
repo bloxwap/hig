@@ -14,7 +14,28 @@ const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const storage=[{id:'apps',label:'Apps',value:20},{id:'photos',label:'Photos',value:12},{id:'ios',label:'iOS',value:8}];
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
-it('colours segments in the default tone order, and a tone or a host colour overrides it',()=>{
+it('reuses shares across copy, locale and title changes and recalculates for new data or totals',()=>{
+  let reads=0,labelReads=0,colorReads=0;
+  const elements=Array.from({length:50},(_,index)=>({get label(){labelReads++;return String(index);},get color(){colorReads++;return '#123456';},get value(){reads++;return index+1;}}));
+  const chart=h(BarMark,{title:'Portfolio',elements});
+  act(()=>{root=render(h(HIGProvider,{locale:'en-US'},chart));});
+  const baseline=reads;
+  act(()=>root.update(h(HIGProvider,{locale:'en-US',messages:{stale:'Delayed'}},chart)));
+  expect(baseline).toBeGreaterThanOrEqual(50);
+  expect(reads).toBe(baseline);
+  act(()=>root.update(h(HIGProvider,{locale:'fr-FR'},chart)));
+  labelReads=0;colorReads=0;
+  act(()=>root.update(h(HIGProvider,{locale:'fr-FR'},h(BarMark,{title:'Updated',elements}))));
+  expect([labelReads,colorReads]).toEqual([0,0]);
+  expect(reads-baseline).toBe(0);
+  act(()=>root.update(h(HIGProvider,{locale:'fr-FR'},h(BarMark,{title:'Updated',testID:'mix',elements,total:5000}))));
+  expect(reads-baseline).toBe(50);
+  const lastShare=()=>host(root.root,'mix-legend-49').props.accessibilityLabel;
+  expect(lastShare()).toContain(new Intl.NumberFormat('fr-FR',{style:'percent'}).format(.01));
+  act(()=>root.update(h(HIGProvider,{locale:'fr-FR'},h(BarMark,{title:'Updated',testID:'mix',elements:[...elements.slice(0,-1),{label:'49',value:100}],total:5000}))));
+  expect(lastShare()).toContain(new Intl.NumberFormat('fr-FR',{style:'percent'}).format(.02));
+ });
+ it('colours segments in the default tone order, and a tone or a host colour overrides it',()=>{
  expect(barMarkTones).toEqual(['positive','info','warning','negative','muted','faint']);
  const seven=Array.from({length:7},(_,index)=>({label:`L${index}`,value:1}));
  let tree=mount({elements:seven});

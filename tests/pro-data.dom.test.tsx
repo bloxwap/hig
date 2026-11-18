@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {afterEach,it,expect,vi} from 'vitest';
-import {render,screen,within,cleanup} from '@testing-library/react';
+import {act,render,screen,within,cleanup} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {Table,NumberReadout,type TableRowProps} from '../packages/hig/react/src/data';
@@ -75,4 +75,80 @@ it('preserves a host market identity and signed fixed-percent strings after host
  }
  rerender(<HIGProvider locale='de-DE'><MarketRow mode='presentation' symbol='BTC' name='Bitcoin' price={1} change={1.2} changeOptions={{minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'always'}}/></HIGProvider>);
  expect(document.querySelector('.hig-market-change')?.textContent).toBe('+1,20\u00a0%');
+});
+
+it('retains cells across status updates and renders new row values',()=>{
+ const rows=Array.from({length:1000},(_,i)=>({id:String(i),name:'Market '+i}));
+ const keyFor=(row:typeof rows[number])=>row.id;
+ const renderCell=vi.fn((row:typeof rows[number])=>row.name);
+ const columns=[{key:'market',label:'Market',render:renderCell}];
+ const scene=(items:typeof rows,loading:boolean)=><Table caption="Markets" rows={items} columns={columns} keyFor={keyFor} loading={loading}/>;
+ const view=render(scene(rows,false));
+ expect(renderCell.mock.calls.length).toBeLessThanOrEqual(Math.ceil(window.innerHeight/44)+5);
+ expect(screen.getByRole('table').getAttribute('aria-rowcount')).toBe('1001');
+ expect(screen.getByText('Market 999').closest('tr')?.getAttribute('aria-rowindex')).toBe('1001');
+ renderCell.mockClear();
+ view.rerender(scene(rows,true));
+ expect(screen.getByRole('status').textContent).toBe('Loading');
+ expect(renderCell).not.toHaveBeenCalled();
+ view.rerender(scene([{...rows[0],name:'Updated market'},...rows.slice(1)],false));
+ expect(renderCell).toHaveBeenCalledTimes(1);
+ expect(screen.getByText('Updated market')).toBeTruthy();
+});
+
+
+it('keeps measured row heights with their keys through a quote refresh, sort and removal',()=>{
+ const observers=new Map<Element,(entries:unknown[])=>void>();
+ class ResizeProbe{
+  constructor(private notify:(entries:unknown[])=>void){}
+  observe(element:Element){observers.set(element,this.notify);}
+  unobserve(element:Element){observers.delete(element);}
+  disconnect(){for(const [element,notify] of observers)if(notify===this.notify)observers.delete(element);}
+ }
+ vi.stubGlobal('ResizeObserver',ResizeProbe);
+ try{
+  const rows=Array.from({length:100},(_,id)=>({id:String(id),value:id}));
+  const keyFor=(row:typeof rows[number])=>row.id;
+  const columns=[{key:'value',label:'Value',render:(row:typeof rows[number])=>row.value}];
+  const scene=(items:typeof rows)=><Table caption="Quotes" keyFor={keyFor} columns={columns} rows={items}/>;
+  const view=render(scene(rows));
+  const measured=view.container.querySelector('[data-hig-window-index="2"]')!;
+  const notify=observers.get(measured)!;
+  act(()=>notify([{target:measured,borderBoxSize:[{blockSize:80}]}]));
+  const spacerHeight=()=>parseFloat(view.container.querySelector<HTMLTableCellElement>('tr[aria-hidden] td')!.style.height);
+  const original=spacerHeight();
+  view.rerender(scene(rows.map(row=>row.id==='0'?{...row,value:200}:row)));
+  expect(observers.get(measured)).toBe(notify);
+  const reversed=rows.slice().reverse();
+  view.rerender(scene(reversed));
+  expect(spacerHeight()).toBe(original+36);
+  view.rerender(scene(reversed.filter(row=>row.id!=='2')));
+  expect(spacerHeight()).toBe(original-44);
+  view.unmount();
+ }finally{vi.unstubAllGlobals();}
+});
+
+it('updates translated table status without revisiting column headers or populated cells',()=>{
+ const label=vi.fn((i:number)=>'Column '+i),cell=vi.fn((value:string)=>value);
+ const columns=Array.from({length:12},(_,i)=>({key:String(i),get label(){return label(i);},render:cell}));
+ const child=<Table caption="Prices" rows={['BTC']} columns={columns} keyFor={String} loading/>;
+ const {rerender}=render(<HIGProvider>{child}</HIGProvider>);
+ label.mockClear();cell.mockClear();
+ rerender(<HIGProvider density="compact" messages={{loading:'Chargement'}}>{child}</HIGProvider>);
+ expect(screen.getByRole('status').textContent).toBe('Chargement');
+ expect(label).not.toHaveBeenCalled();
+ expect(cell).not.toHaveBeenCalled();
+});
+
+it('moves keyed rows and updates their positions without rendering unchanged cell values',()=>{
+ const cell=vi.fn((row:{id:string})=>row.id);
+ const columns=[{key:'id',label:'Market',render:cell}];
+ const keyFor=(row:{id:string})=>row.id;
+ const rowProps=(_:unknown,index:number)=>({'data-index':index});
+ const rows=[{id:'BTC'},{id:'ETH'}];
+ const table=(items:typeof rows)=><Table caption="Prices" rows={items} columns={columns} keyFor={keyFor} rowProps={rowProps}/>;
+ const {rerender}=render(table(rows));cell.mockClear();
+ rerender(table(rows.slice().reverse()));
+ expect(cell).not.toHaveBeenCalled();
+ expect(screen.getAllByRole('cell').map(c=>[c.textContent,c.parentElement?.dataset.index])).toEqual([['ETH','0'],['BTC','1']]);
 });

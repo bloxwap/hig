@@ -20,6 +20,16 @@ const texts=tree=>tree.findAll(node=>node.type==='Text').map(text);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;jest.restoreAllMocks();});
 
 describe('ListRow',()=>{
+ it('keeps stable rows and their labels idle during number-format changes',()=>{
+  const renders=jest.spyOn(ListRow,'render'),labels=jest.spyOn(Text,'render');
+  const rows=h(React.Fragment,null,Array.from({length:50},(_,i)=>h(ListRow,{key:i,label:String(i),onSelect(){}})));
+  mount(rows);
+  renders.mockClear();labels.mockClear();
+  act(()=>root.update(h(HIGProvider,{numberFormat:{currencyDisplay:'code'}},rows)));
+  expect(renders).not.toHaveBeenCalled();expect(labels).not.toHaveBeenCalled();
+  act(()=>root.update(h(HIGProvider,{direction:'rtl'},rows)));
+  expect(renders).toHaveBeenCalledTimes(50);expect(labels).toHaveBeenCalledTimes(50);
+ });
  it('draws a muted description under the label and reads it with the label',()=>{
   const tree=mount(h(ListRow,{label:'Card',description:'Instant card deposit',value:'$5',testID:'row',onSelect(){}}));
   expect(host(tree,'row').props.accessibilityLabel).toBe('Card, Instant card deposit, $5');
@@ -39,12 +49,26 @@ describe('ListRow',()=>{
   tree=mount(h(ListRow,{label:'External',selected:false,disclosure:'chevron',testID:'row',onSelect(){}}));expect(host(tree,'row-chevron')).toBeDefined();
  });
  it('shows a spinner while busy, reads busy and ignores the press without dimming',()=>{
+  jest.useFakeTimers();
   const select=jest.fn();
   const tree=mount(h(ListRow,{label:'Link account',busy:true,testID:'row',onSelect:select}));
   const row=host(tree,'row');expect(row.props.accessibilityState).toEqual({disabled:false,busy:true});
   expect(row.props.accessibilityLabel).toBe(Platform.OS==='android'?'Link account':'Link account · Working');
+  act(()=>jest.advanceTimersByTime(999));
+  expect(host(tree,'row-busy')).toBeUndefined();expect(host(tree,'row-chevron')).toBeDefined();
+  act(()=>jest.advanceTimersByTime(1));jest.useRealTimers();
   expect(host(tree,'row-busy')).toBeDefined();expect(host(tree,'row-chevron')).toBeUndefined();expect(flat(row).opacity).toBe(1);
   expect(tree.findAll(node=>node.props.testID==='row'&&typeof node.props.onPress==='function')).toHaveLength(0);expect(select).not.toHaveBeenCalled();
+ });
+ it('reserves trailing space for a delayed spinner on a row without a glyph',()=>{
+  jest.useFakeTimers();
+  try{
+   const tree=mount(h(ListRow,{label:'Account',value:'Primary',busy:true,disclosure:'none',onSelect(){}}));
+   const slot=tree.findAll(node=>typeof node.type==='string'&&node.props.accessibilityElementsHidden&&flat(node).width===20)[0];
+   expect(slot.children).toHaveLength(0);
+   act(()=>jest.advanceTimersByTime(1000));
+   expect(slot.findByType(ActivityIndicator)).toBeDefined();
+  }finally{jest.useRealTimers();}
  });
  it('draws the external arrow, mirrored in RTL, or nothing through disclosure',()=>{
   let tree=mount(h(ListRow,{label:'Docs',disclosure:'external',testID:'row',onSelect(){}}));expect(flat(host(tree,'row-external')).transform).toBeUndefined();
@@ -156,4 +180,22 @@ describe('Small primitives',()=>{
   expect(tree.findAll(node=>node.type==='Text').some(node=>text(node)==='Network fees are high')).toBe(true);
   expect(tree.findAllByType(RNText).length).toBeGreaterThan(1);
  });
+});
+
+it('replaces all three active indicators when reduced motion changes',()=>{
+ jest.useFakeTimers();
+ try{
+  const {Button}=require('../../packages/hig/native/src/button');
+  const {Spinner}=require('../../packages/hig/native/src/status');
+  const {StaticLoadingRing}=require('../../packages/hig/native/src/static-loading-ring');
+  const controls=h(View,null,h(Button,{busy:true},'Save'),h(ListRow,{busy:true,label:'Transfer',onSelect(){}}),h(Spinner,{label:'Loading'}));
+  const tree=mount(controls,{reducedMotion:false});
+  act(()=>jest.advanceTimersByTime(1000));
+  expect(tree.findAllByType(ActivityIndicator)).toHaveLength(3);
+  act(()=>root.update(h(HIGProvider,{reducedMotion:true},controls)));
+  expect(tree.findAllByType(ActivityIndicator)).toHaveLength(0);
+  expect(tree.findAllByType(StaticLoadingRing)).toHaveLength(3);
+  act(()=>root.update(h(HIGProvider,{reducedMotion:false},controls)));
+  expect(tree.findAllByType(ActivityIndicator)).toHaveLength(3);
+ }finally{jest.useRealTimers();}
 });

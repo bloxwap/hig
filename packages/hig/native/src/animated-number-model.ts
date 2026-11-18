@@ -1,4 +1,4 @@
-import type {NumberFlowPlace} from '@bloxwap/hig/contracts/number-flow';
+import {numberFlowNeutral,type NumberFlowPlace} from '@bloxwap/hig/contracts/number-flow';
 import {formatNumber} from './number-format.js';
 
 export type NumberTrend=-1|0|1|((previousValue:number,value:number)=>-1|0|1);
@@ -7,11 +7,11 @@ export interface NumberReelToken {key:string;kind:'digit'|'static';type:string;v
 export interface NumberReelModel {canonical:string;digits:readonly string[];tokens:readonly NumberReelToken[]}
 
 const supportedParts=new Set(['integer','fraction','decimal','group','plusSign','minusSign','percentSign','currency','unit','compact','literal','exponentSeparator','exponentInteger','exponentMinusSign','exponentPlusSign','approximatelySign']);
-const bidiControls=/[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/u;
+const nonAscii=/[^\x00-\x7f]/;
 
 export function formatNumberReadout(value:number|null|undefined,locale:string,options?:Intl.NumberFormatOptions,formattedValue?:string,prefix?:string,suffix?:string):NumberReading{
  const known=typeof value==='number'&&Number.isFinite(value);if(!known)return {known:false,core:'—',text:'—'};
- // Without a sign to compose, the reading is the unsigned formatter's own, and that one is kept; `formatNumber` builds its own each time.
+ // Without a sign to compose, the reading is the unsigned formatter's own, and that one is kept.
  let core:string;if(formattedValue)core=formattedValue;else{try{const sign=options?.signDisplay;core=sign===undefined||sign==='auto'?formatFor(locale,options).unsigned.format(value):formatNumber(value,locale,options);}catch{core=String(value);}}
  return {known:true,core,text:`${prefix??''}${core}${suffix??''}`};
 }
@@ -24,16 +24,8 @@ export function numberTrendDirection(trend:NumberTrend|undefined,previousValue:n
  return value>previousValue?1:value<previousValue?-1:0;
 }
 
-function strongRTL(character:string):boolean{
- const point=character.codePointAt(0);if(point===undefined)return false;
- if((point>=0x0660&&point<=0x0669)||(point>=0x06f0&&point<=0x06f9)||(point>=0x066a&&point<=0x066c))return false;
- return (point>=0x0590&&point<=0x08ff)||(point>=0xfb1d&&point<=0xfdff)||(point>=0xfe70&&point<=0xfefc)||(point>=0x10800&&point<=0x10fff)||(point>=0x1e800&&point<=0x1edff)||(point>=0x1ee00&&point<=0x1eeff);
-}
-
 export function safeNumberLayout(text:string,direction:string):boolean{
- if(direction!=='ltr')return false;
- for(const character of Array.from(text))if(bidiControls.test(character)||strongRTL(character))return false;
- return true;
+ return direction==='ltr'&&numberFlowNeutral(text);
 }
 
 const asciiDigits:readonly string[]=['0','1','2','3','4','5','6','7','8','9'];
@@ -42,16 +34,23 @@ const asciiDigits:readonly string[]=['0','1','2','3','4','5','6','7','8','9'];
 // formatters and some twenty calls), and building a formatter is the dear part, so each answer is asked for once per format
 // and kept. A different `Intl.NumberFormat` (a polyfill installed later, a test double) starts over, and so does a host that
 // goes through more formats than fit. Nothing that failed is kept, so it is asked again as before.
-interface KeptFormat {unsigned:Intl.NumberFormat;numberingSystem:string|undefined;digits?:readonly string[]|null;parts?:Intl.NumberFormat|null;separators?:Map<readonly string[],string|null>}
+interface KeptFormat {unsigned:Intl.NumberFormat;numberingSystem?:string|null;digits?:readonly string[]|null;parts?:Intl.NumberFormat|null;separators?:Map<readonly string[],string|null>}
+let latestFormat:KeptFormat|undefined;
 const keptFormats=new Map<string,KeptFormat>(),keptLocaleDigits=new Map<string,readonly string[]>();let keptFor:unknown;
-function current(){if(keptFor!==Intl.NumberFormat){keptFormats.clear();keptLocaleDigits.clear();keptFor=Intl.NumberFormat;}}
+const keptSystemDigits=new Map<string,readonly string[]>();
+const keptSeparators=new Map<string,string>();
+function current(){if(keptFor!==Intl.NumberFormat){keptFormats.clear();keptLocaleDigits.clear();keptSystemDigits.clear();keptSeparators.clear();keptFor=Intl.NumberFormat;}}
 function formatFor(locale:string,options:Intl.NumberFormatOptions|undefined):KeptFormat{
  current();const key=`${locale}\u0000${options?JSON.stringify(options):''}`;let kept=keptFormats.get(key);
  if(!kept){
   // The numbering system is the unsigned format's: Hermes on iOS ignores `signDisplay`, and HIG composes the sign itself.
-  const {signDisplay:_sign,...rest}=options??{},unsigned=new Intl.NumberFormat(locale,rest);kept={unsigned,numberingSystem:unsigned.resolvedOptions().numberingSystem};
-  if(keptFormats.size>=64)keptFormats.clear();keptFormats.set(key,kept);
+  const {signDisplay:_sign,...rest}=options??{},unsigned=new Intl.NumberFormat(locale,rest);kept={unsigned};
+  if(keptFormats.size>=64)keptFormats.delete(keptFormats.keys().next().value!);
+  keptFormats.set(key,kept);
+ }else if(keptFormats.size===64&&kept!==latestFormat){
+  keptFormats.delete(key);keptFormats.set(key,kept);
  }
+ latestFormat=kept;
  return kept;
 }
 /** The ten digit glyphs of a locale's numbering system, or `null` when Intl cannot name them one character each. */
@@ -72,14 +71,19 @@ function localeDigits(locale:string):readonly string[]|null{
  */
 export function createFormattedReelModel(text:string,locale:string,direction:string):NumberReelModel|null{
  if(!text||!safeNumberLayout(text,direction))return null;
- const characters=Array.from(text),ascii=characters.some(character=>asciiDigits.includes(character));
- const digits=ascii?asciiDigits:localeDigits(locale);if(!digits)return null;
- const count=characters.filter(character=>digits.includes(character)).length;if(!count)return null;
+ let count=0;
+ for(let index=0;index<text.length;index++){
+  const code=text.charCodeAt(index);
+  if(code>=48&&code<=57)count++;
+ }
+ const digits=count?asciiDigits:localeDigits(locale);if(!digits)return null;
+ if(!count)for(const character of text)if(digits.includes(character))count++;
+ if(!count)return null;
  const tokens:NumberReelToken[]=[];let run='',seen=0;
  const flush=()=>{if(run){tokens.push({key:`static:${tokens.length}`,kind:'static',type:'literal',value:run,partIndex:tokens.length});run='';}};
- for(const character of characters){
-  const digit=digits.indexOf(character);
-  if(digit<0){run+=character;continue;}
+ for(const character of text){
+  const digit=digits===asciiDigits?character.charCodeAt(0)-48:digits.indexOf(character);
+  if(digit<0||digit>9){run+=character;continue;}
   flush();const place=count-++seen;
   tokens.push({key:`digit:${place}`,kind:'digit',type:'integer',value:character,partIndex:tokens.length,digit,place});
  }
@@ -90,11 +94,14 @@ interface NumberPart {type:string;value:string}
 const minusSign=/[-−‐-―﹣－]/u;
 /** The ten digit glyphs a reel rolls through: the numbering system's when Intl names it (each checked one glyph, and one integer part where `formatToParts` exists), else ASCII when the text uses it, else the locale's. */
 function reelDigits(locale:string,kept:KeptFormat,text:string):readonly string[]|null{
+ if(kept.numberingSystem===undefined)kept.numberingSystem=kept.unsigned.resolvedOptions().numberingSystem??null;
  const numberingSystem=kept.numberingSystem;
- if(!numberingSystem)return Array.from(text).some(character=>asciiDigits.includes(character))?asciiDigits:localeDigits(locale);
+ if(!numberingSystem)return /[0-9]/.test(text)?asciiDigits:localeDigits(locale);
  return kept.digits===undefined?kept.digits=systemDigits(locale,numberingSystem):kept.digits;
 }
 function systemDigits(locale:string,numberingSystem:string):readonly string[]|null{
+ const key=JSON.stringify([locale,numberingSystem]);
+ const cached=keptSystemDigits.get(key);if(cached)return cached;
  const formatter=new Intl.NumberFormat(locale,{numberingSystem,useGrouping:false,minimumFractionDigits:0,maximumFractionDigits:0});
  const digits=Array.from({length:10},(_,digit)=>{
   const formatted=formatter.format(digit);if(Array.from(formatted).length!==1)return '';
@@ -102,24 +109,38 @@ function systemDigits(locale:string,numberingSystem:string):readonly string[]|nu
   const parts=formatter.formatToParts(digit);
   return parts.length===1&&parts[0].type==='integer'&&parts[0].value===formatted?formatted:'';
  });
- return digits.every(Boolean)&&new Set(digits).size===10?digits:null;
+ if(!digits.every(Boolean)||new Set(digits).size!==10)return null;
+ if(keptSystemDigits.size>=64)keptSystemDigits.clear();
+ keptSystemDigits.set(key,digits);return digits;
 }
 /** Intl's own parts for the value, when the runtime has `formatToParts` and they spell `text` with at least one integer digit. */
 function intlParts(value:number,locale:string,options:Intl.NumberFormatOptions|undefined,text:string,kept:KeptFormat):NumberPart[]|null{
  try{
-  if(kept.parts===undefined){const built=new Intl.NumberFormat(locale,options);kept.parts=typeof built.formatToParts==='function'?built:null;}
+  if(kept.parts===undefined){const sign=options?.signDisplay;const built=sign===undefined||sign==='auto'?kept.unsigned:new Intl.NumberFormat(locale,options);kept.parts=typeof built.formatToParts==='function'?built:null;}
   const formatter=kept.parts;if(!formatter)return null;
   const parts=formatter.formatToParts(value);
-  return parts.length&&parts.some(part=>part.type==='integer')&&parts.map(part=>part.value).join('')===text?parts:null;
+  let offset=0,hasInteger=false;
+  for(const part of parts){
+   if(!text.startsWith(part.value,offset))return null;
+   offset+=part.value.length;
+   if(part.type==='integer')hasInteger=true;
+  }
+  return hasInteger&&offset===text.length?parts:null;
  }catch{return null;}
 }
 /** The locale's decimal separator for these options, read from formatted text: whatever sits between the digits of `1.5`. */
 function decimalSeparator(locale:string,options:Intl.NumberFormatOptions|undefined,digits:readonly string[]):string|null{
  const {style,currency,currencyDisplay,numberingSystem}=options??{};
- const probe=new Intl.NumberFormat(locale,{...(style==='currency'&&currency?{style,currency,currencyDisplay}:null),...(numberingSystem?{numberingSystem}:null),useGrouping:false,minimumFractionDigits:1,maximumFractionDigits:1});
+ const probeOptions={...(style==='currency'&&currency?{style,currency,currencyDisplay}:null),...(numberingSystem?{numberingSystem}:null),useGrouping:false,minimumFractionDigits:1,maximumFractionDigits:1};
+ const key=JSON.stringify([locale,probeOptions,digits]);
+ const cached=keptSeparators.get(key);if(cached!==undefined)return cached;
+ const probe=new Intl.NumberFormat(locale,probeOptions);
  const characters=Array.from(probe.format(1.5)),first=characters.findIndex(character=>digits.includes(character));
  let last=characters.length-1;while(last>first&&!digits.includes(characters[last]))last--;
- return first>=0&&last>first+1?characters.slice(first+1,last).join(''):null;
+ if(first<0||last<=first+1)return null;
+ const separator=characters.slice(first+1,last).join('');
+ if(keptSeparators.size>=64)keptSeparators.clear();
+ keptSeparators.set(key,separator);return separator;
 }
 /**
  * Parts read from formatted text, for runtimes without `formatToParts` (Hermes on iOS): digits before the locale's decimal
@@ -129,18 +150,32 @@ function decimalSeparator(locale:string,options:Intl.NumberFormatOptions|undefin
  */
 function textParts(text:string,locale:string,options:Intl.NumberFormatOptions|undefined,digits:readonly string[],kept:KeptFormat):NumberPart[]|null{
  if(options?.notation==='scientific'||options?.notation==='engineering')return null;
- const characters=Array.from(text),isDigit=(character:string)=>digits.includes(character);
- const first=characters.findIndex(isDigit);if(first<0)return null;
+ const characters=nonAscii.test(text)?Array.from(text):text;
+ const isDigit=(character:string)=>digits.includes(character);
+ let first=0;
+ while(first<characters.length&&!isDigit(characters[first]))first++;
+ if(first===characters.length)return null;
  let last=characters.length-1;while(!isDigit(characters[last]))last--;
  const separators=kept.separators??=new Map();let found=separators.get(digits);
  if(found===undefined){found=decimalSeparator(locale,options,digits);separators.set(digits,found);}
- const separator=Array.from(found??'');let point=-1;
- if(separator.length)for(let index=first+1;index+separator.length<=last;index++)if(separator.every((character,offset)=>characters[index+offset]===character)){point=index;break;}
+ const separator=found??'';
+ let point=-1,separatorLength=separator.length;
+ if(separator){
+  if(typeof characters==='string'||separator.length===1){
+   const index=characters.indexOf(separator,first+1);
+   if(index>=0&&index+separator.length<=last)point=index;
+  }else{
+   const glyphs=Array.from(separator);separatorLength=glyphs.length;
+   for(let index=first+1;index+glyphs.length<=last;index++){
+    if(glyphs.every((glyph,offset)=>characters[index+offset]===glyph)){point=index;break;}
+   }
+  }
+ }
  const parts:NumberPart[]=[];
  const push=(type:string,value:string)=>{const previous=parts[parts.length-1];if(previous&&previous.type===type&&type!=='decimal')previous.value+=value;else parts.push({type,value});};
  for(let index=0;index<characters.length;index++){
   const character=characters[index];
-  if(index===point){push('decimal',separator.join(''));index+=separator.length-1;continue;}
+  if(index===point){push('decimal',separator);index+=separatorLength-1;continue;}
   if(isDigit(character))push(point>=0&&index>point?'fraction':'integer',character);
   else if(index>first&&index<last)push('group',character);
   else push(minusSign.test(character)?'minusSign':character==='+'?'plusSign':'literal',character);
@@ -159,17 +194,24 @@ export function createNumberReelModel(value:number|null|undefined,locale:string,
   const digits=reelDigits(locale,kept,canonical);
   if(!digits||!safeNumberLayout(canonical,direction))return null;
   const parts=intlParts(value,locale,options,canonical,kept)??textParts(canonical,locale,options,digits,kept);if(!parts)return null;
-  const digitIndexes=new Map(digits.map((digit,index)=>[digit,index]));
-  const count=(type:string)=>parts.filter(part=>part.type===type).reduce((total,part)=>total+Array.from(part.value).length,0);
-  const integerCount=count('integer'),exponentCount=count('exponentInteger');let integerIndex=0,fractionIndex=0,exponentIndex=0;
+  // Each validated glyph is one code point. Count places from the right, including supplementary-plane digits.
+  let integerCount=0,exponentCount=0;
+  const glyphWidth=digits[0].length,uniformWidth=digits.every(glyph=>glyph.length===glyphWidth);
+  for(const part of parts){
+   if(part.type!=='integer'&&part.type!=='exponentInteger')continue;
+   const count=uniformWidth?part.value.length/glyphWidth:Array.from(part.value).length;
+   if(part.type==='integer')integerCount+=count;
+   else exponentCount+=count;
+  }
+  let integerIndex=0,fractionIndex=0,exponentIndex=0;
   const tokens:NumberReelToken[]=[];
   for(let partIndex=0;partIndex<parts.length;partIndex++){
    const part=parts[partIndex];if(!supportedParts.has(part.type))return null;
    if(part.type!=='integer'&&part.type!=='fraction'&&part.type!=='exponentInteger'){
     tokens.push({key:`part:${partIndex}:${part.type}`,kind:'static',type:part.type,value:part.value,partIndex});continue;
    }
-   for(const character of Array.from(part.value)){
-    const digit=digitIndexes.get(character);if(digit===undefined)return null;
+   for(const character of part.value){
+    const digit=digits.indexOf(character);if(digit<0)return null;
     let key:string,place:number;
     if(part.type==='integer'){place=integerCount-integerIndex++-1;key=`integer:${place}`;}
     else if(part.type==='fraction'){place=fractionIndex++;key=`fraction:${place}`;}
@@ -185,7 +227,11 @@ export function createNumberReelModel(value:number|null|undefined,locale:string,
 export function numberReelPlace(token:Pick<NumberReelToken,'type'|'place'>):number|null{return token.type==='integer'?token.place??0:token.type==='fraction'?-1-(token.place??0):null;}
 /** The reels of a model as NumberFlow places, in display order. */
 export function numberReelPlaces(model:NumberReelModel):NumberFlowPlace[]{
- return model.tokens.filter(token=>token.kind==='digit').map(token=>({key:token.key,digit:token.digit??0,place:numberReelPlace(token)}));
+ const places:NumberFlowPlace[]=[];
+ for(const token of model.tokens){
+  if(token.kind==='digit')places.push({key:token.key,digit:token.digit??0,place:numberReelPlace(token)});
+ }
+ return places;
 }
 /**
  * Where a reel's strip sits for a position that has turned any number of times either way. The strip is `length + 1` glyphs,
@@ -228,9 +274,17 @@ export function createNumberFlowRoll(delta:number,duration:number,samples:readon
   },
   onFrame(animation,now){
    'worklet';
-   let remaining=0;const active:NumberFlowTurn[]=[];
-   for(const turn of animation.turns){const progress=(now-turn.start)/turn.duration;if(progress<1){remaining+=turn.delta*(1-sampleReelEasing(samples,progress));active.push(turn);}}
-   animation.turns=active;animation.current=animation.toValue-remaining;
-   return active.length===0;
+   let remaining=0,active=0;
+   const turns=animation.turns;
+   for(let index=0;index<turns.length;index++){
+    const turn=turns[index],progress=(now-turn.start)/turn.duration;
+    if(progress>=1)continue;
+    remaining+=turn.delta*(1-sampleReelEasing(samples,progress));
+    if(index!==active)turns[active]=turn;
+    active++;
+   }
+   if(active!==turns.length)turns.length=active;
+   animation.current=animation.toValue-remaining;
+   return active===0;
   }};
 }

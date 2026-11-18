@@ -9,6 +9,27 @@ afterEach(cleanup);
 const parts=[{label:'Bitcoin',value:6200,detail:'$6,200'},{label:'Ether',value:3400},{label:'USD Coin',value:400}];
 const segments=()=>[...document.querySelectorAll<HTMLElement>('.hig-bar-mark-segment')];
 describe('BarMark',()=>{
+ it('reuses shares across copy, locale and title changes and recalculates for new data or totals',()=>{
+  let reads=0,labelReads=0,colorReads=0;
+  const elements=Array.from({length:50},(_,index)=>({get label(){labelReads++;return String(index);},get color(){colorReads++;return '#123456';},get value(){reads++;return index+1;}}));
+  const chart=<BarMark title="Portfolio" elements={elements}/>;
+  const view=render(<HIGProvider locale="en-US">{chart}</HIGProvider>);
+  const baseline=reads;
+  view.rerender(<HIGProvider locale="en-US" messages={{stale:'Delayed'}}>{chart}</HIGProvider>);
+  expect(baseline).toBeGreaterThanOrEqual(50);
+  expect(reads).toBe(baseline);
+  view.rerender(<HIGProvider locale="fr-FR">{chart}</HIGProvider>);
+  labelReads=0;colorReads=0;
+  view.rerender(<HIGProvider locale="fr-FR"><BarMark title="Updated" elements={elements}/></HIGProvider>);
+  expect([labelReads,colorReads]).toEqual([0,0]);
+  expect(reads-baseline).toBe(0);
+  view.rerender(<HIGProvider locale="fr-FR"><BarMark title="Updated" elements={elements} total={5000}/></HIGProvider>);
+  expect(reads-baseline).toBe(50);
+  const lastShare=()=>screen.getAllByRole('listitem').at(-1)?.querySelector('.hig-sr-only')?.textContent;
+  expect(lastShare()).toBe(new Intl.NumberFormat('fr-FR',{style:'percent'}).format(.01));
+  view.rerender(<HIGProvider locale="fr-FR"><BarMark title="Updated" elements={[...elements.slice(0,-1),{label:'49',value:100}]} total={5000}/></HIGProvider>);
+  expect(lastShare()).toBe(new Intl.NumberFormat('fr-FR',{style:'percent'}).format(.02));
+ });
  it('computes shares of the sum, or of a larger total with the remainder left empty',()=>{
   expect(barMarkShares(parts)).toEqual({shares:[0.62,0.34,0.04],rest:0});
   expect(barMarkShares(parts,20000)).toEqual({shares:[0.31,0.17,0.02],rest:0.5});

@@ -23,7 +23,7 @@ jest.mock('react-native-reanimated',()=>{
   }
   return ref.current;
  };
- return {__esModule:true,default:{View:RN.View,Text:RN.Text},cancelAnimation:value=>value.stop(),defineAnimation:(starting,factory)=>({__mockDefined:true,factory}),withTiming:(toValue,config)=>({__mockTiming:true,toValue,config}),
+ return {__esModule:true,default:{View:RN.View,Text:RN.Text,createAnimatedComponent:component=>component},cancelAnimation:value=>value.stop(),defineAnimation:(starting,factory)=>({__mockDefined:true,factory}),withTiming:(toValue,config)=>({__mockTiming:true,toValue,config}),
   useSharedValue:shared,useAnimatedStyle:updater=>updater(),Easing:{bezier:(...points)=>({bezier:points})},ReduceMotion:{Never:'never',System:'system',Always:'always'}};
 });
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
@@ -44,8 +44,8 @@ const cells=()=>root.root.findAllByType(RNView).filter(node=>{const style=StyleS
 const rows=cell=>cell.findAllByType(RNText).map(node=>node.props.children).join('');
 /** Moves the clock and runs one frame of everything in flight. */
 const advance=ms=>{mockClock.now+=ms;for(const value of mockClock.values)value.frame(mockClock.now);};
-/** The reels in flight or landed: the shared values holding a position (every strip makes a position, then an opacity). */
-const positions=()=>mockClock.values.filter((_,index)=>index%2===0);
+/** The reels in flight or landed: the shared values holding a position. */
+const positions=()=>mockClock.values.filter(value=>!mockClock.fades.some(fade=>fade.value===value));
 
 describe('the roll, as the UI thread runs it',()=>{
  const linear=numberFlowEasingSamples('linear');
@@ -63,8 +63,9 @@ describe('the roll, as the UI thread runs it',()=>{
   // Half way to 4 the reel is asked for 6: it is still at 2, it keeps the first turn's speed and adds the second's.
   const second=start(createNumberFlowRoll(2,1000,linear),first.current,500,first);
   expect(second.toValue).toBe(6);expect(second.current).toBeCloseTo(2,5);expect(second.turns).toHaveLength(2);
+  const turns=second.turns;
   second.onFrame(second,750);expect(second.current).toBeCloseTo(2+1+0.5,5);
-  second.onFrame(second,1000);expect(second.current).toBeCloseTo(4+1,5);expect(second.turns).toHaveLength(1);
+  second.onFrame(second,1000);expect(second.current).toBeCloseTo(4+1,5);expect(second.turns).toHaveLength(1);expect(second.turns).toBe(turns);
   expect(second.onFrame(second,1500)).toBe(true);expect(second.current).toBe(6);
   // Turning back mid-flight nets out the same way.
   const up=start(createNumberFlowRoll(3,1000,linear),0,0,null);up.onFrame(up,500);const down=start(createNumberFlowRoll(-3,1000,linear),up.current,500,up);
@@ -90,6 +91,23 @@ describe('the roll, as the UI thread runs it',()=>{
 });
 
 describe('NumberFlow on native',()=>{
+ it.each([['flow',0],['flow',1],['slide',0],['slide',1]])('uses the %s paragraph only when every glyph baseline aligns (offset %s)',(motion,offset)=>{
+  mount(flow({value:1,motion}));measure();
+  const probes=root.root.findAllByType(RNText).filter(node=>node.props.onTextLayout);
+  expect(probes).toHaveLength(11);
+  act(()=>{
+   for(const probe of probes){
+    const glyphs=probe.props.children.split('\n');
+    const lines=glyphs.map((text,index)=>({text,y:index*24+(index===9?offset:0),ascender:18}));
+    probe.props.onTextLayout({nativeEvent:{lines}});
+   }
+  });
+  update(flow({value:2,motion}));
+  const text=cells()[0].findAllByType(RNText);
+  expect(text).toHaveLength(offset?(motion==='flow'?11:20):1);
+  if(!offset)expect(StyleSheet.flatten(text[0].props.style).transform).toEqual([{translateY:-24}]);
+  expect(text.map(node=>node.props.children).join('').replaceAll('\n','')).toBe(motion==='flow'?'01234567890':'01234567890123456789');
+ });
  it('draws one glyph per place at rest and mounts no reel until a place turns',()=>{
   mount(flow({value:1234.5,prefix:'$'}));measure();
   expect(cells().map(rows)).toEqual(['1','2','3','4','5']);expect(mockClock.values).toHaveLength(0);
@@ -100,10 +118,10 @@ describe('NumberFlow on native',()=>{
  it('rolls only the places that changed, through the digits between, on NumberFlow’s timing',()=>{
   mount(flow({value:1234}));measure();update(flow({value:1237}));
   // The ones gets its strip in the same commit, showing the digit it replaces; the other places are untouched.
-  expect(cells().map(rows)).toEqual(['1','2','3','01234567890']);expect(positions()).toHaveLength(1);
+  expect(cells().map(rows)).toEqual(['1','2','3','01234567890']);expect(mockClock.values).toHaveLength(1);
   const [position]=positions();expect(position.value).toBe(4);expect(position.animating).toBe(true);
-  advance(450);expect(position.value).toBeCloseTo(4+3*sampleNumberFlowEasing(numberFlowCurve,0.5),6);expect(position.value).toBeGreaterThan(4);expect(position.value).toBeLessThan(7);
-  advance(450);expect(position.value).toBe(7);expect(position.animating).toBe(false);
+  advance(250);expect(position.value).toBeCloseTo(4+3*sampleNumberFlowEasing(numberFlowCurve,0.5),6);expect(position.value).toBeGreaterThan(4);expect(position.value).toBeLessThan(7);
+  advance(250);expect(position.value).toBe(7);expect(position.animating).toBe(false);
   expect(reading().props.accessibilityLabel).toBe('Price: 1,237');
  });
  it('wraps with the trend and joins a new value to the roll in flight',()=>{
@@ -111,18 +129,18 @@ describe('NumberFlow on native',()=>{
   // The ones goes 9 to 0 one step up; the new tens arrives turning from zero and fading in.
   const [tens,ones]=positions();expect(cells().map(rows)).toEqual(['01234567890','01234567890']);
   // A strip starts one turn before its digit, wherever that is: -1 is the 9 above 0, the same picture as 9.
-  expect(tens.value).toBe(0);expect(ones.value).toBe(-1);expect(numberFlowReelOffset(ones.value,10,24)).toBe(-216);expect(mockClock.fades).toHaveLength(1);expect(mockClock.fades[0].config).toMatchObject({duration:450,reduceMotion:'never'});
+  expect(tens.value).toBe(0);expect(ones.value).toBe(-1);expect(numberFlowReelOffset(ones.value,10,24)).toBe(-216);expect(mockClock.fades).toHaveLength(1);expect(mockClock.fades[0].config).toMatchObject({duration:250,reduceMotion:'never'});
   advance(300);const mid=ones.value;expect(mid).toBeGreaterThan(-1);expect(mid).toBeLessThan(0);
   update(flow({value:12,trend:1}));expect(ones.value).toBeCloseTo(mid,10);
-  advance(900);expect(ones.value).toBe(2);expect(numberFlowReelOffset(ones.value,10,24)).toBe(-48);expect(tens.value).toBe(1);
+  advance(500);expect(ones.value).toBe(2);expect(numberFlowReelOffset(ones.value,10,24)).toBe(-48);expect(tens.value).toBe(1);
   // Unmounting stops whatever is still moving.
   update(flow({value:19,trend:1}));expect(ones.animating).toBe(true);act(()=>root.unmount());root=null;expect(ones.animating).toBe(false);
  });
  it('takes each digit’s own short way without a trend',()=>{
   mount(flow({value:19,trend:0}));measure();update(flow({value:20,trend:0}));
-  const [tens,ones]=positions();advance(900);expect(tens.value).toBe(2);expect(ones.value).toBe(0);
+  const [tens,ones]=positions();advance(500);expect(tens.value).toBe(2);expect(ones.value).toBe(0);
   // A reel resting on 0 turns like any other.
-  update(flow({value:23,trend:0}));expect(ones.animating).toBe(true);advance(900);expect(ones.value).toBe(3);
+  update(flow({value:23,trend:0}));expect(ones.animating).toBe(true);advance(500);expect(ones.value).toBe(3);
  });
  it('wraps a limited place at its limit and loops lower places when continuous',()=>{
   const seconds=value=>flow({value,trend:-1,digits:{1:{max:5}},options:{minimumIntegerDigits:2}});
@@ -130,11 +148,11 @@ describe('NumberFlow on native',()=>{
   const [tens,ones]=positions();expect(cells().map(rows)).toEqual(['0123450','01234567890']);
   // One step down each: the tens from the 0 that follows 5 on its six-glyph reel, never through 9, 8, 7 and 6.
   expect(tens.value).toBe(6);expect(ones.value).toBe(10);
-  advance(900);expect(tens.value).toBe(5);expect(numberFlowReelOffset(tens.value,6,24)).toBe(-120);expect(ones.value).toBe(9);
+  advance(500);expect(tens.value).toBe(5);expect(numberFlowReelOffset(tens.value,6,24)).toBe(-120);expect(ones.value).toBe(9);
   act(()=>root.unmount());mockClock.values.length=0;
   mount(flow({value:120,trend:1,continuous:true}));measure();update(flow({value:130,trend:1,continuous:true}));
   // The ones shows 0 before and after, and goes once round on the way.
-  const [loopTens,loopOnes]=positions();expect(loopOnes.value).toBe(-10);advance(300);expect(loopOnes.value).toBeGreaterThan(-9);expect(loopOnes.value).toBeLessThan(-1);
+  const [loopTens,loopOnes]=positions();expect(loopOnes.value).toBe(-10);advance(160);expect(loopOnes.value).toBeGreaterThan(-9);expect(loopOnes.value).toBeLessThan(-1);
   advance(600);expect(loopTens.value).toBe(3);expect(loopOnes.value).toBe(0);
  });
  it('takes its timing from `duration`, `transformTiming` and `spinTiming`',()=>{
@@ -166,10 +184,10 @@ describe('NumberFlow on native',()=>{
   const tensShows=()=>{const [tens]=positions(),glyphs=rows(cells()[0]);return glyphs[Math.round(-numberFlowReelOffset(tens.value,glyphs.length-1,24)/24)];};
   mount(seconds(30));measure();update(seconds(75));
   // 7 does not fit a reel of six, so the tens turn on all ten glyphs, there and back.
-  expect(rows(cells()[0])).toBe('01234567890');advance(900);expect(tensShows()).toBe('7');
-  update(seconds(12));expect(rows(cells()[0])).toBe('01234567890');expect(tensShows()).toBe('7');advance(900);expect(tensShows()).toBe('1');
+  expect(rows(cells()[0])).toBe('01234567890');advance(500);expect(tensShows()).toBe('7');
+  update(seconds(12));expect(rows(cells()[0])).toBe('01234567890');expect(tensShows()).toBe('7');advance(500);expect(tensShows()).toBe('1');
   // Back inside its limit the place takes its short reel again, starting from the digit it shows.
-  update(seconds(23));expect(rows(cells()[0])).toBe('0123450');expect(tensShows()).toBe('1');advance(900);expect(tensShows()).toBe('2');
+  update(seconds(23));expect(rows(cells()[0])).toBe('0123450');expect(tensShows()).toBe('1');advance(500);expect(tensShows()).toBe('2');
   // With motion off the reel still fits whatever digit it is given.
   update(flow({value:81,trend:1,digits:{1:{max:5}},options:{minimumIntegerDigits:2}},{reducedMotion:true}));expect(rows(cells()[0])).toBe('01234567890');expect(tensShows()).toBe('8');
  });
@@ -181,6 +199,14 @@ describe('NumberFlow on native',()=>{
   update(flow({value:2346,options:{style:'percent'}},{locale:'de-DE'}));expect(positions().filter(position=>position.animating)).toHaveLength(1);
   // A reel already turning lands when the format changes under it.
   update(flow({value:2346,options:{style:'percent',minimumFractionDigits:1}},{locale:'de-DE'}));expect(positions().some(position=>position.animating)).toBe(false);
+ });
+ it('allocates only the rolling positions for a carry with fades disabled',()=>{
+  const figure=value=>flow({value,trend:1,opacityTiming:{duration:0}});
+  mount(figure(9));measure();const allocated=mockClock.values.length;
+  update(figure(10));expect(mockClock.values.length-allocated).toBe(2);
+  expect(mockClock.fades).toHaveLength(0);expect(positions().filter(position=>position.animating)).toHaveLength(2);
+  advance(1000);expect(reading().props.accessibilityLabel).toBe('Price: 10');
+  update(flow({value:10,trend:1}));expect(mockClock.fades).toHaveLength(0);
  });
  it('lands a place that is still fading in when motion is turned off',()=>{
   mount(flow({value:9,trend:1}));measure();update(flow({value:10,trend:1}));
@@ -221,6 +247,19 @@ describe('shared native digit measurements',()=>{
  const probes=()=>root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function');
  const widths=()=>root.root.findAllByType(RNView).map(node=>StyleSheet.flatten(node.props.style)).filter(style=>style?.overflow==='hidden').map(style=>style.width);
  const event=width=>({nativeEvent:{layout:{x:0,y:0,width,height:24}}});
+ it('shares one dimensions listener across a board and ignores changes that leave font scale alone',()=>{
+  const remove=jest.fn();let notify;
+  const subscribe=jest.spyOn(require('react-native').Dimensions,'addEventListener').mockImplementation((name,listener)=>{notify=listener;return {remove};});
+  const items=Array.from({length:40},(_,i)=>[String(i),{}]);
+  mount(group(items.map(([id])=>[id,{value:null}])));expect(subscribe).not.toHaveBeenCalled();
+  update(group(items));measure(12,24);expect(subscribe).toHaveBeenCalledTimes(1);
+  PixelRatio.getFontScale.mockClear();act(()=>notify());expect(PixelRatio.getFontScale).toHaveBeenCalledTimes(1);
+  PixelRatio.getFontScale.mockReturnValue(2);act(()=>notify());expect(widths()).toEqual([]);
+  measure(24,48);expect(widths()).toEqual(Array(40).fill(24));
+  update(group(items.slice(1)));expect(remove).not.toHaveBeenCalled();
+  update(group([]));expect(remove).toHaveBeenCalledTimes(1);
+  update(group(items.slice(0,1)));expect(subscribe).toHaveBeenCalledTimes(2);
+ });
  it('measures matching readouts together and transfers the probes when their owner leaves',()=>{
   mount(group([['a',{}],['b',{}],['c',{tone:'muted'}]]));
   const late=probes().map(node=>node.props.onLayout);

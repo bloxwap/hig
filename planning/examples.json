@@ -522,7 +522,7 @@
       "slug": "navigation",
       "entry": "navigation",
       "family": "navigation",
-      "web": "<C.Navigation label='Sample navigation' items={[{label:'Overview',href:'#overview',active:true},{label:'Activity',href:'#activity'}]}/>",
+      "web": "<C.Stack><C.Navigation label='Sample navigation' items={[{label:'Overview',href:'#overview',active:true},{label:'Activity',href:'#activity'}]}/><h3 id='overview'>Overview</h3><C.Text>Sample portfolio balance.</C.Text><h3 id='activity'>Activity</h3><C.Text>Recent sample transactions.</C.Text></C.Stack>",
       "native": "<C.Navigation label='Sample navigation' items={[{id:'overview',label:'Overview',active:true,onNavigate:()=>setMessage('Overview requested')},{id:'activity',label:'Activity',onNavigate:()=>setMessage('Activity requested')}]}/>",
       "nativeSupport": "renderer",
       "states": [
@@ -1951,8 +1951,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.1' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.9.1')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.1' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.9.2')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"

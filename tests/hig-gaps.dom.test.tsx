@@ -2,7 +2,7 @@
 /** Gaps the app conversions found: small optional props on shared components (web). */
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen} from '@testing-library/react';
+import {act,cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {Field,Input} from '../packages/hig/react/src/field';
@@ -53,9 +53,13 @@ describe('AssetBalanceRow trailingInteractive (web parity)',()=>{
 describe('Spinner hideLabel',()=>{
  it('draws the ring alone while the label stays the status text',async()=>{
   const {Spinner}=await import('../packages/hig/react/src/status');
+  vi.useFakeTimers();
   const {rerender}=render(<HIGProvider><Spinner label='Loading quote' hideLabel/></HIGProvider>);
   const status=screen.getByRole('status');expect(status.className).toBe('hig-spinner');
   const hidden=status.querySelector('.hig-sr-only')!;expect(hidden.textContent).toBe('Loading quote…');expect(status.textContent).toBe('Loading quote…');
+  act(()=>vi.advanceTimersByTime(999));expect(status.querySelector('.hig-spinner-indicator')).toBeNull();
+  act(()=>vi.advanceTimersByTime(1));expect(status.querySelector('.hig-spinner-indicator')).toBeTruthy();
+  vi.useRealTimers();
   rerender(<HIGProvider><Spinner label='Loading quote'/></HIGProvider>);
   expect(screen.getByRole('status').querySelector('.hig-sr-only')).toBeNull();expect(screen.getByRole('status').textContent).toBe('Loading quote…');
  });

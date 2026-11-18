@@ -21,7 +21,7 @@ const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const flat=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
 const button=(view,id)=>view.findAll(node=>node.props.testID===id&&'onPress' in node.props)[0];
-const readings=view=>host(view,'reward-rows').children.map(row=>row.props.accessibilityLabel);
+const readings=(view,prefix='reward')=>host(view,`${prefix}-rows`).findAll(node=>typeof node.type==='string'&&node.props.testID?.startsWith(`${prefix}-row-`)&&node.props.accessible===true).map(row=>row.props.accessibilityLabel);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
 it('measures the share of the goal reached, clamped, and unknown without a usable amount or goal',()=>{
@@ -99,10 +99,10 @@ describe('host slots (Unreleased)',()=>{
   const view=mount({testID:'board',entries:prizes,scoreOptions:{style:'currency',currency:'USD',maximumFractionDigits:0},you:{id:'me',rank:9,name:'you',score:3},youLabel:'Your rank',status:"You're not ranked yet"});
   // The block's testID prefixes every test ID inside it.
   expect(host(view,'board-you').props.accessibilityLabel).toBe('Your rank, 9, you, $3');
-  expect(host(view,'board-rows').children.map(row=>row.props.accessibilityLabel)).toEqual(['1, Ada, $1,000','2, Bo, 1,090,779 vol, $12.50']);
+  expect(readings(view,'board')).toEqual(['1, Ada, $1,000','2, Bo, 1,090,779 vol, $12.50']);
   const detail=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='board-row-w2-detail');expect(detail.props).toMatchObject({value:1090779,suffix:' vol',tone:'muted'});
   const status=host(view,'board-status');expect(text(status)).toBe("You're not ranked yet");expect(status.props.accessibilityLiveRegion).toBe('polite');
-  const ids=host(view,'board').children.map(child=>child.props.testID);expect(ids.indexOf('board-you')).toBeLessThan(ids.indexOf('board-status'));expect(ids.indexOf('board-status')).toBeLessThan(ids.indexOf('board-list'));
+  const ids=host(view,'board').findAll(child=>typeof child.type==='string').map(child=>child.props.testID);expect(ids.indexOf('board-you')).toBeLessThan(ids.indexOf('board-status'));expect(ids.indexOf('board-status')).toBeLessThan(ids.indexOf('board-list'));
   expect(has(view,'reward-you')).toBe(false);expect(has(view,'board-header')).toBe(true);expect(has(view,'board-title')).toBe(true);
  });
  it('shows skeleton rows while loading, pagination under the list and a host verified mark',()=>{
@@ -144,7 +144,7 @@ describe('host slots (Unreleased)',()=>{
  });
  it('animates a host-formatted detail (Unreleased)',()=>{
   const view=mount({entries:[{id:'a',rank:1,name:'Ada',detail:{value:1090779,formattedValue:'1.090.779',suffix:' vol'},score:5}]});
-  expect(host(view,'reward-rows').children[0].props.accessibilityLabel).toBe('1, Ada, 1.090.779 vol, 5');
+  expect(host(view,'reward-row-a').props.accessibilityLabel).toBe('1, Ada, 1.090.779 vol, 5');
   const flow=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='reward-row-a-detail');expect(flow.props).toMatchObject({formattedValue:'1.090.779',animateFormatted:true});
  });
  it('accepts host elements in the headline',()=>{
@@ -176,4 +176,80 @@ it('rolls the drawing clock to expiry while showing the viewer’s streak multip
   act(()=>jest.advanceTimersByTime(500));expect(timer().props.value).toBe(1);
   act(()=>jest.advanceTimersByTime(1000));expect(text(view)).toContain(drawing.endedLabel);
  }finally{jest.useRealTimers();}
+});
+
+it('skips all standings data while loading the list',()=>{
+ const scores=jest.fn(()=>1);
+ const entries=Array.from({length:10000},(_,i)=>({id:String(i),rank:i+1,name:'Trader '+i,get score(){return scores();}}));
+ mount({entries,loading:true});
+ expect(scores).not.toHaveBeenCalled();
+});
+
+it('windows a large sticky leaderboard with the pinned rank before the standings and pages after them',()=>{
+ const {VirtualizedList}=require('react-native');
+ const entries=Array.from({length:10000},(_,i)=>({id:String(i),rank:i+1,name:'Trader '+i,score:i}));
+ const tree=mount({stickyHeader:true,entries,you:entries[0],promo:pool,pagination:{label:'Page 1'},listTitle:'Rank',testID:'standings'});
+ const list=tree.findByType(VirtualizedList);
+ expect(list.props.data).toBe(entries);
+ expect(list.props.getItemCount(entries)).toBe(10001);
+ expect(list.props.getItem(entries,0)).toBe(null);
+ expect(list.props.getItem(entries,10000)).toBe(entries[9999]);
+ expect(list.props.stickyHeaderIndices).toEqual([0]);
+ expect(has(tree,'standings-promo')).toBe(true);
+ expect(has(tree,'standings-you')).toBe(true);
+ expect(has(tree,'standings-row-0')).toBe(true);
+ expect(has(tree,'standings-row-9999')).toBe(false);
+ expect(has(tree,'standings-page')).toBe(true);
+ const last=list.props.renderItem({item:entries[9999],index:10000});
+ expect(last.props.children.props.entry).toBe(entries[9999]);
+});
+
+it('uses the host list as the only scroller for a headerless pane, including while loading',()=>{
+ const {FlatList}=require('react-native');
+ const listComponent=props=>h(FlatList,props);
+ const many=Array.from({length:10000},(_,i)=>({id:String(i),name:'Trader '+i,rank:i+1,score:i}));
+ const props={header:false,stickyHeader:true,listComponent,entries:many,promo:pool,testID:'hosted'};
+ let view=mount({...props,loading:true});
+ let list=view.findByType(listComponent);
+ expect(list.props.data).toEqual([null]);
+ expect(list.props.ListHeaderComponent).toBeNull();
+ expect(list.props.stickyHeaderIndices).toBeUndefined();
+ expect(has(view,'hosted-loading')).toBe(true);
+ view=mount(props);list=view.findByType(listComponent);
+ expect(view.findAllByType(FlatList)).toHaveLength(1);
+ expect(list.props.data.at(-1)).toBe(many.at(-1));
+ expect(has(view,'hosted-row-0')).toBe(true);
+ expect(has(view,'hosted-row-9999')).toBe(false);
+});
+
+it('leaves unchanged standings alone when the leaderboard status changes',()=>{
+ const reads=jest.fn(()=>100);
+ const entries=Array.from({length:40},(_,i)=>({id:String(i),name:'Trader',rank:i+1,get score(){return reads();}}));
+ mount({entries,you:entries[0],status:'Live'});
+ expect(reads).toHaveBeenCalled();
+ reads.mockClear();
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(RewardBlock,{...base,entries,you:entries[0],status:'Updated'}))));
+ expect(reads).not.toHaveBeenCalled();
+});
+
+it('reads only the changed standing when a sticky leaderboard refreshes',()=>{
+ const reads=new Set();
+ const makeEntry=(index,score)=>({id:String(index),name:'Trader '+index,rank:index+1,get score(){reads.add(index);return score;}});
+ const entries=Array.from({length:1000},(_,i)=>makeEntry(i,i));
+ const tree=mount({stickyHeader:true,entries});
+ reads.clear();
+ const next=entries.slice();next[2]=makeEntry(2,77);
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(RewardBlock,{...base,stickyHeader:true,entries:next}))));
+ expect([...reads]).toEqual([2]);
+ expect(host(tree,'reward-row-2').props.accessibilityLabel).toContain('77');
+});
+
+it('leaves standings untouched when the host changes its feedback handler',()=>{
+ const read=jest.fn(i=>'Trader '+i);
+ const rows=Array.from({length:30},(_,i)=>({id:String(i),rank:i+1,get name(){return read(i);},score:i}));
+ const block=h(RewardBlock,{title:'Leaderboard',entries:rows});
+ act(()=>{root=render(h(HIGProvider,{reducedMotion:true},block));});
+ read.mockClear();
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true,onAccepted:jest.fn()},block)));
+ expect(read).not.toHaveBeenCalled();
 });

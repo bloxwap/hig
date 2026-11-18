@@ -108,3 +108,207 @@ it('hides units per asset, makes a row plain, passes the units format, and headl
  // Without the new fields the rows take the same props as before.
  expect(byId('usdc').props.headline).toBeUndefined();
 });
+it('updates the total independently of holdings and refreshes rows when the holdings change',()=>{
+ const value=jest.fn(()=>20);
+ const holdings=[{...sol,get value(){return value();}}];
+ mount({assets:holdings,balance:20});
+ expect(value).toHaveBeenCalled();
+ value.mockClear();
+ const update=(assets,balance)=>act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{assets,balance}))));
+ update(holdings,21);
+ expect(total(root.root).props.value).toBe(21);
+ expect(value).not.toHaveBeenCalled();
+ update([hype],759);
+ expect(rows(root.root).map(node=>node.props.name)).toContain(hype.name);
+});
+
+it('windows a large sticky portfolio and preserves the summary and pinned holding',()=>{
+ const portfolio=Array.from({length:1000},(_,i)=>({id:String(i),name:'Holding '+i,symbol:i===500?'USDC':'A'+i,value:i}));
+ const select=jest.fn(),view=mount({assets:portfolio,stickyHeader:true,onAssetSelect:select});
+ const list=view.findByType(require('react-native').VirtualizedList);
+ expect(list.props.getItemCount(list.props.data)).toBe(1001);
+ expect(list.props.getItem(list.props.data,0)).toBeNull();
+ expect(list.props.data.every(asset=>portfolio[Number(asset.id)]===asset)).toBe(true);
+ expect(list.props.getItem(list.props.data,1)).toBe(portfolio[500]);
+ expect(rows(view).slice(0,2).map(row=>row.props.testID)).toEqual(['account-asset-500','account-asset-999']);
+ expect(rows(view).length).toBeLessThan(30);
+ expect(has(view,'account-balance')).toBe(true);
+ expect(list.props.stickyHeaderIndices).toEqual([0]);
+ act(()=>rows(view)[1].props.onSelect());
+ expect(select).toHaveBeenCalledWith(portfolio[999]);
+});
+
+it('windows holdings across sections and preserves section totals, order and selection',()=>{
+ const assets=Array.from({length:40},(_,i)=>({id:String(i),name:'Holding '+i,symbol:'A'+i,value:i,balance:i}));
+ const sections=[
+  {id:'first',title:'First',pinnedId:'3',total:100,assets:assets.slice(0,2).concat(assets[3])},
+  {id:'empty',title:'Hidden',assets:[]},
+  ...Array.from({length:25},(_,i)=>({id:'wallet'+i,title:'Wallet '+i,pinnedId:'7',order:'given',assets})),
+ ];
+ const select=jest.fn(),view=mount({sections,stickyHeader:true,onAssetSelect:select});
+ const list=view.findByType(require('react-native').VirtualizedList);
+ expect(rows(view).length).toBeLessThan(30);
+ const count=list.props.getItemCount(list.props.data);
+ expect(count).toBe(1+26+1003);
+ const allKeys=Array.from({length:count},(_,i)=>list.props.keyExtractor(list.props.getItem(list.props.data,i)));
+ expect(new Set(allKeys).size).toBe(count);
+ const pairs=[[undefined,'abc'],['','abc'],['a','bc'],['ab','c'],['a:',':b'],['a::','b']];
+ const keys=pairs.map(([sectionId,id])=>list.props.keyExtractor({kind:'asset',sectionId,asset:{id}}));
+ expect(new Set(keys).size).toBe(pairs.length);
+ expect(has(view,'account-section-empty-title')).toBe(false);
+ expect(all(view,'account-section-wallet0-title').some(node=>node.props.accessibilityRole==='header')).toBe(true);
+ const sectionTotal=id=>all(view,'account-section-'+id+'-total').find(node=>node.type===AnimatedNumberReadout).props.value;
+ expect(sectionTotal('first')).toBe(100);
+ expect(sectionTotal('wallet0')).toBe(780);
+ expect(total(view).props.value).toBe(19600);
+ expect(rows(view).slice(0,5).map(row=>row.props.testID)).toEqual(['account-section-first-asset-3','account-section-first-asset-1','account-section-first-asset-0','account-section-wallet0-asset-7','account-section-wallet0-asset-0']);
+ act(()=>rows(view)[3].props.onSelect());
+ expect(select).toHaveBeenCalledWith(assets[7],sections[2]);
+});
+
+it('reads each holding value once when ranking and skips it for host order',()=>{
+ const read=jest.fn(i=>i%3===0?null:i);
+ const holdings=Array.from({length:1000},(_,i)=>({id:String(i),symbol:'A',name:'Asset '+i,get value(){return read(i);}}));
+ const {rest}=accountRows(holdings);
+ expect(rest[0]).toBe(holdings[998]);
+ expect(read).toHaveBeenCalledTimes(holdings.length);
+ read.mockClear();
+ expect(accountRows(holdings,'USDC',{order:'given'}).rest).toEqual(holdings);
+ expect(read).not.toHaveBeenCalled();
+});
+
+it.each([false,true])('keeps visible holdings when the selection handler changes (sticky=%s)',stickyHeader=>{
+ const read=jest.fn(i=>i);
+ const holdings=Array.from({length:stickyHeader?1000:40},(_,i)=>({id:String(i),symbol:'A',name:'Asset '+i,get value(){return read(i);}}));
+ const section={id:'wallet',title:'Wallet',assets:holdings},sections=[section];
+ const first=jest.fn(),second=jest.fn();
+ const update=onAssetSelect=>act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{sections,stickyHeader,onAssetSelect}))));
+ mount({sections,stickyHeader,onAssetSelect:first});
+ read.mockClear();
+ update(second);
+ expect(read).not.toHaveBeenCalled();
+ act(()=>rows(root.root)[0].props.onSelect());
+ expect(second).toHaveBeenCalledWith(holdings[holdings.length-1],section);
+ expect(first).not.toHaveBeenCalled();
+ update(undefined);
+ expect(rows(root.root)[0].props.onSelect).toBeUndefined();
+});
+
+it('reuses each section valuation for its heading and the account balance',()=>{
+ const read=jest.fn(()=>9);
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Token '+i,symbol:'T',get value(){return read();}}));
+ const sections=[{id:'wallet',title:'Wallet',order:'given',assets}];
+ const view=mount({sections,stickyHeader:true});
+ expect(read).toHaveBeenCalledTimes(assets.length+rows(view).length);
+ expect(total(view).props.value).toBe(9000);
+ const update=props=>act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{...props,stickyHeader:true}))));
+ read.mockClear();
+ update({sections,balance:20});
+ expect(read).not.toHaveBeenCalled();
+ update({sections:[{...sections[0],assets:[{...usdc,value:13}]}]});
+ expect(total(root.root).props.value).toBe(13);
+ expect(all(root.root,'account-section-wallet-total').find(node=>node.type===AnimatedNumberReadout).props.value).toBe(13);
+});
+
+it('defers an offscreen section valuation when a sticky account has an explicit balance',()=>{
+ const read=jest.fn(()=>25);
+ const assets=Array.from({length:100},(_,i)=>({id:String(i),name:'Asset '+i,symbol:'A',value:i}));
+ const sections=[{id:'first',title:'First',order:'given',assets},{id:'last',title:'Last',order:'given',assets:[{id:'last',name:'Last',symbol:'L',get value(){return read();}}]}];
+ const view=mount({sections,stickyHeader:true,balance:42});
+ expect(total(view).props.value).toBe(42);
+ expect(has(view,'account-section-last-title')).toBe(false);
+ expect(read).not.toHaveBeenCalled();
+});
+
+it.each([false,true])('updates a wallet without reading holdings in an unchanged wallet (sticky=%s)',stickyHeader=>{
+ const read=jest.fn(i=>i);
+ const assets=Array.from({length:stickyHeader?1000:40},(_,i)=>({id:String(i),name:'Holding '+i,symbol:'A',get value(){return read(i);}}));
+ const stable={id:'stable',title:'Stable',assets};
+ const wallet={id:'wallet',title:'Wallet',assets:[sol],total:10};
+ const view=mount({sections:[stable,wallet],stickyHeader});
+ const before=total(view).props.value;
+ const update=sections=>act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{sections,stickyHeader}))));
+ expect(read).toHaveBeenCalled();
+ read.mockClear();
+ update([stable,{...wallet,total:20}]);
+ expect(read).not.toHaveBeenCalled();
+ expect(total(root.root).props.value).toBe(before+10);
+ update([{...stable,pinnedId:'8'},wallet]);
+ expect(rows(root.root)[0].props.name).toBe('Holding 8');
+});
+
+it.each([true,false])('updates an explicit wallet total without ranking unchanged holdings again (sticky=%s)',stickyHeader=>{
+ const read=jest.fn(i=>i),select=jest.fn();
+ const assets=Array.from({length:stickyHeader?1000:40},(_,i)=>({id:String(i),name:'Token '+i,symbol:'T',get value(){return read(i);}}));
+ const wallet={id:'wallet',title:'Wallet',total:20,assets};
+ mount({sections:[wallet],stickyHeader,onAssetSelect:select});
+ read.mockClear();
+ const updated={...wallet,total:30};
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{sections:[updated],stickyHeader,onAssetSelect:select}))));
+ expect(read).not.toHaveBeenCalled();
+ expect(total(root.root).props.value).toBe(30);
+ act(()=>rows(root.root)[0].props.onSelect());
+ expect(select.mock.calls[0][1]).toBe(updated);
+});
+
+it('keeps the virtualized ledger data when wallet metadata changes and updates it when holdings move',()=>{
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),symbol:'T',name:'Token '+i,value:i}));
+ const wallet={id:'wallet',title:'Wallet',total:1,order:'given',assets};
+ const another={id:'other',title:'Other',total:2,assets:[usdc]};
+ mount({sections:[wallet,another],stickyHeader:true});
+ const data=()=>root.root.findByType(require('react-native').VirtualizedList).props.data;
+ const update=sections=>act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{sections,stickyHeader:true}))));
+ const first=data();
+ const changed={...wallet,title:'Updated wallet',total:8};
+ update([changed,another]);
+ expect(data().filter((cell,index)=>cell!==first[index])).toHaveLength(0);
+ expect(data()===first).toBe(true);
+ expect(text(all(root.root,'account-section-wallet-title')[0])).toBe('Updated wallet');
+ expect(total(root.root).props.value).toBe(10);
+ update([another,{...changed,pinnedId:'900'}]);
+ expect(data()===first).toBe(false);
+ expect(rows(root.root).slice(0,2).map(row=>row.props.name)).toEqual(['USD Coin','Token 900']);
+});
+
+it('matches value-first ordering for fractional and extreme values, unknowns and locale-equivalent names',()=>{
+ const names=['é','e\u0301','ß','SS','한','東京','A','a','A2','😀'];
+ const values=[Number.MAX_VALUE,-Number.MAX_VALUE,Number.MIN_VALUE,-0,0,1.25,-4.5,null,NaN,Infinity,-Infinity];
+ const holdings=Array.from({length:441},(_,i)=>({id:String(i),symbol:'A',name:names[(i*7)%names.length],value:values[(i*5)%values.length]}));
+ const expected=[...holdings].sort((a,b)=>{
+  const x=assetValue(a),y=assetValue(b);
+  return x===y?a.name.localeCompare(b.name):x===null?1:y===null?-1:y-x;
+ });
+ const actual=accountRows(holdings).rest;
+ expect(actual.map(asset=>asset.id)).toEqual(expected.map(asset=>asset.id));
+ expect(actual.every((asset,i)=>asset===expected[i])).toBe(true);
+});
+
+it('reuses a calculated wallet balance after an explicit override clears',()=>{
+ const read=jest.fn(()=>2);
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Asset '+i,symbol:'T',get value(){return read();}}));
+ const props={assets,order:'given',stickyHeader:true};
+ const view=mount(props);
+ const update=balance=>act(()=>root.update(h(HIGProvider,{reducedMotion:true},h(AccountBlock,{...props,balance}))));
+ update(42);
+ read.mockClear();
+ update(undefined);
+ expect(total(view).props.value).toBe(2000);
+ expect(read).not.toHaveBeenCalled();
+});
+
+it('ranks a distant ledger only when the list requests one of its holdings',()=>{
+ const read=jest.fn(i=>i);
+ const assets=Array.from({length:1000},(_,i)=>({id:String(i),name:'Token '+i,symbol:'T',get value(){return read(i);}}));
+ const first=assets.map((_,i)=>({id:String(i),name:'Spot '+i,symbol:'S',value:i}));
+ const view=mount({stickyHeader:true,balance:42,sections:[{id:'spot',title:'Spot',assets:first},{id:'funding',title:'Funding',assets}]});
+ expect(read).not.toHaveBeenCalled();
+ const {data,getItem}=view.findByType(require('react-native').VirtualizedList).props;
+ expect(getItem(data,1002).kind).toBe('heading');
+ expect(read).not.toHaveBeenCalled();
+ const top=getItem(data,1003);
+ expect(top.asset).toBe(assets[999]);
+ expect(getItem(data,1003)).toBe(top);
+ expect(read).toHaveBeenCalledTimes(1000);
+ expect(getItem(data,1004).asset).toBe(assets[998]);
+ expect(read).toHaveBeenCalledTimes(1000);
+});

@@ -1,3 +1,4 @@
+import {appendTrailSample} from '../packages/hig/chart/src/chart-renderer';
 import {it,expect} from 'vitest';
 import {ALTIMETER_FLOW_PX,easeInOut,gridPhase,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,tickSpacingFor,trailPoints} from '../packages/hig/chart/src/altimeter-model';
 
@@ -42,6 +43,14 @@ it('retargets an unfinished price move without changing its current position',()
  expect(previous).toBeCloseTo(99.98);
 });
 
+it('lands on the exact price and starts the next move there after idle frames',()=>{
+ const tween=priceTween();tween.update(1e16,0);tween.update(.01,10);
+ expect(tween.update(.01,310)).toBe(.01);
+ expect(tween.update(.01,900)).toBe(.01);
+ expect(tween.update(.02,1000)).toBe(.01);
+ expect(tween.update(.02,1150)).toBeCloseTo(.015,8);
+});
+
 it('carries forward velocity through streaming updates instead of stopping on every packet',()=>{
  const tween=priceTween();tween.update(100,0);tween.update(100.04,10);
  const before=tween.update(100.04,159.99),at=tween.update(100.04,160);
@@ -71,4 +80,34 @@ it('the smoothed trail passes through every sample and never overshoots a price'
  expect(calls[0]).toEqual([0,10]);expect(calls.slice(1).map(c=>c.slice(-2))).toEqual(points.slice(1).map(p=>[...p]));
  for(const [i,call] of calls.slice(1).entries()){const low=Math.min(points[i][1],points[i+1][1]),high=Math.max(points[i][1],points[i+1][1]);for(const y of [call[1],call[3]]){expect(y).toBeGreaterThanOrEqual(low-1e-9);expect(y).toBeLessThanOrEqual(high+1e-9);}}
  calls.length=0;smoothTrail([[0,1],[5,2]],sink);expect(calls).toEqual([[0,1],[5,2]]);
+});
+
+it('seeds a flat trail and retains the left-edge neighbor when the viewport shrinks',()=>{
+ const ticks:{t:number;p:number}[]=[];
+ appendTrailSample(ticks,{t:20,p:5},0);
+ expect(ticks).toEqual([{t:0,p:5},{t:20,p:5}]);
+ for(const t of [40,60,80,80,100])appendTrailSample(ticks,{t,p:t/2},0);
+ const neighbor=ticks[3];
+ appendTrailSample(ticks,{t:120,p:60},80);
+ expect(ticks[0]).toBe(neighbor);
+ expect(ticks.map(tick=>tick.t)).toEqual([60,80,80,100,120]);
+ appendTrailSample(ticks,{t:200,p:100},180);
+ expect(ticks.map(tick=>tick.t)).toEqual([120,200]);
+});
+
+it('compacts horizontal runs between their endpoints without changing neighboring curves',()=>{
+ const ticks=[0,0,0,3,4,4,4,4,1,1,1].map((p,i)=>({t:i*200,p}));
+ const full=trailPoints(ticks,2000,0,100,p=>p);
+ const compact=trailPoints(ticks,2000,0,100,p=>p,true);
+ expect(compact).toEqual([full[0],full[2],full[3],full[4],full[7],full[8],full[10]]);
+ const sloped=(points:typeof full)=>{
+  const curves:number[][]=[];let previous=points[0][1];
+  smoothTrail(points,{moveTo(){},lineTo(){},bezierCurveTo(...args){
+   if(args[5]!==previous)curves.push(args);
+   previous=args[5];
+  }});
+  return curves;
+ };
+ expect(sloped(compact)).toEqual(sloped(full));
+ expect(trailPoints(ticks.slice(0,3),400,7,20,p=>p,true)).toEqual([[7,0],[20,0]]);
 });

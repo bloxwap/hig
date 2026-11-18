@@ -1,8 +1,8 @@
 /** Native HIGProvider numberFormat: the host's money presentation under every currency format the blocks, rows, bars and readouts draw. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
-const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {Usd,Percent}=require('../../packages/hig/native/src/data');
+const {HIGProvider,useNumberLocale,usePresentNumber}=require('../../packages/hig/native/src/provider');
+const {NumberReadout,Usd,Percent}=require('../../packages/hig/native/src/data');
 const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
 const {AccountBlock}=require('../../packages/hig/native/src/account-block');
 const {AssetBalanceRow}=require('../../packages/hig/native/src/asset-balance-row');
@@ -29,6 +29,21 @@ const scene=()=>[
  h(TokenActionBlock,{key:'token',symbol:'HYPE',name:'Hyperliquid',value:759,assets:[],chains:[],actions:[]}),
  h(BarPnl,{key:'bar',entry:100,mark:110,labels:{liquidation:'L',mark:'M',entry:'E'},testID:'bar'}),
 ];
+it('updates numeric subscribers independently',()=>{
+ const locales=[],displays=[];
+ function Locale(){locales.push(useNumberLocale());return null;}
+ function Display(){displays.push(usePresentNumber()({style:'currency',currency:'USD'}).currencyDisplay);return null;}
+ const children=h(React.Fragment,null,h(Locale),h(Display));
+ const provider=(locale,props)=>h(HIGProvider,{locale,reducedMotion:true,...props},children);
+ act(()=>{root=render(provider('en-US'));});
+ act(()=>root.update(provider('en-US',{messages:{stale:'Delayed'}})));
+ expect(locales).toEqual(['en-US']);expect(displays).toEqual([undefined]);
+ const numberFormat={currencyDisplay:'code'};
+ act(()=>root.update(provider('en-US',{numberFormat})));
+ expect(locales).toEqual(['en-US']);expect(displays).toEqual([undefined,'code']);
+ act(()=>root.update(provider('fr-FR',{numberFormat})));
+ expect(locales).toEqual(['en-US','fr-FR']);expect(displays).toEqual([undefined,'code']);
+});
 it('leaves the formats alone without the setting: French dollars read $US',()=>{
  const view=mount(scene());const all=strings(view);
  expect(all).toContain('12,50 $US');expect(all).toContain('Total balance: 1 042,09 $US');expect(all).toContain('759,00 $US');
@@ -72,6 +87,8 @@ describe('numberFormat.locale, formattedValue figures and market colours (Unrele
   const model=createNumberReelModel(1234.5,'en-US',undefined,'1 234,50 $','ltr',true);
   expect(model.canonical).toBe('1 234,50 $');
   expect(model.tokens.map(token=>token.kind==='digit'?`${token.key}=${token.value}`:token.value)).toEqual(['digit:5=1',' ','digit:4=2','digit:3=3','digit:2=4',',','digit:1=5','digit:0=0',' $']);
+  const mixed=createFormattedReelModel('📈 ١2٣4','ar-EG','ltr');
+  expect(mixed.tokens.map(token=>[token.key,token.value])).toEqual([['static:0','📈 ١'],['digit:1','2'],['static:2','٣'],['digit:0','4']]);
   expect(createFormattedReelModel('—','en-US','ltr')).toBeNull();expect(createFormattedReelModel('12','en-US','rtl')).toBeNull();
   expect(createNumberReelModel(null,'en-US',undefined,'12','ltr',true)).toBeNull();
  });
@@ -85,4 +102,31 @@ describe('numberFormat.locale, formattedValue figures and market colours (Unrele
   view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:90,labels})],{marketColors:{up:'#ff3b30',down:'#0a84ff'}});expect(style(move()).backgroundColor).toBe('#0a84ff');
   view=mount([h(Bar,{key:'bar',testID:'bar',entry:100,mark:110,labels})]);expect(style(move()).backgroundColor).toBe(nativeSrgb.positive);
  });
+});
+
+it('formats only changed readouts when a quote moves',()=>{
+ const touched=new Set();
+ const options=Array.from({length:24},(_,index)=>({get maximumFractionDigits(){touched.add(index);return 2;}}));
+ const scene=first=>h(React.Fragment,null,...options.map((format,index)=>
+  h([NumberReadout,Usd,Percent][index%3],{key:index,options:format,value:index===0?first:index,testID:'quote-'+index})));
+ act(()=>{root=render(scene(10));});
+ expect(touched.size).toBe(24);
+ touched.clear();
+ act(()=>root.update(scene(11)));
+ expect([...touched]).toEqual([0]);
+ expect(text(root.root.findByProps({testID:'quote-0'}))).toBe('11');
+});
+
+it('keeps numeric work scoped to readout settings across nested providers',()=>{
+ const touched=new Set();
+ const quotes=Array.from({length:24},(_,index)=>h(NumberReadout,{key:index,stale:true,value:1234.5,testID:'quote-'+index,options:{get maximumFractionDigits(){touched.add(index);return 2;}}}));
+ const scene=(compact,locale,stale)=>h(HIGProvider,{density:compact?'compact':'comfortable',locale,messages:{stale}},h(HIGProvider,null,quotes));
+ act(()=>{root=render(scene(false,'en-US','Old'));});
+ expect(touched.size).toBe(24);
+ touched.clear();
+ act(()=>root.update(scene(true,'en-US','Old')));
+ expect(touched.size).toBe(0);
+ act(()=>root.update(scene(true,'de-DE','Alt')));
+ expect(touched.size).toBe(24);
+ expect(text(root.root.findByProps({testID:'quote-0'}))).toBe('1.234,5 Alt');
 });

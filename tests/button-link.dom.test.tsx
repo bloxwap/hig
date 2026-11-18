@@ -33,7 +33,7 @@ describe('Button href, glow and label wrapping; Badge dot',()=>{
   await userEvent.click(link);expect(onClick).not.toHaveBeenCalled();
   rerender(<HIGProvider onAccepted={accepted}><Button href='/trade' busy busyLabel='Working' onClick={onClick}>Trade</Button></HIGProvider>);
   link=screen.getByRole('link',{name:'Trade · Working'});
-  expect(link.getAttribute('aria-busy')).toBe('true');expect(link.querySelector('.hig-button-spinner')).not.toBeNull();expect(link.hasAttribute('href')).toBe(false);
+  expect(link.getAttribute('aria-busy')).toBe('true');expect(link.querySelector('.hig-button-spinner')).toBeNull();expect(link.hasAttribute('href')).toBe(false);
   await userEvent.click(link);expect(onClick).not.toHaveBeenCalled();expect(accepted).not.toHaveBeenCalled();
  });
  it('without href stays a button, and IconButton has no href',()=>{

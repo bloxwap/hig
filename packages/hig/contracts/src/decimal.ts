@@ -16,12 +16,31 @@ function format(n:bigint,scale:number){const raw=n.toString().padStart(scale+1,'
 export function decimalMultiply(a:string|number,b:string|number,places=100){const x=parts(a),y=parts(b);return decimal(format(x.n*y.n,x.scale+y.scale),places);}
 export function decimalDivide(a:string|number,b:string|number,places=18){const x=parts(a),y=parts(b);if(!y.n)return '0';if(!Number.isInteger(places)||places<0||places>100)throw new RangeError('Invalid decimal precision');return format(x.n*10n**BigInt(y.scale+places)/(y.n*10n**BigInt(x.scale)),places);}
 export function decimalCompare(a:string|number,b:string|number){const x=parts(a),y=parts(b),left=x.n*10n**BigInt(y.scale),right=y.n*10n**BigInt(x.scale);return left<right?-1:left>right?1:0;}
+interface DecimalGlyphs {separator:string;digits:readonly string[]}
+const localeGlyphs=new Map<string,DecimalGlyphs|null>();
+let glyphConstructor:typeof Intl.NumberFormat|undefined;
+
+function decimalGlyphs(locale:string):DecimalGlyphs|null{
+ const ctor=Intl.NumberFormat;
+ if(ctor!==glyphConstructor){localeGlyphs.clear();glyphConstructor=ctor;}
+ const cached=localeGlyphs.get(locale);
+ if(cached!==undefined)return cached;
+ const formatter=new ctor(locale,{useGrouping:false,maximumFractionDigits:1});
+ let glyphs:DecimalGlyphs|null=null;
+ if(typeof formatter.formatToParts==='function'){
+  const separator=formatter.formatToParts(1.1).find(part=>part.type==='decimal')?.value??'.';
+  const digits=Array.from({length:10},(_,digit)=>formatter.format(digit));
+  glyphs={separator,digits};
+ }
+ if(localeGlyphs.size>=64)localeGlyphs.delete(localeGlyphs.keys().next().value!);
+ localeGlyphs.set(locale,glyphs);
+ return glyphs;
+}
+
 /** Localizes an editor's decimal digits without converting the amount to a floating-point number. */
 export function localizeDecimal(value:string,locale:string):string{
  try{
-  const formatter=new Intl.NumberFormat(locale,{useGrouping:false,maximumFractionDigits:1});
-  const separator=formatter.formatToParts(1.1).find(part=>part.type==='decimal')?.value??'.';
-  const digits=Array.from({length:10},(_,digit)=>formatter.format(digit));
-  return value.replace(/[0-9.]/g,char=>char==='.'?separator:digits[Number(char)]);
+  const glyphs=decimalGlyphs(locale);
+  return glyphs?value.replace(/[0-9.]/g,char=>char==='.'?glyphs.separator:glyphs.digits[Number(char)]):value;
  }catch{return value;}
 }

@@ -12,6 +12,20 @@ function mount(element){act(()=>{root=create(element);});return root.root;}
 it('native busy button exposes blocked action/progress state',()=>{const tree=mount(React.createElement(Button,{busy:true},'Confirm'));const button=tree.findAll(n=>n.props.accessibilityRole&&typeof n.props.onPress==='function')[0];expect(button.props.disabled).toBe(true);expect(button.props.accessibilityState).toEqual({disabled:true,busy:true});});
 it('native checkbox updates state on accepted activation',()=>{const change=jest.fn();const tree=mount(React.createElement(Checkbox,{label:'Sound',onCheckedChange:change}));act(()=>tree.findAll(n=>n.props.accessibilityRole&&typeof n.props.onPress==='function')[0].props.onPress());expect(change).toHaveBeenCalledWith(true);expect(tree.findAll(n=>n.props.accessibilityRole&&typeof n.props.onPress==='function')[0].props.accessibilityState.checked).toBe(true);});
 it('native controlled radio ignores repeated current values',()=>{const change=jest.fn();const tree=mount(React.createElement(RadioGroup,{label:'Side',value:'buy',onValueChange:change,options:[{value:'buy',label:'Buy'},{value:'sell',label:'Sell'}]}));act(()=>tree.findAll(n=>n.props.accessibilityRole==='radio'&&typeof n.props.onPress==='function')[0].props.onPress());expect(change).not.toHaveBeenCalled();act(()=>tree.findAll(n=>n.props.accessibilityRole==='radio'&&typeof n.props.onPress==='function')[1].props.onPress());expect(change).toHaveBeenCalledWith('sell');});
+it('native radio selection leaves other labels untouched and uses the latest change handler',()=>{
+ const read=jest.fn(index=>String(index));
+ const options=Array.from({length:50},(_,index)=>({value:String(index),get label(){return read(index);}}));
+ const oldChange=jest.fn(),newChange=jest.fn();
+ const group=(value,onValueChange)=>React.createElement(RadioGroup,{label:'Choice',options,value,onValueChange});
+ const tree=mount(group('0',oldChange));
+ read.mockClear();
+ act(()=>root.update(group('1',newChange)));
+ expect(read.mock.calls.filter(([index])=>index>1)).toHaveLength(0);
+ const radio=tree.findAll(n=>n.props.accessibilityRole==='radio'&&n.props.accessibilityLabel==='2'&&typeof n.props.onPress==='function')[0];
+ act(()=>radio.props.onPress());
+ expect(newChange).toHaveBeenCalledWith('2');
+ expect(oldChange).not.toHaveBeenCalled();
+});
 it('native amount entry keeps raw decimal string and labeled error hint',()=>{const tree=mount(React.createElement(Field,{label:'Amount',description:'Available: 1 BTC',error:'Precision exceeded'},React.createElement(Input,{value:'0,001',keyboardType:'decimal-pad'})));const input=tree.findByType(TextInput);expect(input.props.value).toBe('0,001');expect(input.props.accessibilityLabel).toBe('Amount');expect(input.props.accessibilityHint).toContain('Precision exceeded');expect(input.props.keyboardType).toBe('decimal-pad');});
 it('native Modal handles Android back without DOM imports',()=>{const close=jest.fn();const tree=mount(React.createElement(Dialog,{open:true,onOpenChange:close,title:'Review',description:'Verify amount'},null));act(()=>tree.findByType(Modal).props.onRequestClose());expect(close).toHaveBeenCalledWith(false);});
 it('native unknown financial values stay distinct from zero',()=>{mount(React.createElement(NumberReadout,{value:null}));expect(JSON.stringify(root.toJSON())).toContain('—');});
@@ -28,7 +42,7 @@ it('native disabled selection handlers reject even direct backend callbacks',()=
 it('native Modal keeps the host orientation instead of forcing iOS portrait',()=>{const tree=mount(React.createElement(Dialog,{open:true,onOpenChange:jest.fn(),title:'Review',description:'Verify amount'},null));const orientations=tree.findByType(Modal).props.supportedOrientations;expect(orientations).toEqual(expect.arrayContaining(['portrait','landscape-left','landscape-right']));});
 it('native Modal requests initial and return accessibility focus without delayed stale requests',()=>{const {AccessibilityInfo,findNodeHandle}=require('react-native');void findNodeHandle;const rn=require('react-native');const handle=jest.spyOn(rn,'findNodeHandle').mockImplementation(node=>node._nativeTag);const focus=jest.spyOn(AccessibilityInfo,'setAccessibilityFocus').mockImplementation(()=>{});const raf=jest.spyOn(global,'requestAnimationFrame').mockImplementation(callback=>{callback(0);return 99;});const initialFocusRef={current:{_nativeTag:7}},returnFocusRef={current:{_nativeTag:9}};try{const props={open:true,onOpenChange:jest.fn(),title:'Review',description:'Verify',initialFocusRef,returnFocusRef};const tree=mount(React.createElement(Dialog,props,null));act(()=>tree.findByType(Modal).props.onShow());expect(focus).toHaveBeenCalledWith(7);act(()=>root.update(React.createElement(Dialog,{...props,open:false},null)));expect(focus).toHaveBeenLastCalledWith(9);}finally{handle.mockRestore();focus.mockRestore();raf.mockRestore();}});
 it('native layout direction follows each provider and stays isolated',()=>{const {HIGProvider}=require('../../packages/hig/native/src/provider');const {Inline}=require('../../packages/hig/native/src/surface');const {View,StyleSheet}=require('react-native');const tree=mount(React.createElement(React.Fragment,null,React.createElement(HIGProvider,{direction:'rtl'},React.createElement(Inline,{testID:'rtl'})),React.createElement(HIGProvider,{direction:'ltr'},React.createElement(Inline,{testID:'ltr'}))));for(const direction of ['rtl','ltr']){const view=tree.findAllByType(View).find(n=>n.props.testID===direction);expect(StyleSheet.flatten(view.props.style).direction).toBe(direction);}});
-it('native provider observes OS reduced motion and removes its subscription',async()=>{const {HIGProvider,useHIG}=require('../../packages/hig/native/src/provider');const {AccessibilityInfo}=require('react-native');const remove=jest.fn();let change;const originalSubscribe=AccessibilityInfo.addEventListener,originalQuery=AccessibilityInfo.isReduceMotionEnabled;const subscribe=AccessibilityInfo.addEventListener=jest.fn().mockImplementation((name,callback)=>{if(name==='reduceMotionChanged')change=callback;return {remove};});const query=AccessibilityInfo.isReduceMotionEnabled=jest.fn().mockResolvedValue(true);void subscribe;void query;let env;function Probe(){env=useHIG();return null;}try{await act(async()=>{root=create(React.createElement(HIGProvider,null,React.createElement(Probe)));});expect(env.reducedMotion).toBe(true);act(()=>change(false));expect(env.reducedMotion).toBe(false);act(()=>root.unmount());root=null;expect(remove).toHaveBeenCalledTimes(1);}finally{AccessibilityInfo.addEventListener=originalSubscribe;AccessibilityInfo.isReduceMotionEnabled=originalQuery;}});
+it('native provider observes OS reduced motion and removes its subscription',async()=>{const {HIGProvider,useHIG}=require('../../packages/hig/native/src/provider');const {AccessibilityInfo}=require('react-native');const remove=jest.fn();let change;const originalSubscribe=AccessibilityInfo.addEventListener,originalQuery=AccessibilityInfo.isReduceMotionEnabled;const subscribe=AccessibilityInfo.addEventListener=jest.fn().mockImplementation((name,callback)=>{if(name==='reduceMotionChanged')change=callback;return {remove};});const query=AccessibilityInfo.isReduceMotionEnabled=jest.fn().mockResolvedValue(true);let env;function Probe(){env=useHIG();return null;}try{await act(async()=>{root=create(React.createElement(HIGProvider,null,React.createElement(HIGProvider,null,React.createElement(Probe))));});expect(subscribe).toHaveBeenCalledTimes(1);expect(query).toHaveBeenCalledTimes(1);expect(env.reducedMotion).toBe(true);act(()=>change(false));expect(env.reducedMotion).toBe(false);act(()=>root.unmount());root=null;expect(remove).toHaveBeenCalledTimes(1);}finally{AccessibilityInfo.addEventListener=originalSubscribe;AccessibilityInfo.isReduceMotionEnabled=originalQuery;}});
 
 it('native typography preserves explicit host families and maps normal/bold weights',()=>{const {HIGProvider}=require('../../packages/hig/native/src/provider');const {Text}=require('../../packages/hig/native/src/surface');const {Text:RNText,StyleSheet}=require('react-native');const tree=mount(React.createElement(HIGProvider,{fontFamily:'SansRegular',fontFamilies:{400:'SansRegular',700:'SansBold'}},React.createElement(React.Fragment,null,React.createElement(Text,{testID:'bold',style:{fontWeight:'bold'}},'Bold'),React.createElement(Text,{testID:'host',style:{fontFamily:'HostMono',fontWeight:'bold'}},'Host'))));const texts=tree.findAllByType(RNText);expect(StyleSheet.flatten(texts.find(n=>n.props.testID==='bold').props.style).fontFamily).toBe('SansBold');expect(StyleSheet.flatten(texts.find(n=>n.props.testID==='host').props.style).fontFamily).toBe('HostMono');});
 
@@ -51,7 +65,7 @@ it('native long lists virtualize stable keys and expose loading, retry and pagin
 });
 it('native accordion emits one silent disclosure intent instead of duplicate activation and selection',()=>{
  const {Accordion}=require('../../packages/hig/native/src/navigation');const {HIGProvider}=require('../../packages/hig/native/src/provider');const emit=jest.fn();
- const tree=mount(React.createElement(HIGProvider,{feedback:{emit}},React.createElement(Accordion,{title:'Details'},'Information')));
+ const tree=mount(React.createElement(HIGProvider,{feedback:{emit},reducedMotion:true},React.createElement(Accordion,{title:'Details'},'Information')));
  const target=tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0];act(()=>target.props.onPress({stopPropagation:()=>{},isDefaultPrevented:()=>false}));expect(emit).toHaveBeenCalledTimes(1);expect(emit.mock.calls[0][0].intent).toBe('disclosure');
 });
 it('optional native number motion exposes one quiet accessible final reading',()=>{
@@ -199,12 +213,12 @@ it('native switch draws the HIG capsule on web as one named switch, not react-na
   expect(tree.findAllByType(RN.Switch)).toHaveLength(0);
   const track=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===40&&flat(n).height===24)[0],thumb=()=>tree.findAll(n=>n.type==='View'&&flat(n).width===18&&flat(n).height===18)[0];
   expect(track().props['aria-hidden']).toBe(true);
-  expect(flat(track())).toMatchObject({borderRadius:12,padding:3,backgroundColor:nativeSrgb.nested,transitionDuration:'150ms'});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.text,transform:[{translateX:0}],transitionProperty:'transform, background-color'});
+  expect(flat(track())).toMatchObject({borderRadius:12,padding:3,backgroundColor:nativeSrgb.nested});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.text,transform:[{translateX:0}],transitionProperty:'transform'});
   // Space toggles once and ignores key repeat; Enter is RN Web's own press.
   const prevent=jest.fn();act(()=>controls()[0].props.onKeyDown({key:' ',preventDefault:prevent}));act(()=>controls()[0].props.onKeyDown({key:' ',repeat:true,preventDefault:prevent}));
   expect(changed).toHaveBeenCalledTimes(1);expect(changed).toHaveBeenCalledWith(true);expect(prevent).toHaveBeenCalledTimes(2);
   act(()=>root.update(React.createElement(Switch,{label:'Sound',checked:true,onCheckedChange:changed})));
-  expect(flat(track())).toMatchObject({backgroundColor:nativeSrgb.action});expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.onAction,transform:[{translateX:16}]});
+  expect(flat(track())).toMatchObject({backgroundColor:nativeSrgb.nested});expect(tree.findAll(n=>n.type==='View'&&flat(n).transitionProperty==='opacity').map(n=>flat(n).opacity)).toEqual([1]);expect(flat(thumb())).toMatchObject({backgroundColor:nativeSrgb.onAction,transform:[{translateX:16}]});
  }finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
 });
 it('native switch keeps the platform switch in one pressable row on iOS and Android',()=>{
@@ -290,4 +304,316 @@ it('native Android slider falls back to a plain adjustable View when HIGAdjustab
    expect(r.root.findAll(n=>n.type==='HIGAdjustableView')).toHaveLength(0);expect(r.root.findAll(n=>n.type===RN.View&&n.props.accessibilityRole==='adjustable')).toHaveLength(1);run(()=>r.unmount());
   }finally{Object.defineProperty(RN.Platform,'OS',descriptor);RN.UIManager.hasViewManagerConfig=original;}
  });
+});
+
+it('retains each filter chip animation value across parent updates',()=>{
+ const {Animated}=require('react-native');
+ const {Filter}=require('../../packages/hig/native/src/radio-group');
+ const options=Array.from({length:20},(_,i)=>({value:String(i),label:String(i)}));
+ const OriginalValue=Animated.Value;
+ const constructor=jest.spyOn(Animated,'Value').mockImplementation(value=>new OriginalValue(value));
+ try{
+  mount(React.createElement(Filter,{label:'Filters',options,value:'0'}));
+  expect(constructor.mock.calls.length).toBeGreaterThanOrEqual(options.length);
+  constructor.mockClear();
+  for(let i=0;i<10;i++)act(()=>root.update(React.createElement(Filter,{label:'Filters '+i,options,value:'0'})));
+  expect(constructor).toHaveBeenCalledTimes(0);
+ }finally{constructor.mockRestore();}
+});
+
+it('windows long search results and keeps the full result count accessible',()=>{
+ const {Search}=require('../../packages/hig/native/src/navigation');
+ const {FlatList}=require('react-native');
+ const select=jest.fn();
+ const results=Array.from({length:1000},(_,index)=>({id:String(index),label:'Market '+index,onSelect:()=>select(index)}));
+ const tree=mount(React.createElement(Search,{query:'Market',onQueryChange:jest.fn(),results}));
+ const buttons=tree.findAllByType(Button);
+ expect(buttons.length).toBeGreaterThan(0);
+ expect(buttons.length).toBeLessThan(40);
+ expect(tree.findByType(FlatList).props.data).toBe(results);
+ expect(tree.findAll(n=>n.props.accessibilityLiveRegion==='polite'&&typeof n.props.children==='string')[0].props.children).toMatch(/1,?000/);
+ act(()=>buttons[0].props.onPress());
+ expect(select).toHaveBeenCalledWith(0);
+});
+
+it.each([40,1000])('keeps %i search results stable when only the query changes',count=>{
+ const {Search}=require('../../packages/hig/native/src/navigation');
+ const label=jest.fn(index=>'Market '+index);
+ const results=Array.from({length:count},(_,index)=>({id:String(index),get label(){return label(index);},onSelect:jest.fn()}));
+ const onQueryChange=jest.fn();
+ const search=query=>React.createElement(Search,{query,onQueryChange,results});
+ mount(search(''));
+ expect(label).toHaveBeenCalled();
+ label.mockClear();
+ for(const query of ['m','ma','mar','mark','market'])act(()=>root.update(search(query)));
+ expect(label).toHaveBeenCalledTimes(0);
+});
+
+it('keeps radio options rendered when only the group label changes',()=>{
+ const label=jest.fn(index=>'Option '+index);
+ const options=Array.from({length:40},(_,index)=>({value:String(index),get label(){return label(index);}}));
+ const change=jest.fn();
+ const group=name=>React.createElement(RadioGroup,{label:name,options,defaultValue:'0',onValueChange:change});
+ mount(group('Options'));
+ label.mockClear();
+ for(let i=0;i<10;i++)act(()=>root.update(group('Options '+i)));
+ expect(label).toHaveBeenCalledTimes(0);
+ const radio=root.root.findAll(n=>n.props.accessibilityRole==='radio'&&typeof n.props.onPress==='function');
+ act(()=>radio.find(n=>n.props.accessibilityLabel==='Option 1').props.onPress());
+ expect(change).toHaveBeenCalledWith('1');
+});
+
+it('redraws only the two changed native segment labels after selection',()=>{
+ const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
+ const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const label=jest.fn(index=>'Segment '+index);
+ const options=Array.from({length:8},(_,index)=>({value:String(index),get label(){return label(index);}}));
+ const change=jest.fn();
+ const group=onValueChange=>React.createElement(HIGProvider,{reducedMotion:true},React.createElement(SegmentedControl,{label:'Chart range',options,defaultValue:'0',onValueChange}));
+ const tree=mount(group(change));
+ const radio=tree.findAll(n=>n.props.accessibilityLabel==='Segment 7'&&typeof n.props.onPress==='function')[0];
+ label.mockClear();
+ act(()=>radio.props.onPress());
+ expect(label).toHaveBeenCalledTimes(4);
+ expect(change).toHaveBeenCalledWith('7');
+ const replacement=jest.fn();
+ act(()=>root.update(group(replacement)));
+ const next=tree.findAll(n=>n.props.accessibilityLabel==='Segment 3'&&typeof n.props.onPress==='function')[0];
+ act(()=>next.props.onPress());
+ expect(replacement).toHaveBeenCalledWith('3');
+ expect(change).toHaveBeenCalledTimes(1);
+});
+
+it('keeps native list validation and cell rendering stable during pagination',()=>{
+ const {FlatList,Text}=require('react-native');
+ const {List}=require('../../packages/hig/native/src/data');
+ const items=Array.from({length:10000},(_,index)=>String(index));
+ const keyFor=jest.fn(id=>id);
+ const render=jest.fn(id=>React.createElement(Text,null,id));
+ const element=loading=>React.createElement(List,{items,keyFor,render,loading});
+ const tree=mount(element(false));
+ const renderItem=tree.findByType(FlatList).props.renderItem;
+ keyFor.mockClear();
+ render.mockClear();
+ act(()=>root.update(element(true)));
+ const list=tree.findByType(FlatList);
+ expect(list.props.accessibilityState.busy).toBe(true);
+ expect(list.props.renderItem).toBe(renderItem);
+ expect(keyFor.mock.calls.length).toBeLessThan(100);
+ expect(render).not.toHaveBeenCalled();
+});
+
+it('keeps visible native cells stable when a page arrives and refreshes an edited cell',()=>{
+ const {Text}=require('react-native');
+ const {List}=require('../../packages/hig/native/src/data');
+ const items=Array.from({length:40},(_,id)=>({id,value:id}));
+ const keyFor=item=>String(item.id);
+ const render=jest.fn(item=>React.createElement(Text,null,item.value));
+ const list=rows=>React.createElement(List,{items:rows,keyFor,render});
+ mount(list(items));
+ expect(render.mock.calls.some(([item])=>item.id===7)).toBe(true);
+ render.mockClear();
+ const appended=[...items,{id:40,value:40}];
+ act(()=>root.update(list(appended)));
+ expect(render).not.toHaveBeenCalled();
+ act(()=>root.update(list(appended.map(item=>item.id===7?{...item,value:77}:item))));
+ expect(render.mock.calls.map(([item])=>item.value)).toEqual([77]);
+});
+
+it('uses a compact window only when offscreen row offsets are available',()=>{
+ const {FlatList,Text}=require('react-native');
+ const {List}=require('../../packages/hig/native/src/data');
+ const {computeWindowedRenderLimits}=require('@react-native/virtualized-lists/Lists/VirtualizeUtils');
+ const items=Array.from({length:1000},(_,index)=>String(index));
+ const props={items,keyFor:String,render:id=>React.createElement(Text,null,id)};
+ const tree=mount(React.createElement(List,props));
+ const list=()=>tree.findByType(FlatList);
+ expect(list().props.windowSize).toBeUndefined();
+ expect(list().props.maxToRenderPerBatch).toBeUndefined();
+ const getItemLayout=(_,index)=>({index,offset:index*60,length:60});
+ act(()=>root.update(React.createElement(List,{...props,getItemLayout})));
+ expect(list().props.getItemLayout).toBe(getItemLayout);
+ const {ListFooterComponent,ListEmptyComponent,accessibilityState}=list().props;
+ expect(ListFooterComponent).toBeNull();
+ for(const viewport of [480,720]){
+  act(()=>list().props.onLayout({nativeEvent:{layout:{height:viewport}}}));
+  expect(list().props.ListFooterComponent).toBe(ListFooterComponent);
+  expect(list().props.ListEmptyComponent).toBe(ListEmptyComponent);
+  expect(list().props.accessibilityState).toBe(accessibilityState);
+  const limits=windowSize=>computeWindowedRenderLimits({data:items,getItemCount:data=>data.length},list().props.maxToRenderPerBatch,windowSize,
+   {first:0,last:999},{getCellMetricsApprox:index=>({index,offset:index*60,length:60})},{dt:16,offset:30001,velocity:1,visibleLength:viewport,zoomScale:1});
+  const {windowSizeOrDefault}=require('@react-native/virtualized-lists/Lists/VirtualizedListProps');
+  const previous=limits(windowSizeOrDefault(undefined));
+  expect(previous.last-previous.first+1).toBe(21*viewport/60+1);
+  const window=limits(list().props.windowSize);
+  expect(window).toEqual({first:496,last:500+viewport/60+4});
+  expect(list().props.maxToRenderPerBatch).toBe(4);
+  expect(list().props.updateCellsBatchingPeriod).toBe(16);
+ }
+});
+
+it.each([40,1000])('refreshes one changed native search result among %i',count=>{
+ const {Search}=require('../../packages/hig/native/src/navigation');
+ const reads=jest.fn(),oldAction=jest.fn(),newAction=jest.fn();
+ const results=Array.from({length:count},(_,i)=>({id:String(i),get label(){reads(i);return 'Result '+i;},onSelect:oldAction}));
+ const tree=items=>React.createElement(Search,{query:'result',onQueryChange:()=>{},results:items});
+ const view=mount(tree(results));
+ reads.mockClear();
+ act(()=>root.update(tree([{id:'0',get label(){reads(0);return 'Updated result';},onSelect:newAction},...results.slice(1)])));
+ expect(reads.mock.calls).toEqual([[0]]);
+ const first=view.findAllByType(Button)[0];expect(first.props.children).toBe('Updated result');
+ act(()=>first.props.onPress());expect(newAction).toHaveBeenCalledTimes(1);expect(oldAction).not.toHaveBeenCalled();
+});
+
+it('skips the virtualized list on an unrelated host update and reflects changed items',()=>{
+ const {FlatList,Text}=require('react-native');
+ const {List}=require('../../packages/hig/native/src/data');
+ const items=Array.from({length:1000},(_,index)=>({id:String(index),name:'Item '+index}));
+ const keyFor=item=>item.id;
+ const render=jest.fn(item=>React.createElement(Text,null,item.name));
+ const draw=jest.spyOn(FlatList.prototype,'render');
+ const scene=(data,label)=>React.createElement(React.Fragment,null,
+  React.createElement(Text,null,label),React.createElement(List,{items:data,keyFor,render}));
+ try{
+  mount(scene(items,'Connecting'));
+  expect(draw).toHaveBeenCalled();
+  draw.mockClear();
+  render.mockClear();
+  act(()=>root.update(scene(items,'Connected')));
+  expect(draw).not.toHaveBeenCalled();
+  expect(render).not.toHaveBeenCalled();
+  act(()=>root.update(scene([{...items[0],name:'Updated'},...items.slice(1)],'Connected')));
+  expect(draw).toHaveBeenCalled();
+  expect(render).toHaveBeenCalledTimes(1);
+  expect(root.root.findAllByType(Text).some(node=>node.props.children==='Updated')).toBe(true);
+ }finally{draw.mockRestore();}
+});
+
+it('updates translated list status without rendering the FlatList again',()=>{
+ const {FlatList,Text}=require('react-native');
+ const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const {List}=require('../../packages/hig/native/src/data');
+ const items=Array.from({length:1000},(_,index)=>String(index));
+ const list=React.createElement(List,{items,keyFor:id=>id,render:id=>React.createElement(Text,null,id),loading:true});
+ const draw=jest.spyOn(FlatList.prototype,'render');
+ try{
+  mount(React.createElement(HIGProvider,null,list));
+  expect(draw).toHaveBeenCalled();
+  draw.mockClear();
+  act(()=>root.update(React.createElement(HIGProvider,{messages:{loadingItems:'Fetching balances'}},list)));
+  expect(root.root.findAllByType(Text).some(node=>node.props.children==='Fetching balances')).toBe(true);
+  expect(draw).not.toHaveBeenCalled();
+ }finally{draw.mockRestore();}
+});
+
+it.each(['List','Search'])('%s renders only the edited virtualized cell on a data refresh',component=>{
+ const {Text}=require('react-native');
+ const CellRenderer=require(require.resolve('@react-native/virtualized-lists/Lists/VirtualizedListCellRenderer',{paths:[require.resolve('react-native')]})).default;
+ const {List}=require('../../packages/hig/native/src/data');
+ const {Search}=require('../../packages/hig/native/src/navigation');
+ const onSelect=jest.fn();
+ const rows=Array.from({length:1000},(_,index)=>({id:String(index),label:'Result '+index,onSelect}));
+ const keyFor=item=>item.id;
+ const render=item=>React.createElement(Text,null,item.label);
+ const scene=items=>component==='List'?React.createElement(List,{items,keyFor,render}):React.createElement(Search,{results:items,query:'',onQueryChange:onSelect});
+ const draw=jest.spyOn(CellRenderer.prototype,'render');
+ try{
+  mount(scene(rows));
+  draw.mockClear();
+  const edited=rows.slice();
+  edited[2]={...rows[2],label:'Updated result'};
+  act(()=>root.update(scene(edited)));
+  expect(draw.mock.instances.map(cell=>cell.props.item.id)).toEqual(['2']);
+ }finally{draw.mockRestore();}
+});
+
+it('formats trade reviews on demand and refreshes the amount on reopen',()=>{
+ const {TradeEntry}=require('../../packages/hig/native/src/blocks');
+ const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const description=jest.fn((amount,asset)=>amount+' '+asset);
+ const messages={confirmOrderDescription:description};
+ const onConfirm=jest.fn();
+ const scene=amount=>React.createElement(HIGProvider,{messages},React.createElement(TradeEntry,{amount,asset:'BTC',available:'1 BTC',onAmountChange:()=>{},onConfirm}));
+ const view=mount(scene('0.1'));
+ const press=label=>act(()=>view.findAllByType(Button).find(button=>button.props.children===label).props.onPress());
+ act(()=>root.update(scene('0.2')));
+ expect(description).not.toHaveBeenCalled();
+ press('Review order');
+ expect(description).toHaveBeenLastCalledWith('0.2','BTC');
+ act(()=>root.update(scene('0.3')));
+ expect(description).toHaveBeenLastCalledWith('0.3','BTC');
+ press('Confirm order');expect(onConfirm).toHaveBeenCalledTimes(1);
+ act(()=>view.findByType(Modal).props.onRequestClose());
+ description.mockClear();
+ act(()=>root.update(scene('0.4')));
+ expect(description).not.toHaveBeenCalled();
+ press('Review order');
+ expect(description).toHaveBeenLastCalledWith('0.4','BTC');
+});
+
+it('keeps the native copy handler stable and updates the inherited monospace face and translation',()=>{
+ const {InstallCommand}=require('../../packages/hig/native/src/blocks');
+ const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const {Text,StyleSheet}=require('react-native');
+ const child=React.createElement(HIGProvider,null,React.createElement(InstallCommand,{command:'npm i',onCopy:jest.fn()}));
+ const wrap=props=>React.createElement(HIGProvider,props,child);
+ const tree=mount(wrap({monoFontFamily:'Mono A'}));
+ const press=tree.findByType(Button).props.onPress;
+ act(()=>root.update(wrap({monoFontFamily:'Mono A',density:'compact'})));
+ expect(tree.findByType(Button).props.onPress).toBe(press);
+ act(()=>root.update(wrap({monoFontFamily:'Mono B',messages:{copyInstallCommand:'Copier'}})));
+ expect(tree.findByType(Button).props.children).toBe('Copier');
+ const text=tree.findAllByType(Text).find(node=>node.props.selectable);
+ expect(StyleSheet.flatten(text.props.style)).toMatchObject({fontFamily:'Mono B',writingDirection:'ltr'});
+});
+
+it('keeps list empty and footer elements stable on density changes and updates their translations',()=>{
+ const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const {List}=require('../../packages/hig/native/src/data');
+ const {Text}=require('../../packages/hig/native/src/surface');
+ const list=React.createElement(List,{items:[],keyFor:String,render:String,onLoadMore:jest.fn()});
+ const wrap=props=>React.createElement(HIGProvider,props,list);
+ const messages={noItems:'Empty',loadMore:'More'};
+ const tree=mount(wrap({messages,density:'comfortable'}));
+ const empty=tree.findAllByType(Text).find(n=>n.props.children==='Empty').props;
+ const more=tree.findByType(Button).props;
+ act(()=>root.update(wrap({messages,density:'compact'})));
+ expect(tree.findAllByType(Text).find(n=>n.props.children==='Empty').props).toBe(empty);
+ expect(tree.findByType(Button).props).toBe(more);
+ act(()=>root.update(wrap({messages:{noItems:'Vide',loadMore:'Suite'}})));
+ expect(tree.findAllByType(Text).some(n=>n.props.children==='Vide')).toBe(true);
+ expect(tree.findByType(Button).props.children).toBe('Suite');
+});
+
+it('tracks exact row windows from list layout without a global dimension listener',()=>{
+ const {Dimensions,FlatList,Text}=require('react-native');
+ const {List}=require('../../packages/hig/native/src/data');
+ const items=Array.from({length:1000},(_,i)=>String(i));
+ const listener=jest.spyOn(Dimensions,'addEventListener');
+ try{
+  const view=mount(React.createElement(List,{items,keyFor:String,render:item=>React.createElement(Text,null,item),getItemLayout:(_,index)=>({index,length:60,offset:index*60})}));
+  expect(listener.mock.calls.filter(([event])=>event==='change')).toHaveLength(0);
+  const list=()=>view.findByType(FlatList).props;
+  act(()=>list().onLayout({nativeEvent:{layout:{height:300}}}));
+  expect(list().windowSize).toBeCloseTo(2.6);
+ }finally{listener.mockRestore();}
+});
+
+it('shares the native motion listener and keeps a newer change over a pending initial query',async()=>{
+ const {AccessibilityInfo}=require('react-native'),{HIGProvider,useReducedMotion}=require('../../packages/hig/native/src/provider');
+ const seen=new Map(),remove=jest.fn();let change,resolve;
+ const oldSubscribe=AccessibilityInfo.addEventListener,oldQuery=AccessibilityInfo.isReduceMotionEnabled;
+ const subscribe=AccessibilityInfo.addEventListener=jest.fn((_event,notify)=>{change=notify;return {remove};});
+ const query=AccessibilityInfo.isReduceMotionEnabled=jest.fn(()=>new Promise(done=>{resolve=done;}));
+ function Probe({id}){seen.set(id,useReducedMotion());return null;}
+ const tree=ids=>React.createElement(React.Fragment,null,ids.map(id=>React.createElement(HIGProvider,{key:id},React.createElement(Probe,{id}))));
+ try{
+  const ids=Array.from({length:40},(_,i)=>i);
+  mount(tree(ids));expect(subscribe).toHaveBeenCalledTimes(1);expect(query).toHaveBeenCalledTimes(1);
+  act(()=>change(true));await act(async()=>{resolve(false);});
+  expect(ids.every(id=>seen.get(id)===true)).toBe(true);
+  act(()=>root.update(tree([1,40])));expect(seen.get(40)).toBe(true);expect(remove).not.toHaveBeenCalled();
+  act(()=>root.update(tree([])));expect(remove).toHaveBeenCalledTimes(1);
+  act(()=>root.update(tree([41])));expect(query).toHaveBeenCalledTimes(2);
+ }finally{act(()=>root.unmount());root=null;AccessibilityInfo.addEventListener=oldSubscribe;AccessibilityInfo.isReduceMotionEnabled=oldQuery;}
 });

@@ -1,7 +1,7 @@
 'use client';
-import React, {useEffect, useState, type ReactNode} from 'react';
+import React, {lazy, Suspense, useEffect, useState, type ReactNode} from 'react';
 import {Clock, Copy, Loader2, RefreshCw, Trophy, X} from 'lucide-react';
-import {NumberFlow} from '@bloxwap/hig/react/animated-number';
+import {NumberReadout} from '@bloxwap/hig/react/data';
 import {InfoCard, InfoPanel, NotificationCard} from './notification-card';
 import {AppleLogo, GoogleLogo, XLogo} from './provider-logos';
 import {ClosePayoutCard} from './close-payout-card';
@@ -11,10 +11,31 @@ function Preview({name, source, children}:{name:string;source:string;children:(d
  const [visible,setVisible]=useState(true);
  return <article style={{minWidth:0}}><h3>{name}</h3><p style={{fontSize:12,overflowWrap:'anywhere'}}>Source: {source}</p><div style={{padding:'20px 0',minHeight:100}}>{visible?children(()=>setVisible(false)):<p>Dismissed</p>}</div><button type="button" onClick={()=>setVisible(false)}>Dismiss preview</button>{' · '}<button type="button" onClick={()=>setVisible(true)}>Reset preview</button></article>;
 }
+const NumberFlow=lazy(()=>import('@bloxwap/hig/react/animated-number').then(module=>({default:module.NumberFlow})));
 function Countdown({dismiss}:{dismiss:()=>void}) {
- const [seconds,setSeconds]=useState(120),[running,setRunning]=useState(false);
- useEffect(()=>{if(!running)return;const end=Date.now()+seconds*1000;const timer=setInterval(()=>{const left=Math.max(0,Math.ceil((end-Date.now())/1000));setSeconds(left);if(left===0)setRunning(false);},200);return()=>clearInterval(timer);},[running]);
- return <><InfoCard tone="info" icon={<Clock size={16}/>} title={<><span aria-hidden="true">{seconds===0?'Market is open':<>Market opens in <NumberFlow value={Math.floor(seconds/60)} trend={-1}/>:<NumberFlow value={seconds%60} trend={-1} digits={{1:{max:5}}} formattedValue={String(seconds%60).padStart(2,'0')} animateFormatted/></>}</span><span className="sr-only">Market opening countdown demo</span></>} onClose={dismiss}/><div style={{marginTop:16}}><button type="button" onClick={()=>setRunning(!running)}>{running?'Pause':'Start'} countdown</button>{' · '}<button type="button" onClick={()=>{setRunning(false);setSeconds(120);}}>Reset timer</button></div></>;
+ const [seconds,setSeconds]=useState(120),[end,setEnd]=useState<number|null>(null);
+ const [started,setStarted]=useState(false);
+ useEffect(()=>{
+  if(end===null)return;
+  const timer=setInterval(()=>{
+   const left=Math.max(0,Math.ceil((end-Date.now())/1000));
+   setSeconds(left);
+   if(left===0)setEnd(null);
+  },1000);
+  return ()=>clearInterval(timer);
+ },[end]);
+ const minutes=Math.floor(seconds/60),remainder=String(seconds%60).padStart(2,'0');
+ const reading=<><NumberReadout value={minutes}/>:<span className="hig-number">{remainder}</span></>;
+ function toggle(){
+  if(end!==null){setEnd(null);return;}
+  setStarted(true);
+  setEnd(Date.now()+seconds*1000);
+ }
+ return <><InfoCard tone="info" icon={<Clock size={16}/>} title={<><span aria-hidden="true">{seconds===0?'Market is open':<>Market opens in {started?<Suspense fallback={reading}>
+  <NumberFlow value={minutes} trend={-1}/>:<NumberFlow value={seconds%60} trend={-1} digits={{1:{max:5}}} formattedValue={remainder} animateFormatted/>
+ </Suspense>:reading}</>}</span><span className="sr-only">Market opening countdown demo</span></>} onClose={dismiss}/>
+ <div style={{marginTop:16}}><button type="button" className="min-h-11 min-w-11" onClick={toggle}>{end===null?'Start':'Pause'} countdown</button>{' · '}
+ <button type="button" className="min-h-11 min-w-11" onClick={()=>{setEnd(null);setSeconds(120);}}>Reset timer</button></div></>;
 }
 export default function SpecializedToasts(){
  const [action,setAction]=useState('');const act=(label:string)=>({label,onClick:()=>setAction(`${label} selected (demo)`)});

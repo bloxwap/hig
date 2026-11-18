@@ -1,7 +1,10 @@
 /** Native AssetsBlock: header, search, category capsules, views, then markets in sections by category with their signal discs. */
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
-const {StyleSheet}=require('react-native');
+const {StyleSheet,ScrollView}=require('react-native');
+// Use the native orientation context omitted by the Jest ScrollView stub.
+const NativeScrollView=jest.requireActual('react-native/Libraries/Components/ScrollView/ScrollView').default;
+ScrollView.Context=NativeScrollView.Context;
 const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {AssetsBlock,filterAssets}=require('../../packages/hig/native/src/assets-block');
@@ -133,14 +136,22 @@ test('rows are one line each, headingId names the title, and stickyHeader pins t
 test('reads the host clock, freezes while paused, and runs no timer while no countdown section is shown',()=>{
  jest.useFakeTimers();const spy=jest.spyOn(global,'setInterval');
  let clock=1_000_000;const now=()=>clock;const opensAt=clock+65_000;
- const cats=[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}];
- const tree=props=>h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{testID:'assets',assets,categories:cats,onSelect:()=>{},now,...props}));
+ let statusReads=0;
+ const expired={...categories[0],opensAt:clock-1000,get status(){statusReads++;return {label:'OPEN'};}};
+ const cats=[expired,{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}];
+ let rowReads=0;
+ const markets=Array.from({length:100},(_,i)=>({...assets[0],category:'commodities',id:String(i),get name(){rowReads++;return 'Gold';}}));
+ markets.push({...assets[0],category:'crypto',id:'expired',name:'Expired'});
+ const tree=props=>h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{testID:'assets',assets:markets,categories:cats,onSelect:()=>{},now,...props}));
  act(()=>{root=render(tree({category:'crypto'}));});
  expect(spy).not.toHaveBeenCalled();
  act(()=>root.update(tree({category:''})));
  const badge=()=>{const countdown=host(root.root,'assets-countdown-commodities');return text(countdown??host(root.root,'assets-status-commodities'));};
  expect(badge()).toBe('Opens in 0:01:05');expect(spy).toHaveBeenCalledTimes(1);
- act(()=>{clock+=1000;jest.advanceTimersByTime(1000);});expect(badge()).toBe('Opens in 0:01:04');
+ expect(statusReads).toBeGreaterThan(0);
+ statusReads=0;rowReads=0;
+ act(()=>{clock+=1000;jest.advanceTimersByTime(1000);});expect(rowReads).toBe(0);
+ expect(statusReads).toBe(0);expect(badge()).toBe('Opens in 0:01:04');
  act(()=>root.update(tree({paused:true})));
  act(()=>{clock+=5000;jest.advanceTimersByTime(5000);});expect(badge()).toBe('Opens in 0:01:04');expect(spy).toHaveBeenCalledTimes(1);
  act(()=>root.update(tree({})));expect(badge()).toBe('Opens in 0:00:59');
@@ -213,6 +224,9 @@ test('enterChoosesFirst makes the Search key choose the first enabled match of a
  act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select).not.toHaveBeenCalled();
  view=mount({onSelect:select,enterChoosesFirst:true,query:'r',assets:assets.map(asset=>asset.id==='ETH'?{...asset,disabled:true}:asset)});
  act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select).toHaveBeenCalledTimes(1);expect(select.mock.calls[0][0].id).toBe('XRP');
+ const markets=assets.map(asset=>({...asset,name:'Matched',disabled:asset.category==='crypto'}));
+ view=mount({onSelect:select,enterChoosesFirst:true,query:'matched',assets:markets});
+ act(()=>view.findByType(TextInput).props.onSubmitEditing());expect(select.mock.calls[1][0].id).toBe('GOLD');
 });
 
 test('scrolls the selected category capsule fully into view on mount and on change, through a host filterScrollComponent',()=>{
@@ -232,4 +246,101 @@ test('scrolls the selected category capsule fully into view on mount and on chan
  act(()=>chips[1].props.onPress());expect(scrollTo).toHaveBeenLastCalledWith({x:108,animated:false});
  // A capsule already whole on screen does not scroll.
  scrollTo.mockClear();act(()=>chips[2].props.onPress());expect(scrollTo).not.toHaveBeenCalled();
+});
+
+test('search observes edits and preserves repeated category sections',()=>{
+ const asset={...assets[0],name:'Original',symbol:'OLD',keywords:'legacy'};
+ const repeated=[categories[0],{...categories[0],label:'Repeated'}];
+ const matches=filterAssets([asset],repeated,{query:'legacy'});
+ expect(matches.map(section=>section.category)).toEqual(repeated);
+ expect(matches[0].assets).not.toBe(matches[1].assets);
+ asset.name='Renamed';
+ asset.symbol='NEW';
+ asset.keywords='révised';
+ expect(filterAssets([asset],repeated,{query:'legacy'})).toHaveLength(0);
+ for(const query of ['renamed','new','revised'])expect(filterAssets([asset],repeated,{query})).toHaveLength(2);
+});
+
+test.each(['standalone','sticky','host'])('a large %s picker windows rows and keeps a filtered market selectable',mode=>{
+ const markets=Array.from({length:1000},(_,i)=>({...assets[0],id:String(i),name:'Market '+i}));
+ const choose=jest.fn();
+ const {FlatList}=require('react-native');
+ const HostList=props=>h(FlatList,props);
+ const tree=query=>h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{testID:'markets',assets:markets,categories,onSelect:choose,stickyHeader:mode==='sticky',listComponent:mode==='host'?HostList:undefined,query}));
+ act(()=>{root=render(tree(''));});
+ if(mode==='host')expect(root.root.findByType(HostList).props.stickyHeaderIndices).toBeUndefined();
+ const mounted=root.root.findAll(node=>typeof node.type==='string'&&/^markets-\d+$/.test(node.props.testID??''));
+ expect(mounted.length).toBeGreaterThan(0);
+ expect(mounted.length).toBeLessThan(30);
+ expect(has(root.root,'markets-999')).toBe(false);
+ act(()=>root.update(tree('Market 999')));
+ const button=root.root.findByProps({testID:'markets-999',accessibilityRole:'button'});
+ act(()=>button.props.onPress());
+ expect(choose).toHaveBeenCalledWith(markets[999]);
+});
+
+test('reuses the category scroller and its labels across search edits',()=>{
+ const {ScrollView,TextInput}=require('react-native');
+ let reads=0,scrollerRenders=0;
+ const groups=Array.from({length:40},(_,i)=>({id:String(i),get label(){reads++;return 'Category '+i;}}));
+ const HostScroll=React.forwardRef((props,ref)=>{scrollerRenders++;return h(ScrollView,{...props,ref});});
+ const view=mount({categories:groups,assets:[{...assets[0],category:'0'}],filterScrollComponent:HostScroll});
+ reads=0;scrollerRenders=0;
+ for(const query of ['z','zz','zzz'])act(()=>view.findByType(TextInput).props.onChangeText(query));
+ expect([reads,scrollerRenders]).toEqual([0,0]);
+});
+
+test('filters a burst of large-catalog edits once and submits the current native text',()=>{
+ jest.useFakeTimers();
+ try{
+  const {TextInput}=require('react-native');
+  let reads=0;
+  const markets=Array.from({length:1000},(_,i)=>({...assets[0],id:String(i),name:'Market '+i,get category(){reads++;return 'crypto';}}));
+  const choose=jest.fn(),changed=jest.fn();
+  const view=mount({assets:markets,defaultQuery:'absent',enterChoosesFirst:true,onSelect:choose,onQueryChange:changed});
+  const input=()=>view.findByType(TextInput).props;
+  reads=0;
+  for(const query of ['9','99','999']){act(()=>input().onChangeText(query));act(()=>jest.advanceTimersByTime(40));}
+  expect(input().value).toBe('999');expect(changed.mock.calls.flat()).toEqual(['9','99','999']);expect(reads).toBe(0);
+  act(()=>jest.advanceTimersByTime(110));expect(reads).toBe(1000);expect(has(view,'assets-999')).toBe(true);
+  act(()=>input().onChangeText('888'));act(()=>input().onSubmitEditing());expect(choose.mock.calls[0][0]).toBe(markets[888]);expect(reads).toBe(2000);
+  act(()=>jest.advanceTimersByTime(200));expect(reads).toBe(2000);
+ }finally{jest.useRealTimers();}
+});
+
+test('updates only the two markets whose selection changed',()=>{
+ const reads=new Set();
+ const markets=Array.from({length:50},(_,i)=>({...assets[0],id:String(i),get name(){reads.add(i);return 'Market '+i;}}));
+ const onSelect=jest.fn();
+ const tree=selectedId=>h(HIGProvider,{reducedMotion:true},h(AssetsBlock,{testID:'assets',assets:markets,categories,onSelect,selectedId}));
+ act(()=>{root=render(tree('0'));});
+ reads.clear();
+ act(()=>root.update(tree('1')));
+ expect([...reads]).toEqual([0,1]);
+ expect(host(root.root,'assets-0').props.accessibilityState.selected).toBe(false);
+ expect(host(root.root,'assets-1').props.accessibilityState.selected).toBe(true);
+});
+
+test('keeps a large inline market picker in the parent vertical scroll view',()=>{
+ const {FlatList}=require('react-native');
+ const markets=Array.from({length:51},(_,i)=>({...assets[0],id:String(i),name:'Market '+i}));
+ act(()=>{root=render(h(HIGProvider,{},h(NativeScrollView,{},h(AssetsBlock,{assets:markets,categories,onSelect:()=>{},testID:'markets'}))));});
+ expect(root.root.findAllByType(FlatList)).toHaveLength(0);
+ expect(has(root.root,'markets-50')).toBe(true);
+});
+
+test('indexes category boundaries without reading every market ID on mount',()=>{
+ const {VirtualizedList}=require('react-native');
+ const touched=new Set();
+ const markets=Array.from({length:1000},(_,i)=>({...assets[0],category:i<500?'crypto':'stocks',get id(){touched.add(i);return String(i);}}));
+ const tree=mount({assets:markets});
+ expect(touched.size).toBeLessThan(30);
+ const {data,getItem,getItemCount}=tree.findByType(VirtualizedList).props;
+ expect(getItemCount(data)).toBe(1003);
+ expect(getItem(data,0).kind).toBe('controls');
+ expect(getItem(data,1).category).toBe(categories[0]);
+ expect(getItem(data,501).asset).toBe(markets[499]);
+ expect(getItem(data,502).category).toBe(categories[2]);
+ expect(getItem(data,503).asset).toBe(markets[500]);
+ expect(getItem(data,1002).asset).toBe(markets[999]);
 });

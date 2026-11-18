@@ -200,6 +200,14 @@ button[data-search-full] kbd {
   border-radius: 1.75rem;
   background: var(--hig-background);
 }
+/* Reserve the default account preview's balance and holdings while its chunk loads. */
+.block-card[data-component='AccountBlock'][data-state='default'] { min-height:26rem; }
+@media (max-width:420px) {
+  .block-card[data-component='AccountBlock'][data-state='default'] { min-height:27rem; }
+}
+@media (max-width:350px) {
+  .block-card[data-component='AccountBlock'][data-state='default'] { min-height:30rem; }
+}
 .block-card:has(> .hig-stack > .hig-surface:first-child) { padding: 0; border: 0; border-radius: 0; }
 .example-canvas > .hig-stack { align-items: flex-start; }
 .example-canvas > .hig-stack > :is(.hig-stack, .hig-inline, .hig-surface, .hig-row, .hig-table-scroll, .hig-list, section, nav) { width: 100%; }
@@ -238,3 +246,26 @@ button[data-search-full] kbd {
 @media (prefers-reduced-motion: no-preference) {
   .modal-canvas .hig-app-modal[data-modal-motion="full"] { transition-property:opacity,transform,display; transition-behavior:allow-discrete; }
 }
+
+#nd-nav button[aria-label] { min-width:44px;min-height:44px;vertical-align:middle; }
+
+.home-header { position:sticky;top:0;z-index:40;height:3.5rem;background:var(--hig-background);border-bottom:1px solid var(--hig-nested); }
+.home-header nav { display:flex;align-items:center;gap:1.5rem;height:100%;max-width:1400px;margin-inline:auto;padding-inline:1rem; }
+.home-header a,.home-header button { display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px; }
+.home-brand { font-weight:600; }
+.home-links,.home-desktop-tools,.home-mobile-tools { display:flex;align-items:center;gap:.5rem; }
+.home-links a,#home-navigation a { padding-inline:.5rem;font-size:.875rem;color:var(--hig-muted); }
+.home-links a:hover,#home-navigation a:hover { color:var(--hig-text); }
+.home-header a[aria-current] { color:var(--hig-action); }
+.home-desktop-tools,.home-mobile-tools { margin-inline-start:auto; }
+.home-desktop-tools button { width:15rem;justify-content:flex-start; }
+.home-mobile-tools { display:none; }
+#home-navigation { position:fixed;inset:3.5rem 0 auto;width:100%;margin:0;padding:.5rem 1rem;background:var(--hig-background);border-bottom:1px solid var(--hig-nested);color:var(--hig-text); }
+#home-navigation:popover-open { display:grid;justify-items:start; }
+@media (max-width:63.999rem) { .home-desktop-tools { display:none; } .home-mobile-tools { display:flex; } }
+@media (max-width:39.999rem) { .home-links { display:none; } }
+.home-chevron { width:.625rem;height:.625rem;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg); }
+.home-shortcut { display:flex;gap:.125rem;margin-inline-start:auto; }
+.home-shortcut kbd { padding:.125rem .35rem;font-size:.75rem; }
+.home-search-icon { position:relative;width:.875rem;height:.875rem;border:1.5px solid currentColor;border-radius:50%; }
+.home-search-icon::after { content:'';position:absolute;width:.4rem;height:1.5px;bottom:-.12rem;right:-.25rem;background:currentColor;transform:rotate(45deg); }

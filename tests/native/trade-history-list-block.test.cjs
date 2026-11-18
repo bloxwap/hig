@@ -114,3 +114,61 @@ it('shows the host empty text without trades and a host header action',()=>{
  const tree=mount({trades:[],headerAction:h(View,{testID:'filter'})});
  expect(text(all(tree,'history-empty').find(node=>typeof node.type==='string'))).toBe('No closed trades yet');expect(host(tree,'history-rows')).toBeUndefined();expect(all(tree,'filter').length).toBeGreaterThan(0);
 });
+
+it('windows a large sticky history with its notice and footer inside the scroller',()=>{
+ const history=Array.from({length:250},(_,i)=>({...trades[0],id:String(i)}));
+ const select=jest.fn(),{Text,VirtualizedList}=require('react-native');
+ const tree=mount({stickyHeader:true,trades:history,onSelect:select,notice:h(Text,null,'Saved history'),footer:h(Text,null,'End of history')});
+ const list=tree.findByType(VirtualizedList);
+ expect(list.props.data).toBe(history);
+ expect(list.props.getItem(history,0)).toBe(null);
+ expect(list.props.getItem(history,250)).toBe(history[249]);
+ expect(list.props.stickyHeaderIndices).toEqual([0]);
+ expect(host(tree,'history-notice')).toBeDefined();expect(host(tree,'history-footer')).toBeDefined();
+ const rows=tree.findAll(n=>typeof n.type==='string'&&/^history-\d+$/.test(n.props.testID??''));
+ expect(rows.length).toBeGreaterThan(0);expect(rows.length).toBeLessThan(30);expect(host(tree,'history-249')).toBeUndefined();
+ act(()=>tree.findAll(n=>n.props.testID==='history-0'&&n.props.onPress)[0].props.onPress());
+ expect(select.mock.calls[0][0]).toBe(history[0]);
+});
+
+it('reuses unchanged trade rows when the footer or one trade updates',()=>{
+ const {Text}=require('react-native'),reads=Array(40).fill(0);
+ const item=(index,pnl)=>({...trades[0],id:String(index),get pnl(){reads[index]++;return pnl;}});
+ const history=reads.map((_,index)=>item(index,index)),select=jest.fn();
+ const tree=(items,footer)=>h(HIGProvider,{reducedMotion:true},h(TradeHistoryListBlock,{labels:{...labels},trades:items,onSelect:select,footer:h(Text,null,footer)}));
+ act(()=>{root=render(tree(history,'Loading'));});reads.fill(0);
+ act(()=>root.update(tree(history,'Loaded')));expect(reads.every(count=>count===0)).toBe(true);
+ const updated=history.slice();updated[12]=item(12,812);act(()=>root.update(tree(updated,'Loaded')));
+ expect(reads.filter(Boolean)).toEqual([1]);expect(reads[12]).toBe(1);
+});
+
+it('keeps unchanged trade amounts idle when density changes',()=>{
+ let optionReads=0,rowReads=0;
+ const pnlOptions={style:'currency',currency:'USD',get maximumFractionDigits(){optionReads++;return 2;}};
+ const rows=Array.from({length:50},(_,index)=>({...trades[0],id:String(index),get pnl(){rowReads++;return 1.412;}}));
+ const child=h(TradeHistoryListBlock,{labels,trades:rows,pnlOptions,testID:'history'});
+ const provider=(density,locale)=>h(HIGProvider,{density,locale,reducedMotion:true},child);
+ act(()=>{root=render(provider('comfortable','en-US'));});
+ expect(rowReads).toBeGreaterThan(0);
+ expect(optionReads).toBeGreaterThan(0);
+ rowReads=optionReads=0;
+ act(()=>root.update(provider('compact','en-US')));
+ expect({optionReads,rowReads}).toEqual({optionReads:0,rowReads:0});
+ act(()=>root.update(provider('compact','de-DE')));
+ expect(host(root.root,'history-0').props.accessibilityLabel).toContain('1,41');
+});
+
+it('updates the trade result when a refreshed row reuses edited format options',()=>{
+ const options={maximumFractionDigits:1};
+ const scene=(time,locale='en-US')=>h(HIGProvider,{locale,reducedMotion:true},h(TradeHistoryListBlock,{labels,testID:'history',trades:[{...trades[0],pnlOptions:options,time}]}));
+ act(()=>{root=render(scene('2d'));});
+ const reading=()=>text(host(root.root,'history-1-pnl'));
+ expect(reading()).toBe('1.4');
+ options.maximumFractionDigits=2;
+ act(()=>root.update(scene('3d')));
+ expect(reading()).toBe('1.41');
+ const name=()=>host(root.root,'history-1').props.accessibilityLabel;
+ expect(name()).toBe('Amazon, Short 20×, 1.41, 3d');
+ act(()=>root.update(scene('4d','de-DE')));
+ expect(name()).toBe('Amazon, Short 20×, 1,41, 4d');
+});

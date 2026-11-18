@@ -2,20 +2,51 @@
 import { Check } from '@bloxwap/icons/react/check';
 import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
 import {assertUniqueKeys} from '@bloxwap/hig/contracts';
-import React,{useEffect,useId,useLayoutEffect,useRef,useState} from 'react';
-import {useControllable,useHIG} from './provider.js';
+import React,{useCallback,useEffect,useId,useLayoutEffect,useMemo,useRef,useState} from 'react';
+import {useControllable,useLayoutDirection,useLocale} from './provider.js';
+import {SelectWindow} from './select-window.js';
 import type {ChoicesProps} from './selection.js';
+
+const Option=React.memo(function Option({option,index,id,selected,active,size,onHighlight,onChoose}:{
+ option:ChoicesProps['options'][number];index:number;id:string;selected:boolean;active:boolean;size?:number;
+ onHighlight:(index:number)=>void;onChoose:(index:number)=>void;
+}){
+ return <div id={id} role='option' aria-posinset={size===undefined?undefined:index+1} aria-setsize={size}
+  className='hig-select-option' aria-selected={selected} aria-disabled={option.disabled||undefined} data-active={active||undefined}
+  onPointerEnter={()=>{if(!option.disabled)onHighlight(index);}} onClick={()=>onChoose(index)}>
+  <span>{option.label}</span><Check size={20} className='hig-select-check'/>
+ </div>;
+});
+
+// Enabled option indices are sorted. A live replacement may remove the highlighted index.
+function enabledPosition(enabled:readonly number[],active:number){
+ if(active<0)return -1;
+ if(enabled[active]===active)return active;
+ let low=0,high=enabled.length;
+ while(low<high){
+  const middle=Math.floor((low+high)/2);
+  if(enabled[middle]<active)low=middle+1;
+  else high=middle;
+ }
+ return enabled[low]===active?low:-1;
+}
 
 /** A select-only combobox. DOM focus stays on the trigger while its active option is announced. */
 export function Select({label,options,value,defaultValue,disabled,onValueChange}:ChoicesProps){
- assertUniqueKeys(options,option=>option.value,'Select');const controlled=useRef(value!==undefined).current;
- const id=useId();const {direction,locale}=useHIG();
- const [current,setCurrent]=useControllable(value,defaultValue??options.find(option=>!option.disabled)?.value??'',onValueChange);
+ const {enabled,byValue}=useMemo(()=>{
+  const enabled:number[]=[],byValue=new Map<string,number>();
+  options.forEach((option,index)=>{byValue.set(option.value,index);if(!option.disabled)enabled.push(index);});
+  if(byValue.size!==options.length)assertUniqueKeys(options,option=>option.value,'Select');
+  return {enabled,byValue};
+ },[options]);
+ const controlled=useRef(value!==undefined).current;
+ const id=useId();const direction=useLayoutDirection(),locale=useLocale();
+ const [current,setCurrent]=useControllable(value,defaultValue??options[enabled[0]]?.value??'',onValueChange);
  const [open,setOpen]=useState(false);const [active,setActive]=useState(-1);
  const trigger=useRef<HTMLButtonElement>(null);const list=useRef<HTMLDivElement>(null);
  const search=useRef({text:'',time:0});
- const match=options.findIndex(option=>option.value===current);
- const selected=match>=0&&!options[match].disabled?match:controlled?-1:options.findIndex(option=>!option.disabled);
+ const match=byValue.get(current)??-1;
+ const selected=match>=0&&!options[match].disabled?match:controlled?-1:enabled[0]??-1;
  useEffect(()=>{if(!controlled&&selected>=0&&current!==options[selected].value)setCurrent(options[selected].value);},[controlled,current,selected,options]);
  const expanded=open&&!disabled&&options.length>0;
  const activeOption=active>=0&&!options[active]?.disabled?options[active]:undefined;
@@ -25,18 +56,16 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
   if(disabled||!options.length)return;
   // Safari does not focus buttons on pointer activation; the combobox owns keyboard navigation.
   trigger.current?.focus();
-  const enabled=options.flatMap((option,index)=>option.disabled?[]:[index]);
   setActive(edge==='last'?(enabled.at(-1)??-1):edge==='first'?(enabled[0]??-1):selected>=0&&!options[selected].disabled?selected:enabled[0]??-1);
   setOpen(true);search.current={text:'',time:0};
  }
- function choose(index:number){
+ const choose=useCallback((index:number)=>{
   const option=options[index];if(disabled||!option||option.disabled)return;
   setCurrent(option.value);setOpen(false);trigger.current?.focus();
- }
+ },[disabled,options,setCurrent]);
  function move(delta:number){
-  const enabled=options.flatMap((option,index)=>option.disabled?[]:[index]);
   if(!enabled.length)return;
-  const position=enabled.indexOf(active);
+  const position=enabledPosition(enabled,active);
   setActive(enabled[Math.min(enabled.length-1,Math.max(0,position+delta))]);
  }
  function onKeyDown(event:React.KeyboardEvent<HTMLButtonElement>){
@@ -80,7 +109,8 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
   const position=()=>{
    const rect=button.getBoundingClientRect();const gap=6;const inset=8;
    const viewport=window.visualViewport;
-   const width=viewport?.width??window.innerWidth;const height=viewport?.height??window.innerHeight;
+   const layoutHeight=window.innerHeight;
+   const width=viewport?.width??window.innerWidth;const height=viewport?.height??layoutHeight;
    const left=viewport?.offsetLeft??0;const top=viewport?.offsetTop??0;
    const below=top+height-rect.bottom-gap-inset;const above=rect.top-top-gap-inset;
    const desired=Math.min(320,popup.scrollHeight||320);const upwards=below<desired&&above>below;
@@ -90,13 +120,21 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
    const popupWidth=Math.min(rect.width,Math.max(0,width-inset*2));
    popup.style.width=`${popupWidth}px`;popup.style.maxHeight=`${maxHeight}px`;
    popup.style.left=`${Math.max(left+inset,Math.min(direction==='rtl'?rect.right-popupWidth:rect.left,left+width-popupWidth-inset))}px`;
-   popup.style.top=`${upwards?Math.max(top+inset,rect.top-gap-Math.min(popup.scrollHeight,maxHeight)):rect.bottom+gap}px`;
+   popup.style.top=upwards?'auto':`${rect.bottom+gap}px`;
+   popup.style.bottom=upwards?`${layoutHeight-rect.top+gap}px`:'auto';
   };
   position();
-  const resize=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(position);resize?.observe(button);
-  window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
-  window.visualViewport?.addEventListener('resize',position);window.visualViewport?.addEventListener('scroll',position);
-  return()=>{resize?.disconnect();window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);window.visualViewport?.removeEventListener('resize',position);window.visualViewport?.removeEventListener('scroll',position);};
+  let frame=0;
+  const schedulePosition=()=>{
+   if(!frame)frame=requestAnimationFrame(()=>{frame=0;position();});
+  };
+  const onScroll=(event:Event)=>{
+   if(event.target!==popup)schedulePosition();
+  };
+  const resize=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(schedulePosition);resize?.observe(button);
+  window.addEventListener('resize',schedulePosition);window.addEventListener('scroll',onScroll,{capture:true,passive:true});
+  window.visualViewport?.addEventListener('resize',schedulePosition);window.visualViewport?.addEventListener('scroll',schedulePosition,{passive:true});
+  return()=>{cancelAnimationFrame(frame);resize?.disconnect();window.removeEventListener('resize',schedulePosition);window.removeEventListener('scroll',onScroll,true);window.visualViewport?.removeEventListener('resize',schedulePosition);window.visualViewport?.removeEventListener('scroll',schedulePosition);};
  },[expanded,direction,options.length]);
 
  useEffect(()=>{
@@ -107,7 +145,7 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
   const outside=(event:PointerEvent)=>{const target=event.target as Node;if(!trigger.current?.contains(target)&&!list.current?.contains(target))setOpen(false);};
   // Consume Escape before an enclosing modal's document capture listener can dismiss it too.
   const escape=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setOpen(false);}};
-  document.addEventListener('pointerdown',outside);
+  document.addEventListener('pointerdown',outside,{passive:true});
   window.addEventListener('keydown',escape,true);
   return()=>{document.removeEventListener('pointerdown',outside);window.removeEventListener('keydown',escape,true);};
  },[expanded]);
@@ -120,14 +158,15 @@ export function Select({label,options,value,defaultValue,disabled,onValueChange}
   else if(option.offsetTop+option.offsetHeight>popup.scrollTop+popup.clientHeight)popup.scrollTop=option.offsetTop+option.offsetHeight-popup.clientHeight;
  },[expanded,active,activeOption,id]);
 
+ const renderOption=(option:ChoicesProps['options'][number],index:number)=><Option key={option.value} id={optionId(index)}
+  option={option} index={index} size={options.length>50?options.length:undefined} selected={index===selected} active={index===active}
+  onHighlight={setActive} onChoose={choose}/>;
  return <div className='hig-field'><label id={`${id}-label`} htmlFor={id}>{label}</label><div className='hig-select'>
   <button ref={trigger} id={id} type='button' role='combobox' className='hig-input hig-select-trigger' disabled={disabled} aria-labelledby={`${id}-label`} aria-haspopup='listbox' aria-expanded={expanded} aria-controls={expanded?`${id}-list`:undefined} aria-activedescendant={expanded&&activeOption?optionId(active):undefined} onClick={()=>expanded?setOpen(false):show()} onKeyDown={onKeyDown} onBlur={()=>setOpen(false)}>
    <span className='hig-select-value'>{options[selected]?.label??''}</span><ChevronDown size={20} className='hig-select-chevron'/>
   </button>
   {expanded&&<div ref={list} id={`${id}-list`} className='hig-select-list' role='listbox' aria-labelledby={`${id}-label`} popover='manual' onPointerDown={event=>event.preventDefault()}>
-   {options.map((option,index)=><div key={option.value} id={optionId(index)} role='option' className='hig-select-option' aria-selected={index===selected} aria-disabled={option.disabled||undefined} data-active={index===active||undefined} onPointerMove={()=>{if(!option.disabled)setActive(index);}} onClick={()=>choose(index)}>
-    <span>{option.label}</span><Check size={20} className='hig-select-check'/>
-   </div>)}
+   {options.length>50?<SelectWindow options={options} active={active} list={list} renderOption={renderOption}/>:options.map(renderOption)}
   </div>}
  </div></div>;
 }

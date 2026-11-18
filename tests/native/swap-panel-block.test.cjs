@@ -223,7 +223,8 @@ it('slides a pushed view in from the trailing side and a popped one from the lea
  const offset=tree=>{const stage=tree.findAll(n=>n.props.testID==='swap-stage'&&typeof n.type!=='string')[0];const inner=root.toJSON();void stage;const find=node=>{if(!node||typeof node==='string')return null;if(node.props?.testID==='swap-stage')return node.children[0];for(const child of node.children??[]){const hit=find(child);if(hit)return hit;}return null;};return StyleSheet.flatten(find(inner).props.style);};
  const render=direction=>h(HIGProvider,{reducedMotion:false,direction},h(SwapPanelBlock,{tokens,onSubmit:jest.fn()}));
  act(()=>{root=create(render('ltr'));});let tree=root.root;expect(timing).not.toHaveBeenCalled();
- press(tree,'swap-settings-button');expect(timing).toHaveBeenCalledTimes(1);expect(timing.mock.calls[0][1]).toMatchObject({toValue:1,duration:260});
+ press(tree,'swap-settings-button');expect(timing).toHaveBeenCalledTimes(1);expect(timing.mock.calls[0][1]).toMatchObject({toValue:1,duration:260,useNativeDriver:true});
+ expect(offset(tree).height).toBeUndefined();
  // The mocked animation never advances, so the view rests at its starting offset: trailing side for a push.
  expect(offset(tree).transform[0].translateX).toBe(48);expect(offset(tree).opacity).toBe(0);
  press(tree,'swap-back');expect(timing).toHaveBeenCalledTimes(2);expect(offset(tree).transform[0].translateX).toBe(-48);

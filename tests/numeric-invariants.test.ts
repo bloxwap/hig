@@ -1,5 +1,5 @@
-import {expect,it} from 'vitest';
-import {decimal,decimalCompare,decimalMultiply,decimalDivide,numericRange,paginationValue,progressValue} from '../packages/hig/contracts/src/index';
+import {expect,it,vi} from 'vitest';
+import {localizeDecimal,decimal,decimalCompare,decimalMultiply,decimalDivide,numericRange,paginationValue,progressValue} from '../packages/hig/contracts/src/index';
 import {createConfettiBurst} from '../packages/hig/contracts/src/confetti';
 it('performs decimal arithmetic without losing transaction digits',()=>{
  expect(decimal('9007199254740993.123456789')).toBe('9007199254740993.123456789');
@@ -19,4 +19,15 @@ it('validates ranges and normalizes progress and pagination consistently',()=>{
 });
 it('bounds a burst before allocating its particles',()=>{
  expect(createConfettiBurst({particleCount:Number.MAX_SAFE_INTEGER},['red']).particles).toHaveLength(500);
+});
+
+it('prepares decimal glyphs once per locale while preserving raw digits and trailing separators',()=>{
+ const probe=vi.spyOn(Intl.NumberFormat.prototype,'formatToParts');
+ try{
+  expect(localizeDecimal('9007199254740993.00','bn-BD')).toBe('৯০০৭১৯৯২৫৪৭৪০৯৯৩.০০');
+  expect(localizeDecimal('0.','bn-BD')).toBe('০.');
+  expect(localizeDecimal('001.','de-DE')).toBe('001,');
+  expect(localizeDecimal('001.00','de-DE')).toBe('001,00');
+  expect(probe).toHaveBeenCalledTimes(2);
+ }finally{probe.mockRestore();}
 });

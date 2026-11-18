@@ -1,6 +1,6 @@
 # @bloxwap/hig/react
 
-Version 0.9.1, an entry of `@bloxwap/hig`. Import individual entries; see docs/components for platform and accessibility contracts.
+Version 0.9.2, an entry of `@bloxwap/hig`. Import individual entries; see docs/components for platform and accessibility contracts.
 
 UI symbols come from `@bloxwap/icons` (install `@bloxwap/icons@^0.1.0`). The web entry renders inline SVG and imports individual icon modules.
 

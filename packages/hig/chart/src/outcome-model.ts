@@ -70,12 +70,22 @@ export function labelBounds(height:number,size:number,insets?:TargetLabelInsets,
  * `preserveOrder` keeps the input sequence instead of sorting by desired position, for stable target-label stacks.
  */
 export function capsuleCenters(wanted:readonly number[],height:number,size=36,gap=6,preserveOrder=false,bounds={top:0,bottom:height}):number[]{
- const order=wanted.map((_,index)=>index),placed:number[]=[];
- if(!preserveOrder)order.sort((a,b)=>wanted[a]-wanted[b]);
+ const count=wanted.length;
+ const order=preserveOrder?undefined:wanted.map((_,index)=>index).sort((a,b)=>wanted[a]-wanted[b]);
+ const centers=new Array<number>(count);
  // A crowded chart gives up the gap before any capsule leaves it.
- const step=order.length>1?Math.min(size+gap,(bounds.bottom-bounds.top-size)/(order.length-1)):size+gap;
- for(const [rank,index] of order.entries())placed[rank]=Math.max(wanted[index],rank?placed[rank-1]+step:bounds.top+size/2);
- for(let rank=order.length-1;rank>=0;rank--)placed[rank]=Math.min(placed[rank],rank===order.length-1?bounds.bottom-size/2:placed[rank+1]-step);
- const centers:number[]=[];for(const [rank,index] of order.entries())centers[index]=placed[rank];
+ const step=count>1?Math.min(size+gap,(bounds.bottom-bounds.top-size)/(count-1)):size+gap;
+ let lower=bounds.top+size/2;
+ for(let rank=0;rank<count;rank++){
+  const index=order?.[rank]??rank;
+  centers[index]=Math.max(wanted[index],lower);
+  lower=centers[index]+step;
+ }
+ let upper=bounds.bottom-size/2;
+ for(let rank=count-1;rank>=0;rank--){
+  const index=order?.[rank]??rank;
+  centers[index]=Math.min(centers[index],upper);
+  upper=centers[index]-step;
+ }
  return centers;
 }

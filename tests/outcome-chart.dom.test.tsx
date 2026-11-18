@@ -53,7 +53,8 @@ it('OutcomeChart captions the figure, draws the ten percent ladder, and lists on
 });
 
 it('trails flow left at 50px a second from the ladder to the capsules, over the moving grid',()=>{
- render(<HIGProvider><OutcomeChart summary='Flow' outcomes={[{id:'a',label:'A',price:.5},{id:'b',label:'B',price:.25}]}/></HIGProvider>);
+ const view=(price:number)=><HIGProvider><OutcomeChart summary='Flow' outcomes={[{id:'a',label:'A',price},{id:'b',label:'B',price:.25}]}/></HIGProvider>;
+ const {rerender}=render(view(.5));
  frame(0);
  // 600 wide: the capsules take 200 + 8 over the ladder and the connector 40, so trails run from 18 to 352.
  expect(context.calls.filter(call=>call[0]==='createLinearGradient')).toEqual([['createLinearGradient',18,0,352,0],['createLinearGradient',18,0,352,0]]);
@@ -68,7 +69,9 @@ it('trails flow left at 50px a second from the ladder to the capsules, over the 
  expect(context.calls.slice(firstBegin+1,firstBegin+45).filter(call=>call[0]==='moveTo'&&call[1]===22).map(call=>call[2])).toEqual([0,1,2,3,4,5,6,7].map(row=>expect.closeTo(24+row*312/7,5)));
  // The first grid mark starts at x=22 and has moved 25px after half a second.
  const firstMark=()=>context.calls[context.calls.findIndex(call=>call[0]==='beginPath')+1][1];
- expect(firstMark()).toBe(22);frame(500);expect(firstMark()).toBe(-3);
+ expect(firstMark()).toBe(22);
+ // Move the price so the end of the initial horizontal run is visible on the trail.
+ rerender(view(.51));frame(1);frame(500);expect(firstMark()).toBe(-3);
  // The sample taken at t=0 has moved 50px left of the tip after one second.
  frame(1000);expect(context.calls).toContainEqual(['bezierCurveTo',expect.any(Number),expect.any(Number),expect.any(Number),expect.any(Number),302,high]);
 });
@@ -100,12 +103,32 @@ it('a new chance eases over 300ms and carries its capsule along; reduced motion 
  expect(context.calls[context.calls.findIndex(call=>call[0]==='beginPath')+1][1]).toBe(22);
 });
 
+it('reverses an unfinished price update from the current trail position',()=>{
+ const view=(price:number)=><OutcomeChart summary="Reversal" outcomes={[{id:'a',label:'A',price},{id:'low',label:'Low',price:.02},{id:'high',label:'High',price:.98}]}/>;
+ const {rerender}=render(view(.5));frame(0);
+ rerender(view(.75));frame(16);frame(166);
+ const midpoint=Number(tips()[0]);expect(midpoint).toBeCloseTo(141,0);
+ rerender(view(.25));frame(166);expect(tips()[0]).toBeCloseTo(midpoint,5);
+ frame(466);expect(tips()[0]).toBeCloseTo(258,5);
+});
+
 it('draws at most ten outcomes and waits with the localized status when there are none',()=>{
  const many=Array.from({length:12},(_,index)=>({id:`#${index}`,label:`Outcome ${index}`,price:.1}));
  const {rerender}=render(<HIGProvider messages={{loadingChart:'Diagramm wird geladen'}}><OutcomeChart summary='Many' outcomes={many}/></HIGProvider>);
  expect(capsules()).toHaveLength(10);
  rerender(<HIGProvider messages={{loadingChart:'Diagramm wird geladen'}}><OutcomeChart summary='Many' outcomes={null}/></HIGProvider>);
  expect(screen.getByRole('status').textContent).toBe('Diagramm wird geladen');expect(capsules()).toHaveLength(0);
+});
+
+it('stops reading a large feed after ten distinct nonempty IDs',()=>{
+ const first={id:'first',label:'First',price:.1};
+ let tailReads=0;
+ const tail=Array.from({length:9990},()=>({get id(){tailReads++;return 'tail';},label:'Tail',price:null}));
+ const outcomes=[{...first,id:''},first,{...first,label:'Duplicate'},...Array.from({length:9},(_,i)=>({...first,id:String(i)})),...tail];
+ render(<OutcomeChart summary='Large feed' outcomes={outcomes}/>);
+ expect(capsules().map(node=>node.dataset.higOutcome)).toEqual(['first','0','1','2','3','4','5','6','7','8']);
+ expect(capsules()[0].textContent).toContain('First');
+ expect(tailReads).toBe(0);
 });
 
 it('without outcomes it subscribes to the feed, follows it, and stops it on unmount; host outcomes never open it',()=>{
@@ -132,12 +155,12 @@ it('outcomes wait stacked at the bottom, then glide into place when their prices
  const {rerender,unmount}=render(view(waiting));
  frame(0);expect(capsules().map(center)).toEqual([273,309,345]);expect(tips()).toHaveLength(0);
  rerender(view(sample));
- // Still in the stack on arrival; halfway after 300ms; in place after 600ms. The trails are at their chances at once.
+ // Still in the stack on arrival; halfway after 250ms; in place after 500ms. The trails are at their chances at once.
  expect(capsules().map(center)).toEqual([273,309,345]);
- frame(300);expect(capsules().map(center)).toEqual([291,327,expect.closeTo(192.3,1)]);expect(tips()).toHaveLength(3);
+ frame(250);expect(capsules().map(center)).toEqual([291,327,expect.closeTo(192.3,1)]);expect(tips()).toHaveLength(3);
  // Each connector follows its capsule while it moves.
  expect(context.calls.filter(call=>call[0]==='bezierCurveTo'&&call[5]===392).map(call=>call[6])).toEqual([291,327,expect.closeTo(192.3,1)]);
- frame(600);expect(capsules().map(center)).toEqual([309,345,expect.closeTo(39.6,5)]);
+ frame(500);expect(capsules().map(center)).toEqual([309,345,expect.closeTo(39.6,5)]);
  unmount();
  const reduced=render(view(waiting,true));frame(0);reduced.rerender(view(sample,true));frame(16);expect(capsules().map(center)).toEqual([309,345,expect.closeTo(39.6,5)]);
 });

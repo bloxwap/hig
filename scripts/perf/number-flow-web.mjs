@@ -4,6 +4,7 @@
 // (Performance.getMetrics) around each scenario and the page records its requestAnimationFrame intervals.
 //
 //   node scripts/perf/number-flow-web.mjs                    every scenario, both motions, unthrottled and at 4x CPU throttle
+//   node scripts/perf/number-flow-web.mjs --production       ordinary React DOM for user-facing timing; React commit counts are unavailable
 //   node scripts/perf/number-flow-web.mjs --runs=5           the median of five runs of each (default 3)
 //   node scripts/perf/number-flow-web.mjs --motion=flow      one motion (flow, slide)
 //   node scripts/perf/number-flow-web.mjs --quiet-page       tickers, unchanged and roll without the frame recorder. Its
@@ -41,7 +42,8 @@ const require=createRequire(`${root}/package.json`);
 const {build}=require('esbuild');const {chromium}=require('@playwright/test');
 const flag=name=>process.argv.find(argument=>argument.startsWith(`--${name}=`))?.slice(name.length+3);
 const runs=Math.max(1,Number(flag('runs'))||3),only=flag('only')?.split(','),profile=flag('profile')?.split(':'),trace=flag('trace')?.split(':'),least=flag('stat')==='min',against=flag('against'),motions=flag('motion')?.split(',')??['flow','slide'],quiet=process.argv.includes('--quiet-page'),warm=process.argv.includes('--warm');
-const pageSource=sources=>`import React,{Profiler,useState} from 'react';import {createRoot} from 'react-dom/profiling';import {flushSync} from 'react-dom';
+const production=process.argv.includes('--production');
+const pageSource=sources=>`import React,{Profiler,useState} from 'react';import {createRoot} from '${production?'react-dom/client':'react-dom/profiling'}';import {flushSync} from 'react-dom';
 import {HIGProvider} from './${sources}/provider';import {AnimatedNumberReadout} from './${sources}/animated-number';
 const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2};
 // The first currency crosses 1,000 and the first percentage crosses zero, so figures gain and lose places and signs as well as roll.
@@ -55,7 +57,7 @@ const frame=()=>new Promise(done=>requestAnimationFrame(done)),wait=ms=>new Prom
 // A live collection: its length is recounted after a mutation without style or layout, so sampling it does not disturb the counters.
 const elements=document.getElementById('root').getElementsByTagName('*'),nodes=()=>elements.length-1;
 const median=list=>{const sorted=[...list].sort((a,b)=>a-b);return sorted.length?sorted[Math.floor(sorted.length/2)]:0;};
-const frames=stamps=>{const gaps=stamps.slice(1).map((stamp,index)=>stamp-stamps[index]);return {frames:gaps.length,framesOver16_7ms:gaps.filter(gap=>gap>17.7).length,framesOver33ms:gaps.filter(gap=>gap>34.4).length,worstFrameMs:Math.max(0,...gaps),medianFrameMs:median(gaps)};};
+const frames=stamps=>{const gaps=stamps.slice(1).map((stamp,index)=>stamp-stamps[index]);return {frames:gaps.length,framesNear120Hz:gaps.filter(gap=>Math.abs(gap-1000/120)<=0.5).length,framesOver16_7ms:gaps.filter(gap=>gap>17.7).length,framesOver33ms:gaps.filter(gap=>gap>34.4).length,worstFrameMs:Math.max(0,...gaps),medianFrameMs:median(gaps)};};
 const starts=count=>Array.from({length:count},(_,index)=>formats[index%formats.length].start*(1+Math.floor(index/formats.length)*0.01));
 const leftovers=()=>({animations:document.getAnimations().length,nodes:document.querySelectorAll('.hig-number-flow-window,.hig-number-flow-ghost,[data-spinning],.hig-animated-number-old').length});
 let job={scenario:'',motion:'flow',values:[],next:random(1),quiet:false};
@@ -126,9 +128,9 @@ async function measure(browser,bundle,scenario,motion,rate,inspect=''){
   const probe=await page.evaluate(()=>window.higPerf.probe());
   if(errors.length)throw new Error(`${scenario} ${motion}: ${errors.join('; ')}`);
   const delta=name=>after[name]-before[name],per=(value,count)=>count?value/count:0,{updates,ticks,commits,...rest}=ran;
-  return {...rest,ticks,updates,commits,
-   scriptMsPerUpdate:per(delta('ScriptDuration')*1000,updates),taskMsPerUpdate:per(delta('TaskDuration')*1000,updates),layoutsPerUpdate:per(delta('LayoutCount'),updates),styleRecalcsPerUpdate:per(delta('RecalcStyleCount'),updates),commitsPerUpdate:per(commits,updates),
-   perTick:{scriptMs:per(delta('ScriptDuration')*1000,ticks),taskMs:per(delta('TaskDuration')*1000,ticks),layoutMs:per(delta('LayoutDuration')*1000,ticks),styleMs:per(delta('RecalcStyleDuration')*1000,ticks),layouts:per(delta('LayoutCount'),ticks),styleRecalcs:per(delta('RecalcStyleCount'),ticks),commits:per(commits,ticks)},
+  return {...rest,ticks,updates,commits:production?null:commits,
+   scriptMsPerUpdate:per(delta('ScriptDuration')*1000,updates),taskMsPerUpdate:per(delta('TaskDuration')*1000,updates),layoutsPerUpdate:per(delta('LayoutCount'),updates),styleRecalcsPerUpdate:per(delta('RecalcStyleCount'),updates),commitsPerUpdate:production?null:per(commits,updates),
+   perTick:{scriptMs:per(delta('ScriptDuration')*1000,ticks),taskMs:per(delta('TaskDuration')*1000,ticks),layoutMs:per(delta('LayoutDuration')*1000,ticks),styleMs:per(delta('RecalcStyleDuration')*1000,ticks),layouts:per(delta('LayoutCount'),ticks),styleRecalcs:per(delta('RecalcStyleCount'),ticks),commits:production?null:per(commits,ticks)},
    totals:{scriptMs:delta('ScriptDuration')*1000,taskMs:delta('TaskDuration')*1000,layoutMs:delta('LayoutDuration')*1000,styleMs:delta('RecalcStyleDuration')*1000,layouts:delta('LayoutCount'),styleRecalcs:delta('RecalcStyleCount')},
    heapGrowthKB:(settled.JSHeapUsedSize-before.JSHeapUsedSize)/1024,...probe};
  }finally{await page.close();}
@@ -156,9 +158,9 @@ function summary(results){
 }
 const browser=await launchBrowser(chromium,{headless:true});
 try{
- if(profile||trace){const [scenario,motion='flow',rate='1']=profile??trace;console.log(JSON.stringify({scenario,motion,cpuThrottle:Number(rate),...(await measure(browser,bundles.current,scenario,motion,Number(rate),profile?'profile':'trace'))},null,1));}
+ if(profile||trace){const [scenario,motion='flow',rate='1']=profile??trace;console.log(JSON.stringify({scenario,motion,cpuThrottle:Number(rate),reactBuild:production?'production':'profiling',...(await measure(browser,bundles.current,scenario,motion,Number(rate),profile?'profile':'trace'))},null,1));}
  else{
-  const result={checkedAt:new Date().toISOString(),chromium:browser.version(),runs,quietPage:quiet,note:`${least?'least':'median'} of runs; an update is one value handed to one figure, a tick one state change of the parent`,cpuThrottle1x:{},cpuThrottle4x:{},...(against?{against:{sources:against,cpuThrottle1x:{},cpuThrottle4x:{}}}:null)};
+  const result={checkedAt:new Date().toISOString(),chromium:browser.version(),reactBuild:production?'production':'profiling',runs,quietPage:quiet,note:`${least?'least':'median'} of runs; an update is one value handed to one figure, a tick one state change of the parent`,cpuThrottle1x:{},cpuThrottle4x:{},...(against?{against:{sources:against,cpuThrottle1x:{},cpuThrottle4x:{}}}:null)};
   for(const [name,rate] of [['cpuThrottle1x',1],['cpuThrottle4x',4]])for(const motion of motions){
    result[name][motion]={};if(against)result.against[name][motion]={};
    for(const scenario of ['tickers','interrupt','mount','unchanged','roll']){

@@ -130,3 +130,83 @@ it('picker rows show the balance and its value as live numbers that follow the t
  expect(flow(tree,'swap-token-balance-1-eth')[0]).toBe(before);expect(reading(tree,'swap-token-balance-1-eth')).toBe('0.75');expect(reading(tree,'swap-token-value-1-eth')).toBe('$1,500.00');
 });
 
+
+it('ranks each available hot token once in a native picker',()=>{
+ const tree=mount(h(ToPickerBlock,{tokens,onSelect:jest.fn(),hotTokenIds:['missing',baseEth.id,baseEth.id,eth.id]}));
+ expect(rows(tree,'to')).toEqual([baseEth.id,eth.id,usdc.id,baseUsdc.id]);
+});
+
+it('only redraws affected token rows when the destination or selected token changes',()=>{
+ const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),name:'Token '+i}));
+ const tokenRowProps=jest.fn(token=>({testID:'position-'+token.id}));
+ const props={tokens:catalog,onSelect:jest.fn(),tokenRowProps,onAddressChange:jest.fn()};
+ const picker=(address,selected)=>h(HIGProvider,{reducedMotion:true},h(ToPickerBlock,{...props,address,selected}));
+ act(()=>{root=create(picker('',catalog[0]));});
+ expect(tokenRowProps.mock.calls).toHaveLength(Math.ceil(node(root.root,'swap-list-to').props.style.height/64)+4);
+ tokenRowProps.mockClear();
+ act(()=>root.update(picker('0x1',catalog[0])));
+ const addressCalls=tokenRowProps.mock.calls.map(([token])=>token.id);
+ tokenRowProps.mockClear();
+ act(()=>root.update(picker('0x1',catalog[1])));
+ expect({addressCalls,selectionCalls:tokenRowProps.mock.calls.map(([token])=>token.id)}).toEqual({addressCalls:[],selectionCalls:['0','1']});
+ expect(node(root.root,'position-0').props.accessibilityState.selected).toBe(false);
+ expect(node(root.root,'position-1').props.accessibilityState.selected).toBe(true);
+});
+
+it('scans a large catalog once per typing burst and rejects a stale row press',()=>{
+ jest.useFakeTimers();
+ try{
+  let reads=0;
+  const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),get keywords(){reads++;return 'key'+i;}}));
+  const select=jest.fn();
+  const tokenRowProps=jest.fn(()=>({}));
+  let listRenders=0;
+  function HostList(props){listRenders++;return h(FlatList,props);}
+  const tree=mount(h(ToPickerBlock,{tokens:catalog,onSelect:select,tokenRowProps,listComponent:HostList}));
+  listRenders=0;
+  tokenRowProps.mockClear();
+  for(const value of ['k','ke','key999'])act(()=>search(tree,'to').props.onChangeText(value));
+  expect(tokenRowProps.mock.calls.length).toBe(0);expect(listRenders).toBe(1);
+  expect(search(tree,'to').props.value).toBe('key999');expect(reads).toBe(0);
+  act(()=>jest.advanceTimersByTime(150));
+  expect(reads).toBe(1000);expect(rows(tree,'to')).toEqual(['999']);
+  act(()=>search(tree,'to').props.onChangeText('key888'));
+  press(tree,'swap-token-999');expect(select).not.toHaveBeenCalled();
+  expect(rows(tree,'to')).toEqual(['888']);expect(reads).toBe(1001);
+ }finally{jest.useRealTimers();}
+});
+
+it.each([1,2])('budgets four rows of overscan at font scale %d while measuring wrapped text',fontScale=>{
+ const RN=require('react-native');
+ const dimensions=jest.spyOn(RN,'useWindowDimensions').mockReturnValue({height:800,width:360,scale:2,fontScale});
+ try{
+  const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),name:'Long token name '.repeat(5)+i}));
+  const tree=mount(h(ToPickerBlock,{tokens:catalog,onSelect:jest.fn(),hotTokenIds:['0']}));
+  const list=node(tree,'swap-list-to').props;
+  const stride=20+Math.max(44,45*fontScale);
+  expect((list.windowSize-1)*list.style.height/2).toBeCloseTo(4*stride);
+  expect(list.maxToRenderPerBatch).toBe(4);expect(list.updateCellsBatchingPeriod).toBe(16);
+  expect(list.getItemLayout).toBeUndefined();expect(list.contentContainerStyle.minHeight).toBe(64000);
+  expect(texts(node(tree,'swap-token-0'))).toContain(catalog[0].name);
+  expect(rows(tree,'to')).toHaveLength(1000);
+ }finally{dimensions.mockRestore();}
+});
+
+it('does no chain discovery for a hidden filter and keeps chain controls stable while typing',()=>{
+ let idReads=0;
+ const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),get chainId(){idReads++;return i%20;}}));
+ const options=Array.from({length:20},(_,i)=>({chainId:i,name:'Chain '+i}));
+ const props={tokens:catalog,onSelect:jest.fn()};
+ mount(h(ToPickerBlock,{...props,chainFilter:false}));const hiddenReads=idReads;
+ const tree=mount(h(ToPickerBlock,{...props,chains:options}));
+ const labels=['All',...options.map(o=>o.name)];
+ const handlers=()=>labels.map(label=>chain(tree,label).props.onPress);
+ let previous=handlers(),changed=0;
+ for(const value of ['e','et','eth']){
+  act(()=>search(tree,'to').props.onChangeText(value));
+  const next=handlers();changed+=next.filter((fn,i)=>fn!==previous[i]).length;previous=next;
+ }
+ expect({hiddenReads,changed}).toEqual({hiddenReads:0,changed:0});
+ act(()=>chain(tree,'Chain 2').props.onPress(event));
+ expect(rows(tree,'to')).toHaveLength(50);
+});

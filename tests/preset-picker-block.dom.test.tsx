@@ -53,3 +53,17 @@ describe('PresetPickerBlock',()=>{
  });
  it('is exported from the blocks aggregate',()=>{expect(blocks.PresetPickerBlock).toBe(PresetPickerBlock);});
 });
+
+it('skips unchanged header props on selection and applies a replacement Back handler',async()=>{
+ const readTitle=vi.fn(()=>'Previous screen');
+ const props={title:'Size',onBack:vi.fn(),backProps:{get title(){return readTitle();}},presets:sizeOptions(300),onPresetChange:vi.fn(),onSubmit:vi.fn(),submitLabel:'Set'};
+ const {rerender}=render(<PresetPickerBlock {...props} selected={100} value={100}/>);
+ expect(readTitle).toHaveBeenCalled();
+ readTitle.mockClear();
+ rerender(<PresetPickerBlock {...props} selected={50} value={50}/>);
+ expect(readTitle).not.toHaveBeenCalled();
+ const back=vi.fn();
+ rerender(<PresetPickerBlock {...props} onBack={back} selected={50} value={50}/>);
+ await userEvent.click(screen.getByTitle('Previous screen'));
+ expect(back).toHaveBeenCalledOnce();
+});

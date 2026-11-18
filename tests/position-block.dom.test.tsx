@@ -53,7 +53,10 @@ describe('PositionBlock',()=>{
  it('ships no trading words of its own: only Close and Back are built in, and they follow the provider',()=>{
   render(<HIGProvider locale='fr-FR' messages={{close:'Fermer'}}><PositionBlock title='Position' details={[{label:'Frais',value:{value:0.53,options:usd}}]} groups={[]} onClose={()=>{}}/></HIGProvider>);
   expect(screen.getByRole('button',{name:'Fermer'})).toBeTruthy();expect(lines()[0][1]).toMatch(/^0,53\s\$US$/);
-  const source=readFileSync('packages/hig/react/src/blocks/position-block.tsx','utf8');expect(source.match(/messages\.\w+/g)).toEqual(['messages.close']);
+  const source=readFileSync('packages/hig/react/src/blocks/position-block.tsx','utf8');
+  const header=readFileSync('packages/hig/react/src/blocks/screen-header.tsx','utf8');
+  expect(source.match(/messages\.\w+/g)??[]).toEqual([]);
+  expect(header.match(/messages\.\w+/g)).toEqual(['messages.close','messages.back']);
  });
  it('stacks its list groups 24 apart, the standard gap between groups',()=>{
   const rule=readFileSync('packages/hig/react/src/styles.css','utf8').split('\n').find(line=>line.startsWith('.hig-position-groups {'))??'';
@@ -118,4 +121,16 @@ describe('PositionBlock host slots',()=>{
   render(<PositionBlock {...base} groups={[[{id:'leverage',label:'Leverage',value:{value:40,suffix:'×',formattedValue:'40'},onSelect:()=>{}}]]}/>);
   expect(screen.getByRole('button',{name:/Leverage/}).textContent).toContain('40×');
  });
+});
+
+it('updates translated header controls without rereading the position summary',()=>{
+ let reads=0;
+ const details=Array.from({length:8},(_,index)=>({id:String(index),get label(){reads++;return 'Fee';},value:'$2'}));
+ const child=<PositionBlock {...base} details={details} onClose={()=>{}}/>;
+ const view=render(<HIGProvider density='comfortable'>{child}</HIGProvider>);
+ expect(reads).toBeGreaterThan(0);
+ reads=0;
+ view.rerender(<HIGProvider density='compact' messages={{close:'Fermer'}}>{child}</HIGProvider>);
+ expect(screen.getByRole('button',{name:'Fermer'})).toBeTruthy();
+ expect(reads).toBe(0);
 });

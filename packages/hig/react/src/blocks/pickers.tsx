@@ -1,11 +1,13 @@
 "use client";
 import React,{useCallback,useEffect,useId,useMemo,useRef,useState} from 'react';
+import {createPickerSearch} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
+import {RowWindow} from '../row-window.js';
 import {PressDecoration,useHIG} from '../provider.js';
 import {Button,IconButton} from '../button.js';
 import {Field,Input,SearchInput} from '../field.js';
 import {Filter} from '../selection.js';
-import {SwapIcon,SwapNumber,TokenIcon,usdNumber,addressGradient,chainsOf,fuzzyMatch,shortAddress,type SwapChain,type SwapToken} from './swap/shared.js';
+import {SwapIcon,SwapNumber,TokenIcon,usdNumber,addressGradient,chainsOf,shortAddress,type SwapChain,type SwapToken} from './swap/shared.js';
 export type {SwapChain,SwapToken} from './swap/shared.js';
 export interface SwapWallet {connected:boolean;address?:string|null}
 /** The searchable token list both pickers share. */
@@ -49,52 +51,106 @@ function useMergedRef<T>(...refs:(React.Ref<T>|undefined)[]){
  const latest=useRef(refs);latest.current=refs;
  return useCallback((node:T|null)=>{for(const ref of latest.current){if(typeof ref==='function')ref(node);else if(ref)(ref as React.RefObject<T|null>).current=node;}},[]);
 }
-function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,search:searchable=true,zeroBalances,searchLabel,searchRef,searchInputProps,tokenRowProps,label}:PickerListProps&{label:string}){
+const TokenWindow=React.memo(RowWindow) as typeof RowWindow;
+const TokenPickerButton=React.memo(function TokenPickerButton({token,index,active,isSelected,selectedLabel,onSelect,setActive,tokenRowProps,zeroBalances}:
+ Pick<PickerListProps,'onSelect'|'tokenRowProps'|'zeroBalances'>&{token:SwapToken;index:number;active:boolean;isSelected:boolean;selectedLabel:string;setActive:(index:number)=>void}){
+ return <button {...rowAttributes(tokenRowProps?.(token))} type='button' className='hig-swap-row' data-active={active} data-selected={isSelected||undefined} aria-current={isSelected||undefined} onClick={()=>onSelect(token)} onPointerMove={()=>setActive(index)}>
+  <TokenIcon token={token}/>
+  <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.detail??token.chain}{isSelected?' · '+selectedLabel:''}</span></span>
+  {showBalance(token,zeroBalances)&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}
+  <PressDecoration kind='row'/>
+ </button>;
+});
+const TokenList=React.memo(function TokenList({tokens,chains,chainFilter=true,hotTokenIds,selected=null,onSelect,loading,autoFocus,search:searchable=true,zeroBalances,searchLabel,searchRef,searchInputProps,tokenRowProps,label}:PickerListProps&{label:string}){
  const {messages}=useHIG();const id=useId();
  const [query,setQuery]=useState('');const [chainId,setChainId]=useState<string|number|null>(null);const [active,setActive]=useState(searchable?0:-1);
  const list=useRef<HTMLDivElement>(null);const search=useRef<HTMLInputElement>(null);const searchInput=useMergedRef(search,searchRef);
  useEffect(()=>{if(autoFocus&&window.matchMedia?.('(pointer: fine)').matches)search.current?.focus();},[]);
- const options=useMemo(()=>chains??chainsOf(tokens),[chains,tokens]);
+ const [previousQuery,setPreviousQuery]=useState<string|null>(null);
+ const waiting=previousQuery!==null&&tokens.length>50;
+ const filterQuery=waiting?previousQuery:query;
+ function editQuery(next:string){
+  if(next===query)return;
+  setPreviousQuery(tokens.length>50&&next.trim()!==''?filterQuery:null);
+  setQuery(next);
+ }
+ useEffect(()=>{
+  if(previousQuery===null)return;
+  if(!waiting){setPreviousQuery(null);return;}
+  const timer=setTimeout(()=>setPreviousQuery(null),150);
+  return ()=>clearTimeout(timer);
+ },[previousQuery,query,waiting]);
  // Hot tokens lead the unfiltered list; any search or chain filter shows one flat list.
- const {rows,hotCount}=useMemo(()=>{
-  const text=query.trim();
-  const filtered=tokens.filter(token=>(chainId===null||token.chainId===chainId)&&(text===''||fuzzyMatch(text,`${token.name} ${token.symbol} ${token.chain} ${token.keywords??''}`)));
-  if(text!==''||chainId!==null||!hotTokenIds?.length)return {rows:filtered,hotCount:0};
-  const hot=hotTokenIds.map(id=>filtered.find(token=>token.id===id)).filter((token):token is SwapToken=>!!token);
-  if(!hot.length||hot.length===filtered.length)return {rows:filtered,hotCount:0};
-  return {rows:[...hot,...filtered.filter(token=>!hot.includes(token))],hotCount:hot.length};
- },[tokens,hotTokenIds,query,chainId]);
+ const searchCatalog=useMemo(()=>createPickerSearch(tokens),[tokens]);
+ // Keyboard navigation and the following render share the same catalog scan.
+ const rowsFor=useMemo(()=>{
+  let cached:{text:string;result:ReturnType<typeof searchCatalog>}|undefined;
+  return (text:string)=>{
+   if(cached?.text===text)return cached.result;
+   const result=searchCatalog(text,chainId,hotTokenIds);
+   cached={text,result};
+   return result;
+  };
+ },[searchCatalog,chainId,hotTokenIds]);
+ const {rows,hotCount}=rowsFor(filterQuery);
+ const sections=useMemo(()=>({
+  hot:hotCount?rows.slice(0,hotCount):[],
+  all:hotCount?rows.slice(hotCount):rows,
+ }),[rows,hotCount]);
  // Without a search field there is no arrow-key cursor, so no row is highlighted until the pointer moves over one.
  useEffect(()=>{setActive(searchable?0:-1);},[query,chainId,searchable]);
  useEffect(()=>{list.current?.querySelector('[data-active="true"]')?.scrollIntoView?.({block:'nearest'});},[active]);
  const onKeyDown=(event:React.KeyboardEvent)=>{
-  if(event.key==='ArrowDown'){event.preventDefault();setActive(index=>Math.min(index+1,rows.length-1));}
-  else if(event.key==='ArrowUp'){event.preventDefault();setActive(index=>Math.max(index-1,0));}
-  else if(event.key==='Enter'&&rows[active]){event.preventDefault();onSelect(rows[active]);}
+  if(!['ArrowDown','ArrowUp','Enter'].includes(event.key))return;
+  const currentRows=waiting?rowsFor(query).rows:rows;
+  if(waiting)setPreviousQuery(null);
+  if(event.key==='ArrowDown'){event.preventDefault();setActive(index=>Math.min((waiting?0:index)+1,currentRows.length-1));}
+  else if(event.key==='ArrowUp'){event.preventDefault();setActive(index=>Math.max((waiting?0:index)-1,0));}
+  else if(event.key==='Enter'&&currentRows[waiting?0:active]){event.preventDefault();onSelect(currentRows[waiting?0:active]);}
  };
+ const pendingSearch=useRef<string|null>(null);
+ React.useLayoutEffect(()=>{pendingSearch.current=waiting?query:null;},[waiting,query]);
+ const selectVisible=useCallback((token:SwapToken)=>{
+  const pending=pendingSearch.current;
+  if(pending!==null){
+   setPreviousQuery(null);
+   if(!createPickerSearch([token])(pending,chainId).rows.length)return;
+  }
+  onSelect(token);
+ },[chainId,onSelect]);
  // An empty value is the unfiltered list.
- const filters=[{value:'',label:messages.swapAllChains??en.swapAllChains},...options.map(chain=>({value:String(chain.chainId),label:chain.name,icon:chain.icon}))];
- const row=(token:SwapToken,index:number)=>{const isSelected=selected?.id===token.id;return <div role='listitem' key={token.id}><button {...rowAttributes(tokenRowProps?.(token))} type='button' className='hig-swap-row' data-active={index===active} data-selected={isSelected||undefined} aria-current={isSelected||undefined} onClick={()=>onSelect(token)} onPointerMove={()=>setActive(index)}>
-  <TokenIcon token={token}/>
-  <span className='hig-swap-row-text'><strong>{token.name}</strong><span>{token.detail??token.chain}{isSelected?' · '+(messages.swapSelected??en.swapSelected):''}</span></span>
-  {showBalance(token,zeroBalances)&&<span className='hig-swap-row-balance'><strong><SwapNumber value={token.balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix}/></strong>{(token.price??0)>0&&<SwapNumber {...usdNumber((token.balance??0)*(token.price??0))}/>}</span>}
-  <PressDecoration kind='row'/>
- </button></div>;};
+ const options=useMemo(()=>{
+  if(!chainFilter)return [];
+  const available=chains??chainsOf(tokens);
+  return available.map(chain=>({value:String(chain.chainId),chainId:chain.chainId,label:chain.name,icon:chain.icon}));
+ },[chainFilter,chains,tokens]);
+ const chainControl=useMemo(()=>{
+  if(options.length<2)return null;
+  const filters=[{value:'',label:messages.swapAllChains??en.swapAllChains},...options];
+  return <Filter label={messages.swapChains??en.swapChains} options={filters} value={chainId===null?'':String(chainId)}
+   onValueChange={next=>setChainId(options.find(chain=>chain.value===next)?.chainId??null)}/>;
+ },[options,messages.swapAllChains,messages.swapChains,chainId]);
+ const selectedId=selected?.id;
+ const selectedLabel=messages.swapSelected??en.swapSelected;
+ const row=useCallback((token:SwapToken,index:number)=><div role='listitem' key={token.id}>
+  <TokenPickerButton token={token} index={index} active={index===active} isSelected={selectedId===token.id} selectedLabel={selectedLabel}
+   onSelect={selectVisible} setActive={setActive} tokenRowProps={tokenRowProps} zeroBalances={zeroBalances}/>
+ </div>,[active,selectedId,selectedLabel,selectVisible,tokenRowProps,zeroBalances]);
  const searchName=messages.swapSearchTokens??en.swapSearchTokens;
- const field=<SearchInput ref={searchInput} aria-label={searchLabel?undefined:searchName} placeholder={searchName} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false} {...searchInputProps} value={query} onChange={event=>setQuery(event.target.value)} onKeyDown={event=>{searchInputProps?.onKeyDown?.(event);if(!event.defaultPrevented)onKeyDown(event);}}/>;
+ const field=<SearchInput ref={searchInput} aria-label={searchLabel?undefined:searchName} placeholder={searchName} enterKeyHint='search' autoComplete='off' autoCapitalize='none' autoCorrect='off' spellCheck={false} {...searchInputProps} value={query} onChange={event=>editQuery(event.target.value)} onKeyDown={event=>{searchInputProps?.onKeyDown?.(event);if(!event.defaultPrevented)onKeyDown(event);}}/>;
  return <>
   {searchable&&(searchLabel?<Field label={searchLabel}>{field}</Field>:field)}
-  {chainFilter&&options.length>1&&<Filter label={messages.swapChains??en.swapChains} options={filters} value={chainId===null?'':String(chainId)} onValueChange={next=>setChainId(options.find(chain=>String(chain.chainId)===next)?.chainId??null)}/>}
+  {chainControl}
   {/* Lists hold only their rows: the empty text and the section headings sit outside them, and each section is its own named list. */}
-  <div ref={list} className='hig-swap-list' aria-busy={loading||undefined}>
+  <div ref={list} className='hig-swap-list' aria-busy={loading||waiting||undefined}>
    {rows.length===0&&<p className='hig-swap-empty' role='status'>{loading?(messages.loading??en.loading)+'…':messages.swapNoTokens??en.swapNoTokens}</p>}
    {hotCount>0&&<p className='hig-swap-section' id={`${id}-hot`}><SwapIcon name='flame' size={14}/>{messages.swapHot??en.swapHot}</p>}
-   {hotCount>0&&<div role='list' aria-labelledby={`${id}-hot`}>{rows.slice(0,hotCount).map((token,index)=>row(token,index))}</div>}
+   {hotCount>0&&<TokenWindow as='div' role='list' labelledBy={`${id}-hot`} items={sections.hot} itemKey='id' rowHeight={64} enabled={rows.length>50} active={active} tabThrough renderRow={row}/>}
    {hotCount>0&&<p className='hig-swap-section' id={`${id}-all`}>{messages.swapAllTokens??en.swapAllTokens}</p>}
-   {rows.length>hotCount&&<div role='list' {...(hotCount>0?{'aria-labelledby':`${id}-all`}:{'aria-label':label})}>{rows.slice(hotCount).map((token,index)=>row(token,index+hotCount))}</div>}
+   {rows.length>hotCount&&<TokenWindow as='div' role='list' labelledBy={hotCount?`${id}-all`:undefined} label={hotCount?undefined:label} items={sections.all} itemKey='id' rowHeight={64} enabled={rows.length>50} first={hotCount} active={active} tabThrough renderRow={row}/>}
   </div>
  </>;
-}
+});
 export interface FromPickerBlockProps extends PickerListProps {
  /** The connected wallet. Omit for a list with no wallet row at all. */
  wallet?:SwapWallet;

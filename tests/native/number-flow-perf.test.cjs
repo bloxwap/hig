@@ -6,7 +6,7 @@
  */
 const React=require('react');
 const {create,act}=require('react-test-renderer');
-const {Text:RNText,PixelRatio}=require('react-native');
+const {Text:RNText,View:RNView,PixelRatio}=require('react-native');
 const mockClock={now:0,values:[]},mockDrawn={text:0};
 jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
@@ -23,7 +23,7 @@ jest.mock('react-native-reanimated',()=>{
   }
   return ref.current;
  };
- return {__esModule:true,default:{View:RN.View,Text:RN.Text},cancelAnimation:value=>value.stop(),defineAnimation:(starting,factory)=>({__mockDefined:true,factory}),withTiming:(toValue,config)=>({__mockTiming:true,toValue,config}),
+ return {__esModule:true,default:{View:RN.View,Text:RN.Text,createAnimatedComponent:component=>component},cancelAnimation:value=>value.stop(),defineAnimation:(starting,factory)=>({__mockDefined:true,factory}),withTiming:(toValue,config)=>({__mockTiming:true,toValue,config}),
   useSharedValue:shared,useAnimatedStyle:updater=>updater(),Easing:{bezier:(...points)=>({bezier:points})},ReduceMotion:{Never:'never',System:'system',Always:'always'}};
 });
 // Every HIG text a readout draws goes through this one component, so counting its renders counts the texts React drew again.
@@ -57,6 +57,15 @@ const reading=()=>{const children=root.root.findAllByType(RNText).find(node=>nod
 
 describe.each([['NumberFlow',NumberFlow],['AnimatedNumberReadout, sliding',AnimatedNumberReadout]])('%s under load on native',(name,Component)=>{
  const flowing=Component===NumberFlow;
+ it('reuses rounded numeric places until the reading or its format changes',()=>{
+  const parts=jest.spyOn(Object.getPrototypeOf(new Intl.NumberFormat()),'formatToParts');
+  const trend=jest.fn(()=>1);
+  const view=(value,places)=>figure(Component,{value,trend,options:{minimumFractionDigits:places,maximumFractionDigits:places}});
+  mount(view(1.001,2));measure();parts.mockClear();trend.mockClear();
+  update(view(1.002,2));expect(parts).not.toHaveBeenCalled();expect(trend).not.toHaveBeenCalled();
+  update(view(1.011,2));expect(trend).toHaveBeenCalledTimes(1);expect(trend).toHaveBeenCalledWith(1.002,1.011);expect(parts).toHaveBeenCalled();expect(reading()).toBe('1.01');
+  parts.mockClear();update(view(1.011,3));expect(parts).toHaveBeenCalled();expect(reading()).toBe('1.011');
+ });
  it('commits once for a change, and not at all while the roll runs',()=>{
   // A layout effect assigns the single measuring readout after React commits it.
   expect(cost(()=>mount(figure(Component,{value:1234.56})))).toMatchObject({commits:2});
@@ -78,21 +87,29 @@ describe.each([['NumberFlow',NumberFlow],['AnimatedNumberReadout, sliding',Anima
   expect(cost(()=>update(figure(Component,{value:1211.58}))).texts).toBe(1);
   expect(reading()).toBe('$1,211.58');
  });
- it('formats nothing and draws only its reading when its parent draws again with the same value',()=>{
+ it('reuses the measured digit row on a raw tick below display precision',()=>{
+  const props={value:1234.561,options:usd};
+  mount(figure(Component,{...props,spinTiming:{duration:180,easing:[0.2,0,0,1]}}));measure();
+  const row=()=>root.root.findAllByType(RNView).find(node=>node.props.accessibilityElementsHidden&&node.props.style?.direction==='ltr').props.children;
+  const initial=row();
+  update(figure(Component,{...props,value:1234.562,spinTiming:{duration:180,easing:[0.2,0,0,1]}}));expect(row()).toBe(initial);
+  update(figure(Component,{...props,value:1234.57}));expect(row()).not.toBe(initial);expect(reading()).toBe('$1,234.57');
+ });
+ it('reuses the reading and its format when its parent draws again with the same value',()=>{
   mount(figure(Component,{value:1234.56}));measure();update(figure(Component,{value:1234.57}));
-  expect(cost(()=>update(figure(Component,{value:1234.57,options:{...usd}})))).toEqual({commits:1,texts:1,formatters:0});
+  expect(cost(()=>update(figure(Component,{value:1234.57,options:{...usd}})))).toEqual({commits:1,texts:0,formatters:0});
  });
  it('builds its formatters once for a format, not for every value or every figure',()=>{
-  // The first figure in a format asks Intl for the formatter, the numbering system's digits and the parts.
+  // The reading formatter supplies parts too. A second formatter supplies the digit glyphs.
   jest.restoreAllMocks();jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);counted();
-  expect(cost(()=>mount(figure(Component,{value:1234.56}))).formatters).toBe(3);
+  expect(cost(()=>mount(figure(Component,{value:1234.56}))).formatters).toBe(2);
   // It was five for every render of every readout, and ten where a flowing figure worked out its turns.
   expect(cost(()=>measure()).formatters).toBe(0);
   for(const value of [1234.57,1240.11,98.5,123456.78])expect(cost(()=>update(figure(Component,{value}))).formatters).toBe(0);
   act(()=>root.unmount());root=null;
-  // More figures in that format build nothing; one that composes its sign builds what `formatNumber` builds for a value, and only that.
-  expect(cost(()=>mount(board(Component,[1,2,3]))).formatters).toBe(4);
-  expect(cost(()=>update(board(Component,[11,0.25,13]))).formatters).toBe(1);
+  // The new signed percent format is initialized on mount and reused when the value changes.
+  expect(cost(()=>mount(board(Component,[1,2,3]))).formatters).toBe(3);
+  expect(cost(()=>update(board(Component,[11,0.25,13]))).formatters).toBe(0);
   expect(cost(()=>update(board(Component,[11,0.25,13]))).formatters).toBe(0);
  });
  it('reads what it read before, sign and all',()=>{
@@ -142,4 +159,26 @@ describe('the reel model under load',()=>{
   act(()=>root.unmount());root=null;
  }
  process.stdout.write(`\n[number-flow-perf] ${JSON.stringify(report)}\n`);
+});
+
+it('defers numbering-system resolution and reuses the reading formatter for automatic-sign reels',()=>{
+ const resolve=jest.spyOn(Object.getPrototypeOf(new Intl.NumberFormat()),'resolvedOptions');
+ formatters.mockClear();
+ const reading=formatNumberReadout(12.34,'en-US',usd);
+ expect(reading.core).toBe('$12.34');
+ expect(resolve).not.toHaveBeenCalled();
+ const model=createNumberReelModel(12.34,'en-US',usd,undefined,'ltr',false,reading.core);
+ expect(model.canonical).toBe(reading.core);
+ expect(formatters).toHaveBeenCalledTimes(2); // Currency reading and one digit formatter.
+ expect(resolve).toHaveBeenCalledTimes(1);
+});
+
+it('reuses digit probes for currency and units and isolates a different numbering system',()=>{
+ const currency=createNumberReelModel(12,'en-US',usd,undefined,'ltr');
+ const units=createNumberReelModel(12,'en-US',{maximumFractionDigits:6},undefined,'ltr');
+ expect(units.digits).toBe(currency.digits);
+ expect(formatters).toHaveBeenCalledTimes(3);
+ const arabic=createNumberReelModel(12,'en-US',{numberingSystem:'arab'},undefined,'ltr');
+ expect(arabic.digits[1]).toBe('١');
+ expect(arabic.digits).not.toBe(units.digits);
 });

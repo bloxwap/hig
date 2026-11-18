@@ -1,9 +1,9 @@
 import React,{useState} from 'react';
-import {afterEach,it,expect} from 'vitest';
+import {afterEach,it,expect,vi} from 'vitest';
 import {render,screen,cleanup} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-import {NumberReadout,Percent,Table} from '../packages/hig/react/src/data';
+import {List,NumberReadout,Percent,Table} from '../packages/hig/react/src/data';
 afterEach(cleanup);
 it('formats percent points with locale placement, precision and unknown states',()=>{
  const {rerender}=render(<HIGProvider locale='de-DE'><Percent value={-5.25} options={{minimumFractionDigits:2}}/></HIGProvider>);
@@ -37,4 +37,101 @@ it('includes optional affixes once for known static readings and suppresses them
  const {rerender}=render(<NumberReadout label='Total' value={0} prefix='$' suffix=' USD' stale/>);expect(screen.getByLabelText('Total: $0 USD (stale)')).toBeTruthy();expect(document.querySelector('.hig-number')?.textContent).toBe('$0 USD (stale)');
  rerender(<NumberReadout label='Total' value={null} prefix='$' suffix=' USD' stale/>);expect(screen.getByLabelText('Total: — (stale)')).toBeTruthy();expect(document.querySelector('.hig-number')?.textContent).toBe('— (stale)');
  rerender(<NumberReadout value={12} prefix='≈' suffix=' coins'/>);expect(document.querySelector('.hig-number')?.textContent).toBe('≈12 coins');
+});
+
+it('updates list pagination without revisiting unchanged rows',()=>{
+ const items=Array.from({length:1000},(_,index)=>String(index));
+ const keyFor=vi.fn((id:string)=>id);
+ const draw=vi.fn((id:string)=>id);
+ const {rerender}=render(<List items={items} keyFor={keyFor} render={draw}/>);
+ expect(keyFor).toHaveBeenCalledTimes(items.length);
+ expect(draw.mock.calls.length).toBeGreaterThan(0);
+ expect(draw.mock.calls.length).toBeLessThan(50);
+ keyFor.mockClear();
+ draw.mockClear();
+ rerender(<List items={items} keyFor={keyFor} render={draw} loading/>);
+ expect(screen.getByRole('status').textContent).toBe('Loading items');
+ expect(keyFor).not.toHaveBeenCalled();
+ expect(draw).not.toHaveBeenCalled();
+});
+
+it('renders only new or changed items when a list page arrives',()=>{
+ const items=Array.from({length:40},(_,id)=>({id,value:id}));
+ const keyFor=(item:typeof items[number])=>String(item.id);
+ const draw=vi.fn((item:typeof items[number])=><input aria-label={keyFor(item)} defaultValue={item.value}/>);
+ const list=(rows:typeof items)=><List items={rows} keyFor={keyFor} render={draw}/>;
+ const {rerender}=render(list(items));
+ const focused=screen.getByRole('textbox',{name:'3'});
+ focused.focus();
+ draw.mockClear();
+ const appended=[...items,{id:40,value:40}];
+ rerender(list(appended));
+ expect(draw.mock.calls.map(([item])=>item.id)).toEqual([40]);
+ draw.mockClear();
+ rerender(list(appended.map(item=>item.id===7?{...item,value:77}:item)));
+ expect(draw.mock.calls.map(([item])=>item.value)).toEqual([77]);
+ expect(document.activeElement).toBe(focused);
+});
+
+it('preserves a focused row when crossing the virtualization threshold in either direction',async()=>{
+ const items=Array.from({length:51},(_,index)=>String(index));
+ const props={keyFor:(id:string)=>id,render:(id:string)=><button>{id}</button>};
+ const {rerender}=render(<List {...props} items={items.slice(0,50)}/>);
+ expect(screen.getAllByRole('listitem')).toHaveLength(50);
+ const focused=screen.getByRole('button',{name:'36'});
+ await userEvent.click(focused);
+ rerender(<List {...props} items={items}/>);
+ expect(screen.getAllByRole('listitem').length).toBeLessThan(50);
+ expect(document.activeElement).toBe(focused);
+ expect(focused.closest('li')?.getAttribute('aria-posinset')).toBe('37');
+ rerender(<List {...props} items={items.slice(0,50)}/>);
+ expect(document.activeElement).toBe(focused);
+ expect(screen.getAllByRole('listitem')).toHaveLength(50);
+});
+
+it('keeps a focused virtual row mounted when it moves outside the visible range',async()=>{
+ const items=Array.from({length:1000},(_,index)=>String(index));
+ const props={keyFor:(id:string)=>id,render:(id:string)=><button>{id}</button>};
+ const {rerender}=render(<List {...props} items={items}/>);
+ const focused=screen.getByRole('button',{name:'999'});
+ await userEvent.click(focused);
+ rerender(<List {...props} items={[...items.slice(0,500),'999',...items.slice(500,-1)]}/>);
+ expect(document.activeElement).toBe(focused);
+ expect(focused.closest('li')?.getAttribute('aria-posinset')).toBe('501');
+});
+
+it('updates translated list status without revisiting the collection',()=>{
+ let lengthReads=0;
+ const items=new Proxy(Array.from({length:1000},(_,index)=>String(index)),{
+  get(target,key,receiver){if(key==='length')lengthReads++;return Reflect.get(target,key,receiver);},
+ });
+ const list=<List items={items} keyFor={id=>id} render={id=>id} loading/>;
+ const view=render(<HIGProvider>{list}</HIGProvider>);
+ expect(lengthReads).toBeGreaterThan(0);
+ lengthReads=0;
+ view.rerender(<HIGProvider messages={{loadingItems:'Fetching balances'}}>{list}</HIGProvider>);
+ expect(screen.getByRole('status').textContent).toBe('Fetching balances');
+ expect(lengthReads).toBe(0);
+});
+
+it('measures only lists inside scrollers that moved during the frame',async()=>{
+ const {act}=await import('@testing-library/react');
+ vi.useFakeTimers({toFake:['requestAnimationFrame','cancelAnimationFrame']});
+ try{
+  const items=Array.from({length:80},(_,i)=>String(i));
+  const panel=(label:string)=><div data-testid={label} style={{overflowY:'auto'}}><List items={items} label={label} keyFor={String} render={String}/></div>;
+  render(<div data-testid="outer" style={{overflowY:'auto'}}>{panel('left')}{panel('right')}</div>);
+  const reads=screen.getAllByRole('list').map(list=>vi.spyOn(list,'getBoundingClientRect'));
+  function scroll(...targets:EventTarget[]){
+   reads.forEach(spy=>spy.mockClear());
+   act(()=>{for(const target of targets)target.dispatchEvent(new Event('scroll'));vi.advanceTimersByTime(32);});
+   return reads.map(spy=>spy.mock.calls.length);
+  }
+  const left=screen.getByTestId('left'),right=screen.getByTestId('right');
+  expect(scroll(left,left)).toEqual([1,0]);
+  expect(scroll(right)).toEqual([0,1]);
+  expect(scroll(left,right)).toEqual([1,1]);
+  expect(scroll(screen.getByTestId('outer'))).toEqual([1,1]);
+  expect(scroll(document)).toEqual([1,1]);
+ }finally{cleanup();vi.useRealTimers();}
 });

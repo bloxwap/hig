@@ -26,7 +26,7 @@ function mount(element,provider={}){if(root)act(()=>root.unmount());act(()=>{roo
 const flat=node=>StyleSheet.flatten(node.props.style)??{};
 const host=(tree,testID)=>tree.findAll(node=>node.props.testID===testID&&typeof node.type==='string')[0];
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
-const cells=tree=>tree.findAll(node=>node.type==='Text'&&typeof node.props.children==='string'&&node.props.children.length===1);
+const cells=tree=>tree.findAll(node=>node.type==='Text'&&typeof node.props.children==='string');
 beforeEach(()=>{jest.useFakeTimers();create.mockClear();});
 afterEach(()=>{if(root){act(()=>root.unmount());root=undefined;}jest.useRealTimers();});
 it('tells Ethereum from Solana by the 0x prefix',()=>{
@@ -51,8 +51,8 @@ it('draws the column as one selectable, left-to-right text named by the whole ad
  expect(column.props.accessibilityLabel).toBe(ethereum);expect(column.props.selectable).toBe(true);
  expect(flat(column)).toMatchObject({fontFamily:'BloxwapMonoRegular',lineHeight:28,fontSize:25.5,writingDirection:'ltr',textAlign:'left'});
  expect(text(column).split('\n')).toEqual(['0x9e0f','D06228','74ca1c','cBf79D','A087Ba','F4622F','af7768']);
- const drawn=cells(tree);expect(drawn).toHaveLength(42);
- expect(flat(drawn[0])).toMatchObject({color:colors.text,fontWeight:'600'});expect(flat(drawn[6])).toMatchObject({color:colors.muted,fontWeight:'500'});expect(flat(drawn[41])).toMatchObject({color:colors.text,fontWeight:'600'});
+ const drawn=cells(tree);expect(drawn.map(node=>node.props.children.replaceAll('\n',''))).toEqual([ethereum.slice(0,6),ethereum.slice(6,-4),ethereum.slice(-4)]);
+ expect(flat(drawn[0])).toMatchObject({color:colors.text,fontWeight:'600'});expect(flat(drawn[1])).toMatchObject({color:colors.muted,fontWeight:'500'});expect(flat(drawn[2])).toMatchObject({color:colors.text,fontWeight:'600'});
  tree=mount(h(VerticalAddress,{address:solana,testID:'column'}));
  expect(flat(host(tree,'column'))).toMatchObject({lineHeight:22,fontSize:20});expect(text(host(tree,'column')).split('\n')).toHaveLength(11);
 });
@@ -108,6 +108,6 @@ it('every character carries the row type size, so HIG Text\'s body size cannot s
  const React=require('react');const {create,act}=require('react-test-renderer');const {StyleSheet}=require('react-native');
  const {HIGProvider}=require('../../packages/hig/native/src/provider');const {VerticalAddress}=require('../../packages/hig/native/src/data');
  let view;act(()=>{view=create(React.createElement(HIGProvider,null,React.createElement(VerticalAddress,{address:'0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688',rowHeight:28})));});
- const sizes=new Set(view.root.findAll(n=>typeof n.type==='string'&&n.type==='Text'&&typeof n.props.children==='string'&&n.props.children.length===1).map(n=>StyleSheet.flatten(n.props.style).fontSize));
+ const sizes=new Set(view.root.findAll(n=>typeof n.type==='string'&&n.type==='Text'&&typeof n.props.children==='string').map(n=>StyleSheet.flatten(n.props.style).fontSize));
  expect([...sizes]).toEqual([25.5]);act(()=>view.unmount());
 });

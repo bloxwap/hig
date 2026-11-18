@@ -8,7 +8,7 @@ const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});
 const mount=element=>{act(()=>{root=create(element);});return root.root.findByType(RNText);};
-const reading=node=>node.props.children.join('');
+const reading=node=>[].concat(node.props.children).join('');
 
 it('preserves opaque static text while applying stale, label, semantic tone and protected typography',()=>{
  const text=mount(h(HIGProvider,{locale:'de-DE',messages:{stale:'(veraltet)'}},h(NumberReadout,{

@@ -10,8 +10,17 @@ function mockAnimate(){const animations:{cancel:ReturnType<typeof vi.fn>;onfinis
 it('animates per place without an initial animation, bypass delay or live region, and latest value wins',()=>{
  const {animate,animations}=mockAnimate();const {rerender,unmount}=render(<AnimatedNumberReadout value={1} label='Price'/>);expect(animate).not.toHaveBeenCalled();expect(screen.getByLabelText('Price: 1')).toBeTruthy();
  rerender(<AnimatedNumberReadout value={2} label='Price'/>);expect(animate.mock.calls[0][1]).toMatchObject({easing:'cubic-bezier(0.22,1,0.36,1)',duration:180,fill:'forwards'});expect(animate).toHaveBeenCalledTimes(2);expect(screen.getByLabelText('Price: 2')).toBeTruthy();expect(animate.mock.instances.every(instance=>instance.classList.contains('hig-animated-number-old')||instance.classList.contains('hig-animated-number-new'))).toBe(true);
- rerender(<AnimatedNumberReadout value={3} label='Price'/>);expect(animate).toHaveBeenCalledTimes(4);expect(animations[0].cancel).toHaveBeenCalledOnce();expect(animations[1].cancel).toHaveBeenCalledOnce();expect(screen.getByLabelText('Price: 3')).toBeTruthy();expect(document.querySelectorAll('.hig-sr-only')).toHaveLength(1);expect(document.querySelector('.hig-animated-number-visual')?.getAttribute('aria-hidden')).toBe('true');expect(document.querySelector('[aria-live]')).toBeNull();
+ rerender(<AnimatedNumberReadout value={3} label='Price' duration={900}/>);expect(animate.mock.calls[2][1].duration).toBe(500);expect(animate).toHaveBeenCalledTimes(4);expect(animations[0].cancel).toHaveBeenCalledOnce();expect(animations[1].cancel).toHaveBeenCalledOnce();expect(screen.getByLabelText('Price: 3')).toBeTruthy();expect(document.querySelectorAll('.hig-sr-only')).toHaveLength(1);expect(document.querySelector('.hig-animated-number-visual')?.getAttribute('aria-hidden')).toBe('true');expect(document.querySelector('[aria-live]')).toBeNull();
  unmount();expect(animations[2].cancel).toHaveBeenCalledOnce();expect(animations[3].cancel).toHaveBeenCalledOnce();
+});
+it('animates only the available layer when a digit enters or leaves',()=>{
+ const {animate}=mockAnimate();
+ const {rerender}=render(<AnimatedNumberReadout value={9}/>);
+ rerender(<AnimatedNumberReadout value={19}/>);
+ expect(animate.mock.instances.map(node=>[node.className,node.textContent])).toEqual([['hig-animated-number-new','1']]);
+ animate.mockClear();
+ rerender(<AnimatedNumberReadout value={9}/>);
+ expect(animate.mock.instances.map(node=>[node.className,node.textContent])).toEqual([['hig-animated-number-old','1']]);
 });
 it('finishes an interrupted sequence at exact canonical visual text with no superseded layers',()=>{
  const {animations}=mockAnimate();const options={minimumFractionDigits:2,maximumFractionDigits:2};const view=(value:number)=><HIGProvider locale='de-DE'><AnimatedNumberReadout value={value} label='Price' options={options} prefix='$' suffix=' USD'/></HIGProvider>;const {rerender}=render(view(999.99));
@@ -33,4 +42,32 @@ it('shares affixes and stale state with one semantic reading and suppresses affi
 });
 it('has deterministic SSR markup with a hidden semantic reading and static final visual',()=>{
  const html=renderToString(<AnimatedNumberReadout value={1234.5}/>);expect(html).toContain('hig-sr-only');expect(html).toContain('aria-hidden="true"');expect(html).toContain('1,234.5');expect(html).not.toContain('hig-animated-number-old');
+});
+
+it('builds digit places only when a slide actually moves',()=>{
+ const parts=vi.spyOn(Intl.NumberFormat.prototype,'formatToParts');
+ try{
+  mockAnimate();
+  const view=(value:number,animated=true)=><AnimatedNumberReadout value={value} animated={animated}/>;
+  const {rerender}=render(view(123456.75));
+  const visual=document.querySelector('.hig-animated-number-visual')!;
+  expect(visual.textContent).toBe('123,456.75');expect(visual.childElementCount).toBe(0);expect(parts).not.toHaveBeenCalled();
+  rerender(view(123456.76,false));
+  expect(visual.childElementCount).toBe(0);expect(parts).not.toHaveBeenCalled();
+  rerender(view(123456.77));
+  expect(visual.childElementCount).toBe(1);
+  expect(visual.firstChild?.nodeType).toBe(Node.TEXT_NODE);
+  expect(visual.firstChild?.textContent).toBe('123,456.7');
+  expect(visual.querySelector('.hig-animated-number-old')?.textContent).toBe('6');
+  expect(visual.querySelector('.hig-animated-number-new')?.textContent).toBe('7');
+ }finally{parts.mockRestore();}
+});
+
+it('keeps a slide running through raw ticks that leave host-formatted digits unchanged',()=>{
+ const {animate,animations}=mockAnimate(),trend=vi.fn(()=>1 as const);
+ const figure=(value:number,formattedValue:string)=><AnimatedNumberReadout value={value} formattedValue={formattedValue} animateFormatted trend={trend}/>;
+ const {rerender}=render(figure(1,'1.0'));
+ rerender(figure(1.1,'1.1'));expect(animate).toHaveBeenCalledTimes(2);
+ rerender(figure(1.11,'1.1'));expect(animations[0].cancel).not.toHaveBeenCalled();expect(animate).toHaveBeenCalledTimes(2);
+ rerender(figure(1.2,'1.2'));expect(trend).toHaveBeenLastCalledWith(1.11,1.2);expect(animations[0].cancel).toHaveBeenCalledOnce();
 });

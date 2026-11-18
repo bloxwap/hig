@@ -1,6 +1,6 @@
-import React,{Profiler,useEffect,useMemo,useRef,useState} from 'react';
+import React,{Profiler,useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import {View} from 'react-native';
-import {useFrameCallback,useSharedValue} from 'react-native-reanimated';
+import {useFrameCallback,useSharedValue,type FrameInfo} from 'react-native-reanimated';
 import {HIGProvider} from '@bloxwap/hig/native/provider';
 import {NumberFlow} from '@bloxwap/hig/native/animated-number';
 /**
@@ -9,7 +9,7 @@ import {NumberFlow} from '@bloxwap/hig/native/animated-number';
  *  (b) interrupt: one figure given a new value every animation frame for 3 s, so every change interrupts the one before.
  * It logs `[perf] number-flow start`, one line per scenario and `[perf] number-flow done`. A scenario's line carries the frames
  * the JS thread got (requestAnimationFrame) and the frames the UI thread drew (a Reanimated frame callback), with how many ran
- * longer than 1.5 frames at 60 Hz and the longest, and React's commits. A fresh 40-figure board then measures
+ * longer than 1.5 frames at 60 Hz, the longest gap, intervals within 0.5 ms of 120 Hz, and React's commits. A fresh 40-figure board then measures
  * its first animation independently, followed by ten steady ticks. Commits read 0 in a release build, where React does
  * not profile. The figures move whatever the OS says about reduced motion, so a run always measures motion.
  */
@@ -21,16 +21,21 @@ const starts=(count:number)=>Array.from({length:count},(_,index)=>formats[index%
 function random(seed:number){return()=>{seed=(seed+0x6d2b79f5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
 const wait=(ms:number)=>new Promise<void>(done=>setTimeout(done,ms));
 const frame=()=>new Promise<number>(done=>requestAnimationFrame(done));
-const gaps=(stamps:readonly number[])=>{const steps=stamps.slice(1).map((stamp,index)=>stamp-stamps[index]);return `jsFrames=${steps.length} jsSlow=${steps.filter(step=>step>25).length} jsWorstMs=${Math.max(0,...steps).toFixed(1)}`;};
+function near120HzInterval(ms:number){
+ 'worklet';
+ return Math.abs(ms-1000/120)<=0.5;
+}
+const gaps=(stamps:readonly number[])=>{const steps=stamps.slice(1).map((stamp,index)=>stamp-stamps[index]);return `jsFrames=${steps.length} jsSlow=${steps.filter(step=>step>25).length} jsWorstMs=${Math.max(0,...steps).toFixed(1)} jsNear120=${steps.filter(near120HzInterval).length}`;};
 /** Counts the frames the UI thread draws between `start` and `stop`. */
 function useUIFrames(){
- const frames=useSharedValue(0),slow=useSharedValue(0),worst=useSharedValue(0);
- const callback=useFrameCallback(info=>{
+ const frames=useSharedValue(0),slow=useSharedValue(0),worst=useSharedValue(0),near120=useSharedValue(0);
+ const record=useCallback((info:FrameInfo)=>{
   'worklet';
   const step=info.timeSincePreviousFrame??0;
-  frames.value+=1;if(step>25)slow.value+=1;if(step>worst.value)worst.value=step;
- },false);
- return useMemo(()=>({start(){frames.value=0;slow.value=0;worst.value=0;callback.setActive(true);},stop(){callback.setActive(false);return `uiFrames=${frames.value} uiSlow=${slow.value} uiWorstMs=${worst.value.toFixed(1)}`;}}),[callback,frames,slow,worst]);
+  frames.value+=1;if(near120HzInterval(step))near120.value+=1;if(step>25)slow.value+=1;if(step>worst.value)worst.value=step;
+ },[frames,near120,slow,worst]);
+ const callback=useFrameCallback(record,false);
+ return useMemo(()=>({start(){frames.value=0;slow.value=0;worst.value=0;near120.value=0;callback.setActive(true);},stop(){callback.setActive(false);return `uiFrames=${frames.value} uiSlow=${slow.value} uiWorstMs=${worst.value.toFixed(1)} uiNear120=${near120.value}`;}}),[callback,frames,slow,worst,near120]);
 }
 export default function NumberFlowPerf({onDone}:{onDone?:()=>void}){
  const [boardKey,setBoardKey]=useState(0);

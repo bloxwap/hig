@@ -6,7 +6,7 @@ import {SafeAreaView,SafeAreaProvider} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {nativeColors as colors} from '@bloxwap/hig/tokens';
-import {FeedbackProvider,useFeedback} from '@bloxwap/hig/feedback/react';
+import {FeedbackProvider,useFeedback,useFeedbackRuntime} from '@bloxwap/hig/feedback/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {jsonStorage} from '@bloxwap/hig/feedback/preferences';
 import {createController} from './feedback';
@@ -39,19 +39,44 @@ function ColorSpaceCheck(){
 }
 // #86: hosts that support RTL pass the locale's direction; RN 0.83 Android does not report a per-app RTL locale through I18nManager.
 const hostDirection=()=>localeDirection(getLocales()[0]);
+const componentOptions=gallery.examples.map(({name})=>({value:name,label:name}));
+const stateOptions=new Map(gallery.examples.map(({name,states})=>[name,states.map(value=>({value,label:value}))]));
+interface VerificationRow {id:string;label:string;value:number}
+const verificationKey=(row:VerificationRow)=>row.id;
+const renderVerificationRow=(row:VerificationRow)=><Row><Text>{row.label}</Text><NumberReadout value={row.value}/></Row>;
+const fontFamilies={400:'BloxwapSansRegular',600:'BloxwapSansSemiBold'};
+
 // Host keyboard avoidance: Android 15 edge-to-edge no longer resizes for the IME, and iOS needs keyboard insets.
+function GalleryTrade({amountDraft,onConfirm}:{amountDraft:React.RefObject<string>;onConfirm:()=>void}){
+ const [amount,setAmount]=useState(()=>amountDraft.current);
+ function edit(value:string){
+  amountDraft.current=value;
+  setAmount(value);
+ }
+ return <TradeEntry asset='BTC' amount={amount} onAmountChange={edit} available='0.25 BTC' onConfirm={onConfirm}/>;
+}
+function GalleryFeedbackSettings(){
+ const {preferences,update}=useFeedback();
+ return <>
+  <Switch label='Sound' checked={preferences.sound} onCheckedChange={v=>update({sound:v})}/>
+  <Switch label='Haptics' checked={preferences.haptics} onCheckedChange={v=>update({haptics:v})}/>
+  <Slider label='Volume' value={Math.round(preferences.volume*100)} onValueChange={v=>update({volume:v/100})}/>
+  <Switch label='Motion' checked={preferences.motion} onCheckedChange={v=>update({motion:v})}/>
+ </>;
+}
 function Gallery(){
- const [component,setComponent]=useState('Button'),[exampleState,setExampleState]=useState('default'),[direction,setDirection]=useState<'ltr'|'rtl'|undefined>(undefined),[diagnostics,setDiagnostics]=useState(false),[rows,setRows]=useState(0),[amount,setAmount]=useState('0.01'),[status,setStatus]=useState('Demo only; no trade is submitted.'),[catalog,setCatalog]=useState<FixtureCatalog|undefined>(undefined),[colorSpace,setColorSpace]=useState<'srgb'|'display-p3'|undefined>(undefined);
- const {preferences,update,sink,controller}=useFeedback();const [localeDirectionValue]=useState(hostDirection);
- useEffect(()=>{const apply=(route:GalleryRoute|null)=>{if(!route)return;if(route.component&&gallery.examples.some(e=>e.name===route.component)){setComponent(route.component);setExampleState(route.state??'default');}if(route.direction)setDirection(route.direction);if(route.diagnostics!==undefined)setDiagnostics(route.diagnostics);setRows(route.rows??0);setCatalog(route.messages);if(route.colorSpace)setColorSpace(route.colorSpace);};void Linking.getInitialURL().then(url=>apply(parseGalleryRoute(url))).catch(()=>{});const sub=Linking.addEventListener('url',({url})=>apply(parseGalleryRoute(url)));return()=>sub.remove();},[]);
+ const [component,setComponent]=useState('Button'),[exampleState,setExampleState]=useState('default'),[direction,setDirection]=useState<'ltr'|'rtl'|undefined>(undefined),[diagnostics,setDiagnostics]=useState(false),[rows,setRows]=useState(0),[status,setStatus]=useState('Demo only; no trade is submitted.'),[catalog,setCatalog]=useState<FixtureCatalog|undefined>(undefined),[colorSpace,setColorSpace]=useState<'srgb'|'display-p3'|undefined>(undefined);
+ const amountDraft=React.useRef('0.01');
+ const {motion,sink,controller}=useFeedbackRuntime();const [localeDirectionValue]=useState(hostDirection);
+ useEffect(()=>{const apply=(route:GalleryRoute|null)=>{if(!route)return;if(route.component&&stateOptions.has(route.component)){setComponent(route.component);setExampleState(route.state??'default');}if(route.direction)setDirection(route.direction);if(route.diagnostics!==undefined)setDiagnostics(route.diagnostics);setRows(route.rows??0);setCatalog(route.messages);if(route.colorSpace)setColorSpace(route.colorSpace);};void Linking.getInitialURL().then(url=>apply(parseGalleryRoute(url))).catch(()=>{});const sub=Linking.addEventListener('url',({url})=>apply(parseGalleryRoute(url)));return()=>sub.remove();},[]);
  useEffect(()=>{controller()?.setBackground(AppState.currentState!=='active');const sub=AppState.addEventListener('change',state=>controller()?.setBackground(state!=='active'));return()=>sub.remove();},[controller]);
- const header=<Stack><BrandMark label='Bloxwap'/><Heading>Native HIG gallery</Heading><Select label='Component' options={gallery.examples.map(e=>({value:e.name,label:e.name}))} value={component} onValueChange={v=>{setComponent(v);setExampleState('default');}}/><Select label='Example state' options={(gallery.examples.find(e=>e.name===component)?.states??['default']).map(v=>({value:v,label:v}))} value={exampleState} onValueChange={setExampleState}/><Text>0.1.0 · pinned Bloxwap Sans static faces registered</Text>{colorSpace&&<ColorSpaceCheck/>}{diagnostics&&<Diagnostics/>}{catalog&&<Button busy testID='busy-name-check'>{fixtureCatalogs[catalog].label}</Button>}</Stack>;
+ const header=<Stack><BrandMark label='Bloxwap'/><Heading>Native HIG gallery</Heading><Select label='Component' options={componentOptions} value={component} onValueChange={v=>{setComponent(v);setExampleState('default');}}/><Select label='Example state' options={stateOptions.get(component)!} value={exampleState} onValueChange={setExampleState}/><Text>0.1.0 · pinned Bloxwap Sans static faces registered</Text>{colorSpace&&<ColorSpaceCheck/>}{diagnostics&&<Diagnostics/>}{catalog&&<Button busy testID='busy-name-check'>{fixtureCatalogs[catalog].label}</Button>}</Stack>;
  const longRows=React.useMemo(()=>Array.from({length:rows},(_,i)=>({id:String(i+1),label:`Verification row ${i+1}`,value:60000+i*1.25})),[rows]);
  // rows=N swaps in a long list for scroll verification; the generated example keeps its single row.
- const example=component==='List'&&rows>0?<List label='Verification rows' items={longRows} keyFor={r=>r.id} render={r=><Row><Text>{r.label}</Text><NumberReadout value={r.value}/></Row>}/>:<Example key={component} name={component} state={exampleState}/>;
+ const example=component==='List'&&rows>0?<List label='Verification rows' items={longRows} keyFor={verificationKey} render={renderVerificationRow}/>:<Example key={component} name={component} state={exampleState}/>;
  const toasterPosition:ToastPosition=component==='Toaster'&&["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"].includes(exampleState)?exampleState as ToastPosition:'bottom-center';
  const listMode=['List','Table','OutcomeChart'].includes(component);
- return <HIGProvider locale={catalog?fixtureCatalogs[catalog].locale:undefined} messages={catalog?fixtureCatalogs[catalog].messages:undefined} fontFamily='BloxwapSansRegular' fontFamilies={{400:'BloxwapSansRegular',600:'BloxwapSansSemiBold'}} monoFontFamily='BloxwapMonoRegular' colorSpace={colorSpace} direction={direction??localeDirectionValue} feedback={sink} reducedMotion={!preferences.motion?true:undefined}><SafeAreaView style={{flex:1,backgroundColor:colors.android.background}}>{listMode?<View style={{flex:1,padding:24,gap:16}}>{header}{example}</View>:<KeyboardAvoidingView style={{flex:1}} behavior='padding' enabled={Platform.OS==='android'}><ScrollView contentContainerStyle={{padding:24}} keyboardShouldPersistTaps='handled' automaticallyAdjustKeyboardInsets><Stack>{header}{example}<TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' onConfirm={()=>{setStatus('Demo confirmation accepted');sink.emit({id:`demo-${Date.now()}`,source:'trade-demo',intent:'success',origin:'programmatic'});}}/><MarketRow symbol='BTC' name='Bitcoin' price={67234.56} change={2.5} onSelect={()=>setStatus('Bitcoin selected')}/><Switch label='Sound' checked={preferences.sound} onCheckedChange={v=>update({sound:v})}/><Switch label='Haptics' checked={preferences.haptics} onCheckedChange={v=>update({haptics:v})}/><Slider label='Volume' value={Math.round(preferences.volume*100)} onValueChange={v=>update({volume:v/100})}/><Switch label='Motion' checked={preferences.motion} onCheckedChange={v=>update({motion:v})}/><Alert title='Sample outcome' tone='action'><Text>{status}</Text></Alert><InstallCommand command='npm install ./bloxwap-hig-native-0.1.0.tgz' onCopy={()=>{throw new Error('Host clipboard adapter required');}}/></Stack></ScrollView></KeyboardAvoidingView>}</SafeAreaView><Toaster testID='toaster' position={toasterPosition}/></HIGProvider>;
+ return <HIGProvider locale={catalog?fixtureCatalogs[catalog].locale:undefined} messages={catalog?fixtureCatalogs[catalog].messages:undefined} fontFamily='BloxwapSansRegular' fontFamilies={fontFamilies} monoFontFamily='BloxwapMonoRegular' colorSpace={colorSpace} direction={direction??localeDirectionValue} feedback={sink} reducedMotion={!motion?true:undefined}><SafeAreaView style={{flex:1,backgroundColor:colors.android.background}}>{listMode?<View style={{flex:1,padding:24,gap:16}}>{header}{example}</View>:<KeyboardAvoidingView style={{flex:1}} behavior='padding' enabled={Platform.OS==='android'}><ScrollView contentContainerStyle={{padding:24}} keyboardShouldPersistTaps='handled' automaticallyAdjustKeyboardInsets><Stack>{header}{example}<GalleryTrade amountDraft={amountDraft} onConfirm={()=>{setStatus('Demo confirmation accepted');sink.emit({id:`demo-${Date.now()}`,source:'trade-demo',intent:'success',origin:'programmatic'});}}/><MarketRow symbol='BTC' name='Bitcoin' price={67234.56} change={2.5} onSelect={()=>setStatus('Bitcoin selected')}/><GalleryFeedbackSettings/><Alert title='Sample outcome' tone='action'><Text>{status}</Text></Alert><InstallCommand command='npm install ./bloxwap-hig-native-0.1.0.tgz' onCopy={()=>{throw new Error('Host clipboard adapter required');}}/></Stack></ScrollView></KeyboardAvoidingView>}</SafeAreaView><Toaster testID='toaster' position={toasterPosition}/></HIGProvider>;
 }
 const storage=jsonStorage(AsyncStorage);
 // Metro asset dependencies must be statically analyzable.

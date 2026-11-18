@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import {Button} from '../packages/hig/react/src/button';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {Field,Input,TextArea} from '../packages/hig/react/src/field';
-import {Switch,RadioGroup,SegmentedControl,Slider} from '../packages/hig/react/src/selection';
+import {Filter,Switch,RadioGroup,SegmentedControl,Slider} from '../packages/hig/react/src/selection';
 import {Tabs,Accordion} from '../packages/hig/react/src/navigation';
 import {Dialog} from '../packages/hig/react/src/overlay';
 import {Toast,Callout} from '../packages/hig/react/src/status';
@@ -107,3 +107,47 @@ it('preserves every undismissed notification through a burst and retry',async()=
 
 it('disabled fields cannot be re-enabled by a child and the input keeps host keyboard mode',()=>{render(<Field label='Amount' disabled><Input disabled={false} inputMode='text'/></Field>);const input=screen.getByRole('textbox') as HTMLInputElement;expect(input.disabled).toBe(true);expect(input.inputMode).toBe('text');});
 it('announces a burst once and preserves pending critical text through rapid dismissal',async()=>{const notices=[{id:'critical',message:'Failed operation',severity:'error' as const},{id:'info',message:'Copied',severity:'info' as const}];const {rerender}=render(<Toast notices={notices} onDismiss={()=>{}}/>);rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);await waitFor(()=>expect(screen.getByRole('alert').textContent).toBe('Failed operation'));rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);});
+
+it('retains radio options across group-label updates and uses the latest change handler',()=>{
+ const label=vi.fn((index:number)=>`Option ${index}`);
+ const options=Array.from({length:40},(_,index)=>({value:String(index),get label(){return label(index);}}));
+ const first=vi.fn(),second=vi.fn();
+ const view=render(<RadioGroup label='Options' options={options} defaultValue='0' onValueChange={first}/>);
+ label.mockClear();
+ for(let i=0;i<10;i++)view.rerender(<RadioGroup label={`Options ${i}`} options={options} defaultValue='0' onValueChange={first}/>);
+ expect(label).toHaveBeenCalledTimes(0);
+ view.rerender(<RadioGroup label='Options' options={options} defaultValue='0' onValueChange={second}/>);
+ fireEvent.click(screen.getByRole('radio',{name:'Option 1'}));
+ expect(second).toHaveBeenCalledWith('1');
+ expect(first).not.toHaveBeenCalled();
+});
+
+it('redraws only the two changed segment labels after selection',()=>{
+ const label=vi.fn((index:number)=>`Segment ${index}`);
+ const options=Array.from({length:8},(_,index)=>({value:String(index),get label(){return label(index);}}));
+ const change=vi.fn();
+ const view=render(<SegmentedControl label="Chart range" options={options} defaultValue="0" onValueChange={change}/>);
+ label.mockClear();
+ fireEvent.click(screen.getByRole('radio',{name:'Segment 7'}));
+ expect(label).toHaveBeenCalledTimes(2);
+ expect(change).toHaveBeenCalledWith('7');
+ const replacement=vi.fn();
+ view.rerender(<SegmentedControl label="Chart range" options={options} defaultValue="0" onValueChange={replacement}/>);
+ fireEvent.click(screen.getByRole('radio',{name:'Segment 3'}));
+ expect(replacement).toHaveBeenCalledWith('3');
+ expect(change).toHaveBeenCalledTimes(1);
+});
+
+it('redraws only the old and new filter chips and uses the latest host handler',()=>{
+ const drawn:string[]=[];
+ const options=Array.from({length:40},(_,i)=>({value:String(i),label:'Choice '+i,get icon(){drawn.push(String(i));return undefined;}}));
+ const first=vi.fn(),next=vi.fn();
+ const view=render(<Filter label="Choices" defaultValue="0" options={options} onValueChange={first}/>);
+ drawn.length=0;
+ fireEvent.click(screen.getByRole('radio',{name:'Choice 20'}));
+ expect(drawn).toEqual(['0','20']);expect(first).toHaveBeenCalledWith('20');
+ drawn.length=0;
+ view.rerender(<Filter label="Choices" defaultValue="0" options={options} onValueChange={next}/>);
+ expect(drawn).toEqual([]);
+ fireEvent.click(screen.getByRole('radio',{name:'Choice 39'}));expect(next).toHaveBeenCalledWith('39');
+});

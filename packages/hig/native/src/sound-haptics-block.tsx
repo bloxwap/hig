@@ -1,7 +1,7 @@
 import React from 'react';
 import {View,type ScrollViewProps} from 'react-native';
 import {formatNumber} from './number-format.js';
-import {useColors,useFills,useHIG,useNumberLocale} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
 import {SettingCard,SettingHeader,SettingSwitch,type SettingAction} from './setting-switch.js';
@@ -60,17 +60,19 @@ const steps:readonly number[]=[0.25,0.5,0.75,1],percent:Intl.NumberFormatOptions
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** The share of the meter filled, from 0 to 1. Unknown and out-of-range levels are clamped. */
 export const soundLevel=(level:number|null|undefined):number=>level==null||!Number.isFinite(level)?0:Math.min(1,Math.max(0,level));
-/** The settings for what the app plays and feels like, as a screen: each channel is a card with a switch, and a channel that is on can show the device it uses, a live input meter and its volume as fixed steps. */
-export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:SoundHapticsBlockProps){
- const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale();
+type VolumeStepsProps=Omit<SoundVolume,'label'>&{id:string;disabled:boolean;locale:string;direction:'ltr'|'rtl'};
+const VolumeSteps=React.memo(function VolumeSteps({id,options=steps,value,onValueChange,disabled,locale,direction}:VolumeStepsProps){
+ return <View style={{direction,flexDirection:'row',gap:8}}>{options.map(option=><Button key={option} testID={`${id}-volume-${option}`} intent={option===value?'primary':'secondary'} accessibilityState={{selected:option===value}} disabled={disabled} onPress={()=>onValueChange(option)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(option,locale,percent)}</Button>)}</View>;
+});
+const SoundCard=React.memo(function SoundCard(section:SoundSection){
+ const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale();
  const caption={fontSize:14,lineHeight:21,color:colors.muted} as const;
- const cards=sections.map(section=>{
   const {source,choices,level,levelLabel,volume,action}=section,on=section.checked,id=`sound-${section.id}`;
   const showVolume=!!volume&&(on||section.volumeWhenOff==='disabled');
   const open=(on&&(!!source||!!choices||level!==undefined))||showVolume||!!action;
   const share=soundLevel(level);
-  const fill=<View testID={`${id}-level`} style={{width:`${share*100}%`,borderRadius:2,backgroundColor:colors.action}}/>,track={direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'} as const;
-  return <SettingCard key={section.id} testID={id}>
+  const fill=<View testID={`${id}-level`} style={{width:'100%',transform:[{scaleX:share}],transformOrigin:direction==='rtl'?'right center':'left center',borderRadius:2,backgroundColor:colors.action}}/>,track={direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'} as const;
+  return <SettingCard testID={id}>
    <SettingSwitch testID={`${id}-switch`} label={section.label} description={section.description} checked={section.checked} disabled={section.disabled} onCheckedChange={section.onCheckedChange}/>
    {open?<View testID={`${id}-body`} style={{gap:8}}>
     {on&&source?<Text testID={`${id}-source`} style={caption}>{source}</Text>:null}
@@ -79,16 +81,20 @@ export function SoundHapticsBlock({title,description,sections,onBack,headerActio
      :<View {...hidden} testID={`${id}-meter`} style={track}>{fill}</View>):null}
     {showVolume&&volume?<View testID={`${id}-volume`} accessibilityRole='radiogroup' accessibilityLabel={volume.label} style={{gap:8}}>
      <Text {...hidden} style={caption}>{volume.label}</Text>
-     <View style={{direction,flexDirection:'row',gap:8}}>{(volume.options??steps).map(option=><Button key={option} testID={`${id}-volume-${option}`} intent={option===volume.value?'primary':'secondary'} accessibilityState={{selected:option===volume.value}} disabled={on?section.disabled:true} onPress={()=>volume.onValueChange(option)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(option,locale,percent)}</Button>)}</View>
+     <VolumeSteps id={id} options={volume.options} value={volume.value} onValueChange={volume.onValueChange} disabled={!on||!!section.disabled} locale={locale} direction={direction}/>
     </View>:null}
     {action?<View style={{marginTop:on&&(source||choices||level!==undefined)||showVolume?8:0}}><Button testID={`${id}-action`} intent='secondary' fullWidth disabled={action.disabled} suppressFeedback={action.feedback===false} onPress={action.onSelect}>{action.label}</Button></View>:null}
    </View>:null}
   </SettingCard>;
- });
+});
+/** The settings for what the app plays and feels like, as a screen: each channel is a card with a switch, and a channel that is on can show the device it uses, a live input meter and its volume as fixed steps. */
+export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:SoundHapticsBlockProps){
+ const colors=useColors();
+ const caption={fontSize:14,lineHeight:21,color:colors.muted} as const;
  const header=<SettingHeader testID='sound' title={title} onBack={onBack} action={headerAction}/>;
  const body=<>
   {description?<Text testID='sound-description' style={{...caption,marginTop:16,paddingHorizontal:4}}>{description}</Text>:null}
-  {sections.length>0?<View testID='sound-sections' style={{gap:8,marginTop:16}}>{cards}</View>:null}
+  {sections.length>0?<View testID='sound-sections' style={{gap:8,marginTop:16}}>{sections.map(section=><SoundCard key={section.id} {...section}/>)}</View>:null}
  </>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='sound-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
  return <View testID={testID} style={{padding:16}}>

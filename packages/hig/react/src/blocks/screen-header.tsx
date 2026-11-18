@@ -2,7 +2,7 @@
 import { QrCode } from '@bloxwap/icons/react/qr-code';
 import React,{useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {PressDecoration,useHIG} from '../provider.js';
+import {PressDecoration,useMessageOverrides} from '../provider.js';
 import {SwapIcon} from './swap/shared.js';
 import {useStickyHeader} from './sticky-header.js';
 /** Attributes passed through to a header control's `<button>`, such as a data attribute or a pointer handler. HIG keeps its own type, class, name and click. */
@@ -34,13 +34,14 @@ export interface ScreenHeaderProps {
 /** Attributes for a header Close `<button>`: those of `ScreenHeaderControlProps`, plus `disabled`, which draws Close unavailable (dimmed, `disabled`, not pressable), for example while the pane's action is being signed. */
 export type HeaderCloseProps=ScreenHeaderControlProps&{disabled?:boolean};
 /** The block header's Close control, shared by the blocks that draw one. */
-export function HeaderClose({onClose,label,closeProps}:{onClose:()=>void;label:string;closeProps?:HeaderCloseProps}){
+export function HeaderClose({onClose,label,closeProps}:{onClose:()=>void;label?:string;closeProps?:HeaderCloseProps}){
+ const messages=useMessageOverrides();
  const off=!!closeProps?.disabled;
- return <button {...closeProps} type='button' className='hig-swap-back' aria-label={label} disabled={off||undefined} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back' disabled={off}/></button>;
+ return <button {...closeProps} type='button' className='hig-swap-back' aria-label={label??messages.close??en.close} disabled={off||undefined} onClick={onClose}><SwapIcon name='close'/><PressDecoration kind='back' disabled={off}/></button>;
 }
 /** Header of a card that is its own screen: Back on the leading edge, the title centred, and an optional control on the trailing edge. The title stays centred with either, both or neither. Every block draws it; import it from `@bloxwap/hig/react/blocks/screen-header` for a host pane that has no block. */
 export function ScreenHeader({title,onBack,backDisabled,backProps,action,headingId,badge,eyebrow,hideTitle,description,stickyHeader}:ScreenHeaderProps){
- const {messages}=useHIG();const header=useRef<HTMLDivElement>(null);
+ const messages=useMessageOverrides();const header=useRef<HTMLDivElement>(null);
  useStickyHeader(header,!!stickyHeader);
  const heading=<h2 id={headingId} className={`hig-screen-title${hideTitle?' hig-sr-only':''}`}>{badge?<>{title}<span className='hig-sr-only'>,</span> <span className='hig-badge hig-screen-badge'>{badge}</span></>:title}</h2>;
  return <div ref={header} className='hig-screen-header' data-sticky={stickyHeader||undefined}>

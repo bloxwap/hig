@@ -3,20 +3,22 @@ import {AccessibilityInfo,Platform,Pressable,TextInput,type TextInputProps,View}
 import {CloseIcon,SearchIcon} from './icons.js';
 import {Text} from './surface.js';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useMessageOverrides,useTextEnvironment} from './provider.js';
 const Context=createContext<{label:string;hint?:string;disabled?:boolean;invalid?:boolean}>({label:''});
 export interface FieldProps {label:string;description?:string;/** `positive` draws the description as a success line, such as a name that is available, and announces it when it changes. The words carry the meaning; the colour repeats it. */descriptionTone?:'muted'|'positive';error?:string;required?:boolean;disabled?:boolean}
-export function Field({label,description,descriptionTone,error,required,disabled,children}:React.PropsWithChildren<FieldProps>){const id=useId();const {messages}=useHIG();const colors=useColors();const marked=required?`${label} ${messages.required??en.required}`:label;const positive=descriptionTone==='positive';
+export function Field({label,description,descriptionTone,error,required,disabled,children}:React.PropsWithChildren<FieldProps>){const id=useId();const messages=useMessageOverrides();const colors=useColors();const marked=required?`${label} ${messages.required??en.required}`:label;const positive=descriptionTone==='positive';
  // iOS has no live regions: a changed success line is spoken explicitly, as an Alert is. Android reads the live region.
  const spoken=useRef(description);useEffect(()=>{if(spoken.current===description)return;spoken.current=description;if(positive&&description&&Platform.OS==='ios'){try{AccessibilityInfo.announceForAccessibility(description);}catch{/* The visible line remains. */}}},[description,positive]);
- return <Context.Provider value={{label:marked,hint:[description,error].filter(Boolean).join('. '),disabled,invalid:!!error}}><View style={{gap:8}}><Text nativeID={id}>{marked}</Text>{children}{description&&<Text {...(positive?{accessibilityLiveRegion:'polite' as const}:{})} style={{color:positive?colors.positive:colors.muted}}>{description}</Text>}{error&&<Text accessibilityLiveRegion='polite' style={{color:colors.negative}}>{error}</Text>}</View></Context.Provider>;}
+ const invalid=!!error;
+ const field=React.useMemo(()=>({label:marked,hint:[description,error].filter(Boolean).join('. '),disabled,invalid}),[marked,description,error,disabled,invalid]);
+ return <Context.Provider value={field}><View style={{gap:8}}><Text nativeID={id}>{marked}</Text>{children}{description&&<Text {...(positive?{accessibilityLiveRegion:'polite' as const}:{})} style={{color:positive?colors.positive:colors.muted}}>{description}</Text>}{error&&<Text accessibilityLiveRegion='polite' style={{color:colors.negative}}>{error}</Text>}</View></Context.Provider>;}
 export const Label:typeof Text=Text;
 /** No resting stroke: the fill separates the field (one step lighter inside a Surface, Dialog or sheet). The ring appears only for focus and for an invalid value. */
 export interface InputProps extends TextInputProps {
  /** Host text on the leading edge inside the field, before what is typed, such as `@` for a handle or `$` for an amount (test ID `<testID>-prefix`). Drawn muted and not part of the value; it leads the input's accessibility hint, before the field's description and error, so it is read after the label. The text starts after it. */
  prefix?:string;
 }
-export const Input:React.ForwardRefExoticComponent<InputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,InputProps>(function Input({style,onFocus,onBlur,prefix,...props},ref){const field=useContext(Context);const colors=useColors();const fills=useFills();const env=useHIG();const [focused,setFocused]=useState(false);
+export const Input:React.ForwardRefExoticComponent<InputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,InputProps>(function Input({style,onFocus,onBlur,prefix,...props},ref){const field=useContext(Context);const colors=useColors();const fills=useFills();const env=useTextEnvironment();const [focused,setFocused]=useState(false);
  // The prefix is measured once laid out, so the text starts just after it; until then a width is estimated from its length.
  const [lead,setLead]=useState<number|null>(null);
  const rtl=env.direction==='rtl',web=Platform.OS==='web';
@@ -40,7 +42,7 @@ export interface SearchInputProps extends TextInputProps {
  /** Accessible name of the clear button; defaults to HIGProvider `messages.clearSearch`. */
  clearLabel?:string;
 }
-export const SearchInput:React.ForwardRefExoticComponent<SearchInputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,SearchInputProps>(function SearchInput({style,trailing,onClear,clearLabel,...props},ref){const colors=useColors();const {direction,messages}=useHIG();const inner=useRef<React.ComponentRef<typeof TextInput>|null>(null);
+export const SearchInput:React.ForwardRefExoticComponent<SearchInputProps&React.RefAttributes<React.ComponentRef<typeof TextInput>>>=forwardRef<React.ComponentRef<typeof TextInput>,SearchInputProps>(function SearchInput({style,trailing,onClear,clearLabel,...props},ref){const colors=useColors();const direction=useLayoutDirection();const messages=useMessageOverrides();const inner=useRef<React.ComponentRef<typeof TextInput>|null>(null);
  // RN Web resolves `start` through its own locale context rather than this View's direction.
  const rtl=direction==='rtl',web=Platform.OS==='web';const edge=web?(rtl?{right:18}:{left:18}):{start:18};const inset=web?(rtl?{paddingRight:46}:{paddingLeft:46}):{paddingStart:46};
  const extra=trailing!=null&&trailing!==false,reserve=extra||onClear!=null;

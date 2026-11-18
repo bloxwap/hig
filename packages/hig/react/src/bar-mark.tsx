@@ -1,5 +1,5 @@
 "use client";
-import React,{useId} from 'react';
+import React,{useId,useMemo} from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {useNumberLocale} from './provider.js';
 import {AnimatedNumberReadout} from './animated-number.js';
@@ -32,13 +32,23 @@ export function barMarkShares(elements:readonly BarMarkElement[],total?:number):
  const values=elements.map(element=>amount(element.value)),sum=values.reduce((a,b)=>a+b,0),whole=Math.max(amount(total??0),sum);
  return whole>0?{shares:values.map(value=>value/whole),rest:(whole-sum)/whole}:{shares:values.map(()=>0),rest:1};
 }
+const percentOptions:Intl.NumberFormatOptions={style:'percent',maximumFractionDigits:1};
+const BarContents=React.memo(function BarContents({elements,total,legend}:Pick<BarMarkProps,'elements'|'total'|'legend'>){
+ const locale=useNumberLocale();const {shares,rest:remainder}=useMemo(()=>barMarkShares(elements,total),[elements,total]);
+ const percentages=useMemo(()=>shares.map(share=>formatNumber(share,locale,percentOptions)),[shares,locale]);
+ const paints=useMemo(()=>elements.map(({color,tone},index)=>color
+  ?{style:{'--hig-bar-mark-color':color} as React.CSSProperties}
+  :{'data-tone':tone??barMarkTones[index%barMarkTones.length]}),[elements]);
+ return <>
+  <div className='hig-bar-mark-bar' aria-hidden='true'>{elements.map((element,index)=>shares[index]>0&&<span key={element.id??index} className='hig-bar-mark-segment' {...paints[index]} style={{...paints[index].style,flexGrow:shares[index]}}/>)}{remainder>0&&<span className='hig-bar-mark-rest' style={{flexGrow:remainder}}/>}</div>
+  <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paints[index]}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{typeof element.detail==='string'?element.detail:<AnimatedNumberReadout {...figureProps(element.detail)}/>}</span>}<span className='hig-sr-only'>{percentages[index]}</span></li>)}</ul>
+ </>;
+});
 /** A one-dimensional stacked bar: a titled card whose single bar is divided among its elements, with a legend naming each part. */
 export function BarMark({title,description,elements,total,legend=true,size='default',surface=true,className,...rest}:BarMarkProps){
- const locale=useNumberLocale();const id=useId();const {shares,rest:remainder}=barMarkShares(elements,total);
- const paint=(element:BarMarkElement,index:number)=>element.color?{style:{'--hig-bar-mark-color':element.color} as React.CSSProperties}:{'data-tone':element.tone??barMarkTones[index%barMarkTones.length]};
+ const id=useId();
  return <section {...rest} className={`${surface?'hig-surface ':''}hig-bar-mark${className?` ${className}`:''}`} data-surface={surface?undefined:'false'} data-size={size==='small'?size:undefined} aria-labelledby={id}>
   <div className='hig-bar-mark-header'><strong id={id} className='hig-bar-mark-title'>{title}</strong>{description!=null&&<span className='hig-bar-mark-description'>{description}</span>}</div>
-  <div className='hig-bar-mark-bar' aria-hidden='true'>{elements.map((element,index)=>shares[index]>0&&<span key={element.id??index} className='hig-bar-mark-segment' {...paint(element,index)} style={{...paint(element,index).style,flexGrow:shares[index]}}/>)}{remainder>0&&<span className='hig-bar-mark-rest' style={{flexGrow:remainder}}/>}</div>
-  <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paint(element,index)}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{typeof element.detail==='string'?element.detail:<AnimatedNumberReadout {...figureProps(element.detail)}/>}</span>}<span className='hig-sr-only'>{formatNumber(shares[index],locale,{style:'percent',maximumFractionDigits:1})}</span></li>)}</ul>
+  <BarContents elements={elements} total={total} legend={legend}/>
  </section>;
 }

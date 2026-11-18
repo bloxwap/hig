@@ -4,10 +4,10 @@ import Reanimated,{useAnimatedStyle,useFrameCallback,useSharedValue} from 'react
 import Svg,{Circle,Defs,G,Line,LinearGradient,Path,Rect,Stop,Text as SvgText} from 'react-native-svg';
 import {tokens} from '@bloxwap/hig/tokens';
 import {ALTIMETER_BURST_COOLDOWN_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,
- bitcoinPrice,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,sparkGeometry,
+ bitcoinPrice,firstRetainedTick,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,sparkGeometry,
  targetCrossings,targetLayout,tickSpacingFor,trailPoints,validTargets,
  type AltimeterFeed,type AltimeterPosition,type AltimeterTarget,type AltimeterTargetPosition,type TargetLabelInsets,type AltimeterTick} from '@bloxwap/hig/chart/altimeter-core';
-import {useColors,useHIG,useMessages,useNumberLocale} from './provider.js';
+import {useColors,useReducedMotion,useMonoFontFamily,useMessages,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
 
 export {bitcoinPrice,type AltimeterFeed,type AltimeterPosition,type AltimeterTarget,type TargetLabelInsets};
@@ -61,7 +61,7 @@ function BurstEffect({burst,now,x,y,width}:{burst:Burst;now:number;x:number;y:nu
 
 /** Native SVG price ladder, scrolling trail and position readout. Stops drawing and unsubscribes in the background. */
 export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,dgen,degen=dgen??false,...view}:AltimeterChartProps){
- const colors=useColors(),{reducedMotion,monoFontFamily}=useHIG(),messages=useMessages(),locale=useNumberLocale();
+ const colors=useColors(),reducedMotion=useReducedMotion(),monoFontFamily=useMonoFontFamily(),messages=useMessages(),locale=useNumberLocale();
  const [width,setWidth]=useState(0),[frame,setFrame]=useState(emptyFrame),[stale,setStale]=useState(false);
  const [active,setActive]=useState(AppState.currentState==null||AppState.currentState==='active');
  useEffect(()=>{const sub=AppState.addEventListener('change',state=>setActive(state==='active'));return ()=>sub.remove();},[]);
@@ -86,7 +86,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
   let last=-Infinity,sampled=-Infinity,lastBurst=-Infinity,previous=NaN,anchor=NaN,spacing=0,labelMotionUntil=0;
   let lastSettings:typeof settings.current|undefined;
   let ticks:AltimeterTick[]=[],burst:Burst|undefined;
-  const tween=priceTween(),layout=targetLayout(),crossings=targetCrossings();
+  const tween=priceTween(),layout=targetLayout({reuseSettled:true}),crossings=targetCrossings({immutableTargets:true});
   const requestFrame=()=>{
    clearTimeout(sampleTimer);
    if(raf===null)raf=requestAnimationFrame(step);
@@ -115,11 +115,11 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
    if(now-sampled>=ALTIMETER_SAMPLE_MS){
     const keep=width/ALTIMETER_FLOW_PX*1000+2000;
     if(!ticks.length)ticks=[{t:now-keep,p:display}];
-    ticks=[...ticks,{t:now,p:display}];
-    while(ticks.length>2&&ticks[1].t<now-keep)ticks.shift();
+    ticks=ticks.slice(firstRetainedTick(ticks,now-keep));
+    ticks.push({t:now,p:display});
     sampled=now;
    }
-   const hit=crossings.update(display,levels).at(-1);
+   const hit=crossings.update(display,levels,degen&&!reducedMotion).at(-1);
    if(hit&&degen&&!reducedMotion&&now-lastBurst>=ALTIMETER_BURST_COOLDOWN_MS){
     burst={start:now,direction:display>previous?'up':'down',color:hit.color};lastBurst=now;
    }
@@ -159,11 +159,17 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  const digits=labelDecimalsFor(spacing,display);
  const optionsKey=JSON.stringify(priceOptions??{});
  const format=useMemo(()=>new Intl.NumberFormat(locale,{style:'currency',currency:'USD',minimumFractionDigits:digits,maximumFractionDigits:digits,...priceOptions}),[locale,digits,optionsKey]);
- const pnlFormat=useMemo(()=>new Intl.NumberFormat(locale,{style:'currency',currency:priceOptions?.currency??'USD',signDisplay:'exceptZero'}),[locale,priceOptions?.currency]);
- const percent=useMemo(()=>new Intl.NumberFormat(locale,{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'}),[locale]);
  const capsule=position?.capsule;
+ const mode=typeof capsule==='object'?'percent':capsule==='pnl'?'pnl':'price';
+ const currency=priceOptions?.currency??'USD';
+ const capsuleFormat=useMemo(()=>{
+  if(mode==='percent')return new Intl.NumberFormat(locale,{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'});
+  if(mode==='pnl')return new Intl.NumberFormat(locale,{style:'currency',currency,signDisplay:'exceptZero'});
+  return null;
+ },[locale,mode,currency]);
  const value=typeof capsule==='object'?capsule.returnRatio:capsule==='pnl'?position?.pnl:mark;
- const reading=value!=null&&Number.isFinite(value)?(typeof capsule==='object'?percent:capsule==='pnl'?pnlFormat:format).format(value):'—';
+ const readingFormat=capsuleFormat??format;
+ const reading=useMemo(()=>value!=null&&Number.isFinite(value)?readingFormat.format(value):'—',[value,readingFormat]);
  const tone=(n:number)=>!Number.isFinite(n)||n===0?colors.muted:n>0?colors.positive:colors.negative;
  const pillColor=position?tone(position.pnl):colors.action;
  const basis=position?.breakEvenPrice;
@@ -174,7 +180,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  // append only the short live connector as price and time advance.
  const history=useMemo(()=>{
   const sample=ticks.at(-1);if(!sample)return null;
-  const points=trailPoints(ticks,sample.t,18,end,p=>center-(p-sample.p)/spacing*ALTIMETER_TICK_PX);
+  const points=trailPoints(ticks,sample.t,18,end,p=>center-(p-sample.p)/spacing*ALTIMETER_TICK_PX,true);
   const last=points.at(-1);if(!last)return null;
   const parts:string[]=[];
   smoothTrail(points,{moveTo:(x,y)=>parts.push(`M${x} ${y}`),lineTo:(x,y)=>parts.push(`L${x} ${y}`),bezierCurveTo:(a,b,c,d,x,y)=>parts.push(`C${a} ${b} ${c} ${d} ${x} ${y}`)});
@@ -215,12 +221,12 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
   });
  },[mark===null,android,slots,anchor,centerTick,halfRows,spacing,format,low,high,center,width]);
  const targetTexts=useMemo(()=>new Map(levels.map(level=>[level.id,[level.label,format.format(level.price)].filter(Boolean).join(' ')])),[levels,format]);
- const bounds=Array.from(frame.levels.values());
+ const bounds=useMemo(()=>Array.from(frame.levels.values()),[frame.levels]);
  const ladderShift=validPrice(display)?(display-reference)/spacing*ALTIMETER_TICK_PX:0;
- const hidden=android?ladder.map(row=>{
+ const hidden=useMemo(()=>android&&bounds.length?ladder.map(row=>{
   const y=row.y+ladderShift;
   return bounds.some(level=>level.labelTop!=null&&y+7>level.labelTop-2&&y-7<level.labelTop+20)?'1':'0';
- }).join(''):'';
+ }).join(''):'',[android,bounds,ladder,ladderShift]);
  const id=useId().replace(/[^a-zA-Z0-9_-]/g,''),fade='trail'+id,shade='basis'+id;
  const status=stale?messages.stale:messages.loadingChart;
  const label=[summary,mark==null?status:reading,...targetTexts.values()].join('. ');

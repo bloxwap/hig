@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React,{createRef} from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
+import {act,cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider,type PressDecorationInfo} from '../packages/hig/react/src/provider';
@@ -35,14 +35,29 @@ describe('ListRow additions',()=>{
   await userEvent.click(other);expect(pick).toHaveBeenCalledTimes(1);
  });
  it('shows a spinner while busy, adds the busy text to the name and ignores presses without dimming',async()=>{
+  vi.useFakeTimers();
   const select=vi.fn();
   const view=render(<HIGProvider pressDecoration={haptic}><ListRow label='Link account' busy onSelect={select}/></HIGProvider>);
   const row=screen.getByRole('button',{name:'Link account · Working'}) as HTMLButtonElement;
-  expect(row.getAttribute('aria-busy')).toBe('true');expect(row.disabled).toBe(false);expect(row.querySelector('.hig-list-row-spinner')).toBeTruthy();expect(row.querySelector('.hig-list-row-chevron')).toBeNull();
+  expect(row.getAttribute('aria-busy')).toBe('true');expect(row.disabled).toBe(false);
+  act(()=>vi.advanceTimersByTime(999));
+  expect(row.querySelector('.hig-list-row-spinner')).toBeNull();expect(row.querySelector('.hig-list-row-chevron')).toBeTruthy();
+  act(()=>vi.advanceTimersByTime(1));vi.useRealTimers();
+  expect(row.querySelector('.hig-list-row-spinner')).toBeTruthy();expect(row.querySelector('.hig-list-row-chevron')).toBeNull();
   expect(row.querySelector('.host-haptic')?.getAttribute('data-disabled')).toBe('true');
   await userEvent.click(row);expect(select).not.toHaveBeenCalled();
   view.rerender(<HIGProvider messages={{busy:'En cours'}}><ListRow label='Link account' busy busyLabel='' onSelect={select}/></HIGProvider>);
   expect(screen.getByRole('button',{name:'Link account'}).getAttribute('aria-busy')).toBe('true');
+ });
+ it('reserves the spinner slot during the delay on a row without a disclosure icon',()=>{
+  vi.useFakeTimers();
+  try{
+   const {container}=render(<ListRow label='Account' value='Primary' busy disclosure='none' onSelect={()=>{}}/>);
+   const slot=container.querySelector('.hig-list-row-busy-slot');
+   expect(slot?.getAttribute('aria-hidden')).toBe('true');expect(slot?.childElementCount).toBe(0);
+   act(()=>vi.advanceTimersByTime(1000));
+   expect(slot?.querySelector('.hig-list-row-spinner')).toBeTruthy();
+  }finally{vi.useRealTimers();}
  });
  it('keeps a linked row the same focused element while it turns busy, and stops it navigating',()=>{
   const select=vi.fn();

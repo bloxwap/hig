@@ -49,7 +49,7 @@ it('a modal sheet draws in the host layer only while open, with default anatomy 
  expect(all(view,'sheet-handle')).toHaveLength(0);layout(view);expect(all(view,'sheet-handle')).toHaveLength(1);
  const texts=view.findAllByType(RNText).map(text);expect(texts).toEqual(expect.arrayContaining(['Review','Verify amount','Close']));
  expect(all(view,'sheet-content')[0].props.accessibilityViewIsModal).toBe(true);
- expect(StyleSheet.flatten(view.findByType(GestureSheetScrollView).props.contentContainerStyle).paddingHorizontal).toBe(8);
+ expect(StyleSheet.flatten(view.findByType(GestureSheetScrollView).props.contentContainerStyle).paddingHorizontal).toBe(16);
  // The surface is rasterised on Android so moving it costs no redraw of its content.
  expect(all(view,'sheet-surface')[0].props.renderToHardwareTextureAndroid).toBe(true);
 });

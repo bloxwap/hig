@@ -1,3 +1,5 @@
+import {StaticLoadingRing} from './static-loading-ring.js';
+import {useBusySpinner} from './use-busy-spinner.js';
 import {progressValue} from '@bloxwap/hig/contracts';
 import React,{useEffect,useRef,useState} from 'react';
 import {tokens,nativeMetrics} from '@bloxwap/hig/tokens';
@@ -10,7 +12,7 @@ import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
 import {Button} from './button.js';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useReducedMotion,useMessageOverrides,useTextEnvironment} from './provider.js';
 import {blockText,plainText} from './text-content.js';
 import {roleColor,type AccentRole} from './roles.js';
 import {speak} from './announce.js';
@@ -50,7 +52,16 @@ export interface ToastProps {
  testID?:string;
 }
 /** Loops a 0→1 value while `active`; rests at 0 otherwise (reduced motion, or nothing to show). */
-function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Easing.linear){const value=useRef(new Animated.Value(0)).current;useEffect(()=>{if(!active){value.stopAnimation();value.setValue(0);return;}const loop=Animated.loop(Animated.timing(value,{toValue:1,duration,easing,useNativeDriver:Platform.OS!=='web',isInteraction:false}));loop.start();return()=>loop.stop();},[active,duration,easing,value]);return value;}
+function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Easing.linear){
+ const value=React.useMemo(()=>active?new Animated.Value(0):null,[active]);
+ useEffect(()=>{
+  if(!value)return;
+  const loop=Animated.loop(Animated.timing(value,{toValue:1,duration,easing,useNativeDriver:Platform.OS!=='web',isInteraction:false}));
+  loop.start();
+  return ()=>loop.stop();
+ },[duration,easing,value]);
+ return value;
+}
 export interface ToastNoticeProps {
  message:string;
  /** A second line under the message, in regular weight. */
@@ -68,7 +79,7 @@ export interface ToastNoticeProps {
 }
 /** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. */
 export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
- const {messages,direction}=useHIG();const colors=useColors();
+ const messages=useMessageOverrides();const direction=useLayoutDirection();const colors=useColors();
  const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null;
  return <View accessibilityLiveRegion='none' style={[{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'},style]}>
   <SeverityIcon kind={severity} color={colors[severityRole[severity]]}/>
@@ -78,28 +89,34 @@ export function ToastNotice({message,description,severity='info',action,dismissN
   {close}
  </View>;
 }
+const PersistentNotice = React.memo(function PersistentNotice({
+ id, message, severity, action, dismiss, formatDismiss, onDismiss, description, closable
+}: Notice & {dismiss:string; formatDismiss:typeof en.dismissNotice; onDismiss?:(id:string)=>void}) {
+ return <ToastNotice message={message} severity={severity} action={action} description={description}
+  dismissName={formatDismiss(message,dismiss)} onDismiss={closable!==false && onDismiss ? ()=>onDismiss(id) : undefined}/>;
+});
 /** Each notice is one capsule row: severity symbol, message, optional action, then a close control. Compact, scrollable notices remain visible until their host removes them. */
 export function Toast({notices,onDismiss,dismissLabel,maxHeight,testID}:ToastProps){
- const {messages}=useHIG();
+ const messages=useMessageOverrides();
  const {height}=useWindowDimensions();
  const dismiss=dismissLabel??messages.dismiss??en.dismiss;
- const unique=[...new Map(notices.map(n=>[n.id,n])).values()];
- const spoken=unique.map(n=>({...n,message:[n.message,n.description].filter(Boolean).join('. ')}));
+ const unique=React.useMemo(()=>[...new Map(notices.map(n=>[n.id,n])).values()],[notices]);
+
  const previous=useRef(new Map<string,string>()),[announcement,setAnnouncement]=useState('');
  const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
- const key=JSON.stringify(spoken.map(n=>[n.id,n.message,n.severity]));
  useEffect(()=>{
+  const spoken=unique.map(n=>({...n,message:[n.message,n.description].filter(Boolean).join('. ')}));
   const delta=notificationDelta(previous.current,spoken);previous.current=delta.next;
   if(!delta.message)return;
   if(Platform.OS!=='web'){speak(delta.message,delta.severity);return;}
   setAnnouncement('');
   if(timer.current!==null)clearTimeout(timer.current);
   timer.current=setTimeout(()=>{timer.current=null;if(previous.current.get(delta.id!)===delta.next.get(delta.id!))setAnnouncement(delta.message!);},25);
- },[key]);
+ },[unique]);
  useEffect(()=>()=>{if(timer.current!==null)clearTimeout(timer.current);},[]);
  return <View testID={testID} style={{maxHeight:maxHeight??height*.6,flexShrink:1}}>
   <ScrollView style={{flexGrow:0,flexShrink:1}} nestedScrollEnabled keyboardShouldPersistTaps='handled' accessibilityLabel={messages.notifications??en.notifications}>
-   <Stack style={{gap:8}}>{unique.map(n=><ToastNotice key={n.id} message={n.message} description={n.description} severity={n.severity} action={n.action} dismissName={(messages.dismissNotice??en.dismissNotice)(n.message,dismiss)} onDismiss={n.closable!==false&&onDismiss?()=>onDismiss(n.id):undefined}/>)}</Stack>
+   <Stack style={{gap:8}}>{unique.map(n=><PersistentNotice key={n.id} {...n} dismiss={dismiss} formatDismiss={messages.dismissNotice??en.dismissNotice} onDismiss={onDismiss}/>)}</Stack>
   </ScrollView>
   {Platform.OS==='web'&&<Text accessibilityLiveRegion='polite' style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{announcement}</Text>}
  </View>;
@@ -118,11 +135,26 @@ export interface SpinnerProps {
  hideLabel?:boolean;
  testID?:string;
 }
-export function Spinner({label,hideLabel,testID}:SpinnerProps){const {messages}=useHIG();const colors=useColors();const text=label??messages.loading??en.loading;return <View testID={testID} accessible accessibilityLabel={text}><ActivityIndicator color={colors.action}/>{hideLabel?null:<Text>{text}</Text>}</View>;}
+export function Spinner({label,hideLabel,testID}:SpinnerProps){
+ const messages=useMessageOverrides();const reducedMotion=useReducedMotion();
+ const colors=useColors(),visible=useBusySpinner(true);
+ const text=label??messages.loading??en.loading;
+ return <View testID={testID} accessible accessibilityLabel={text}>
+  <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{height:20,minWidth:20,alignItems:'center',justifyContent:'center'}}>
+   {visible&&(reducedMotion?<StaticLoadingRing color={colors.action} trackColor={colors.muted}/>:<ActivityIndicator size="small" color={colors.action}/>)}
+  </View>
+  {hideLabel?null:<Text>{text}</Text>}
+ </View>;
+}
 export function Progress({label,value,max=100,hideValue}: {label:string;value?:number;max?:number;/** Draws the label without the ` value/max` suffix (or the `…` while indeterminate), for a host that shows the figure itself. The value is still read. */hideValue?:boolean}){({value,max}=progressValue(value,max));
- const {locale,messages,direction}=useHIG();const colors=useColors();const fills=useFills();
+ const {locale,direction}=useTextEnvironment();const messages=useMessageOverrides();const colors=useColors();const fills=useFills();
+ const describe=messages.progressValue??en.progressValue;
+ const inProgress=messages.inProgress??en.inProgress;
+ const accessibilityValue=React.useMemo(()=>({
+  min:0,max,now:value,text:value===undefined?inProgress:describe(formatNumber(value,locale),formatNumber(max,locale)),
+ }),[max,value,locale,inProgress,describe]);
  const fill=value===undefined?35:Math.min(100,Math.max(0,Number.isFinite(value)&&max>0?value/max*100:0));
- return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={{min:0,max,now:value,text:value===undefined?messages.inProgress??en.inProgress:(messages.progressValue??en.progressValue)(formatNumber(value,locale),formatNumber(max,locale))}}>
+ return <View style={{gap:12,direction}} accessibilityRole='progressbar' accessibilityLabel={label} accessibilityValue={accessibilityValue}>
   <Text>{label}{hideValue?null:value===undefined?'…':` ${value}/${max}`}</Text>
   <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{height:6,borderRadius:9999,overflow:'hidden',backgroundColor:fills.raised}}>
    <View style={{width:`${fill}%`,height:'100%',alignSelf:value===undefined?'center':'flex-start',borderRadius:9999,backgroundColor:colors.action}}/>
@@ -130,7 +162,9 @@ export function Progress({label,value,max=100,hideValue}: {label:string;value?:n
  </View>;
 }
 /** Pulses while content is on its way; still with reduced motion. */
-export function Skeleton({label}: {label?:string}){const {messages,reducedMotion}=useHIG();const fills=useFills();const pulse=useLoop(!reducedMotion,1500);return <Animated.View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:fills.raised,borderRadius:10,opacity:pulse.interpolate({inputRange:[0,.5,1],outputRange:[1,.5,1]})}}/>;}
+export function Skeleton({label}: {label?:string}){const messages=useMessageOverrides();const reducedMotion=useReducedMotion();const fills=useFills();const pulse=useLoop(!reducedMotion,1500);
+ const opacity=React.useMemo(()=>pulse?pulse.interpolate({inputRange:[0,.5,1],outputRange:[1,.5,1]}):1,[pulse]);
+ return <Animated.View accessible accessibilityLabel={label??messages.loadingContent??en.loadingContent} style={{minHeight:48,backgroundColor:fills.raised,borderRadius:10,opacity}}/>;}
 export interface EmptyStateProps extends Omit<ViewProps,'children'> {
  title:string;
  description?:string;
@@ -160,5 +194,9 @@ export function Avatar(props:AvatarFrameProps){return <StillFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */
-export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const {messages,reducedMotion,direction}=useHIG();const colors=useColors();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;const color=colors[statusRole[state]??'muted'];const live=!reducedMotion&&(state==='online'||state==='stale');const ring=useLoop(live,1600,ringEasing);
- return <View style={{direction,flexDirection:'row',alignItems:'center',gap:tokens.space.sm}}><View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{width:7,height:7}}>{live&&<Animated.View style={{position:'absolute',width:7,height:7,borderRadius:4,backgroundColor:color,opacity:ring.interpolate({inputRange:[0,1],outputRange:[.6,0]}),transform:[{scale:ring.interpolate({inputRange:[0,1],outputRange:[1,3]})}]}}/>}<View style={{width:7,height:7,borderRadius:4,backgroundColor:color}}/></View><Text style={{flexShrink:1,minWidth:0}}>{label}: {text}</Text></View>;}
+export function StatusIndicator({label,state}: {label:string;state:'online'|'offline'|'stale'}){const messages=useMessageOverrides();const reducedMotion=useReducedMotion();const direction=useLayoutDirection();const colors=useColors();const text={online:messages.statusOnline??en.statusOnline,offline:messages.statusOffline??en.statusOffline,stale:messages.statusStale??en.statusStale}[state]??state;const color=colors[statusRole[state]??'muted'];const live=!reducedMotion&&(state==='online'||state==='stale');const ring=useLoop(live,1600,ringEasing);
+ const motion=React.useMemo(()=>ring?{
+  opacity:ring.interpolate({inputRange:[0,1],outputRange:[.6,0]}),
+  transform:[{scale:ring.interpolate({inputRange:[0,1],outputRange:[1,3]})}],
+ }:null,[ring]);
+ return <View style={{direction,flexDirection:'row',alignItems:'center',gap:tokens.space.sm}}><View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{width:7,height:7}}>{motion&&<Animated.View style={[{position:'absolute',width:7,height:7,borderRadius:4,backgroundColor:color},motion]}/>}<View style={{width:7,height:7,borderRadius:4,backgroundColor:color}}/></View><Text style={{flexShrink:1,minWidth:0}}>{label}: {text}</Text></View>;}

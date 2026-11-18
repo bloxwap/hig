@@ -1,0 +1,8 @@
+// Generated from planning/examples.json.
+import React,{useState} from 'react';
+import {Text,Stack} from '@bloxwap/hig/react/surface';
+import {WalletAddress} from '@bloxwap/hig/react/wallet-address';
+const components={Stack,Text,WalletAddress};
+export function Example({name,state='default'}:{name:string;state?:string;previewDialog?:typeof import('@bloxwap/hig/react/overlay').Dialog}){const C=components;const [message,setMessage]=useState('');
+function preview(){switch(name){case "WalletAddress":return state==="host-qr"?<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' size={140} announce={false} qr={<svg aria-hidden='true' viewBox='0 0 7 7' width='100%' height='100%' fill='currentColor'><rect x='0' y='0' width='3' height='3'/><rect x='4' y='0' width='3' height='3'/><rect x='0' y='4' width='3' height='3'/><rect x='4' y='4' width='1' height='1'/></svg>} onCopy={()=>setMessage('Copied; the host confirms it with its own toast')}/>:<C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>setMessage('Copy requested; the host owns the clipboard')}/>;
+default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack>{preview()}{message&&<C.Text>{message}</C.Text>}</C.Stack>;}

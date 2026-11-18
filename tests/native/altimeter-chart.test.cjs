@@ -113,3 +113,23 @@ it('keeps one continuous historical and live stroke on iOS',()=>{
  expect(strokes).toHaveLength(1);
  expect(strokes[0].props.d).toMatch(/^M.*C.*h/);
 });
+
+it('keeps the capsule reading across steady chart samples and formats a changed price',()=>{
+ const NativeFormat=Intl.NumberFormat;
+ const reads=jest.fn();
+ const formats=jest.spyOn(Intl,'NumberFormat').mockImplementation((locale,options)=>{
+  const formatter=new NativeFormat(locale,options);
+  return new Proxy(formatter,{get(target,key){
+   if(key==='format')return value=>{reads(value);return target.format(value);};
+   return Reflect.get(target,key,target);
+  }});
+ });
+ mount({price:100});frame(1000);
+ expect(formats.mock.calls.some(([,options])=>options?.signDisplay==='exceptZero')).toBe(false);
+ reads.mockClear();
+ for(let i=1;i<=5;i++)frame(1000+i*200);
+ expect(reads).not.toHaveBeenCalled();
+ act(()=>root.update(tree({price:101})));frame(2200);
+ expect(reads).toHaveBeenCalledWith(101);
+ expect(chartView().props.accessibilityLabel).toMatch(/101/);
+});

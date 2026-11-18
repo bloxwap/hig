@@ -35,7 +35,7 @@ describe('RewardBlock',()=>{
   const view=render(<RewardBlock {...base} promo={pool}/>);
   expect(q('.hig-reward-promo')!.classList.contains('hig-surface')).toBe(true);expect(q('.hig-reward-eyebrow')!.textContent).toBe('Season 01');
   expect(spoken(q('.hig-reward-amount')!)).toBe('$4,037');expect(q('.hig-reward-caption')!.textContent).toBe('of $250,000 prize pool');
-  expect(q('.hig-reward-track')!.getAttribute('aria-hidden')).toBe('true');expect(parseFloat(q('.hig-reward-track > span')!.style.width)).toBeCloseTo(1.6148,3);
+  expect(q('.hig-reward-track')!.getAttribute('aria-hidden')).toBe('true');expect(parseFloat(q('.hig-reward-track > span')!.style.getPropertyValue('--hig-reward-fill'))).toBeCloseTo(1.6148,3);
   // One paragraph: the headline in the text colour, the description continuing it.
   const summary=q('.hig-reward-summary')!;expect(summary.textContent).toBe('Top 100 traders split the pool. Funded by builder fees on every trade.');expect(summary.querySelector('strong')!.textContent).toBe('Top 100 traders split the pool.');
   // Nothing sits under the bar, the eyebrow has no dot, and there is no rules link without its prop.
@@ -45,9 +45,9 @@ describe('RewardBlock',()=>{
   const rule=(selector:string)=>css.split('\n').find(line=>line.startsWith(selector+' {'))??'',size=(line:string)=>line.match(/font-size:[^;]+;line-height:[^;]+;font-weight:[^;]+;letter-spacing:[^;]+/)?.[0];
   expect(size(rule('.hig-reward-amount'))).toBeTruthy();expect(size(rule('.hig-reward-amount'))).toBe(size(rule('.hig-swap-amount')));expect(size(rule('.hig-reward-amount'))).toBe(size(rule('.hig-target-amount')));
   // Over the goal the bar is full; an unknown amount reads as a dash and an empty bar; the host formats the money.
-  view.rerender(<RewardBlock {...base} promo={{...pool,amount:300000}}/>);expect(q('.hig-reward-track > span')!.style.width).toBe('100%');
+  view.rerender(<RewardBlock {...base} promo={{...pool,amount:300000}}/>);expect(q('.hig-reward-track > span')!.style.getPropertyValue('--hig-reward-fill')).toBe('100%');
   view.rerender(<RewardBlock {...base} promo={{...pool,amount:null,amountOptions:{style:'currency',currency:'EUR',maximumFractionDigits:0}}}/>);
-  expect(spoken(q('.hig-reward-amount')!)).toBe('—');expect(q('.hig-reward-caption')!.textContent).toBe('of €250,000 prize pool');expect(q('.hig-reward-track > span')!.style.width).toBe('0%');
+  expect(spoken(q('.hig-reward-amount')!)).toBe('—');expect(q('.hig-reward-caption')!.textContent).toBe('of €250,000 prize pool');expect(q('.hig-reward-track > span')!.style.getPropertyValue('--hig-reward-fill')).toBe('0%');
   // A headline or a description alone still reads; a bare pool has neither a caption nor a paragraph.
   view.rerender(<RewardBlock {...base} promo={{eyebrow:'Pool',amount:10,goal:100,description:'Funded by fees.'}}/>);expect(q('.hig-reward-summary')!.textContent).toBe('Funded by fees.');expect(q('.hig-reward-summary strong')).toBeNull();expect(q('.hig-reward-caption')).toBeNull();
   view.rerender(<RewardBlock {...base} promo={{eyebrow:'Pool',amount:10,goal:100}}/>);expect(q('.hig-reward-summary')).toBeNull();expect(q('.hig-reward-track')).toBeTruthy();
@@ -142,7 +142,7 @@ describe('RewardBlock promo text, slots and a promotion-only pane',()=>{
  it('draws a host figure in the figure slot, a caption function with a node, and no figure line without amount or figure',()=>{
   const {unmount}=render(<HIGProvider><RewardBlock title='Rewards' entries={[]} promo={{eyebrow:'Pool',figure:<strong data-testid='live'>$4,037</strong>,goal:250000,caption:goal=><em>of {goal}</em>}}/></HIGProvider>);
   const slot=screen.getByTestId('live').parentElement!;expect(slot.tagName).toBe('DIV');expect(slot.className).toBe('hig-reward-amount');
-  expect(q('.hig-reward-caption')!.textContent).toBe('of $250,000');expect(q('.hig-reward-track > span')!.style.width).toBe('0%');
+  expect(q('.hig-reward-caption')!.textContent).toBe('of $250,000');expect(q('.hig-reward-track > span')!.style.getPropertyValue('--hig-reward-fill')).toBe('0%');
   unmount();render(<HIGProvider><RewardBlock title='Rewards' promo={{eyebrow:'Soon',headline:'Draws open Monday.'}}/></HIGProvider>);
   expect(q('.hig-reward-amount')).toBeNull();expect(q('.hig-reward-summary')!.textContent).toBe('Draws open Monday.');
  });
@@ -161,4 +161,35 @@ it('shows the streak reward and counts down to the supplied prize drawing',()=>{
   expect(screen.queryByRole('timer')).toBeNull();
   expect(screen.getByText(drawing.endedLabel)).toBeTruthy();
  }finally{cleanup();vi.useRealTimers();}
+});
+
+it('windows large ordered standings and exposes each mounted rank within the full list',()=>{
+ const many=Array.from({length:10000},(_,i)=>({id:String(i),rank:i+1,name:'Trader '+i,score:i}));
+ render(<RewardBlock title="Standings" entries={many}/>);
+ const list=document.querySelector('ol.hig-reward-rows')!;
+ expect(list.children.length).toBeLessThan(50);
+ expect(list.firstElementChild?.getAttribute('aria-posinset')).toBe('1');
+ expect(list.firstElementChild?.getAttribute('aria-setsize')).toBe('10000');
+});
+
+it.each([40,1000])('reuses the %i standings when only the status changes',count=>{
+ const reads=vi.fn(()=>100);
+ const entries=Array.from({length:count},(_,i)=>({id:String(i),name:'Trader',rank:i+1,get score(){return reads();}}));
+ const view=render(<RewardBlock {...base} entries={entries} you={entries[0]} status="Live"/>);
+ expect(reads).toHaveBeenCalled();
+ reads.mockClear();
+ view.rerender(<RewardBlock {...base} entries={entries} you={entries[0]} status="Updated"/>);
+ expect(reads).not.toHaveBeenCalled();
+});
+
+it('reads only the changed score when a virtualized leaderboard refreshes',()=>{
+ const reads=new Set<number>();
+ const makeEntry=(index:number,score:number)=>({id:String(index),name:'Trader '+index,rank:index+1,get score(){reads.add(index);return score;}});
+ const entries=Array.from({length:1000},(_,i)=>makeEntry(i,i));
+ const view=render(<RewardBlock {...base} entries={entries}/>);
+ reads.clear();
+ const next=entries.slice();next[2]=makeEntry(2,77);
+ view.rerender(<RewardBlock {...base} entries={next}/>);
+ expect([...reads]).toEqual([2]);
+ expect(spoken(view.container.querySelector('li[data-index="2"] .hig-reward-score')!)).toBe('77');
 });

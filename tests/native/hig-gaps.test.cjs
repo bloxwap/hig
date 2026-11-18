@@ -123,9 +123,14 @@ describe('AssetBalanceRow trailingInteractive',()=>{
 describe('Spinner hideLabel',()=>{
  const {Spinner}=require('../../packages/hig/native/src/status');
  it('draws the indicator alone and keeps the label as the accessibility label',()=>{
-  let view=mount(h(Spinner,{label:'Loading quote',hideLabel:true,testID:'spin'}));
+  jest.useFakeTimers();
+  let view=mount(h(Spinner,{label:'Loading quote',hideLabel:true,testID:'spin'}),{reducedMotion:false});
   const spin=host(view,'spin');expect(spin.props.accessible).toBe(true);expect(spin.props.accessibilityLabel).toBe('Loading quote');
   expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Loading quote'))).toHaveLength(0);
+  const indicator=require('react-native').ActivityIndicator;
+  act(()=>jest.advanceTimersByTime(999));expect(view.findAllByType(indicator)).toHaveLength(0);
+  act(()=>jest.advanceTimersByTime(1));expect(view.findAllByType(indicator)).toHaveLength(1);
+  jest.useRealTimers();
   view=mount(h(Spinner,{label:'Loading quote',testID:'spin'}));expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('Loading quote')).length).toBeGreaterThan(0);
  });
 });

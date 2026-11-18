@@ -8,7 +8,7 @@ import {Button} from '../packages/hig/react/src/button';
 import {Dialog,AlertDialog,Popover} from '../packages/hig/react/src/overlay';
 import {Toast,Spinner} from '../packages/hig/react/src/status';
 import {Pagination} from '../packages/hig/react/src/navigation';
-import {Field,Input} from '../packages/hig/react/src/field';
+import {Field,Input,SearchInput} from '../packages/hig/react/src/field';
 import {NumberReadout,List} from '../packages/hig/react/src/data';
 afterEach(cleanup);
 // Test fixtures only: HIG approves no translation locale, hosts own these catalogs.
@@ -83,4 +83,54 @@ describe('translated built-in strings (web)',()=>{
   expect(screen.getByText('جارٍ تحميل العناصر')).toBeTruthy();
   expect(screen.getByText('جارٍ التحميل…')).toBeTruthy();
  });
+});
+
+it('updates message readers only when their translations change',()=>{
+ const reads:string[]=[];
+ const Reader=React.memo(function Reader(){reads.push(useMessages().close);return null;});
+ const child=<Reader/>;
+ const view=render(<HIGProvider messages={fr}>{child}</HIGProvider>);
+ const before=reads.length;
+ view.rerender(<HIGProvider messages={fr} density='compact'>{child}</HIGProvider>);
+ expect(reads.length).toBe(before);
+ view.rerender(<HIGProvider messages={ar} density='compact'>{child}</HIGProvider>);
+ expect(reads.slice(before)).toEqual([ar.close]);
+});
+
+it('keeps button decorations stable when the number locale changes',()=>{
+ const draw=vi.fn(()=>null);
+ const actions=Array.from({length:40},(_,i)=><Button key={i}>Action {i}</Button>);
+ const scene=(locale:string)=><HIGProvider numberFormat={{locale}} pressDecoration={draw}>{actions}</HIGProvider>;
+ const {rerender}=render(scene('en-US'));
+ expect(draw).toHaveBeenCalledTimes(actions.length);
+ draw.mockClear();
+ rerender(scene('fr-FR'));
+ expect(draw.mock.calls.length).toBe(0);
+});
+
+it('keeps the search field focused without redrawing its clear control on number-format updates',()=>{
+ const draw=vi.fn(()=>null);
+ const field=<Field label='Asset'><SearchInput value='BTC' readOnly onClear={()=>{}}/></Field>;
+ const scene=(locale:string)=><HIGProvider numberFormat={{locale}} pressDecoration={draw}>{field}</HIGProvider>;
+ const {rerender}=render(scene('en-US'));
+ const input=screen.getByRole('searchbox',{name:'Asset'});
+ input.focus();
+ expect(draw).toHaveBeenCalled();
+ draw.mockClear();
+ rerender(scene('fr-FR'));
+ expect(draw.mock.calls.length).toBe(0);
+ expect(document.activeElement).toBe(input);
+});
+
+it('reuses the pagination reading while sending navigation to the latest callback',async()=>{
+ const pageOf=vi.fn((page:string,total:string)=>page+' / '+total);
+ const messages={pageOf},first=vi.fn(),second=vi.fn();
+ const scene=(page:number,locale:string,onPageChange:(page:number)=>void)=><HIGProvider locale={locale} messages={messages}><Pagination page={page} total={2000} onPageChange={onPageChange}/></HIGProvider>;
+ const {rerender}=render(scene(1200,'en-US',first));
+ rerender(scene(1200.9,'en-US',second));
+ expect(pageOf.mock.calls).toEqual([['1,200','2,000']]);
+ await userEvent.click(screen.getByRole('button',{name:'Next'}));
+ expect(second).toHaveBeenCalledWith(1201);expect(first).not.toHaveBeenCalled();
+ rerender(scene(1201,'de-DE',second));
+ expect(screen.getByText('1.201 / 2.000')).toBeTruthy();
 });

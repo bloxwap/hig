@@ -113,3 +113,17 @@ it('splits the header out for a host scroller that pins it, stacking exactly as 
  act(()=>{all(view,'position-close').find(node=>node.props.onPress).props.onPress({});});expect(close).toHaveBeenCalledTimes(1);
  view=mount({headingId:'whole'});expect(host(view,'position-title').props.nativeID).toBe('whole');expect(flat(view.findAll(node=>typeof node.type==='string')[0])).toEqual({paddingHorizontal:8,paddingBottom:16,paddingTop:16});
 });
+
+it('keeps unchanged position summary rows idle and propagates a direction change',()=>{
+ let reads=0;
+ const details=Array.from({length:8},(_,index)=>({id:String(index),get label(){reads++;return 'Fee';},value:'$2'}));
+ const child=h(PositionBlock,{...base,details});
+ const provider=(density,direction)=>h(HIGProvider,{density,direction,reducedMotion:true},child);
+ act(()=>{root=render(provider('comfortable','ltr'));});
+ expect(reads).toBeGreaterThan(0);
+ reads=0;
+ act(()=>root.update(provider('compact','ltr')));
+ expect(reads).toBe(0);
+ act(()=>root.update(provider('compact','rtl')));
+ expect(flat(host(root.root,'position-detail-0')).direction).toBe('rtl');
+});

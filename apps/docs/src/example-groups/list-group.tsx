@@ -1,0 +1,15 @@
+// Generated from planning/examples.json.
+import React,{useState} from 'react';
+import {ListGroup,ListRow} from '@bloxwap/hig/react/list-group';
+import {Switch} from '@bloxwap/hig/react/selection';
+import {Badge} from '@bloxwap/hig/react/status';
+import {Text,Stack} from '@bloxwap/hig/react/surface';
+const components={Stack,Text,ListGroup,ListRow,Badge,Switch};
+export function Example({name,state='default'}:{name:string;state?:string;previewDialog?:typeof import('@bloxwap/hig/react/overlay').Dialog}){const C=components;const [checked,setChecked]=useState(false);
+const [value,setValue]=useState('buy');
+const [message,setMessage]=useState('');
+const busy=state==='busy';
+const disabled=state==='disabled';
+function preview(){switch(name){case "ListGroup":return state==="untitled"?<C.ListGroup><C.ListRow label='Accounts' value='$0.00' onSelect={()=>setMessage('The host opens Accounts')}/><C.ListRow label='History' trailing={<C.Badge>Live</C.Badge>} onSelect={()=>setMessage('The host opens History')}/></C.ListGroup>:state==="heading-slots"?<C.ListGroup title='Orders' titleAccessory='2' action={{label:'Cancel all',onSelect:()=>setMessage('The host cancels all orders')}} intro={<C.Text tone='muted' size='caption'>Resting orders fill at their limit price.</C.Text>}><C.ListRow label='BTC limit' value='$60,000'/><C.ListRow label='ETH limit' value='$3,000'/></C.ListGroup>:<C.ListGroup title='Settings'><C.ListRow label='Live Mode' trailing={<C.Switch label='Live Mode' defaultChecked/>}/><C.ListRow label='Signals' onSelect={()=>setMessage('The host opens Signals')}/><C.ListRow label='Notifications' value='Off' onSelect={()=>setMessage('The host opens Notifications')}/><C.ListRow label='Language' value='English' onSelect={()=>setMessage('The host opens Language')}/></C.ListGroup>;
+case "ListRow":return state==="static"?<C.ListGroup><C.ListRow label='Version' value='0.6.0'/></C.ListGroup>:state==="details"?<C.ListGroup><C.ListRow label='Card' description='Instant card deposit' value='$5 min' onSelect={()=>setMessage('The host opens card deposit')}/><C.ListRow label='Help centre' disclosure='external' onSelect={()=>setMessage('The host opens the help centre')}/><C.ListRow label='Delete account' tone='destructive' onSelect={()=>setMessage('The host confirms deletion')}/></C.ListGroup>:state==="choice"?<C.ListGroup><C.ListRow label='Embedded wallet' description='0x12…7a9c' selected={value==='buy'} onSelect={()=>setValue('buy')}/><C.ListRow label='External wallet' description='0x9f…31d0' selected={value==='sell'} onSelect={()=>setValue('sell')}/></C.ListGroup>:state==="switch"?<C.ListGroup><C.ListRow label='Swing alerts' description='At most one a day' checked={checked} onCheckedChange={setChecked}/></C.ListGroup>:<C.ListGroup><C.ListRow label='Notifications' value='Off' disabled={disabled} busy={busy} onSelect={()=>setMessage('The host opens Notifications')}/></C.ListGroup>;
+default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack>{preview()}{message&&<C.Text>{message}</C.Text>}</C.Stack>;}

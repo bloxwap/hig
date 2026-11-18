@@ -1,126 +1,29 @@
 'use client';
-import {configurationCode} from './configuration-code.mjs';
-import React,{useCallback,useEffect,useMemo,useState,lazy,Suspense} from 'react';
+import React,{useEffect,useState,Suspense} from 'react';
 
-import {HIGProvider,useHIG} from '@bloxwap/hig/react/provider';
-import {Toaster,type ToastPosition} from '@bloxwap/hig/react/toast';
-import {Button} from '@bloxwap/hig/react/button';
-import {Select,SegmentedControl,Switch,Slider} from '@bloxwap/hig/react/selection';
-import {TradeEntry,MarketRow,InstallCommand} from '@bloxwap/hig/react/blocks';
-import {Surface,Text} from '@bloxwap/hig/react/surface';
-import {Usd} from '@bloxwap/hig/react/data';
-import {Dialog} from '@bloxwap/hig/react/overlay';
-import {Tabs} from '@bloxwap/hig/react/navigation';
-import {Alert,Badge} from '@bloxwap/hig/react/status';
-import {FeedbackProvider,useFeedback} from '@bloxwap/hig/feedback/react';
-import {FeedbackController,type FeedbackPreferences} from '@bloxwap/hig/feedback';
-import {createWebSoundAdapter} from '@bloxwap/hig/feedback/web-sound';
-import {createBrowserHapticAdapter} from '@bloxwap/hig/feedback/browser-haptic';
-import {jsonStorage} from '@bloxwap/hig/feedback/preferences';
-import generated from './demo-content.json';
-import {basePath} from '../lib/site';
-const ToastAlternatives=lazy(()=>import('./toast-alternatives/gallery'));
-const FeedbackBlock=lazy(()=>import('./feedback-block'));
-const NativeLoginPreview=lazy(()=>import('./native-login-preview'));
-const TokenActionFlow=lazy(()=>import('./token-action-flow'));
-const Example=lazy(()=>import('./examples').then(m=>({default:m.Example})));
-interface Entry {name:string;route:string;family:string;nativeSupport:string;states:string[]}
-/** Families shown as composed blocks on a canvas, not as a single control with its code. */
-const blockFamilies=new Set(['recipes','blocks']);
-const content=generated;
-const base=basePath+'/';
-const sourceRef='main';
-const url=(route='')=>base+(route?'docs/'+route+'/':'');
-type CodeData=Record<string,{react:Record<string,string>;native:Record<string,string>}>;
-function sourceCode(entry:Entry,platform:'react'|'native',density:string,state:string,codes:CodeData|null){return (codes?.[entry.name]?.[platform]?.[state]??codes?.[entry.name]?.[platform]?.default??'Loading example code…').replace('density="comfortable"',`density="${platform==='native'?'comfortable':density}"`);}
-function Code({code}: {code:string}){const [status,setStatus]=useState('');return <div className='code-window'><div className='code-toolbar'><span>TypeScript · candidate imports</span><Button intent='ghost' onClick={()=>{navigator.clipboard.writeText(code).then(()=>setStatus('Copied')).catch(()=>setStatus('Copy failed. Select code and copy manually.'));}}>Copy code</Button></div><pre tabIndex={0}><code>{code}</code></pre><p role='status' className='copy-status'>{status}</p></div>;}
-const stateLabel=(value:string)=>value[0].toUpperCase()+value.slice(1);
-/** One link per example: each is a real URL (?state=…), so an example can be opened in a new tab, shared or cited. */
-function StateLinks({entry,state,onStateChange}:{entry:Entry;state:string;onStateChange:(state:string)=>void}){
- const current=entry.states.includes(state)?state:'default';
- return <nav className='example-links' aria-label={`${entry.name} examples`}>{entry.states.map(value=><a key={value} href={value==='default'?'?':`?state=${value}`} aria-current={current===value?'true':undefined} onClick={event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();onStateChange(value);}}>{stateLabel(value)}</a>)}</nav>;
-}
-function ModalPreview({open,onOpenChange,title,children,trigger,contentProps,closeButton,titleHidden}:React.ComponentProps<typeof Dialog>){
- const [popup,setPopup]=useState(false);
- const {reducedMotion}=useHIG();
- const toggleDialog=(next:boolean)=>{setPopup(next);onOpenChange(next);};
- const inlineClose=React.isValidElement<{onClick?:()=>void}>(closeButton)?React.cloneElement(closeButton,{onClick:()=>onOpenChange(false)}):null;
- return <>
-  {!popup&&<div inert={!open} data-state={open?'open':'closed'} data-modal-motion={reducedMotion?'reduced':'full'} className={contentProps?.className} style={contentProps?.style}>{!titleHidden&&<h2 className='hig-dialog-title'>{title}</h2>}{children}{inlineClose}</div>}
-  <Dialog open={popup&&open} onOpenChange={toggleDialog} trigger={trigger} title={title} titleHidden={titleHidden} contentProps={contentProps} closeButton={closeButton}>{children}</Dialog>
- </>;
-}
-function LoginPlatformPreview(){
- const [platform,setPlatform]=useState('web');
- return <section className='block-demo not-prose'><Tabs label='LoginBlock platform' value={platform} onValueChange={setPlatform}
-  items={[{value:'web',label:'Web'},{value:'native',label:'React Native'}].map(item=>({...item,
-   content:platform===item.value?<div className='example-frame block-canvas'><div className='example-canvas block-card' data-component='LoginBlock'>
-    <Suspense fallback={<p role='status'>Loading preview…</p>}>{item.value==='web'?<Example name="LoginBlock"/>:<NativeLoginPreview/>}</Suspense>
-   </div></div>:null,
-  }))}/></section>;
-}
-/** A block on a clean canvas: the composed block alone, in the card it would occupy in a product. */
-function BlockPreview({entry,state,onStateChange}:{entry:Entry;state:string;onStateChange:(state:string)=>void}){
- if(entry.name==='LoginBlock')return <LoginPlatformPreview/>;
- if(entry.name==='ModalBlock'){
-  const selected=entry.states.includes(state)?state:'default';
-  return <section className='block-demo not-prose'><Tabs label='App modals' value={selected} onValueChange={onStateChange} items={entry.states.map(value=>({
-   value,label:value==='default'?'Welcome':stateLabel(value.replaceAll('-',' ')),
-   content:value===selected?<div className='example-frame block-canvas modal-canvas'><Suspense fallback={<p role='status'>Loading preview…</p>}><Example key={value} name={entry.name} state={value} previewDialog={ModalPreview}/></Suspense></div>:null,
-  }))}/></section>;
- }
- return <section className='block-demo not-prose' aria-label={`${entry.name} examples`}>
-  {entry.states.length>1&&<StateLinks entry={entry} state={state} onStateChange={onStateChange}/>}
-  <div className='example-frame block-canvas'><div className='example-canvas block-card' data-component={entry.name}><Suspense fallback={<p role='status'>Loading preview…</p>}>{entry.name==='FeedbackBlock'?<FeedbackBlock key={state} state={state}/>:<Example key={`${entry.name}:${state}`} name={entry.name} state={state}/>}</Suspense></div></div>
- </section>;
-}
-function ComponentPreview({entry,state,onStateChange,density,codes}: {entry:Entry;state:string;onStateChange:(state:string)=>void;density:string;codes:CodeData|null}) {
- if(blockFamilies.has(entry.family))return <BlockPreview entry={entry} state={state} onStateChange={onStateChange}/>;
- return <section className='component-demo not-prose' aria-label={`${entry.name} examples`}>
-  <div className='example-toolbar'>
-   <div className='example-summary'><p className='example-label'>Interactive example</p><div className='support-row'><Badge>React</Badge><Badge>{entry.nativeSupport==='renderer'?'Native renderer':'Native alternative'}</Badge></div></div>
-   <Select label='Example state' options={entry.states.map(value=>({value,label:stateLabel(value)}))} value={entry.states.includes(state)?state:'default'} onValueChange={onStateChange}/>
-  </div>
-  {entry.states.length>1&&<StateLinks entry={entry} state={state} onStateChange={onStateChange}/>}
-  <div className='example-platforms'><Tabs label='Example platform' items={[
-   {value:'react',label:'React',content:<div className='example-frame'><Tabs label='Preview or code' items={[
-    {value:'preview',label:'Preview',content:<div className='example-canvas' data-component={entry.name}><Suspense fallback={<p role='status'>Loading preview…</p>}><Example key={`${entry.name}:${state}`} name={entry.name} state={state}/></Suspense></div>},
-    {value:'code',label:'Code',content:<Code code={sourceCode(entry,'react',density,state,codes)}/>},
-   ]}/></div>},
-   {value:'native',label:'React Native',content:<div className='native-example-note'><p>{entry.nativeSupport==='renderer'?'Run this native example in the Expo gallery.':'Use the documented native alternative in the Expo gallery.'} Physical-device review is pending.</p><Code code={sourceCode(entry,'native','comfortable',state,codes)}/></div>},
-  ]}/></div>
-  {entry.name==='Toast'&&<Suspense fallback={<p>Loading alternatives…</p>}><ToastAlternatives/></Suspense>}
-  <p className='example-note'>Demo data · Physical-device review pending</p>
- </section>;
-}
-function App({initialRoute}:{initialRoute:string}){
- const [codes,setCodes]=useState<CodeData|null>(null);const loadCodes=useCallback(()=>{void fetch(`${basePath}/code.json`).then(response=>{if(!response.ok)throw new Error('Example code unavailable');return response.json();}).then(data=>setCodes(data as CodeData)).catch(()=>setCodes({}));},[]);
- const route=initialRoute;
- const parameters=useMemo(()=>new URLSearchParams(typeof window==='undefined'?'':location.search),[]);
- const [preset,setPreset]=useState(['app','pro','docs'].includes(parameters.get('preset')??'')?parameters.get('preset')!:'app');
- const [platform,setPlatform]=useState<'react'|'native'>(parameters.get('platform')==='native'?'native':'react');
- const [component,setComponent]=useState(content.catalog.some(e=>e.name===parameters.get('component'))?parameters.get('component')!:'Button');
- const [state,setState]=useState(parameters.get('state')??'default');const [amount,setAmount]=useState('0.01');const [outcome,setOutcome]=useState('Demo data. No order is submitted.');
- const {preferences,update,sink,controller}=useFeedback();const density=preset==='pro'?'compact':'comfortable';
- const entry=content.catalog.find(e=>e.name===component)??content.catalog[0];const selectedState=entry.states.includes(state)?state:'default';
- const catalogEntry=content.catalog.find(e=>e.route===route);
- const pageTitle=content.pages.find(p=>p.route===route)?.title??catalogEntry?.name;
+import {HIGProvider} from '@bloxwap/hig/react/provider';
+import {DemoFeedback,useDemoFeedback} from './demo-feedback';
+import {Example,type Entry} from './example-code';
+import {PreviewToaster,toastExamples} from './toast-examples';
+export interface DemoProps {route:string; catalogEntry?:Entry; title?:string}
+export type PreviewComponent=React.ComponentType<React.ComponentProps<typeof Example>>;
+type PreviewProps=DemoProps&{Preview?:PreviewComponent;Flow?:React.ComponentType;Renderer?:typeof import('./component-preview').ComponentPreview};
+function App({route,catalogEntry,title,Preview=Example,Flow,Renderer}:PreviewProps){
+ const {motion,sink}=useDemoFeedback();
+ const [density,setDensity]=useState<'compact'|'comfortable'>('comfortable');
  const [pageState,setPageState]=useState('default');
- useEffect(()=>{if(catalogEntry)loadCodes();},[catalogEntry,loadCodes]);
- // A component page opens on the example named in ?state=…, and keeps the address in step as the example changes.
- useEffect(()=>{document.title=route?`${pageTitle??'Component catalog'} · Bloxwap HIG 0.1.0`:'Bloxwap HIG · clear decisions';const linked=parameters.get('state');setPageState(linked&&catalogEntry?.states.includes(linked)?linked:'default');},[route,pageTitle]);
+ useEffect(()=>{
+  const parameters=new URLSearchParams(location.search);
+  const linked=parameters.get('state');
+  setDensity(parameters.get('preset')==='pro'?'compact':'comfortable');
+  setPageState(linked&&catalogEntry?.states.includes(linked)?linked:'default');
+  document.title=`${title??catalogEntry?.name??'Component catalog'} · Bloxwap HIG 0.1.0`;
+ },[route,catalogEntry,title]);
  const showExample=(next:string)=>{setPageState(next);history.replaceState(null,'',next==='default'?location.pathname:`${location.pathname}?state=${next}`);};
- useEffect(()=>{const background=()=>controller()?.setBackground(document.hidden);background();document.addEventListener('visibilitychange',background);return()=>document.removeEventListener('visibilitychange',background);},[controller]);
- function navigate(next:string){location.assign(url(next));}
- function nav(event:React.MouseEvent<HTMLAnchorElement>,next:string){if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();navigate(next);}
- const toastState=route===''?(component==='Toaster'?selectedState:'default'):(catalogEntry?.name==='Toaster'?pageState:'default');
- const toasterPosition:ToastPosition=["top-left", "top-center", "top-right", "bottom-left", "bottom-center", "bottom-right"].includes(toastState)?toastState as ToastPosition:'bottom-center';
- function share(){const params=new URLSearchParams({preset,platform,component:entry.name,state:selectedState});history.replaceState(null,'',url()+'?'+params);navigator.clipboard.writeText(location.href).then(()=>setOutcome('Configuration link copied')).catch(()=>setOutcome('Copy unavailable. Share the address bar URL.'));}
- return <HIGProvider density={density} feedback={sink} reducedMotion={!preferences.motion?true:undefined}> {route===''?<main id='main-content'><section className='hero'><div><p className='eyebrow'>BLOXWAP HUMAN INTERFACE GUIDELINES</p><h1>One language.<br/><span>Every decision.</span></h1><p className='hero-description'>Clear controls. Quiet feedback. Built for the moments that matter, from the first tap to the final review.</p><div className='hero-actions'><Button onClick={()=>navigate('catalog')}>Explore components <span aria-hidden='true'>↗</span></Button><a href={url('guides/foundations/principles')} onClick={e=>nav(e,'guides/foundations/principles')}>Read the principles</a></div></div><div className='hero-note'><span className='status-dot'/>Designed for web & native<br/><span>Versioned. Composable. Bloxwap-owned.</span></div></section>
- <section className='playground' aria-label='HIG playground'><aside className='configuration'><div className='panel-heading'><h2>Make it yours.</h2><Badge>Approved presets</Badge></div><SegmentedControl label='Surface preset' options={[{value:'app',label:'App'},{value:'pro',label:'Pro'},{value:'docs',label:'Docs'}]} value={preset} onValueChange={setPreset}/><Select label='Platform' options={[{value:'react',label:'React web'},{value:'native',label:'React Native'}]} value={platform} onValueChange={v=>setPlatform(v as typeof platform)}/><Select label='Component' options={content.catalog.map(e=>({value:e.name,label:e.name}))} value={entry.name} onValueChange={v=>{setComponent(v);setState('default');}}/><Select label='Component state' options={entry.states.map(s=>({value:s,label:s[0].toUpperCase()+s.slice(1)}))} value={selectedState} onValueChange={setState}/><div className='panel-rule'/><div className='feedback-heading'><h3>Feedback</h3><span>Always optional</span></div><Switch label='Sound' checked={preferences.sound} onCheckedChange={v=>update({sound:v})}/><Switch label='Haptics' checked={preferences.haptics} onCheckedChange={v=>update({haptics:v})}/><Slider label='Volume' value={Math.round(preferences.volume*100)} onValueChange={v=>update({volume:v/100})}/><Switch label='Motion' checked={preferences.motion} onCheckedChange={v=>update({motion:v})}/><p className='small muted'>Browser haptics depend on hardware. Native gallery links use actual native renderers; device certification is pending.</p><Button intent='secondary' onClick={share}>Share configuration</Button></aside>
- <div className='preview-area'><div className='preview-toolbar'><span><span className='status-dot'/> Live preview</span><span>{platform==='native'?'Comfortable native':preset==='pro'?'Compact Pro':preset==='docs'?'Documentation':'Comfortable touch'} · Dark</span></div>{platform==='react'?<>{preset==='docs'?<div className='product-preview docs-block-preview'><p className='eyebrow'>SDK DOCUMENTATION BLOCK</p><h2>Install once. Compose anywhere.</h2><InstallCommand command='npm install ./bloxwap-hig-react-0.1.0.tgz' onCopy={()=>navigator.clipboard.writeText('npm install ./bloxwap-hig-react-0.1.0.tgz')}/><Surface><Text>TypeScript</Text><pre className='hig-code' tabIndex={0}><code>{"import { Button } from '@bloxwap/hig/react/button';\n// Keep host actions and raw financial values with the host."}</code></pre></Surface><Alert title='Candidate packages'><p>Use dry-run tarballs until publication gates are completed.</p></Alert></div>:<div className='product-preview'><div className='preview-intro'><span className='eyebrow'>SAMPLE PORTFOLIO</span><Badge>Demo data</Badge></div><div className='portfolio-grid'><Surface className='sample-balance'><Text>Total sample balance</Text><Usd value={1250.45}/></Surface><div className='market-panel'><MarketRow name='Bitcoin' symbol='BTC' price={67234.56} change={2.5} onSelect={()=>setOutcome('Bitcoin selected')}/><MarketRow name='Ethereum' symbol='ETH' price={3521.12} change={-0.8} onSelect={()=>setOutcome('Ethereum selected')}/></div></div><div className='preview-bottom'><TradeEntry asset='BTC' amount={amount} onAmountChange={setAmount} available='0.25 BTC' onConfirm={()=>{setOutcome('Demo review confirmed. No transaction submitted.');sink.emit({id:`preview-${Date.now()}`,source:'trade-preview',intent:'success',origin:'programmatic'});}}/><div className='decision-note'><p className='eyebrow'>CLARITY BEFORE COMMITMENT</p><h3>The action stays yours.</h3><p>Review the amount. See the outcome. Keep wallet, trading and network logic with the host.</p><p className='quiet-outcome' role='status'>{outcome}</p></div></div></div>}<div className='component-stage'><div><h3>{entry.name}</h3><span className='muted'>{selectedState} state</span></div><Suspense fallback={<p role='status'>Loading component example…</p>}><Example key={`${entry.name}:${selectedState}`} name={entry.name} state={selectedState}/></Suspense><a href={url(entry.route)} onClick={e=>nav(e,entry.route)}>Usage & accessibility ↗</a></div></>:<div className='native-panel'><span className='eyebrow'>ACTUAL REACT NATIVE EXAMPLES</span><h2>Take the preview to your device.</h2><p>{entry.name}: {entry.nativeSupport==='alternative'?'documented native alternative':'native renderer'}.</p><p>Run the Expo gallery for iOS or Android. Native screenshots, VoiceOver/TalkBack and physical feedback observations are pending.</p><Code code={'npm ci\nnpm run build\nnpm run start -w hig-native-fixture'}/><a href={`https://github.com/bloxwap/hig/tree/${sourceRef}/fixtures/native`}>Open native gallery source ↗</a></div>}<details className='get-code' onToggle={e=>{if(e.currentTarget.open)loadCodes();}}><summary>Get code · {entry.name}</summary><Code code={configurationCode(sourceCode(entry,platform,density,selectedState,codes),platform,preferences)}/></details></div></section>
- <section className='principle-grid'><article><span>01 / INTENT</span><h2>Clear before clever.</h2><p>One primary action. Visible progress. Honest values and recoverable errors.</p></article><article><span>02 / PLATFORM</span><h2>Share the language.</h2><p>Keep the contracts consistent. Let keyboard, touch and native behavior feel familiar.</p></article><article><span>03 / FEEDBACK</span><h2>Quiet by default.</h2><p>Optional sound and haptics add confidence. Essential information stays on screen.</p></article></section></main>:
- route==='flow/token-action-flow'?<Suspense fallback={<p role="status">Loading flow…</p>}><TokenActionFlow/></Suspense>:catalogEntry&&<ComponentPreview entry={catalogEntry} state={pageState} onStateChange={showExample} density={density} codes={codes}/>}<Toaster position={toasterPosition}/></HIGProvider>;
+ const preview=Flow?<Flow/>:catalogEntry&&Renderer&&<Renderer entry={catalogEntry} state={pageState} onStateChange={showExample} density={density} Preview={Preview}/>;
+ return <HIGProvider density={density} feedback={sink} reducedMotion={!motion?true:undefined}>
+  {preview}
+  {catalogEntry&&toastExamples.has(catalogEntry.name)&&<Suspense fallback={null}><PreviewToaster state={catalogEntry?.name==='Toaster'?pageState:'default'}/></Suspense>}
+ </HIGProvider>;
 }
-function Root({route}:{route:string}){const factory=useCallback((preferences:FeedbackPreferences)=>new FeedbackController({preferences,sound:createWebSoundAdapter(),haptics:createBrowserHapticAdapter()}),[]);const storage=useMemo(()=>typeof window==='undefined'?undefined:jsonStorage(window.localStorage),[]);return <FeedbackProvider createController={factory} storage={storage}><App initialRoute={route}/></FeedbackProvider>;}
-export function Demo({route}:{route:string}){return <Root route={route}/>;}
+export function Demo(props:PreviewProps){return <DemoFeedback><App {...props}/></DemoFeedback>;}

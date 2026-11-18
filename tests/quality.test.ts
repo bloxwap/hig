@@ -73,7 +73,7 @@ it.each(['chapter', 'examples'])('post-build drift gate rejects stale %s outputs
   generate(); // npm run check also overwrites the stale committed artifacts.
   const stale=node('check-generated-drift');
   expect(stale.status).toBe(1);expect(stale.stderr).toContain('Stale generated artifacts');
-  expect(stale.stderr).toContain(source==='chapter'?'apps/docs/public/markdown/installation.md':'apps/docs/src/examples.tsx');
+  expect(stale.stderr).toContain(source==='chapter'?'apps/docs/public/markdown/installation.md':'apps/docs/src/example-groups/');
   expect(run('git',['add','.']).status).toBe(0);
   // Staging regenerated files alone must not hide a difference from the commit.
   expect(node('check-generated-drift').status).toBe(1);

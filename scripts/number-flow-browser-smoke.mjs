@@ -39,7 +39,7 @@ for(const [name,type] of Object.entries({chromium,webkit})){
   const land=async()=>{for(let pass=0;pass<4;pass++){await page.evaluate(()=>{for(const animation of document.getAnimations())animation.finish();});await frame();}};
   const state=id=>page.evaluate(id=>{const element=document.querySelector('#'+id),visual=element.querySelector('.hig-animated-number-visual')??element.querySelector('.hig-number'),box=node=>{const rect=node.getBoundingClientRect();return {left:rect.left,top:rect.top,width:rect.width,height:rect.height};};
    const copy=visual.cloneNode(true);copy.querySelectorAll('.hig-number-flow-window,.hig-number-flow-ghosts,.hig-animated-number-old').forEach(node=>node.remove());
-   const strip=key=>{const node=element.querySelector('[data-hig-flow-key="'+key+'"] .hig-number-flow-strip');return node?{glyphs:[...node.children].sort((a,b)=>parseFloat(a.style.transform.slice(11))-parseFloat(b.style.transform.slice(11))).map(glyph=>glyph.textContent).join(''),y:new DOMMatrixReadOnly(getComputedStyle(node).transform).m42,pitch:node.getBoundingClientRect().height}:null;};
+   const strip=key=>{const node=element.querySelector('[data-hig-flow-key="'+key+'"] .hig-number-flow-strip');return node?{glyphs:[...node.children].sort((a,b)=>parseFloat(a.style.transform.slice(11))-parseFloat(b.style.transform.slice(11))).map(glyph=>glyph.textContent.replaceAll('\n','')).join(''),y:new DOMMatrixReadOnly(getComputedStyle(node).transform).m42,pitch:node.getBoundingClientRect().height}:null;};
    const digits=element.querySelector('.hig-number-flow-digits');
    return {text:copy.textContent,flowing:!!element.querySelector('.hig-number-flow'),animations:document.getAnimations().filter(animation=>element.contains(animation.effect?.target)).length,windows:element.querySelectorAll('.hig-number-flow-window').length,ghosts:element.querySelectorAll('.hig-number-flow-ghost').length,spinning:element.querySelectorAll('[data-spinning]').length,
     labels:[...element.querySelectorAll('[aria-label]')].map(node=>node.getAttribute('aria-label')),live:element.querySelectorAll('[aria-live]').length,hidden:visual.getAttribute('aria-hidden'),number:box(element.querySelector('.hig-number')),line:box(element),clip:digits?getComputedStyle(digits).clipPath:null,
@@ -70,8 +70,17 @@ for(const [name,type] of Object.entries({chromium,webkit})){
   // 3b. A reel starts and lands exactly on the digit React drew: the glyph it shows first and the one it shows last are where the
   // digit is, so nothing jumps when the reel is taken away. (WebKit snaps the box a transform's percentages are taken from.)
   await set('setValue',1009.01);
-  const landing=await page.evaluate(()=>{const place=document.querySelector('#flow [data-hig-flow-key="digit:number:0"]'),strip=place.querySelector('.hig-number-flow-strip'),top=node=>{const range=document.createRange();range.selectNodeContents(node);return range.getBoundingClientRect().top;},glyph=text=>[...strip.children].find(node=>node.textContent===text);
-   const turns=strip.getAnimations();for(const turn of turns){turn.pause();turn.currentTime=0;}const first=top(glyph('2'));for(const turn of turns)turn.currentTime=turn.effect.getComputedTiming().duration-0.001;const last=top(glyph('9'));for(const turn of turns)turn.play();
+  const landing=await page.evaluate(()=>{const place=document.querySelector('#flow [data-hig-flow-key="digit:number:0"]'),strip=place.querySelector('.hig-number-flow-strip'),top=node=>{const range=document.createRange();range.selectNodeContents(node);return range.getBoundingClientRect().top;};
+   const glyphTop=text=>{
+    for(const glyph of strip.children){
+     const rows=glyph.textContent.split('\n'),index=rows.indexOf(text);if(index<0)continue;
+     const start=rows.slice(0,index).reduce((offset,row)=>offset+row.length+1,0);
+     const range=document.createRange();range.setStart(glyph.firstChild,start);range.setEnd(glyph.firstChild,start+text.length);
+     return range.getBoundingClientRect().top;
+    }
+    throw new Error('Missing reel glyph '+text);
+   };
+   const turns=strip.getAnimations();for(const turn of turns){turn.pause();turn.currentTime=0;}const first=glyphTop('2');for(const turn of turns)turn.currentTime=turn.effect.getComputedTiming().duration-0.001;const last=glyphTop('9');for(const turn of turns)turn.play();
    return {digit:top(place.querySelector('.hig-number-flow-digit')),first,last,turns:turns.length};});
   assert.equal(landing.turns,1);assert.ok(Math.abs(landing.first-landing.digit)<0.5,`${name} a reel starts ${landing.first-landing.digit}px off its digit`);assert.ok(Math.abs(landing.last-landing.digit)<0.5,`${name} a reel lands ${landing.last-landing.digit}px off its digit`);
   await land();await settled('flow',format(1009.01));
@@ -97,7 +106,7 @@ for(const [name,type] of Object.entries({chromium,webkit})){
   await set('setValue',4321.6);const arabic=await state('arabic'),currency=await state('arabic-currency');
   const arabicText=format(4321.6,'ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2}),six=new Intl.NumberFormat('ar-EG').format(6),five=new Intl.NumberFormat('ar-EG').format(5);
   assert.equal(arabic.text,`≈ ${arabicText}`);assert.ok(arabic.flowing);assert.equal(arabic.windows,1);
-  const tenths=await page.evaluate(()=>[...document.querySelectorAll('#arabic [data-hig-flow-key="digit:number:-1"] .hig-number-flow-glyph')].sort((a,b)=>parseFloat(a.style.transform.slice(11))-parseFloat(b.style.transform.slice(11))).map(glyph=>glyph.textContent).join(''));
+  const tenths=await page.evaluate(()=>[...document.querySelectorAll('#arabic [data-hig-flow-key="digit:number:-1"] .hig-number-flow-glyph')].sort((a,b)=>parseFloat(a.style.transform.slice(11))-parseFloat(b.style.transform.slice(11))).map(glyph=>glyph.textContent.replaceAll('\n','')).join(''));
   assert.equal(tenths,five+six,`${name} Arabic digits should roll in their own glyphs`);
   assert.ok(!currency.flowing,`${name} a number with right-to-left marks should slide, not flow`);assert.equal(currency.text,format(4321.6,'ar-EG'));
   await shot('arabic');await land();await settled('arabic',`≈ ${arabicText}`);

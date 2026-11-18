@@ -36,3 +36,14 @@ it('sets the group data-testid, <testID>-<value> on each radio, and an option te
  render(<SegmentedControl label='Markets' options={[options[0],{...options[1],testID:'open-only'}]}/>);
  expect(screen.getAllByRole('radio').map(radio=>radio.getAttribute('data-testid'))).toEqual([null,'open-only']);
 });
+
+it('reuses the segment options when only the group label changes',()=>{
+ const read=vi.fn((i:number)=>String(i));
+ const choices=Array.from({length:50},(_,i)=>({get value(){return read(i);},label:String(i)}));
+ const {rerender}=render(<SegmentedControl label='Markets' options={choices} value='49'/>);
+ read.mockClear();
+ rerender(<SegmentedControl label='Available markets' options={choices} value='49'/>);
+ expect(read).not.toHaveBeenCalled();
+ expect(screen.getByRole('group',{name:'Available markets'})).toBeTruthy();
+ expect(screen.getByRole('radio',{name:'49'})).toHaveProperty('checked',true);
+});

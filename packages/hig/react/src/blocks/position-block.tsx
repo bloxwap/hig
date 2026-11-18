@@ -1,7 +1,5 @@
 "use client";
 import React from 'react';
-import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {Switch} from '../selection.js';
 import {ListGroup,ListRow} from '../list-group.js';
@@ -68,10 +66,9 @@ function toggleRow(event:React.MouseEvent<HTMLElement>){
 }
 /** The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,headingId,stickyHeader,backProps,closeProps,className,...rest}:PositionBlockProps){
- const {messages}=useHIG();
  const flag=paperTrade&&<ListRow label={paperTrade.label} disabled={paperTrade.disabled} onClick={toggleRow} trailing={<Switch label={paperTrade.label} checked={paperTrade.checked} disabled={paperTrade.disabled} onCheckedChange={paperTrade.onCheckedChange}/>}/>;
  return <section {...rest} className={`hig-position-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} backProps={backProps} headingId={headingId} stickyHeader={stickyHeader} action={headerAction??(onClose&&<HeaderClose onClose={onClose} label={messages.close??en.close} closeProps={closeProps}/>)}/>
+  <ScreenHeader title={title} onBack={onBack} backProps={backProps} headingId={headingId} stickyHeader={stickyHeader} action={headerAction??(onClose&&<HeaderClose onClose={onClose} closeProps={closeProps}/>)}/>
   {details.length>0&&<dl className='hig-position-details'>{details.map((detail,index)=><div key={detail.id??index} data-tone={detail.tone}><dt>{detail.label}{detail.labelAccessory!=null&&<span className='hig-position-label-accessory'>{detail.labelAccessory}</span>}</dt><dd className='hig-number'>{detail.struck?<><span className='hig-position-struck'>{figure(detail.value)}</span><span className='hig-sr-only'> {detail.struck}</span></>:figure(detail.value)}</dd></div>)}</dl>}
   {note&&<p className='hig-position-note'>{note}</p>}
   {(paperTrade||groups.some(group=>group.length>0))&&<div className='hig-position-groups'>

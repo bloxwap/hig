@@ -1,10 +1,5 @@
 "use client";
-import React,{useId,useRef} from 'react';
-import {useHIG,useThemeStyle} from './provider.js';
-import * as Drop from '@radix-ui/react-dropdown-menu';
-import * as Tip from '@radix-ui/react-tooltip';
-import {Button} from './button.js';
 export {Dialog,Sheet,AlertDialog,type DialogProps,type DialogContentProps,type AlertDialogProps} from './dialog.js';
-export function Menu({label,items}: {label:string;items:readonly {label:string;disabled?:boolean;onSelect:(event:Event)=>void}[]}){const {feedback,direction,locale,density}=useHIG();const themeStyle=useThemeStyle();const id=useId();const sequence=useRef(0);const origin=useRef<'pointer'|'keyboard'>('keyboard');return <Drop.Root dir={direction}><Drop.Trigger asChild><Button intent='secondary' suppressFeedback>{label}</Button></Drop.Trigger><Drop.Portal><Drop.Content className='hig-popover hig-menu' align='start' sideOffset={6} collisionPadding={16} style={themeStyle} lang={locale} data-hig-density={density}>{items.map((item,i)=><Drop.Item key={i} disabled={item.disabled} className='hig-menu-item' onPointerDown={()=>{origin.current='pointer';}} onKeyDown={()=>{origin.current='keyboard';}} onSelect={event=>{if(item.disabled)return;item.onSelect(event);if(!event.defaultPrevented)try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent:'selection',origin:origin.current});}catch{/* Optional feedback cannot alter the action. */}}}>{item.label}</Drop.Item>)}</Drop.Content></Drop.Portal></Drop.Root>;}
 export {Popover,type PopoverProps,type PopoverTone} from './popover.js';
-export function Tooltip({content,children}:React.PropsWithChildren<{content:string}>){const {direction,locale,density}=useHIG();const themeStyle=useThemeStyle();return <Tip.Provider><Tip.Root><Tip.Trigger asChild>{children}</Tip.Trigger><Tip.Portal><Tip.Content className='hig-popover hig-tooltip' sideOffset={6} collisionPadding={16} style={themeStyle} dir={direction} lang={locale} data-hig-density={density}>{content}</Tip.Content></Tip.Portal></Tip.Root></Tip.Provider>;}
+export {Menu} from './menu.js';
+export {Tooltip} from './tooltip.js';

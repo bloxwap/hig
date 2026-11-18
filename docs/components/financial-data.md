@@ -248,7 +248,7 @@ What flowing means, on both platforms:
 
 - **Digits roll through the values between.** A place going from 2 to 7 passes 3, 4, 5 and 6. With a `trend` every place turns that way and wraps (9 to 0 going up is one step); with `trend={0}` each place takes its own short way. `digits` limits a place (`{1:{max:5}}` makes the tens of a seconds counter wrap 5 to 0), and `continuous` turns the places below the highest changed one once all the way round so the figure reads as counting.
 - **A new value joins the motion in flight.** Each change adds its own turn to the turns still running instead of cancelling them, so a figure that updates faster than it settles keeps moving at speed and still lands on the latest value.
-- **NumberFlow's timing.** Movement takes 900 ms on NumberFlow's settle (`'number-flow'`) and fades take 450 ms ease-out. `duration` sets the movement and makes fades half of it; `spinTiming`, `transformTiming` and `opacityTiming` set each part as `{duration, easing}`. `easing` is `'number-flow'`, `'standard'` (HIG's), `'linear'`, `'ease'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'` or four bezier control points. No part runs longer than 3000 ms. The arithmetic for all of this is one module, `@bloxwap/hig/contracts/number-flow`, which both renderers call.
+- **NumberFlow's timing.** Movement takes 500 ms on NumberFlow's settle (`'number-flow'`) and fades take 250 ms ease-out. `duration` sets the movement and makes fades half of it; `spinTiming`, `transformTiming` and `opacityTiming` set each part as `{duration, easing}`. `easing` is `'number-flow'`, `'standard'` (HIG's), `'linear'`, `'ease'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'` or four bezier control points. No part runs longer than 500 ms. The arithmetic for all of this is one module, `@bloxwap/hig/contracts/number-flow`, which both renderers call.
 - **`animated={false}`** draws every new value at once, as reduced motion does. Use it for a typed echo and until the first real value arrives. It works for the sliding readout too.
 - **One reading.** Assistive technology gets the final formatted reading as one static text, with `label` in front when given. The moving copy is hidden from it and nothing is announced per change. Reduced motion (the provider's `reducedMotion`, else the system setting), an unknown value and a change of locale or format all draw the new reading at once and the next value moves from it; so does a hidden page on web.
 
@@ -294,7 +294,7 @@ Native call sites of `FlowUsd`, `FlowNumber`, `FlowPercent` and `FlowFormatted`:
 | `FlowNumber` `suffix` | `suffix`. |
 | `FlowFormatted` `text`, `value` | `value` with `formattedValue={text}` and `animateFormatted`. |
 | `animate` | `animated`. |
-| `duration` | `duration` (900 by default, as before; `0` draws at once). |
+| `duration` | `duration` (500 by default; `0` draws at once). |
 | `style` | `style` takes typography only (`fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `letterSpacing`, `textAlign`); colour is `tone`. There is no `className`. |
 | `textProps.maxFontSizeMultiplier`, `allowFontScaling={false}` | `maxFontSizeMultiplier` (`1` for no scaling). |
 | `textProps.accessibilityLabel` | `label`, read as `label: reading`. |

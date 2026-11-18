@@ -9,8 +9,15 @@ const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();});
 function mount(element){act(()=>{root=create(element);});return root.root;}
-const reading=node=>node.props.children.join('');
+const reading=node=>[].concat(node.props.children).join('');
 const text=()=>root.root.findByType(RNText);
+
+it('mounts unstyled numeric cells without walking child nodes or filtering an empty style',()=>{
+ const walk=jest.spyOn(require('../../packages/hig/native/src/text-content'),'plainText');
+ const flatten=jest.spyOn(StyleSheet,'flatten');
+ mount(h(React.Fragment,null,...Array.from({length:50},(_,index)=>h(NumberReadout,{key:index,value:index}))));
+ expect([walk.mock.calls.length,flatten.mock.calls.filter(([style])=>style===undefined).length]).toEqual([0,0]);
+});
 
 it.each(['text','positive','negative','muted'])('uses the explicit %s number tone from the selected native palette (#117)',tone=>{
  const example=(value,colorSpace)=>h(HIGProvider,{colorSpace},h(NumberReadout,{value,tone,testID:'pnl'}));

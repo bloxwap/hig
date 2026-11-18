@@ -1,5 +1,3 @@
-import * as Audio from 'expo-audio';
-import * as Haptics from 'expo-haptics';
 import tick from '@bloxwap/hig/feedback/assets/tick.wav';
 import toggle from '@bloxwap/hig/feedback/assets/toggle.wav';
 import success from '@bloxwap/hig/feedback/assets/success.wav';
@@ -10,10 +8,10 @@ import {recordingAudioBackend,recordingHapticBackend,dispatchLatency} from './na
 // The recording wrappers only log adapter calls for simulator/emulator verification.
 const names=new Map<unknown,string>([[tick,'tick'],[toggle,'toggle'],[success,'success'],[error,'error']]);
 export const createController=(preferences:FeedbackPreferences)=>{
- const sound=createNativeSoundAdapter(recordingAudioBackend(expoAudioBackend(Audio),names),{tick,toggle,success,error});
- // Pre-load players at startup, as product hosts do, so the first cue does not wait on the audio-session bridge.
- void sound.preload().catch(()=>{});
- const controller=new FeedbackController({preferences,sound,haptics:createNativeHapticAdapter(recordingHapticBackend(expoHapticBackend(Haptics)))});
+ const sound=createNativeSoundAdapter(recordingAudioBackend(expoAudioBackend(()=>require('expo-audio') as typeof import('expo-audio')),names),{tick,toggle,success,error});
+ const controller=new FeedbackController({preferences,sound,prepareSound:sound.preload,haptics:createNativeHapticAdapter(recordingHapticBackend(expoHapticBackend(()=>require('expo-haptics') as typeof import('expo-haptics'))))});
+ // The Sound switch emits selection immediately after enabling playback.
+ if(!preferences.sound||preferences.volume<=0)void sound.preload('tick').catch(()=>{});
  const emit=controller.emit;controller.emit=event=>{dispatchLatency.mark();emit(event);};
  return controller;
 };

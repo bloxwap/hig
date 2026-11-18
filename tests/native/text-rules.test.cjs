@@ -31,12 +31,15 @@ const locales=[
 const spinners=()=>rntl.screen.UNSAFE_root.findAllByType(RN.ActivityIndicator);
 // The busy state is a leading spinner; the busy word lives in the accessible name only, never as visible text.
 describe('#92 native Button label renders through HIG Text and busy shows a spinner, not a suffix',()=>{
+ beforeEach(()=>jest.useFakeTimers());
+ afterEach(()=>jest.useRealTimers());
  it('applies the provider font-scale cap to the label, and a Button prop overrides it',()=>{
   // One tree per case keeps each render independent (RNTL keeps one live screen per test).
   render(h(View0,null,h(HIGProvider,{maxFontSizeMultiplier:2},h(Button,{busy:true},'Log out'),h(Button,{busy:true,busyLabel:'Busy (prop cap)',maxFontSizeMultiplier:1.5},'Sign out')),h(Button,{busy:true,busyLabel:'Uncapped'},'Leave')));
   expect(run('Log out').props.maxFontSizeMultiplier).toBe(2);
   expect(run('Sign out').props.maxFontSizeMultiplier).toBe(1.5);
   expect(run('Leave').props.maxFontSizeMultiplier).toBeUndefined();
+  act(()=>jest.advanceTimersByTime(1000));
   expect(runs().map(n=>[].concat(n.props.children).join(''))).toEqual(['Log out','Sign out','Leave']);expect(spinners()).toHaveLength(3);
  });
  it('gives the label the registered family for the 600 weight',()=>{
@@ -57,6 +60,7 @@ describe('#92 native Button label renders through HIG Text and busy shows a spin
   render(h(HIGProvider,{direction:'rtl',messages:{busy:'جارٍ التنفيذ'}},h(Button,{busy:true,intent:'secondary'},'تأكيد')));
   const {nativeSrgb:colors}=require('../../packages/hig/tokens/dist/index.js');
   for(const text of ['تأكيد']){const s=style(run(text));expect(s.color).toBe(colors.text);expect(s.textAlign).toBe('center');expect(s.writingDirection).toBe('rtl');}
+  act(()=>jest.advanceTimersByTime(1000));
   const [spinner]=spinners();expect(spinner.props.color).toBe(colors.text);
   const row=spinner.parent;expect(row.children[0]).toBe(spinner);expect(RN.StyleSheet.flatten(row.props.style)).toMatchObject({flexDirection:'row',direction:'rtl'});
  });
@@ -70,7 +74,7 @@ describe('#94 busy native Button keeps its accessible name',()=>{
   expect(button.props.accessibilityLabel).toContain(text);
   expect(button.props.accessibilityState).toEqual({disabled:true,busy:true});
   expect(rntl.screen.getByLabelText(`${text} · ${busy}`)).toBe(button);
-  expect(run(text)).toBeTruthy();expect(run(`· ${busy}`)).toBeUndefined();expect(spinners()).toHaveLength(1);
+  expect(run(text)).toBeTruthy();expect(run(`· ${busy}`)).toBeUndefined();expect(spinners()).toHaveLength(0);
  }));
  it.each(locales)('Android: busy Button in $locale is named with the visible label; the platform busy state description supplies the busy word once',({locale,messages,text,busy})=>withOS('android',()=>{
   render(h(HIGProvider,{locale,messages},h(Button,{busy:true},text)));
@@ -79,7 +83,7 @@ describe('#94 busy native Button keeps its accessible name',()=>{
   expect(button.props.accessibilityLabel).not.toContain(busy);
   expect(button.props.accessibilityState.busy).toBe(true);
   // The spinner is the visible busy state; no suffix text renders.
-  expect(run(`· ${busy}`)).toBeUndefined();expect(spinners()).toHaveLength(1);
+  expect(run(`· ${busy}`)).toBeUndefined();expect(spinners()).toHaveLength(0);
  }));
  it('an empty busy label names the Button with its text alone; busy state stays set',()=>{
   for(const os of ['ios','android'])withOS(os,()=>{

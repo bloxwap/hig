@@ -71,7 +71,12 @@ describe('display-p3 renders the iosDisplayP3 values on iOS',()=>{
   expect(flat(mount(React.createElement(Button,null,'Go')).findAllByType(RN.Text).at(-1)).color).toBe(p3.onAction);
   expect(flat(mount(React.createElement(Link,{href:'https://example.com'},'Docs')).findByType(RN.Text)).color).toBe(p3.action);
   expect(mount(React.createElement(Slider,{label:'Volume',value:20})).findAll(n=>n.props.minimumTrackTintColor)[0].props.minimumTrackTintColor).toBe(p3.action);
-  expect(mount(React.createElement(Spinner)).findByType(RN.ActivityIndicator).props.color).toBe(p3.action);
+  jest.useFakeTimers();
+  try{
+   const spinner=mount(React.createElement(Spinner),{colorSpace:'display-p3',reducedMotion:false});
+   act(()=>jest.advanceTimersByTime(1000));
+   expect(spinner.findByType(RN.ActivityIndicator).props.color).toBe(p3.action);
+  }finally{jest.useRealTimers();}
   expect(flat(mount(React.createElement(Badge,null,'New')).findByType(RN.Text)).backgroundColor).toBe(p3.surface);
   expect(flat(mount(React.createElement(Surface,null,React.createElement(Badge,null,'New'))).findByType(RN.Text)).backgroundColor).toBe(p3.nested);
   expect(flat(mount(React.createElement(Skeleton)).findAll(n=>n.type===RN.View&&n.props.style)[0]).backgroundColor).toBe(p3.nested);

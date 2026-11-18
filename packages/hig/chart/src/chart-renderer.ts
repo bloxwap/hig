@@ -1,4 +1,13 @@
-import {ALTIMETER_FLOW_PX,smoothTrail,trailPoints,type AltimeterPoint,type AltimeterTick} from './altimeter-model.js';
+import {ALTIMETER_FLOW_PX,firstRetainedTick,smoothTrail,trailPoints,type AltimeterPoint,type AltimeterTick} from './altimeter-model.js';
+
+// Keep the canvas history's array identity for the path and gradient caches.
+export function appendTrailSample(ticks:AltimeterTick[],sample:AltimeterTick,cutoff:number){
+ if(!ticks.length)ticks.push({t:cutoff,p:sample.p});
+ const expired=firstRetainedTick(ticks,cutoff);
+ if(expired===1)ticks.shift();
+ else if(expired>1)ticks.splice(0,expired);
+ ticks.push(sample);
+}
 
 type History={path:Path2D;area?:{price:number;path:Path2D};first:number;last:AltimeterPoint;sample:AltimeterTick;now:number;origin:number;scale:number;low?:number;high?:number;start:number;end:number};
 const histories=new WeakMap<readonly AltimeterTick[],History>();
@@ -36,13 +45,13 @@ interface TrailFrame {
 export function historyPath(ctx:CanvasRenderingContext2D,ticks:readonly AltimeterTick[],now:number,start:number,end:number,yFor:(p:number)=>number,origin:number,scale:number,low?:number,high?:number):TrailFrame|undefined{
  const sample=ticks.at(-1);if(!sample)return;
  if(typeof Path2D==='undefined'){
-  const points=trailPoints(ticks,now,start,end,yFor);if(!points.length)return;
+  const points=trailPoints(ticks,now,start,end,yFor,true);if(!points.length)return;
   ctx.beginPath();smoothTrail(points,ctx);
   return {last:points[points.length-1],first:points[0][0],dx:0,dy:0};
  }
  let history=histories.get(ticks);
  if(!history||history.sample!==sample||history.scale!==scale||history.low!==low||history.high!==high||history.start!==start||history.end!==end||now<history.now){
-  const points=trailPoints(ticks,now,start,end,yFor);if(!points.length)return;
+  const points=trailPoints(ticks,now,start,end,yFor,true);if(!points.length)return;
   const path=new Path2D();smoothTrail(points,path);
   history={path,first:points[0][0],last:points[points.length-1],sample,now,origin,scale,low,high,start,end};
   histories.set(ticks,history);

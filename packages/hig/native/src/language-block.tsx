@@ -1,8 +1,10 @@
 import { Check } from '@bloxwap/icons/native/check';
-import React,{useMemo,useState} from 'react';
-import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {filterLanguages as matchLanguages} from '@bloxwap/hig/contracts';
+import React,{useEffect,useMemo,useState} from 'react';
+import {Image,Pressable,View,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {ListWithIntro,PickerFlatList,usePickerWindow} from './picker-flat-list.js';
 import {StickyHeaderLayout} from './sticky-header.js';
-import {useColors,useFills,useHIG,useMessages} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
 import {SearchInput} from './field.js';
@@ -41,45 +43,67 @@ export interface LanguageBlockProps {
  stickyHeaderBackground?:string;
  /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
  scrollComponent?:React.ComponentType<ScrollViewProps>;
+ /** The host list in a bounded screen or sheet. Its first cell contains the search controls. */
+ listComponent?:React.ComponentType<FlatListProps<LanguageOption|null>>;
  /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */
  headingId?:string;
  testID?:string;
 }
-const fold=(text:string)=>text.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
-/** The languages whose name, description or code contains the query, ignoring case and accents. An empty query keeps every language, in the host's order. */
-export function filterLanguages(languages:readonly LanguageOption[],query:string):LanguageOption[]{
- const needle=fold(query.trim());
- return needle===''?[...languages]:languages.filter(language=>fold(`${language.name} ${language.description??''} ${language.code}`).includes(needle));
-}
+export const filterLanguages:(languages:readonly LanguageOption[],query:string)=>LanguageOption[]=matchLanguages;
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const avatar=40;
-/** Choose the app's language as one screen: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
-export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,disabled,description,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:LanguageBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
- const [query,setQuery]=useState('');
- const rows=useMemo(()=>filterLanguages(languages,query),[languages,query]);
- const heading=title??t.language;
+const LanguageRow=React.memo(function LanguageRow({language,name,description,flag,selected,disabled,onSelect,testID}:{
+ name:LanguageOption['name'];description:LanguageOption['description'];flag:LanguageOption['flag'];
+ language:LanguageOption;selected:boolean;disabled?:boolean;onSelect:LanguageBlockProps['onSelect'];testID?:string;
+}){
+ const colors=useColors(),fills=useFills();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.well:'transparent'});
+ return <Pressable testID={testID?`${testID}-${language.code}`:undefined} accessibilityRole='radio' accessibilityState={disabled?{checked:selected,disabled:true}:{checked:selected}} accessibilityLabel={[name,description].filter(Boolean).join(', ')} accessibilityLanguage={language.code} disabled={disabled} onPress={()=>onSelect(language)} style={disabled?({pressed})=>({...row(pressed),opacity:0.5}):({pressed})=>row(pressed)}>
+     <View {...hidden}>{typeof flag==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:flag}} style={shape as object}/>:<View style={shape}>{flag??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{language.code.slice(0,2).toUpperCase()}</Text>}</View>}</View>
+     <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
+      <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{name}</Text>
+      {description?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{description}</Text>:null}
+     </View>
+     {selected?<Check size={20} color={colors.positive} testID={testID?`${testID}-check`:undefined}/>:null}
+    </Pressable>;
+});
+/** Choose the app's language as one screen: a header, a search field, then each language as a row with its flag, its own name over the reader's name for it, and a check on the one in use. */
+export function LanguageBlock({title,onBack,headerAction,languages,value=null,onSelect,search=true,disabled,description,stickyHeader,stickyHeaderBackground,scrollComponent,listComponent,headingId,testID}:LanguageBlockProps){
+ const colors=useColors(),t=useMessages(),direction=useLayoutDirection();
+ const [query,setQuery]=useState('');
+ const [applied,setApplied]=useState('');
+ const filterQuery=languages.length>50&&query.trim()?applied:query;
+ function editQuery(next:string){
+  setQuery(next);
+  if(languages.length<=50||!next.trim())setApplied(next);
+ }
+ useEffect(()=>{
+  if(filterQuery===query)return;
+  const timer=setTimeout(()=>setApplied(query),150);
+  return ()=>clearTimeout(timer);
+ },[filterQuery,query]);
+ const rows=useMemo(()=>filterQuery.trim()?filterLanguages(languages,filterQuery):languages,[languages,filterQuery]);
+ const heading=title??t.language;
  const header=<View style={stickyHeader?{direction,flexDirection:'row',alignItems:'center',minHeight:44}:{flexDirection:'row',alignItems:'center',minHeight:44}}>
   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID={testID?`${testID}-back`:undefined} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
   <Text testID={testID?`${testID}-title`:undefined} nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{heading}</Text>
   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
  </View>;
- const body=<>
+ const renderRow=(language:LanguageOption)=><LanguageRow key={language.code} language={language} name={language.name} description={language.description} flag={language.flag} selected={language.code===value} disabled={disabled} onSelect={onSelect} testID={testID}/>;
+ const controls=<>
   {description?<Text testID={testID?`${testID}-description`:undefined} style={{paddingHorizontal:4,fontSize:14,lineHeight:21,color:colors.muted}}>{description}</Text>:null}
-  {search?<SearchInput testID={testID?`${testID}-search`:undefined} accessibilityLabel={t.searchLanguages} placeholder={t.searchLanguages} value={query} onChangeText={setQuery} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>:null}
-  {rows.length===0?<Text testID={testID?`${testID}-empty`:undefined} accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{t.noResults}</Text>:
+  {search?<SearchInput testID={testID?`${testID}-search`:undefined} accessibilityLabel={t.searchLanguages} placeholder={t.searchLanguages} value={query} onChangeText={editQuery} returnKeyType='search' autoCapitalize='none' autoCorrect={false} spellCheck={false}/>:null}
+ </>;
+ const empty=<Text testID={testID?`${testID}-empty`:undefined} accessibilityLiveRegion='polite' style={{paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{t.noResults}</Text>;
+ const windowed=usePickerWindow(languages.length,stickyHeader,!!listComponent);
+ const cells=useMemo(():readonly (LanguageOption|null)[]=>listComponent?[null,...rows]:rows,[rows,listComponent]);
+ if(windowed)return <PickerFlatList listComponent={listComponent??ListWithIntro<LanguageOption>} scrollComponent={stickyHeader||listComponent?scrollComponent:undefined} header={header} headerTestID={testID?`${testID}-sticky-header`:'language-sticky-header'} sticky={stickyHeader} background={stickyHeaderBackground} inset={16} direction={direction} rowHeight={60}
+  testID={testID} data={cells} accessibilityRole="radiogroup" accessibilityLabel={heading} keyExtractor={item=>item?`language:${item.code}`:'controls'}
+  renderItem={({item,index})=><View style={{direction,paddingHorizontal:16,paddingTop:item?(index===1?0:4):16,paddingBottom:!item&&(search||description)&&rows.length?16:0,gap:16}}>{item?renderRow(item):<>{controls}{rows.length===0?empty:null}</>}</View>}/>;
+ const body=<>{controls}{rows.length===0?empty:
   <View testID={testID?`${testID}-list`:undefined} accessibilityRole='radiogroup' accessibilityLabel={heading} style={{gap:4}}>
-   {rows.map(language=>{const selected=language.code===value;
-    return <Pressable key={language.code} testID={testID?`${testID}-${language.code}`:undefined} accessibilityRole='radio' accessibilityState={disabled?{checked:selected,disabled:true}:{checked:selected}} accessibilityLabel={[language.name,language.description].filter(Boolean).join(', ')} accessibilityLanguage={language.code} disabled={disabled} onPress={()=>onSelect(language)} style={disabled?({pressed})=>({...row(pressed),opacity:0.5}):({pressed})=>row(pressed)}>
-     <View {...hidden}>{typeof language.flag==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:language.flag}} style={shape as object}/>:<View style={shape}>{language.flag??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{language.code.slice(0,2).toUpperCase()}</Text>}</View>}</View>
-     <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
-      <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{language.name}</Text>
-      {language.description?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{language.description}</Text>:null}
-     </View>
-     {selected?<Check size={20} color={colors.positive} testID={testID?`${testID}-check`:undefined}/>:null}
-    </Pressable>;})}
+   {rows.map(renderRow)}
   </View>}
  </>;
  // The sticky layout puts the header and the body in separate views, so the body's first gap is its top padding.

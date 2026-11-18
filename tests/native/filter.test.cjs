@@ -29,8 +29,7 @@ it('is a named radiogroup that scrolls horizontally, with one radio per option n
  // The empty default value selects the option whose value is empty.
  expect(chips(tree).map(n=>n.props.accessibilityState.checked)).toEqual([true,false,false,false]);
  expect(chip(tree,'Optimism').props.accessibilityState).toEqual({checked:false,disabled:true});
- expect(flat(chip(tree,'Base'))).toMatchObject({minHeight:40,borderRadius:9999,paddingVertical:6,paddingStart:8,paddingEnd:16,gap:8});
- expect(chip(tree,'Base').props.hitSlop).toEqual({top:2,bottom:2});
+ expect(flat(chip(tree,'Base'))).toMatchObject({minHeight:44,borderRadius:9999,paddingVertical:6,paddingStart:8,paddingEnd:16,gap:8});
 });
 it('follows the provider direction',()=>{
  const tree=mount({},{direction:'rtl'});
@@ -80,7 +79,7 @@ it('animates the check in on select and out on deselect, and not on first render
  expect(requests).toHaveLength(0);
  press(chip(tree,'Base'));
  expect(requests.map(request=>request.config.toValue).sort()).toEqual([0,1]);
- for(const request of requests){expect(request.config).toMatchObject({duration:220,useNativeDriver:true,isInteraction:false});expect(request.animation.start).toHaveBeenCalledTimes(1);}
+ for(const request of requests){expect(request.config).toMatchObject({duration:180,useNativeDriver:true,isInteraction:false});expect(request.animation.start).toHaveBeenCalledTimes(1);}
  press(chip(tree,'Ethereum'));
  expect(requests.slice(2).map(request=>request.config.toValue).sort()).toEqual([0,1]);
 });
@@ -90,4 +89,43 @@ it('shows the final state at once under reduced motion',()=>{
  expect(requests).toHaveLength(0);expect(chip(tree,'Base').props.accessibilityState.checked).toBe(true);
  const fill=chip(tree,'Base').findAll(n=>{const style=StyleSheet.flatten(n.props.style)??{};return style.backgroundColor===colors.background&&style.width===24&&style.opacity!==undefined;})[0];
  const opacity=StyleSheet.flatten(fill.props.style).opacity;expect(typeof opacity==='number'?opacity:opacity.__getValue()).toBe(1);
+});
+
+it('redraws only the old and new filter chips and uses the latest host handler',()=>{
+ const drawn=[];
+ const choices=Array.from({length:40},(_,i)=>({value:String(i),label:'Choice '+i,get icon(){drawn.push(String(i));return undefined;}}));
+ const first=jest.fn(),next=jest.fn();
+ const tree=mount({options:choices,defaultValue:'0',onValueChange:first});
+ drawn.length=0;press(chip(tree,'Choice 20'));
+ expect(drawn).toEqual(['0','20']);expect(first).toHaveBeenCalledWith('20');
+ drawn.length=0;act(()=>root.update(h(HIGProvider,{},h(Filter,{label:'Chains',options:choices,defaultValue:'0',onValueChange:next}))));
+ expect(drawn).toEqual([]);
+ press(chip(tree,'Choice 39'));expect(next).toHaveBeenCalledWith('39');
+});
+
+it('reveals the current chip when a retained chip layout handler runs',()=>{
+ const scrollTo=jest.fn();
+ const Scroll=React.forwardRef((props,ref)=>{React.useImperativeHandle(ref,()=>({scrollTo}));return h(ScrollView,props);});
+ const tree=mount({scrollComponent:Scroll,defaultValue:'1'});
+ const layout=(x,width)=>({nativeEvent:{layout:{x,width}}});
+ act(()=>tree.findByType(ScrollView).props.onLayout(layout(0,100)));
+ const previouslyUnselected=chip(tree,'Base').props.onLayout;
+ act(()=>previouslyUnselected(layout(150,40)));
+ expect(scrollTo).not.toHaveBeenCalled();
+ press(chip(tree,'Base'));
+ expect(scrollTo).toHaveBeenLastCalledWith({x:90,animated:true});
+ act(()=>previouslyUnselected(layout(200,40)));
+ expect(scrollTo).toHaveBeenLastCalledWith({x:140,animated:false});
+});
+
+it('skips filter option reads when only number formatting changes',()=>{
+ const read=jest.fn(i=>String(i));
+ const choices=Array.from({length:40},(_,i)=>({get value(){return read(i);},label:'Choice '+i}));
+ const control=h(Filter,{label:'Chains',options:choices,defaultValue:'0'});
+ act(()=>{root=create(h(HIGProvider,{reducedMotion:true},control));});
+ read.mockClear();
+ act(()=>root.update(h(HIGProvider,{reducedMotion:true,numberFormat:{locale:'de-DE'}},control)));
+ expect(read).not.toHaveBeenCalled();
+ press(chip(root.root,'Choice 39'));
+ expect(chip(root.root,'Choice 39').props.accessibilityState.checked).toBe(true);
 });

@@ -200,3 +200,33 @@ describe('blocks and readouts on the iOS stub',()=>{
   all=strings(view);expect(all).toContain('+$20.00');expect(all).toContain('+10.00%');
  });
 });
+
+it('reuses the formatted zero and skips zero checks for unconditional signs',()=>{
+ const formats=jest.fn(),NativeIntl=Intl.NumberFormat;
+ jest.spyOn(Intl,'NumberFormat').mockImplementation(function(locale,options){
+  const real=new NativeIntl(locale,options);
+  return {format:value=>{formats(value);return real.format(value);}};
+ });
+ for(const value of [1,2,3])expect(formatSignedNumber(value,'en-US',{signDisplay:'always'})).toBe('+'+value);
+ expect(formats.mock.calls.flat()).toEqual([-1,-2,-3]);
+ formats.mockClear();
+ for(const value of [1,2,3])expect(formatSignedNumber(value,'en-US',{signDisplay:'exceptZero'})).toBe('+'+value);
+ expect(formats.mock.calls.flat().filter(value=>value===0)).toHaveLength(1);
+});
+
+it('rechecks the editor glyphs after replacing an Intl implementation without parts',()=>{
+ const {localizeDecimal}=require('../../packages/hig/contracts/dist/index.js');
+ const stub=stubIntl();
+ expect(localizeDecimal('1.00','de-DE')).toBe('1.00');
+ expect(localizeDecimal('2.','de-DE')).toBe('2.');
+ expect(stub).toHaveBeenCalledTimes(1);
+ stub.mockRestore();
+ expect(localizeDecimal('2.','de-DE')).toBe('2,');
+});
+
+it('counts supplementary-plane reel glyphs by place',()=>{
+ const model=createNumberReelModel(1234.5,'en-US',{numberingSystem:'mathbold'},undefined,'ltr');
+ const digits=model.tokens.filter(token=>token.kind==='digit');
+ expect(digits.map(token=>token.value)).toEqual(Array.from('𝟏𝟐𝟑𝟒𝟓'));
+ expect(digits.map(token=>token.key)).toEqual(['integer:3','integer:2','integer:1','integer:0','fraction:0']);
+});

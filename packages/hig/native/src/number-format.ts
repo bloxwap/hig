@@ -5,6 +5,6 @@ import {formatSignedNumber} from '@bloxwap/hig/contracts';
  * native figure composes its sign in HIG's own code instead of asking Intl for it: iOS and Android draw the same string, and it is
  * the string an Intl that honours `signDisplay` draws. Display only.
  */
-export function formatNumber(value:number|null|undefined,locale='en-US',options:Intl.NumberFormatOptions={}):string{
+export function formatNumber(value:number|null|undefined,locale='en-US',options?:Intl.NumberFormatOptions):string{
  return formatSignedNumber(value,locale,options);
 }

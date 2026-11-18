@@ -1,4 +1,4 @@
-import {decimal,decimalMultiply,decimalDivide} from '@bloxwap/hig/contracts';
+import {decimal,decimalMultiply,decimalDivide,createPickerSearch} from '@bloxwap/hig/contracts';
 import type React from 'react';
 // Pure helpers for the SwapBlock block. Same behaviour as the web block's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
@@ -70,12 +70,7 @@ export function applyAmountKey(current:string,key:string,mode:SwapDenomination,d
  return limit!==undefined&&dot!==-1&&next.length-dot-1>limit?current:next;
 }
 /** Case-insensitive substring or in-order subsequence match. */
-export function fuzzyMatch(query:string,text:string):boolean{
- const needle=query.toLowerCase().replace(/\s+/g,''),haystack=text.toLowerCase();
- if(haystack.includes(needle))return true;
- let matched=0;for(let index=0;index<haystack.length&&matched<needle.length;index++)if(haystack[index]===needle[matched])matched++;
- return matched===needle.length;
-}
+export {fuzzyMatch} from '@bloxwap/hig/contracts';
 /** A slippage fraction as a percent string: 0.005 is `0.5%`. */
 export const formatPercent=(fraction:number):string=>`${Number((fraction*100).toFixed(4))}%`;
 /** A small trial amount: 1% of holdings, capped at about one dollar's worth. */
@@ -91,11 +86,6 @@ export function addressColor(address:string):string{
  return `hsl(${hash%360}, 75%, 55%)`;
 }
 /** Picker rows: hot tokens lead the unfiltered list; any search or chain filter gives one flat list. */
-export function pickerRows(tokens:readonly SwapToken[],query:string,chainId:string|number|null,hotTokenIds?:readonly string[]):{rows:SwapToken[];hotCount:number}{
- const text=query.trim();
- const filtered=tokens.filter(token=>(chainId===null||token.chainId===chainId)&&(text===''||fuzzyMatch(text,`${token.name} ${token.symbol} ${token.chain} ${token.keywords??''}`)));
- if(text!==''||chainId!==null||!hotTokenIds?.length)return {rows:filtered,hotCount:0};
- const hot=hotTokenIds.map(id=>filtered.find(token=>token.id===id)).filter((token):token is SwapToken=>!!token);
- if(!hot.length||hot.length===filtered.length)return {rows:filtered,hotCount:0};
- return {rows:[...hot,...filtered.filter(token=>!hot.includes(token))],hotCount:hot.length};
+export function pickerRows(tokens:readonly SwapToken[],query:string,chainId:string|number|null,hotTokenIds?:readonly string[]){
+ return createPickerSearch(tokens)(query,chainId,hotTokenIds);
 }

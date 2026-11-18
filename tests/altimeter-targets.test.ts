@@ -111,3 +111,81 @@ it('insets target text while a visible line can enter either reserved area',()=>
  expect(inset.get('top')!.labelTop).toBe(70);
  expect(inset.get('bottom')!.labelTop).toBe(122);
 });
+
+it('reuses settled renderer geometry while recomputing active side changes and inset updates',()=>{
+ const layout=targetLayout({reuseSettled:true}),levels=[{id:'line',price:100,label:'Entry'}];
+ const first=layout.update(levels,99.999,.01,200,0);
+ expect(layout.update(levels,99.999,.01,200,16)).toBe(first);
+ const crossing=layout.update(levels,100.001,.01,200,32);
+ expect(layout.update(levels,100.001,.01,200,48)).not.toBe(crossing);
+ const landed=layout.update(levels,100.001,.01,200,500);
+ expect(layout.update(levels,100.001,.01,200,516)).toBe(landed);
+ expect(layout.update(levels,100.001,.01,200,532,false,{top:80})).not.toBe(landed);
+ layout.reset();
+ expect(layout.update(levels,99.999,.01,200,548)).not.toBe(first);
+});
+
+it('tracks disabled effects and steady prices without scanning unchanged renderer targets',()=>{
+ let reads=0;
+ const level={id:'entry',get price(){reads++;return 100;}},levels=[level];
+ const tracker=targetCrossings({immutableTargets:true});
+ tracker.update(99,levels,false);reads=0;
+ expect(tracker.update(101,levels,false)).toEqual([]);
+ expect(tracker.update(101,levels,true)).toEqual([]);
+ expect(reads).toBe(0);
+ expect(tracker.update(99,levels,true)).toEqual([level]);
+ tracker.update(99,[],false);
+ expect(tracker.update(101,levels,true)).toEqual([]);
+});
+
+it('updates pinned label order and membership when renderer targets change',()=>{
+ const layout=targetLayout({reuseSettled:true});
+ const first=[{id:'near',price:120,label:'Near'},{id:'far',price:140,label:'Far'},{id:'line',price:130}];
+ const next=[{...first[0],price:150},{id:'far',price:140},{...first[2],label:'Line'}];
+ for(const targets of [first,next,first]){
+  expect(layout.update(targets,100,1,200,16,true)).toEqual(placeTargets(targets,100,1,200));
+ }
+});
+
+it('skips target reads inside a known gap and detects exact arrivals after reversals and disabled updates',()=>{
+ let reads=0;
+ const mid={id:'mid',get price(){reads++;return 100;}};
+ const levels=[mid,{id:'upper',price:110}],tracker=targetCrossings({immutableTargets:true});
+ tracker.update(101,levels);
+ tracker.update(102,levels);
+ reads=0;
+ expect(tracker.update(103,levels)).toEqual([]);
+ expect(reads).toBe(0);
+ expect(tracker.update(100,levels)).toEqual([mid]);
+ expect(tracker.update(99,levels)).toEqual([]);
+ tracker.update(105,levels,false);
+ expect(tracker.update(99,levels)).toEqual([mid]);
+ const added={id:'added',price:98},changed=[mid,added];
+ tracker.update(99,changed,false);
+ expect(tracker.update(97,changed)).toEqual([added]);
+});
+
+it('re-arms crossings after a missing displayed price',()=>{
+ const levels=[{id:'mark',price:100}],tracker=targetCrossings({immutableTargets:true});
+ tracker.update(103,levels);
+ tracker.update(NaN,levels);
+ expect(tracker.update(99,levels,false)).toEqual([]);
+ expect(tracker.update(101,levels)).toEqual(levels);
+});
+
+it('skips scans when departing an exact alert and fires again on return',()=>{
+ let reads=0;
+ const levels=Array.from({length:512},(_,i)=>({id:String(i),get price(){reads++;return i*10;}}));
+ const tracker=targetCrossings({immutableTargets:true});
+ tracker.update(999,levels);
+ expect(tracker.update(1000,levels)).toEqual([levels[100]]);
+ reads=0;
+ expect(tracker.update(1002,levels)).toEqual([]);
+ expect(tracker.update(1001,levels)).toEqual([]);
+ expect(reads).toBe(0);
+ expect(tracker.update(999,levels)).toEqual([levels[100]]);
+ expect(tracker.update(1000,levels)).toEqual([levels[100]]);
+ reads=0;
+ expect(tracker.update(998,levels)).toEqual([]);
+ expect(reads).toBe(0);
+});

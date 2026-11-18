@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 // this text-only gate; their SVG source is covered by check-drift.mjs.
 const paths = [
   'apps/docs/src/content.json', 'apps/docs/src/code.json',
-  'apps/docs/src/demo-content.json', 'apps/docs/src/examples.tsx',
+  'apps/docs/src/demo-content.json', 'apps/docs/src/examples.tsx', 'apps/docs/src/example-groups',
   'apps/docs/public/catalog.json', 'apps/docs/public/llms.txt',
   'apps/docs/public/localization.json', 'apps/docs/public/glossary.json',
   'apps/docs/public/markdown', 'docs/foundations/glossary.md',

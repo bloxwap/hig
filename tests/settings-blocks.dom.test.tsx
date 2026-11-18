@@ -39,12 +39,12 @@ describe('SoundHapticsBlock',()=>{
  it('shows the device and a live meter for an input channel, and hides the extras while a channel is off',()=>{
   const view=render(<SoundHapticsBlock title='Sound' sections={sections()}/>);
   const mic=cards()[1];expect(mic.querySelector('.hig-setting-caption')!.textContent).toBe('iPhone Microphone');
-  expect(mic.querySelector('.hig-setting-meter')!.getAttribute('aria-hidden')).toBe('true');expect(mic.querySelector<HTMLElement>('.hig-setting-meter > span')!.style.width).toBe('17%');
+  expect(mic.querySelector('.hig-setting-meter')!.getAttribute('aria-hidden')).toBe('true');expect(mic.querySelector<HTMLElement>('.hig-setting-meter > span')!.style.transform).toBe('scaleX(0.17)');
   expect(within(mic).getByRole('group',{name:'Mic volume'})).toBeTruthy();expect(within(mic).getByRole('button',{name:'100%'}).getAttribute('aria-pressed')).toBe('true');
   view.rerender(<SoundHapticsBlock title='Sound' sections={sections({checked:false})}/>);expect(cards()[0].querySelector('.hig-setting-body')).toBeNull();expect(screen.queryByRole('group',{name:'Volume'})).toBeNull();
   // Host steps and an unknown level.
   view.rerender(<SoundHapticsBlock title='Sound' sections={[{id:'mic',label:'Mic',checked:true,onCheckedChange:noop,level:null,volume:{label:'Gain',options:[0.5,1],value:1,onValueChange:noop}}]}/>);
-  expect(q('.hig-setting-meter > span')!.style.width).toBe('0%');expect(within(screen.getByRole('group',{name:'Gain'})).getAllByRole('button').map(step=>step.textContent)).toEqual(['50%','100%']);
+  expect(q('.hig-setting-meter > span')!.style.transform).toBe('scaleX(0)');expect(within(screen.getByRole('group',{name:'Gain'})).getAllByRole('button').map(step=>step.textContent)).toEqual(['50%','100%']);
   view.rerender(<SoundHapticsBlock title='Sound' sections={[]}/>);expect(q('.hig-setting-cards')).toBeNull();
  });
  it('dims and blocks a disabled channel, and formats steps in the provider locale',async()=>{
@@ -210,4 +210,20 @@ describe('settings host slots (Unreleased)',()=>{
   // Groups alone: items may be left out.
   cleanup();render(<NotificationsBlock title='Notifications' groups={[{id:'a',items:[{id:'x',label:'X',checked:false,onCheckedChange:noop}]}]}/>);expect(toggle('X')).toBeTruthy();
  });
+});
+
+it('updates the microphone level without rebuilding unchanged volume steps',()=>{
+ let reads=0;
+ const options=[0.25,0.5,0.75,1];
+ Object.defineProperty(options,0,{get:()=>{reads++;return 0.25;}});
+ const onValueChange=vi.fn();
+ const mic=(level:number,value:number)=>({id:'mic',label:'Mic',checked:true,onCheckedChange:()=>{},levelLabel:'Input level',level,volume:{label:'Volume',options,value,onValueChange}});
+ const view=render(<SoundHapticsBlock title="Audio" sections={[mic(.1,.25)]}/>);
+ expect(reads).toBeGreaterThan(0);
+ reads=0;
+ view.rerender(<SoundHapticsBlock title="Audio" sections={[mic(.8,.25)]}/>);
+ expect(screen.getByRole('meter').getAttribute('aria-valuenow')).toBe('80');
+ expect(reads).toBe(0);
+ view.rerender(<SoundHapticsBlock title="Audio" sections={[mic(.8,.5)]}/>);
+ expect(screen.getByRole('button',{name:'50%'}).getAttribute('aria-pressed')).toBe('true');
 });

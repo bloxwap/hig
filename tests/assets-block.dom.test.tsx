@@ -89,11 +89,20 @@ describe('AssetsBlock opening countdown',()=>{
   const {act}=await import('@testing-library/react');
   vi.setSystemTime(new Date('2026-11-16T12:00:00Z'));
   const opensAt=Date.now()+((2*60+14)*60+33)*1000;
-  render(<HIGProvider><AssetsBlock assets={assets} categories={[categories[0],{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]} onSelect={()=>{}}/></HIGProvider>);
+  let statusReads=0;
+  const expired={...categories[0],opensAt:Date.now()-1000,get status(){statusReads++;return {label:'OPEN'};}};
+  let rowReads=0;
+  const markets=Array.from({length:100},(_,i)=>({...assets[3],id:String(i),get name(){rowReads++;return 'Gold';}}));
+  markets.push({...assets[0],id:'expired',name:'Expired'});
+  render(<HIGProvider><AssetsBlock assets={markets} categories={[expired,{id:'commodities',label:'Commodities',status:{label:'OPEN'},opensAt}]} onSelect={()=>{}}/></HIGProvider>);
   const badge=()=>document.querySelector('[data-countdown]');const shown=()=>badge()?.querySelector('.hig-animated-number-visual')?.textContent;
   expect(shown()).toBe('Opens in 2:14:33');
   expect(screen.getByRole('heading',{level:3,name:'Commodities, Opens in 2 hours 14 minutes'})).toBeTruthy();
+  expect(statusReads).toBeGreaterThan(0);
+  statusReads=0;rowReads=0;
   act(()=>{vi.advanceTimersByTime(1000);});
+  expect(rowReads).toBe(0);
+  expect(statusReads).toBe(0);
   expect(shown()).toBe('Opens in 2:14:32');
   act(()=>{vi.setSystemTime(opensAt+1);vi.advanceTimersByTime(1000);});
   expect(badge()).toBeNull();
@@ -287,4 +296,141 @@ describe('AssetsBlock empty action, selected disc and keyboard',()=>{
   expect(media).toHaveBeenCalledWith('(pointer: fine)');
   Reflect.deleteProperty(window,'matchMedia');
  });
+});
+
+it('search observes edits and preserves repeated category sections',()=>{
+ const asset={...assets[0],name:'Original',symbol:'OLD',keywords:'legacy'};
+ const repeated=[categories[0],{...categories[0],label:'Repeated'}];
+ const matches=filterAssets([asset],repeated,{query:'legacy'});
+ expect(matches.map(section=>section.category)).toEqual(repeated);
+ expect(matches[0].assets).not.toBe(matches[1].assets);
+ asset.name='Renamed';
+ asset.symbol='NEW';
+ asset.keywords='révised';
+ expect(filterAssets([asset],repeated,{query:'legacy'})).toHaveLength(0);
+ for(const query of ['renamed','new','revised'])expect(filterAssets([asset],repeated,{query})).toHaveLength(2);
+});
+
+it('moves row focus past unmounted disabled markets in both directions',async()=>{
+ const markets=Array.from({length:100},(_,i)=>({...assets[0],id:String(i),name:'Market '+i,disabled:i>0&&i<99}));
+ const choose=vi.fn();
+ render(<HIGProvider><AssetsBlock assets={markets} categories={categories} onSelect={choose}/></HIGProvider>);
+ expect(document.querySelectorAll('.hig-assets-row').length).toBeLessThan(30);
+ const first=document.querySelector<HTMLButtonElement>('[data-asset-id="0"]')!;
+ first.focus();
+ await userEvent.keyboard('{Tab}');
+ expect(document.activeElement?.getAttribute('data-asset-id')).toBe('99');
+ await userEvent.keyboard('{Enter}');
+ expect(choose).toHaveBeenCalledWith(markets[99]);
+ await userEvent.keyboard('{ArrowUp}');
+ expect(document.activeElement).toBe(first);
+});
+
+it('shares a visibility observer and measures only nearby categories while scrolling',async()=>{
+ const {act}=await import('@testing-library/react');
+ let notify!:(entries:Partial<IntersectionObserverEntry>[])=>void;
+ const targets:Element[]=[];
+ const disconnect=vi.fn();
+ const observer=vi.fn(function(callback:typeof notify){
+  notify=callback;
+  return {observe:(element:Element)=>targets.push(element),unobserve:vi.fn(),disconnect};
+ });
+ vi.stubGlobal('IntersectionObserver',observer);
+ vi.useFakeTimers({toFake:['requestAnimationFrame','cancelAnimationFrame']});
+ try{
+  const markets=Array.from({length:60},(_,i)=>({...assets[0],id:String(i),category:categories[i%3].id}));
+  const {unmount}=render(<div data-testid='scroll-parent' style={{overflowY:'auto'}}><AssetsBlock assets={markets} categories={categories} categoryFilter={false} onSelect={()=>{}}/></div>);
+  expect(observer).toHaveBeenCalledTimes(1);
+  expect(targets).toHaveLength(3);
+  const measures=targets.map(target=>vi.spyOn(target,'getBoundingClientRect'));
+  act(()=>notify(targets.map((target,i)=>({target,isIntersecting:i===1}))));
+  measures.forEach(spy=>spy.mockClear());
+  act(()=>{window.dispatchEvent(new Event('scroll'));vi.advanceTimersByTime(32);});
+  expect(measures.map(spy=>spy.mock.calls.length)).toEqual([0,1,0]);
+  const clip=vi.spyOn(screen.getByTestId('scroll-parent'),'getBoundingClientRect');
+  act(()=>notify(targets.map(target=>({target,isIntersecting:true}))));
+  clip.mockClear();
+  const raf=vi.spyOn(window,'requestAnimationFrame');
+  act(()=>{for(let i=0;i<8;i++)window.dispatchEvent(new Event('scroll'));vi.advanceTimersByTime(32);});
+  expect([clip.mock.calls.length,raf.mock.calls.length]).toEqual([1,1]);
+  raf.mockRestore();
+  unmount();expect(disconnect).toHaveBeenCalledTimes(1);
+ }finally{cleanup();vi.useRealTimers();vi.unstubAllGlobals();}
+});
+
+it('reuses category labels across search edits',()=>{
+ let reads=0;
+ const groups=Array.from({length:40},(_,i)=>({id:String(i),get label(){reads++;return 'Category '+i;}}));
+ render(<HIGProvider><AssetsBlock assets={[{...assets[0],category:'0'}]} categories={groups} onSelect={()=>{}}/></HIGProvider>);
+ reads=0;const input=screen.getByRole('searchbox');
+ for(const query of ['z','zz','zzz'])fireEvent.change(input,{target:{value:query}});
+ expect(reads).toBe(0);
+ expect(screen.getByRole('radio',{name:'Category 39'})).toBeTruthy();
+});
+
+it('filters a burst of large-catalog edits once and flushes before a keyboard choice',async()=>{
+ const {act}=await import('@testing-library/react');
+ vi.useFakeTimers({toFake:['setTimeout','clearTimeout']});
+ try{
+  let reads=0;
+  const markets=Array.from({length:1000},(_,i)=>({...assets[0],id:String(i),name:'Market '+i,get category(){reads++;return 'crypto';}}));
+  const choose=vi.fn(),changed=vi.fn();
+  render(<HIGProvider><AssetsBlock assets={markets} categories={categories} onSelect={choose} onQueryChange={changed} defaultQuery='absent' enterChoosesFirst/></HIGProvider>);
+  const input=screen.getByRole('searchbox') as HTMLInputElement;
+  reads=0;
+  for(const query of ['9','99','999']){fireEvent.change(input,{target:{value:query}});act(()=>vi.advanceTimersByTime(40));}
+  expect(input.value).toBe('999');expect(changed.mock.calls.flat()).toEqual(['9','99','999']);expect(reads).toBe(0);
+  act(()=>vi.advanceTimersByTime(110));expect(reads).toBe(1000);expect(document.querySelector('[data-asset-id="999"]')).toBeTruthy();
+  fireEvent.change(input,{target:{value:'888'}});fireEvent.keyDown(input,{key:'ArrowDown'});fireEvent.keyDown(input,{key:'Enter'});
+  expect(choose.mock.calls[0][0]).toBe(markets[888]);expect(reads).toBe(2000);
+  act(()=>vi.advanceTimersByTime(200));expect(reads).toBe(2000);
+ }finally{cleanup();vi.useRealTimers();}
+});
+
+it('updates only the two markets whose selection changed',()=>{
+ const reads=new Set<number>();
+ const markets=Array.from({length:50},(_,i)=>({...assets[0],id:String(i),get name(){reads.add(i);return 'Market '+i;}}));
+ const onSelect=vi.fn();
+ const tree=(selectedId:string)=><HIGProvider><AssetsBlock assets={markets} categories={categories} onSelect={onSelect} selectedId={selectedId}/></HIGProvider>;
+ const {rerender}=render(tree('0'));
+ reads.clear();
+ rerender(tree('1'));
+ expect([...reads]).toEqual([0,1]);
+ expect(screen.getByRole('button',{current:true}).getAttribute('data-asset-id')).toBe('1');
+});
+
+it('moves between late catalog rows without scanning market IDs',async()=>{
+ let idReads=0;
+ const markets=Array.from({length:1000},(_,i)=>({...assets[0],get id(){idReads++;return String(i);},disabled:i>0&&i<998}));
+ render(<HIGProvider><AssetsBlock assets={markets} categories={categories} onSelect={()=>{}}/></HIGProvider>);
+ const mounted=document.querySelectorAll('.hig-assets-row').length;
+ expect(mounted).toBeGreaterThan(0);
+ expect(mounted).toBeLessThan(30);
+ document.querySelector<HTMLButtonElement>('[data-asset-id="0"]')!.focus();
+ await userEvent.keyboard('{Tab}');
+ expect(document.activeElement?.getAttribute('data-asset-id')).toBe('998');
+ idReads=0;
+ await userEvent.keyboard('{ArrowDown}');
+ expect(document.activeElement?.getAttribute('data-asset-id')).toBe('999');
+ expect(idReads).toBeLessThan(200);
+});
+
+it('builds the cross-category keyboard order on first navigation and reuses it',()=>{
+ const markets=Array.from({length:1000},(_,i)=>({...assets[0],id:String(i),category:i<500?'crypto':'stocks'}));
+ const flatMap=Array.prototype.flatMap;
+ let copied=0;
+ const spy=vi.spyOn(Array.prototype,'flatMap').mockImplementation(function(this:unknown[],...args:Parameters<typeof flatMap>){
+  const result=flatMap.apply(this,args);
+  if(result[0]===markets[0]&&result[result.length-1]===markets[999])copied+=result.length;
+  return result;
+ });
+ try{
+  render(<HIGProvider><AssetsBlock assets={markets} categories={categories} onSelect={()=>{}}/></HIGProvider>);
+  expect(copied).toBe(0);
+  const field=screen.getByRole('searchbox');
+  fireEvent.keyDown(field,{key:'ArrowDown'});
+  fireEvent.keyDown(field,{key:'ArrowDown'});
+  expect(copied).toBeLessThanOrEqual(1000);
+  expect(document.querySelector('[data-active].hig-assets-row')?.getAttribute('data-asset-id')).toBe('1');
+ }finally{spy.mockRestore();}
 });

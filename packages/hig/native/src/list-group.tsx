@@ -2,8 +2,10 @@ import { Check as SharedCheck } from '@bloxwap/icons/native/check';
 import { ArrowUpRight } from '@bloxwap/icons/native/arrow-up-right';
 import React,{forwardRef,useState} from 'react';
 import {ActivityIndicator,Platform,Pressable,Text as NativeText,View,type PressableProps,type ViewProps,type ViewStyle} from 'react-native';
+import {StaticLoadingRing} from './static-loading-ring.js';
+import {useBusySpinner} from './use-busy-spinner.js';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useColors,useFills,useHIG} from './provider.js';
+import {useColors,useFills,useRowEnvironment,useTextEnvironment} from './provider.js';
 import {Text} from './surface.js';
 import {ChevronIcon} from './icons.js';
 import {SwitchRow} from './switch-row.js';
@@ -35,7 +37,7 @@ const loose=(node:React.ReactNode):boolean=>Array.isArray(node)?node.some(child=
 const actionSlop={top:12,bottom:12,left:8,right:8};
 /** A grouped list for menus and settings: an optional heading over rows that share one rounded container. */
 export function ListGroup({title,titleAccessory,action,intro,children,testID}:ListGroupProps){
- const colors=useColors(),{direction}=useHIG();
+ const colors=useColors(),{direction}=useTextEnvironment();
  const titled=shown(title),accessory=shown(titleAccessory);
  const titleStyle={color:colors.muted,fontSize:14,lineHeight:20,fontWeight:'500' as const};
  const titleTestID=testID?`${testID}-title`:undefined;
@@ -56,11 +58,12 @@ export function ListGroup({title,titleAccessory,action,intro,children,testID}:Li
    <Text accessible={false} style={{fontSize:14,lineHeight:20,fontWeight:'600',color:colors.text}}>{action.label}</Text>
   </Pressable>:null}
  </View>;
- const empty=React.Children.count(children)===0;
+ const hasIntro=shown(intro);
+ const introOnly=hasIntro&&React.Children.count(children)===0;
  return <View testID={testID} style={{direction,gap:8,minWidth:0}}>
   {header}
-  {shown(intro)?<View testID={testID?`${testID}-intro`:undefined} style={{paddingHorizontal:4,minWidth:0}}>{intro}</View>:null}
-  {shown(intro)&&empty?null:<View testID={testID?`${testID}-rows`:undefined} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{children}</View>}
+  {hasIntro?<View testID={testID?`${testID}-intro`:undefined} style={{paddingHorizontal:4,minWidth:0}}>{intro}</View>:null}
+  {introOnly?null:<View testID={testID?`${testID}-rows`:undefined} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{children}</View>}
  </View>;
 }
 export interface ListRowProps extends Omit<PressableProps,'children'|'style'|'onPress'|'disabled'|'role'|'accessibilityRole'|'accessibilityLabel'|'accessibilityState'|'aria-label'|'aria-checked'|'aria-disabled'|'aria-busy'|'aria-selected'> {
@@ -101,18 +104,19 @@ export interface ListRowProps extends Omit<PressableProps,'children'|'style'|'on
 }
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /** The check of a selected row. It does not mirror in right-to-left layouts. */
+const busyGlyphSlot={width:20,alignItems:'center'} as const;
 function Check({color,testID}:{color:string;testID?:string}){return <SharedCheck size={20} color={color} testID={testID}/>;}
 /** An arrow pointing up and away, for a row that opens something outside the app; it mirrors in right-to-left layouts. */
 function External({color,rtl,testID}:{color:string;rtl:boolean;testID?:string}){return <ArrowUpRight size={20} color={color} testID={testID} style={{transform:rtl?[{scaleX:-1}]:undefined}}/>;}
 /** One row of a ListGroup: the label leads; a value, icons, a badge or a control trail. With `onSelect` the whole row is one button and shows a disclosure chevron; with `checked` or `onCheckedChange` the whole row is a switch; otherwise the row is static, so a control in `trailing` is its only target. Other Pressable props, such as `android_disableSound`, `hitSlop` or `onLongPress`, reach the row, and the ref reaches its view. */
 export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,ListRowProps>(function ListRow({label,description,accessibilityLabel,tone,leading,value,valueLabel,valueTone,trailing,onSelect,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,testID,...rest},ref){
- const colors=useColors(),fills=useFills(),{direction,messages}=useHIG();const [internal,setInternal]=useState(!!defaultChecked);
+ const colors=useColors(),fills=useFills(),{direction,busy:providerBusy,reducedMotion}=useRowEnvironment();const [internal,setInternal]=useState(!!defaultChecked);
  const toggles=!onSelect&&(checked!==undefined||defaultChecked!==undefined||onCheckedChange!=null);
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'flex-start',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?fills.raised:fills.well,opacity:disabled?0.5:1});
  const text=typeof value==='string'||typeof value==='number';
  const described=shown(description),about=described?plainText(description):'';
  const reading=accessibilityLabel??[label,about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ');
- const busyText=busyLabel??messages.busy??en.busy;
+ const busyText=busyLabel??providerBusy??en.busy;
  const spoken=busy&&busyText&&Platform.OS!=='android'?`${reading} · ${busyText}`:reading;
  // Everything aligns to the first line of the label, so a trailing switch stays at the top when the label wraps.
  const first:ViewStyle={minHeight:40,justifyContent:'center'};
@@ -141,10 +145,13 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
  const extra=trailing==null?null:<View pointerEvents={onSelect||toggles?'none':'auto'} {...quiet} style={{flexDirection:'row',alignItems:'center',gap:8,minHeight:40}}>{trailing}</View>;
  const chevron=<View testID={testID?`${testID}-chevron`:undefined} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>;
  const glyphKind=disclosure??(selected!==undefined?'none':'chevron');
- const glyph=busy&&!toggles?<ActivityIndicator testID={testID?`${testID}-busy`:undefined} size='small' color={colors.muted} {...hidden}/>
+ const showSpinner=useBusySpinner(!!busy&&!toggles);
+ const busyId=testID?`${testID}-busy`:undefined;
+ const glyph=showSpinner?(reducedMotion?<StaticLoadingRing color={colors.muted} testID={busyId}/>:<ActivityIndicator testID={busyId} size='small' color={colors.muted} {...hidden}/>)
   :selected?<Check color={colors.text} testID={testID?`${testID}-check`:undefined}/>
   :onSelect?(glyphKind==='chevron'?chevron:glyphKind==='external'?<External color={colors.muted} rtl={direction==='rtl'} testID={testID?`${testID}-external`:undefined}/>:null):null;
- const end=glyph?<View {...hidden} style={first}>{glyph}</View>:null;
+ const reserveSpinner=!!busy&&!toggles;
+ const end=glyph||reserveSpinner?<View {...hidden} style={reserveSpinner?[first,busyGlyphSlot]:first}>{glyph}</View>:null;
  if(toggles){
   const on=checked??internal;
   const hint=[about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ')||undefined;

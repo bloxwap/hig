@@ -18,3 +18,14 @@ it('cancels pending sound when volume becomes zero and dispatches explicit nativ
 it.each([-1,0,NaN,Infinity])('bounds invalid remembered-event capacities without blocking actions (%s)',maxRemembered=>{
  const sound=adapter();const controller=new FeedbackController({sound,maxRemembered,preferences:{sound:true}});controller.emit(event());controller.emit(event());expect(sound.play).toHaveBeenCalledOnce();
 });
+
+it('prepares enabled sound on foreground return and respects the host sound policy',()=>{
+ const prepareSound=vi.fn(),sound=adapter();
+ const controller=new FeedbackController({sound,prepareSound});
+ controller.setBackground(true);controller.updatePreferences({sound:true});
+ expect(prepareSound).not.toHaveBeenCalled();
+ controller.setBackground(false);expect(prepareSound).toHaveBeenCalledOnce();
+ const muted=new FeedbackController({sound,prepareSound,preferences:{sound:true},policy:{sound:false}});
+ muted.setBackground(true);muted.setBackground(false);expect(prepareSound).toHaveBeenCalledOnce();
+ controller.dispose();muted.dispose();
+});

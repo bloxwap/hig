@@ -4,14 +4,15 @@ import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
 import { ChevronsUpDown } from '@bloxwap/icons/react/chevrons-up-down';
 import {assertUniqueKeys} from '@bloxwap/hig/contracts';
 import React from 'react';
+import {RowWindow} from './row-window.js';
 import {formatNumber,presentNumberFormat} from '@bloxwap/hig/contracts';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {useHIG,useNumberLocale} from './provider.js';
+import {useMessageOverrides,useReadoutFormat} from './provider.js';
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;stale?:boolean;label?:string;prefix?:string;suffix?:string}
-export function NumberReadout({value,options,stale,label,prefix='',suffix=''}:NumberProps){const {messages,numberFormat}=useHIG();const locale=useNumberLocale();const known=value!=null&&Number.isFinite(value),formatted=formatNumber(value,locale,presentNumberFormat(options,numberFormat)),reading=known?`${prefix}${formatted}${suffix}`:formatted;return <span className='hig-number' aria-label={label?`${label}: ${reading}${stale?` ${messages.stale??en.stale}`:''}`:undefined}>{reading}{stale&&<span> {messages.stale??en.stale}</span>}</span>;}
-export function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;}
+export const NumberReadout=React.memo(function NumberReadout({value,options,stale,label,prefix='',suffix=''}:NumberProps){const {locale,numberFormat,staleLabel}=useReadoutFormat(options?.style==='currency');const known=value!=null&&Number.isFinite(value),formatted=formatNumber(value,locale,presentNumberFormat(options,numberFormat)),reading=known?`${prefix}${formatted}${suffix}`:formatted;return <span className='hig-number' aria-label={label?`${label}: ${reading}${stale?` ${staleLabel??en.stale}`:''}`:undefined}>{reading}{stale&&<span> {staleLabel??en.stale}</span>}</span>;});
+export const Usd=React.memo(function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;});
 /** Input is percent points: 5 means 5%, not 500%. */
-export function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;}
+export const Percent=React.memo(function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;});
 export type AddressKind='ethereum'|'solana';
 /** `0x…` is Ethereum-style (EVM); anything else lays out as Solana (base58). */
 export const addressKind=(address:string):AddressKind=>address.startsWith('0x')?'ethereum':'solana';
@@ -25,16 +26,42 @@ export function VerticalAddress({address,kind,rowHeight,className}:{address:stri
  const layout=kind??addressKind(address),rows=addressRows(address,layout),size=layout==='ethereum'?6:4,tail=address.length-4;
  return <span className={`hig-vertical-address${className?` ${className}`:''}`} dir='ltr' translate='no' data-kind={layout} style={rowHeight?{'--hig-address-row':`${rowHeight}px`} as React.CSSProperties:undefined}>
   <span className='hig-sr-only'>{address}</span>
-  <span aria-hidden='true'>{rows.map((row,rowIndex)=><span key={rowIndex}>{Array.from(row).map((character,index)=>{const position=rowIndex*size+index;return <span key={index} data-anchor={position<size||position>=tail||undefined}>{character}</span>;})}</span>)}</span>
+  <span aria-hidden='true'>{rows.map((row,index)=>{
+   const characters=Array.from(row),start=index===0?0:Math.max(0,tail-index*size);
+   return <span key={index}>{characters.slice(0,start).join('')}{start<characters.length&&<span data-anchor>{characters.slice(start).join('')}</span>}</span>;
+  })}</span>
  </span>;
 }
 export function Metric({label,value}: {label:string;value:React.ReactNode}){return <dl className='hig-surface'><dt>{label}</dt><dd>{value}</dd></dl>;}
 export const Stat=Metric;
 export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render:(item:T)=>React.ReactNode;empty?:string;label?:string;loading?:boolean;error?:string;onRetry?:()=>void;onLoadMore?:()=>void}
-export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){assertUniqueKeys(items,keyFor,'List');const {messages}=useHIG();return <div className='hig-data-list' aria-busy={loading}>
- {items.length?<ul className='hig-list' aria-label={label}>{items.map(item=><li key={keyFor(item)}>{render(item)}</li>)}</ul>:!loading&&!error?<p className='hig-list-message'>{empty??messages.noItems??en.noItems}</p>:null}
+function ListCell<T>({item,render}:{item:T;render:(item:T)=>React.ReactNode}){
+ return <>{render(item)}</>;
+}
+const MemoizedListCell=React.memo(ListCell) as typeof ListCell;
+type ListStatusProps=Pick<ListProps<unknown>,'empty'|'loading'|'error'|'onRetry'|'onLoadMore'>&{isEmpty:boolean};
+function ListStatus({isEmpty,empty,loading,error,onRetry,onLoadMore}:ListStatusProps){
+ const messages=useMessageOverrides();
+ return <>
+ {isEmpty&&!loading&&!error?<p className='hig-list-message'>{empty??messages.noItems??en.noItems}</p>:null}
  {loading&&<p className='hig-list-message' role='status'>{messages.loadingItems??en.loadingItems}</p>}{error&&<div className='hig-list-error' role='alert'><p className='hig-list-message'>{error}</p>{onRetry&&<button className='hig-button' data-intent='secondary' type='button' disabled={loading} onClick={onRetry}>{messages.retry??en.retry}</button>}</div>}
  {onLoadMore&&<button className='hig-button' data-intent='secondary' type='button' disabled={loading} onClick={onLoadMore}>{messages.loadMore??en.loadMore}</button>}
+ </>;
+}
+export function List<T>({items,keyFor,render,empty,label,loading=false,error,onRetry,onLoadMore}:ListProps<T>){
+ const rows=React.useMemo(()=>{
+  const rows=items.map(item=>({key:keyFor(item),item}));
+  assertUniqueKeys(rows,row=>row.key,'List');
+  return rows;
+ },[items,keyFor]);
+ const list=React.useMemo(()=>(
+  <RowWindow items={rows} itemKey="key" enabled={rows.length>50} rowHeight={44} tabThrough
+   className="hig-list" label={label}
+   renderRow={row=><li key={row.key}><MemoizedListCell item={row.item} render={render}/></li>}/>
+ ),[rows,label,render]);
+ return <div className='hig-data-list' aria-busy={loading}>
+ {items.length?list:null}
+ {(!items.length||loading||error||onLoadMore)&&<ListStatus isEmpty={!items.length} empty={empty} loading={loading} error={error} onRetry={onRetry} onLoadMore={onLoadMore}/>}
  </div>;}
 export function Row({className,...props}:React.HTMLAttributes<HTMLDivElement>){return <div {...props} className={`hig-row${className?` ${className}`:''}`}/>;}
 export interface Column<T> {key:string;label:string;render:(row:T)=>React.ReactNode;/** Logical alignment applies to both header and data cells. */align?:'start'|'center'|'end';sort?:'ascending'|'descending';onSort?:()=>void}
@@ -55,7 +82,33 @@ export interface TableProps<T> {
  state?:React.ReactNode;
 }
 function tableRowAttributes(props:TableRowProps|undefined){const attributes:React.HTMLAttributes<HTMLTableRowElement>={...props};delete attributes.children;delete attributes.dangerouslySetInnerHTML;delete attributes.role;return attributes;}
-export function Table<T>({caption,rows,columns,keyFor,rowProps,className,style,tableClassName,captionHidden=false,stickyHeader=false,loading=false,state}:TableProps<T>){assertUniqueKeys(rows,keyFor,'Table');assertUniqueKeys(columns,column=>column.key,'Table columns');
- const {messages}=useHIG();const status=state!==undefined?state:loading?<span role='status'>{messages.loading??en.loading}</span>:!rows.length?messages.noRows??en.noRows:null;
- return <div className={`hig-table-scroll${className?` ${className}`:''}`} style={style} tabIndex={0} role='region' aria-label={caption} aria-busy={loading||undefined}><table className={`hig-table${tableClassName?` ${tableClassName}`:''}`} data-sticky-header={stickyHeader||undefined}><caption className={captionHidden?'hig-sr-only':undefined}>{caption}</caption><thead><tr>{columns.map(c=><th key={c.key} scope='col' aria-sort={c.sort} style={c.align?{textAlign:c.align}:undefined}>{c.onSort?<button type='button' className='hig-table-sort' onClick={c.onSort}>{c.label}{(c.sort==='ascending'?<ChevronUp size={14} className='hig-table-sort-icon'/>:c.sort==='descending'?<ChevronDown size={14} className='hig-table-sort-icon'/>:<ChevronsUpDown size={14} className='hig-table-sort-icon'/> )}</button>:c.label}</th>)}</tr></thead><tbody>{rows.map((row,index)=><tr {...tableRowAttributes(rowProps?.(row,index))} key={keyFor(row)}>{columns.map(c=><td key={c.key} style={c.align?{textAlign:c.align}:undefined}>{c.render(row)}</td>)}</tr>)}{status!==null&&status!==false&&<tr className='hig-table-state'><td colSpan={Math.max(1,columns.length)}>{status}</td></tr>}</tbody></table></div>;
+function TableDataRow<T>({row,index,columns,rowProps,windowed}:{
+ row:T;index:number;windowed?:boolean;columns:readonly Column<T>[];rowProps?:TableProps<T>['rowProps'];
+}){
+ const cells=React.useMemo(()=>columns.map(column=><td key={column.key} style={column.align?{textAlign:column.align}:undefined}>{column.render(row)}</td>),[columns,row]);
+ return <tr {...tableRowAttributes(rowProps?.(row,index))} {...(windowed?{'data-hig-window-index':index,'aria-rowindex':index+2}:{})}>
+  {cells}
+ </tr>;
+}
+const MemoizedTableDataRow=React.memo(TableDataRow) as typeof TableDataRow;
+function DefaultTableStatus({loading}:{loading:boolean}){
+ const messages=useMessageOverrides();
+ return loading?<span role='status'>{messages.loading??en.loading}</span>:<>{messages.noRows??en.noRows}</>;
+}
+export function Table<T>({caption,rows,columns,keyFor,rowProps,className,style,tableClassName,captionHidden=false,stickyHeader=false,loading=false,state}:TableProps<T>){
+ const status=state!==undefined?state:loading||!rows.length?<DefaultTableStatus loading={loading}/>:null;
+ const windowed=rows.length>50;
+ const hasStatus=status!==null&&status!==false;
+ const keyedRows=React.useMemo(()=>{
+  const items=rows.map(row=>({key:keyFor(row),row}));
+  assertUniqueKeys(items,item=>item.key,'Table');
+  return items;
+ },[rows,keyFor]);
+ const body=React.useMemo(()=>{
+  assertUniqueKeys(columns,column=>column.key,'Table columns');
+  const renderRow=(item:typeof keyedRows[number],index:number)=><MemoizedTableDataRow key={'row:'+item.key} row={item.row} index={index} columns={columns} rowProps={rowProps} windowed={windowed}/>;
+  return windowed?<RowWindow as="tbody" columnCount={Math.max(1,columns.length)} items={keyedRows} itemKey="key" rowHeight={44} tabThrough renderRow={renderRow}/>:keyedRows.map(renderRow);
+ },[keyedRows,columns,rowProps,windowed]);
+ const statusRow=hasStatus?<tr aria-rowindex={windowed?rows.length+2:undefined} className='hig-table-state'><td colSpan={Math.max(1,columns.length)}>{status}</td></tr>:null;
+ return <div className={`hig-table-scroll${className?` ${className}`:''}`} style={style} tabIndex={0} role='region' aria-label={caption} aria-busy={loading||undefined}><table aria-rowcount={windowed?1+rows.length+Number(hasStatus):undefined} className={`hig-table${tableClassName?` ${tableClassName}`:''}`} data-sticky-header={stickyHeader||undefined}><caption className={captionHidden?'hig-sr-only':undefined}>{caption}</caption><thead><tr aria-rowindex={windowed?1:undefined}>{columns.map(c=><th key={c.key} scope='col' aria-sort={c.sort} style={c.align?{textAlign:c.align}:undefined}>{c.onSort?<button type='button' className='hig-table-sort' onClick={c.onSort}>{c.label}{(c.sort==='ascending'?<ChevronUp size={14} className='hig-table-sort-icon'/>:c.sort==='descending'?<ChevronDown size={14} className='hig-table-sort-icon'/>:<ChevronsUpDown size={14} className='hig-table-sort-icon'/> )}</button>:c.label}</th>)}</tr></thead>{windowed?<>{body}{hasStatus&&<tbody>{statusRow}</tbody>}</>:<tbody>{body}{statusRow}</tbody>}</table></div>;
 }

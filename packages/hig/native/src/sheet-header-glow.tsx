@@ -5,7 +5,7 @@ import {useColors} from './provider.js';
 
 export const GestureSheetHeaderContext=React.createContext<'default'|'custom'|false>(false);
 export function useBlockHorizontalInset(){
- return React.useContext(GestureSheetHeaderContext)==='default'?0:8;
+ return React.useContext(GestureSheetHeaderContext)?0:8;
 }
 export const sheetHandlePadding={paddingTop:28,paddingBottom:0};
 export function sheetGripStyle(accent:string){

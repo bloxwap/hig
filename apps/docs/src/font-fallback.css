@@ -1,0 +1,2 @@
+/* Match the variable Sans metrics during font loading. */
+@font-face{font-family:"HIG Docs Sans Fallback";src:local("Arial");size-adjust:97.88%;ascent-override:98.08%;descent-override:24.52%;line-gap-override:0%}

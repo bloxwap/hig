@@ -3,14 +3,16 @@ import { Search } from '@bloxwap/icons/react/search';
 import { X } from '@bloxwap/icons/react/x';
 import React,{createContext,useContext,useId,useRef,useCallback,useEffect,forwardRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {PressDecoration,useHIG} from './provider.js';
+import {PressDecoration,useMessageOverrides} from './provider.js';
 const Context=createContext<{id:string;description?:string;invalid?:boolean;disabled?:boolean;required?:boolean;register?:()=>()=>void}>({id:''});
 export interface FieldProps {id?:string;label:string;description?:string;/** `positive` draws the description as a success line, such as a name that is available, and announces it when it changes. The words carry the meaning; the colour repeats it. */descriptionTone?:'muted'|'positive';error?:string;required?:boolean;disabled?:boolean}
 export function Field({id:provided,label,description,descriptionTone,error,required,disabled,children}:React.PropsWithChildren<FieldProps>){
- const {messages}=useHIG();const generated=useId();const id=provided??generated;const ids=[description&&`${id}-help`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
+ const messages=useMessageOverrides();const generated=useId();const id=provided??generated;const ids=[description&&`${id}-help`,error&&`${id}-error`].filter(Boolean).join(' ')||undefined;
  const controls=useRef(0);const register=useCallback(()=>{if(++controls.current>1)throw new Error('Field requires exactly one control.');return()=>{controls.current--;};},[]);
  const positive=descriptionTone==='positive';
- return <Context.Provider value={{id,description:ids,invalid:!!error,disabled,required,register}}><div className='hig-field'><label htmlFor={id}>{label}{required?` ${messages.required??en.required}`:''}</label>{children}{description&&<p id={`${id}-help`} data-tone={positive?'positive':undefined} aria-live={positive?'polite':undefined}>{description}</p>}{error&&<p id={`${id}-error`} role='alert'>{error}</p>}</div></Context.Provider>;
+ const invalid=!!error;
+ const field=React.useMemo(()=>({id,description:ids,invalid,disabled,required,register}),[id,ids,invalid,disabled,required,register]);
+ return <Context.Provider value={field}><div className='hig-field'><label htmlFor={id}>{label}{required?` ${messages.required??en.required}`:''}</label>{children}{description&&<p id={`${id}-help`} data-tone={positive?'positive':undefined} aria-live={positive?'polite':undefined}>{description}</p>}{error&&<p id={`${id}-error`} role='alert'>{error}</p>}</div></Context.Provider>;
 }
 export const Label=(props:React.LabelHTMLAttributes<HTMLLabelElement>)=><label {...props}/>;
 export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>,'prefix'> {
@@ -30,7 +32,7 @@ export interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputEle
  clearLabel?:string;
 }
 export const SearchInput=/* @__PURE__ */forwardRef<HTMLInputElement,SearchInputProps>(function SearchInput({trailing,onClear,clearLabel,...props},ref){
- const {messages}=useHIG();const inner=useRef<HTMLInputElement|null>(null);const off=!!useContext(Context).disabled||!!props.disabled;
+ const messages=useMessageOverrides();const inner=useRef<HTMLInputElement|null>(null);const off=!!useContext(Context).disabled||!!props.disabled;
  const attach=useCallback((node:HTMLInputElement|null)=>{inner.current=node;const cleanup:unknown=typeof ref==='function'?ref(node):undefined;if(ref&&typeof ref!=='function')ref.current=node;return()=>{inner.current=null;if(typeof cleanup==='function')cleanup();else if(typeof ref==='function')ref(null);else if(ref)ref.current=null;};},[ref]);
  const clear=onClear&&props.value!=null&&String(props.value)!==''?<button type='button' className='hig-search-clear' aria-label={clearLabel??messages.clearSearch??en.clearSearch} disabled={off} onClick={()=>{onClear();inner.current?.focus();}}><X size={16}/><PressDecoration kind='icon-button' disabled={off}/></button>:null;
  const extra=trailing!=null&&trailing!==false;

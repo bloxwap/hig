@@ -94,3 +94,29 @@ it('takes a group testID, gives each segment <testID>-<value>, and lets an optio
  mount({options:[{value:'all',label:'All'},{value:'open',label:'Open',testID:'open-only'}]});
  expect(radios().map(node=>node.props.testID)).toEqual([undefined,'open-only']);
 });
+
+it('scrolls choices at their minimum width inside a narrow host',()=>{
+ const {ScrollView}=require('react-native');
+ mount({defaultValue:'all'},{density:'compact',reducedMotion:true});layout(92);
+ expect(root.root.findByType(ScrollView).props.horizontal).toBe(true);
+ expect(radios().map(radio=>StyleSheet.flatten(radio.props.style).minWidth)).toEqual([44,44,44]);
+ act(()=>radios()[2].props.onPress());
+ expect(style().width).toBe(44);
+ expect(style().transform[0].translateX.__getValue()).toBe(96);
+ layout(308);
+ expect(root.root.findAllByType(ScrollView)).toHaveLength(0);
+ expect(style().width).toBe(100);
+ expect(radios()[2].props.accessibilityState.checked).toBe(true);
+});
+
+it('resizes the indicator without rereading segment options',()=>{
+ const read=jest.fn(i=>String(i));
+ const choices=Array.from({length:50},(_,i)=>({get value(){return read(i);},label:String(i)}));
+ mount({options:choices,value:'49'});
+ layout(3000);
+ read.mockClear();
+ layout(3500);
+ expect(read).not.toHaveBeenCalled();
+ expect(style().width).toBe((3500-49*4)/50);
+ expect(radios()[49].props.accessibilityState.checked).toBe(true);
+});

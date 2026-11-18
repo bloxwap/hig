@@ -72,7 +72,7 @@ it('Accordion is a strokeless card whose trailing chevron and content animate; r
   const kids=json(root.toJSON(),n=>n.props.accessibilityRole==='button').children;expect(kids[0].children).toEqual(['Advanced']);expect(kids[kids.length-1].props.style.transform).toBeTruthy();
   expect(flat(chevron).transform[0].rotate.__getValue()).toBe('0deg');
   act(()=>header(tree).props.onPress(event));
-  expect(timing).toHaveBeenCalledTimes(1);expect(timing.mock.calls[0][1]).toMatchObject({toValue:1,duration:260,useNativeDriver:false});
+  expect(timing).toHaveBeenCalledTimes(1);expect(timing.mock.calls[0][1]).toMatchObject({toValue:1,duration:260,useNativeDriver:true});
   expect(header(tree).props.accessibilityState).toEqual({expanded:true});expect(tree.findAllByType(RNText).map(n=>n.props.children)).toEqual(['Advanced','Body']);
   expect(flat(header(tree).findByType(Animated.View)).transform[0].rotate.__getValue()).toBe('180deg');
   act(()=>header(tree).props.onPress(event));expect(timing.mock.calls[1][1]).toMatchObject({toValue:0});expect(tree.findAllByType(RNText).map(n=>n.props.children)).toEqual(['Advanced']);
@@ -93,6 +93,14 @@ it('Toast notices are one-row capsules: severity symbol, message, action, then a
  const close=tree.findAllByType(Button).find(n=>n.props.accessibilityLabel==='Dismiss Order failed');
  act(()=>close.props.onPress());expect(dismissed).toHaveBeenCalledWith('1');
  expect(tree.findAllByType(RNText).map(n=>n.props.children)).toEqual(['Order failed','Retry']);
+});
+it('mounts static skeletons and offline status dots without an animation clock',()=>{
+ const reset=jest.spyOn(Animated.Value.prototype,'setValue');
+ try{
+  mount(h(HIGProvider,{reducedMotion:true},h(Skeleton),h(StatusIndicator,{label:'Feed',state:'online'})));
+  mount(h(StatusIndicator,{label:'Feed',state:'offline'}));
+  expect(reset).not.toHaveBeenCalled();expect(global.__loops).toHaveLength(0);
+ }finally{reset.mockRestore();}
 });
 it('Skeleton pulses and StatusIndicator rings for online and stale; offline and reduced motion stay still',()=>{
  const loops=()=>global.__loops.length;

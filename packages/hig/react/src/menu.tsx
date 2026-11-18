@@ -1,0 +1,6 @@
+"use client";
+import React,{useId,useRef} from 'react';
+import {useHIG,useThemeStyle} from './provider.js';
+import * as Drop from '@radix-ui/react-dropdown-menu';
+import {Button} from './button.js';
+export function Menu({label,items}: {label:string;items:readonly {label:string;disabled?:boolean;onSelect:(event:Event)=>void}[]}){const {feedback,direction,locale,density}=useHIG();const themeStyle=useThemeStyle();const id=useId();const sequence=useRef(0);const origin=useRef<'pointer'|'keyboard'>('keyboard');return <Drop.Root dir={direction}><Drop.Trigger asChild><Button intent='secondary' suppressFeedback>{label}</Button></Drop.Trigger><Drop.Portal><Drop.Content className='hig-popover hig-menu' align='start' sideOffset={6} collisionPadding={16} style={themeStyle} lang={locale} data-hig-density={density}>{items.map((item,i)=><Drop.Item key={i} disabled={item.disabled} className='hig-menu-item' onPointerDown={()=>{origin.current='pointer';}} onKeyDown={()=>{origin.current='keyboard';}} onSelect={event=>{if(item.disabled)return;item.onSelect(event);if(!event.defaultPrevented)try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent:'selection',origin:origin.current});}catch{/* Optional feedback cannot alter the action. */}}}>{item.label}</Drop.Item>)}</Drop.Content></Drop.Portal></Drop.Root>;}

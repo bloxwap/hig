@@ -1,6 +1,7 @@
 // Looping animations (Skeleton pulse, StatusIndicator ring) run on the native driver, which this renderer cannot attach. Tests keep them inert and assert on the loop request instead.
 beforeEach(()=>{const {Animated}=require('react-native');global.__loops=[];jest.spyOn(Animated,'loop').mockImplementation(animation=>{const loop={animation,start:jest.fn(),stop:jest.fn(),reset:jest.fn()};global.__loops.push(loop);return loop;});});
 afterEach(()=>{require('react-native').Animated.loop.mockRestore?.();});
+jest.mock('react-native-worklets',()=>({scheduleOnUI:(worklet,...args)=>worklet(...args)}));
 jest.mock('react-native-safe-area-context',()=>require('react-native-safe-area-context/jest/mock').default);
 
 const mockNumberReanimated={values:[],animations:[],cancel:jest.fn(),timing:jest.fn((toValue,config)=>({__numberTiming:true,toValue,config}))};
@@ -9,7 +10,7 @@ jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
  return {
   __esModule:true,
-  default:{View:RN.View,Text:RN.Text},
+  default:{View:RN.View,Text:RN.Text,createAnimatedComponent:component=>component},
   cancelAnimation:mockNumberReanimated.cancel,
   withTiming:mockNumberReanimated.timing,
   useSharedValue(initial){

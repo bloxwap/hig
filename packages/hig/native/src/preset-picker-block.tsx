@@ -8,6 +8,10 @@ import {ChevronIcon} from './icons.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
+const PickerHeader = React.memo(ScreenHeader);
+const PickerAction = React.memo(Button);
+const actionStyle = { flex: 1, alignSelf: 'auto' } as const;
+
 /** The row that opens the host's own entry of a value no quick choice holds, such as a keypad. */
 export interface PresetPickerCustom {
  /** The row's text: Custom amount. */
@@ -118,11 +122,20 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const customSelected=custom?(custom.selected??custom.value!==undefined):false;
  const chevron=(color:string)=><View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={color}/></View>;
  const label=presetsLabel??title;
- const group=presets.length>0?<PresetGroup<T> testID={id('presets')} label={label} options={presets.map(option=>({...option,testID:option.testID??id(`preset-${option.value}`)}))} value={selected} onValueChange={onPresetChange} columns={columns} selectedIntent={intent} suppressFeedback={suppressFeedback}/>:null;
- // The adjust gesture steps from the selected chip (or the first, when none is) to the next enabled one.
- const enabled=presets.filter(option=>!option.disabled),at=enabled.findIndex(option=>selected!==null&&Object.is(option.value,selected));
- const step=(delta:number)=>{const next=enabled[at<0?0:Math.max(0,Math.min(enabled.length-1,at+delta))];if(next&&!Object.is(next.value,selected))onPresetChange(next.value);};
- const current=presets.find(option=>selected!==null&&Object.is(option.value,selected));
+ const options=React.useMemo(()=>presets.map(option=>({...option,testID:option.testID??`${testID}-preset-${option.value}`})),[presets,testID]);
+ const group=React.useMemo(()=>options.length>0?<PresetGroup<T> testID={`${testID}-presets`} label={label} options={options} value={selected} onValueChange={onPresetChange} columns={columns} selectedIntent={intent} suppressFeedback={suppressFeedback}/>:null,
+  [options,testID,label,selected,onPresetChange,columns,intent,suppressFeedback]);
+ const isAdjustable=!!adjustable;
+ const selectedIndex=React.useMemo(()=>isAdjustable&&selected!==null?options.findIndex(option=>Object.is(option.value,selected)):-1,[options,isAdjustable,selected]);
+ const current=options[selectedIndex];
+ // An unselected or disabled current value starts at the first enabled chip in either direction.
+ const step=(delta:number)=>{
+  const direction=current&&!current.disabled?delta:1;
+  const start=current&&!current.disabled?selectedIndex+delta:0;
+  for(let i=start;i>=0&&i<options.length;i+=direction){
+   if(!options[i].disabled){onPresetChange(options[i].value);return;}
+  }
+ };
  // With a range the value is reported as min, max and now beside the chip's label; without one, as the label alone.
  const range=(chip:PresetOption<T>|undefined)=>{
   if(!adjustable||(adjustable.min===undefined&&adjustable.max===undefined&&adjustable.now===undefined))return chip?{text:chip.label}:undefined;
@@ -130,7 +143,7 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
   return {min:adjustable.min,max:adjustable.max,...(now!==undefined?{now}:{}),...(chip?{text:chip.label}:{})};
  };
  const chips=adjustable&&group?<View testID={adjustable.testID??id('adjustable')} accessible accessibilityRole='adjustable' accessibilityLabel={label} accessibilityValue={range(current)} accessibilityActions={[{name:'increment',label:adjustable.incrementLabel},{name:'decrement',label:adjustable.decrementLabel}]} onAccessibilityAction={event=>step(event.nativeEvent.actionName==='increment'?1:-1)}>{group}</View>:group;
- const header=title!==undefined?<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
+ const header=title!==undefined?<PickerHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
   <View style={{alignItems:'center'}}><AnimatedNumberReadout testID={id('headline')} value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {custom?<Pressable {...custom.pressProps} testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
@@ -143,8 +156,8 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
   {chips}
   {children}
   <View testID={id('actions')} style={{direction,flexDirection:'row',gap:8}}>
-   {onCancel?<Button testID={id('cancel')} intent='secondary' suppressFeedback={suppressFeedback} onPress={onCancel} style={{flex:1,alignSelf:'auto'}}>{cancelLabel??t.cancel}</Button>:null}
-   <Button testID={id('confirm')} intent={intent} disabled={submitDisabled} busy={busy} suppressFeedback={suppressFeedback} onPress={onSubmit} style={{flex:1,alignSelf:'auto'}}>{submitLabel}</Button>
+   {onCancel?<PickerAction testID={id('cancel')} intent='secondary' suppressFeedback={suppressFeedback} onPress={onCancel} style={actionStyle}>{cancelLabel??t.cancel}</PickerAction>:null}
+   <PickerAction testID={id('confirm')} intent={intent} disabled={submitDisabled} busy={busy} suppressFeedback={suppressFeedback} onPress={onSubmit} style={actionStyle}>{submitLabel}</PickerAction>
   </View>
  </>;
  if(stickyHeader&&header)return <StickyHeaderLayout testID={testID} headerTestID={id('sticky-header')} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>;

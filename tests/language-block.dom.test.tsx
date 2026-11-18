@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen,within} from '@testing-library/react';
+import {act,cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -57,4 +57,101 @@ describe('LanguageBlock',()=>{
   expect(screen.getByRole('radiogroup').hasAttribute('aria-disabled')).toBe(false);
   expect(readFileSync('packages/hig/react/src/styles.css','utf8')).toContain('.hig-language-row:disabled,.hig-assets-row:disabled { opacity:.5;cursor:not-allowed; }');
  });
+});
+
+it('windows a long language list and keeps filtered choices selectable',async()=>{
+ const options=Array.from({length:250},(_,i)=>({code:'en-x-'+i,name:'Language '+i}));
+ const choose=vi.fn();
+ render(<HIGProvider><LanguageBlock languages={options} onSelect={choose}/></HIGProvider>);
+ expect(screen.getAllByRole('radio').length).toBeLessThan(30);
+ const last=screen.getByRole('radio',{name:/Language 249/});
+ expect(last.getAttribute('aria-posinset')).toBe('250');expect(last.getAttribute('aria-setsize')).toBe('250');
+ const input=screen.getByRole('searchbox');await userEvent.type(input,'249{Enter}');
+ expect(choose.mock.calls[0][0]).toBe(options[249]);
+});
+
+it('refreshes cached search text when a host edits language names, descriptions or codes',()=>{
+ const option={code:'fr',name:'Français',description:'French'};
+ expect(filterLanguages([option],'francais')).toEqual([option]);
+ Object.assign(option,{code:'es',name:'Español',description:'Spanish'});
+ for(const query of ['fr','french','francais'])expect(filterLanguages([option],query)).toHaveLength(0);
+ for(const query of ['es','espanol','spanish'])expect(filterLanguages([option],query)).toEqual([option]);
+});
+
+it('opens an unfiltered large picker without copying the host array',()=>{
+ const options=Array.from({length:10000},(_,i)=>({code:String(i),name:'Language '+i}));
+ const iterate=vi.spyOn(options,Symbol.iterator);
+ render(<LanguageBlock languages={options} onSelect={()=>{}}/>);
+ expect(iterate).not.toHaveBeenCalled();
+ expect(screen.getAllByRole('radio').length).toBeLessThan(50);
+});
+
+
+it('filters a large catalog once after a burst of edits and clears immediately',()=>{
+ vi.useFakeTimers();
+ try{
+  const options=Array.from({length:1000},(_,i)=>({code:String(i),name:'Language '+i}));
+  const scans=vi.spyOn(options,'filter');
+  render(<LanguageBlock languages={options} onSelect={()=>{}}/>);
+  const input=screen.getByRole('searchbox');
+  for(const text of ['9','99','999'])fireEvent.change(input,{target:{value:text}});
+  expect((input as HTMLInputElement).value).toBe('999');
+  act(()=>vi.advanceTimersByTime(149));expect(scans).not.toHaveBeenCalled();
+  act(()=>vi.advanceTimersByTime(1));expect(scans).toHaveBeenCalledTimes(1);
+  expect(screen.getAllByRole('radio')).toHaveLength(1);
+  fireEvent.change(input,{target:{value:''}});
+  expect(screen.getAllByRole('radio').length).toBeGreaterThan(1);
+ }finally{vi.useRealTimers();}
+});
+
+it.each(['Enter','ArrowDown'])('scans once when %s applies a pending query before the debounce timer',key=>{
+ vi.useFakeTimers();
+ try{
+  const options=Array.from({length:1000},(_,i)=>({code:String(i),name:'Language '+i}));
+  const scans=vi.spyOn(options,'filter'),select=vi.fn();
+  const view=render(<LanguageBlock languages={options} onSelect={select}/>);
+  const input=screen.getByRole('searchbox');
+  fireEvent.change(input,{target:{value:'999'}});
+  fireEvent.keyDown(input,{key});
+  if(key==='ArrowDown')fireEvent.keyDown(input,{key:'Enter'});
+  expect(select).toHaveBeenCalledWith(options[999]);
+  act(()=>vi.advanceTimersByTime(150));
+  expect(scans).toHaveBeenCalledTimes(1);
+  view.rerender(<LanguageBlock languages={[{code:'new',name:'Replacement 999'}]} onSelect={select}/>);
+  expect(screen.getByRole('radio').textContent).toContain('Replacement 999');
+ }finally{vi.useRealTimers();}
+});
+
+it('updates the two selection marks and preserves focus on an unchanged language',()=>{
+ const draw=vi.fn(()=>null),select=vi.fn();
+ const picker=(value:string)=><HIGProvider pressDecoration={draw}><LanguageBlock languages={languages} value={value} onSelect={select}/></HIGProvider>;
+ const {rerender}=render(picker('en'));
+ const french=screen.getByRole('radio',{name:/Français/});french.focus();
+ draw.mockClear();rerender(picker('es'));
+ expect(draw).toHaveBeenCalledTimes(2);
+ expect(screen.getByRole('radio',{name:/Español/}).getAttribute('aria-checked')).toBe('true');
+ expect(document.activeElement).toBe(french);
+});
+
+it('updates only the selected virtual rows and retains their logical positions',()=>{
+ const draw=vi.fn(()=>null);
+ const options=Array.from({length:250},(_,i)=>({code:'en-x-'+i,name:'Language '+i}));
+ const select=vi.fn();
+ const scene=(value:string)=><HIGProvider pressDecoration={draw}><LanguageBlock languages={options} value={value} onSelect={select}/></HIGProvider>;
+ const {rerender}=render(scene(options[0].code));
+ draw.mockClear();rerender(scene(options[1].code));
+ expect(draw).toHaveBeenCalledTimes(2);
+ expect(screen.getByRole('radio',{name:'Language 1'}).getAttribute('aria-posinset')).toBe('2');
+});
+
+it('refreshes the visible and accessible names of a reused language option',async()=>{
+ const option={code:'fr',name:'French',description:'Language of France',flag:'/old.svg'};
+ const select=vi.fn();
+ const scene=()=><LanguageBlock languages={[option]} onSelect={select}/>;
+ const {rerender}=render(scene());
+ Object.assign(option,{name:'Français',description:'French',flag:'/fr.svg'});
+ rerender(scene());
+ const radio=screen.getByRole('radio',{name:'Français French'});
+ expect(radio.querySelector('img')?.getAttribute('src')).toBe('/fr.svg');
+ await userEvent.click(radio);expect(select.mock.calls[0][0]).toBe(option);
 });

@@ -70,3 +70,21 @@ it('lays the chips out as a grid of 44px targets in the interface face',()=>{
  // The chip is a HIG Button, whose label is the sans interface face, not the mono face.
  expect(css).toMatch(/\.hig-button \{[^}]*font:600 1rem\/1\.5 var\(--hig-font-sans/);
 });
+
+it('rereads only changed chips and uses the latest selection callback',async()=>{
+ const reads=new Set<number>();
+ const options=Array.from({length:40},(_,value)=>({value,get label(){reads.add(value);return String(value);}}));
+ const first=vi.fn(),next=vi.fn();
+ const view=render(<PresetGroup options={options} value={0} onValueChange={first}/>);
+ reads.clear();
+ view.rerender(<PresetGroup options={options} value={1} onValueChange={next}/>);
+ expect([...reads]).toEqual([0,1]);
+ await userEvent.click(screen.getByRole('button',{name:'39'}));
+ expect(next).toHaveBeenCalledWith(39);
+ expect(first).not.toHaveBeenCalled();
+});
+
+it('validates replacement choices even when the selection is unchanged',()=>{
+ const view=render(<PresetGroup options={sizes} value={10}/>);
+ expect(()=>view.rerender(<PresetGroup options={[sizes[0],sizes[0]]} value={10}/>)).toThrow('Choices requires unique keys');
+});

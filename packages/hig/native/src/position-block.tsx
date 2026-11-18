@@ -1,7 +1,7 @@
 import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React from 'react';
 import {View,type ScrollViewProps,type StyleProp,type ViewStyle} from 'react-native';
-import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
 import {SwitchRow} from './switch-row.js';
@@ -112,7 +112,7 @@ function Track({checked,testID}:{checked:boolean;testID?:string}){
 /** The position being opened or edited as a screen: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,headingId,header=true,stickyHeader,stickyHeaderBackground,scrollComponent,backProps,closeProps,testID}:PositionBlockProps){
  const horizontalInset=useBlockHorizontalInset();
- const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
+ const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale(),present=usePresentNumber();
  const figure={fontSize:16,lineHeight:24,fontWeight:'500'} as const;
  const shown=groups.filter(group=>group.length>0);
  const read=(live:PositionBlockFigure)=>figureReading(live,locale,present(live.options));

@@ -1,6 +1,6 @@
 "use client";
 import type {FeedbackSink,FeedbackIntent} from '@bloxwap/hig/contracts/feedback';
-import React,{createContext,useContext,useEffect,useMemo,useState,useRef,useId} from 'react';
+import React,{useCallback,createContext,useContext,useEffect,useMemo,useState,useRef,useId} from 'react';
 import {defaultEnvironment,numberLocale,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts';
 import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig/contracts/messages';
 import {nativeSrgb,resolvePrimaryColor} from '@bloxwap/hig/tokens';
@@ -19,27 +19,102 @@ export interface HIGContext extends Environment { onAccepted?: (id:string)=>void
 /** Host colours for the market-direction roles. An omitted, empty or non-string role keeps `buy`/`sell`. */
 export interface HIGMarketColors {up?:string;down?:string}
 export interface HIGProviderProps extends Partial<Omit<HIGContext,'messages'>> { /** Translations for HIG's built-in strings; omitted keys fall back to the enclosing provider, then English. */ messages?:Partial<HIGMessages> }
+const MessagesContext=createContext<Readonly<Partial<HIGMessages>>>({});
+const LocaleContext=createContext(defaultEnvironment.locale);
+export function useLocale(){return useContext(LocaleContext);}
+const NumberLocaleContext=createContext(defaultEnvironment.locale);
+const NumberFormatContext=createContext<NumberFormatPresentation|undefined>(undefined);
+const defaultReadout:{locale:string;numberFormat?:NumberFormatPresentation;staleLabel?:string}={locale:defaultEnvironment.locale};
+const ReadoutContext=createContext(defaultReadout);
+const PlainReadoutContext=createContext(defaultReadout);
+export function useReadoutFormat(currency=true){return useContext(currency?ReadoutContext:PlainReadoutContext);}
+const ReducedMotionContext=createContext(defaultEnvironment.reducedMotion);
+export function useReducedMotion(){return useContext(ReducedMotionContext);}
+const DirectionContext=createContext<Environment['direction']>(defaultEnvironment.direction);
+export function useLayoutDirection(){return useContext(DirectionContext);}
+const BusyLabelContext=createContext<string|undefined>(undefined);
+export function useBusyLabel(){return useContext(BusyLabelContext);}
+const ButtonContext=createContext<Pick<HIGContext,'density'|'onAccepted'|'feedback'>&{drawPress?:DrawPressLayer;busy?:string}>({density:defaultEnvironment.density});
+export function useButtonEnvironment(){return useContext(ButtonContext);}
+const FeedbackContext=createContext<FeedbackSink|undefined>(undefined);
+const DecorationContext=createContext<DrawPressLayer|undefined>(undefined);
 const Context=createContext<HIGContext&{drawPress?:DrawPressLayer;provided?:boolean}>({...defaultEnvironment,messages:{}});
 const marketColor=(value:unknown)=>typeof value==='string'&&value!==''?value:undefined;
+const motionReaders=new Set<(reduced:boolean)=>void>();
+let motionQuery:MediaQueryList|undefined;
+function notifyMotionReaders(){
+ if(motionQuery)for(const reader of motionReaders)reader(motionQuery.matches);
+}
+function subscribeOSMotion(reader:(reduced:boolean)=>void){
+ if(!motionQuery){
+  motionQuery=window.matchMedia?.('(prefers-reduced-motion: reduce)');
+  if(!motionQuery)return;
+  motionQuery.addEventListener('change',notifyMotionReaders);
+ }
+ motionReaders.add(reader);reader(motionQuery.matches);
+ return ()=>{
+  motionReaders.delete(reader);
+  if(!motionReaders.size){motionQuery?.removeEventListener('change',notifyMotionReaders);motionQuery=undefined;}
+ };
+}
 export function HIGProvider({children,density,locale,direction,reducedMotion,onAccepted,feedback,primaryColor,messages,pressDecoration,numberFormat,marketColors}:React.PropsWithChildren<HIGProviderProps>){
- const parent=useContext(Context);density??=parent.density;locale??=parent.locale;direction??=parent.direction;onAccepted??=parent.onAccepted;feedback??=parent.feedback;const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages),[inherited,messages]);
+ const parent=useContext(Context);density??=parent.density;locale??=parent.locale;direction??=parent.direction;onAccepted??=parent.onAccepted;feedback??=parent.feedback;const inherited=parent.messages;const resolved=useMemo(()=>resolveMessages(inherited,messages,true),[inherited,messages]);
  const market=marketColors??parent.marketColors;const up=marketColor(market?.up),down=marketColor(market?.down);
  const inheritedMarket=useMemo(()=>up===undefined&&down===undefined?undefined:{up,down},[up,down]);
  const accent=primaryColor??parent.primaryColor;const theme=useMemo(()=>marketStyle(primaryStyle(accent),up,down),[accent,up,down]);
  const decorate=pressDecoration??parent.pressDecoration;const drawPress=useMemo(()=>decorate?pressLayer(decorate):undefined,[decorate]);
  const [osReduced,setOSReduced]=useState(false);
- useEffect(()=>{const query=window.matchMedia?.('(prefers-reduced-motion: reduce)');if(!query)return;const update=()=>setOSReduced(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
+ useEffect(()=>parent.provided?undefined:subscribeOSMotion(setOSReduced),[parent.provided]);
  const reduced=reducedMotion??(parent.provided?parent.reducedMotion:osReduced),format=numberFormat??parent.numberFormat;
  // One context value for as long as nothing in it changes. A provider that renders again (a host state change above it) then
  // re-renders no component that reads the context: measured over 500 generated avatars, 25,000 face renders per 50 provider renders became none.
  const value=useMemo(()=>({provided:true,density,locale,direction,reducedMotion:reduced,onAccepted,feedback,primaryColor:accent,messages:resolved,pressDecoration:decorate,numberFormat:format,marketColors:inheritedMarket,drawPress}),[density,locale,direction,reduced,onAccepted,feedback,accent,resolved,decorate,format,inheritedMarket,drawPress]);
- return <Context.Provider value={value}><div style={theme} data-hig-density={density} data-hig-motion={reduced?'reduced':'full'} dir={direction} lang={locale}>{children}</div></Context.Provider>;
+ const busy=resolved.busy;
+ const button=useMemo(()=>({density,onAccepted,feedback,drawPress,busy}),[density,onAccepted,feedback,drawPress,busy]);
+ // Readouts subscribe to the presentation fields, so recreating an inline options object costs no reader render.
+ const hasFormat=format!==undefined;
+ const formatLocale=format?.locale,currencyDisplay=format?.currencyDisplay,useGrouping=format?.useGrouping;
+ const presentation=useMemo(()=>hasFormat?{locale:formatLocale,currencyDisplay,useGrouping}:undefined,
+  [hasFormat,formatLocale,currencyDisplay,useGrouping]);
+ const numericLocale=numberLocale(locale,presentation);
+ const staleLabel=resolved.stale;
+ const plainReadout=useMemo(()=>({locale:numericLocale,staleLabel}),[numericLocale,staleLabel]);
+ const readout=useMemo(()=>({locale:numericLocale,numberFormat:presentation,staleLabel}),[numericLocale,presentation,staleLabel]);
+ return (
+  <Context.Provider value={value}>
+   <ButtonContext.Provider value={button}>
+   <ReducedMotionContext.Provider value={reduced}>
+   <DirectionContext.Provider value={direction}>
+   <LocaleContext.Provider value={locale}>
+   <MessagesContext.Provider value={resolved}>
+    <BusyLabelContext.Provider value={resolved.busy}>
+      <FeedbackContext.Provider value={feedback}>
+        <DecorationContext.Provider value={drawPress}>
+          <NumberLocaleContext.Provider value={numericLocale}>
+            <NumberFormatContext.Provider value={presentation}>
+              <PlainReadoutContext.Provider value={plainReadout}><ReadoutContext.Provider value={readout}>
+                <div style={theme} data-hig-density={density} data-hig-motion={reduced?'reduced':'full'} dir={direction} lang={locale}>
+                  {children}
+                </div>
+              </ReadoutContext.Provider></PlainReadoutContext.Provider>
+            </NumberFormatContext.Provider>
+          </NumberLocaleContext.Provider>
+        </DecorationContext.Provider>
+      </FeedbackContext.Provider>
+    </BusyLabelContext.Provider>
+   </MessagesContext.Provider>
+   </LocaleContext.Provider>
+   </DirectionContext.Provider>
+   </ReducedMotionContext.Provider>
+   </ButtonContext.Provider>
+  </Context.Provider>
+ );
 }
 export const useHIG=():HIGContext=>useContext(Context);
 /** Number options with the nearest provider's `numberFormat` merged under them; only currency formats change. */
-export function usePresentNumber():<T extends Intl.NumberFormatOptions|undefined>(options:T)=>T {const {numberFormat}=useContext(Context);return useMemo(()=><T extends Intl.NumberFormatOptions|undefined>(options:T)=>presentNumberFormat(options,numberFormat),[numberFormat]);}
+export function usePresentNumber():<T extends Intl.NumberFormatOptions|undefined>(options:T)=>T {const numberFormat=useContext(NumberFormatContext);return useMemo(()=><T extends Intl.NumberFormatOptions|undefined>(options:T)=>presentNumberFormat(options,numberFormat),[numberFormat]);}
 /** The locale numbers are formatted in: the nearest provider's `numberFormat.locale`, else its `locale`. */
-export function useNumberLocale():string{const {locale,numberFormat}=useContext(Context);return numberLocale(locale,numberFormat);}
+export function useNumberLocale():string{return useContext(NumberLocaleContext);}
 const interactive='a[href],button,input,select,textarea,label';
 /**
  * The provider's press decoration for one control: the host content in an absolutely positioned layer that is the control's last
@@ -52,7 +127,7 @@ const interactive='a[href],button,input,select,textarea,label';
  * control comes through next. A disabled control gets nothing.
  */
 export function PressDecoration({kind,disabled=false,input}:{kind:PressDecorationKind;disabled?:boolean;input?:React.RefObject<HTMLInputElement|null>}){
- const draw=useContext(Context).drawPress;return draw?draw(kind,disabled,input):null;
+ const draw=useContext(DecorationContext);return draw?draw(kind,disabled,input):null;
 }
 // The layer and its click forwarding reach controls through context from HIGProvider, so a lone Button import does not bundle them.
 type DrawPressLayer=(kind:PressDecorationKind,disabled:boolean,input?:React.RefObject<HTMLInputElement|null>)=>React.JSX.Element|null;
@@ -87,15 +162,22 @@ function marketStyle(style:React.CSSProperties|undefined,up?:string,down?:string
 export function useThemeStyle():React.CSSProperties|undefined {const {primaryColor,marketColors}=useHIG();return useMemo(()=>marketStyle(primaryStyle(primaryColor),marketColors?.up,marketColors?.down),[primaryColor,marketColors]);}
 /** Resolved sRGB roles for canvas and host-drawn content. CSS retains the default wide-gamut palette. */
 export function useColors():Readonly<Record<keyof typeof nativeSrgb,string>> {const {primaryColor}=useHIG();return useMemo(()=>primaryColor===undefined?nativeSrgb:{...nativeSrgb,...resolvePrimaryColor(primaryColor)},[primaryColor]);}
+export function useMessageOverrides(){return useContext(MessagesContext);}
 /** Complete built-in copy for the nearest HIGProvider: host translations over the English defaults. */
-export function useMessages():HIGMessages{const overrides=useContext(Context).messages;return useMemo(()=>resolveMessages({...defaultMessages},overrides),[overrides]);}
+export function useMessages():HIGMessages{const overrides=useMessageOverrides();return useMemo(()=>({...defaultMessages,...overrides}),[overrides]);}
 /** Controlled values never silently switch to internal state. `intent: null` commits without provider feedback. */
 export function useControllable<T>(value:T|undefined,initial:T,onChange?: (value:T)=>void,intent:FeedbackIntent|null='selection'):[T,(next:T)=>void]{
  const [internal,setInternal]=useState(initial);const controlled=useRef(value!==undefined).current,last=useRef(initial),warned=useRef(false);
  if(controlled&&value!==undefined)last.current=value;
  const current=controlled?last.current:internal;
  useEffect(()=>{if((value!==undefined)!==controlled&&!warned.current){warned.current=true;if(process.env.NODE_ENV!=='production')console.warn('HIG controlled state cannot change ownership after mount. Remount to reset it.');}},[controlled,value]);
- const {feedback}=useHIG();const id=useId();const sequence=useRef(0);const pending=useRef<{value:T}|null>(null);
+ const feedback=useContext(FeedbackContext);const id=useId();const sequence=useRef(0);const pending=useRef<{value:T}|null>(null);
  useEffect(()=>{const request=pending.current;if(!request)return;pending.current=null;if(intent&&Object.is(current,request.value)){try{feedback?.emit({id:`${id}/${++sequence.current}`,source:id,intent,origin:'programmatic'});}catch{/* Effects remain optional. */}}});
- return [current,(next)=>{if(Object.is(current,next))return;pending.current={value:next};if(!controlled)setInternal(next);onChange?.(next);}];
+ const change=useCallback((next:T)=>{
+  if(Object.is(current,next))return;
+  pending.current={value:next};
+  if(!controlled)setInternal(next);
+  onChange?.(next);
+ },[controlled,current,onChange]);
+ return [current,change];
 }

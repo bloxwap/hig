@@ -5,6 +5,7 @@ import {formatNumber,formatCountdown,watchCountdown} from '@bloxwap/hig/contract
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {figureProps,type Figure} from '../figure.js';
 import {SegmentedControl} from '../selection.js';
+import {RowWindow} from '../row-window.js';
 import {Button} from '../button.js';
 import {AnimatedNumberReadout,NumberFlow} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
@@ -119,6 +120,7 @@ function DrawingCountdown({drawing}:{drawing:NonNullable<RewardPromo['drawing']>
  </div>;
 }
 const wholeDollars={style:'currency',currency:'USD',maximumFractionDigits:0} as const,whole={maximumFractionDigits:0} as const;
+const hasVerifiedMark=(entry:RewardEntry)=>!!entry.verified;
 const noEntries:readonly RewardEntry[]=[];
 const skeletons=[0,1,2,3,4];
 /** The share of the goal reached, from 0 to 1. Unknown amounts and goals that are not above zero give `null`. */
@@ -126,9 +128,11 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 const verifiedGlyph=<CircleCheck size={16} className='hig-reward-verified-mark'/>;
-function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive,as:Tag='li'}:{entry:RewardEntry;scoreOptions:Intl.NumberFormatOptions;verifiedLabel?:string;verifiedMark?:React.ReactNode;verifiedMarkInteractive?:boolean;as?:'li'|'div'}){
+const Standing=React.memo(function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive}:{
+ entry:RewardEntry;scoreOptions:Intl.NumberFormatOptions;
+} & Pick<RewardBlockProps,'verifiedLabel'|'verifiedMark'|'verifiedMarkInteractive'>){
  const detail=entry.detail;
- return <Tag className='hig-reward-row' data-you={entry.you||undefined}>
+ return <>
   <span className='hig-reward-rank hig-number'>{entry.rank}</span>
   <span className='hig-reward-avatar' aria-hidden='true'>{typeof entry.avatar==='string'?<img src={entry.avatar} alt=''/>:entry.avatar??entry.name.slice(0,2)}</span>
   <span className='hig-reward-identity'>
@@ -136,8 +140,8 @@ function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInt
    {detail!=null&&detail!==''&&<span className='hig-number'>{typeof detail==='string'?detail:<SwapNumber {...figureProps(detail)}/>}</span>}
   </span>
   <span className='hig-reward-score'><AnimatedNumberReadout value={entry.score} options={entry.scoreOptions??scoreOptions}/></span>
- </Tag>;
-}
+ </>;
+});
 function Onward({link,className,children}:{link:RewardLink;className:string;children:React.ReactNode}){
  return link.href!==undefined?<a className={className} href={link.href} target={link.target} rel={link.target==='_blank'?'noopener noreferrer':undefined} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></a>
   :<button type='button' className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
@@ -148,14 +152,21 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
  const amount=promo?.amount,money=promo?.amountOptions??wholeDollars,share=promo?rewardProgress(typeof amount==='string'?null:amount,promo.goal):null;
  const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
  const figure=promo?.figure!=null&&promo.figure!==false?promo.figure:amount===undefined?null:typeof amount==='string'?amount:<AnimatedNumberReadout value={amount} options={money}/>;
- const pinned=you&&<Standing as='div' entry={{...you,you:true}} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
+ const standings=React.useMemo(()=>{
+  if(loading||!entries.length)return null;
+  const renderStanding=(entry:RewardEntry)=><li key={entry.id} className='hig-reward-row' data-you={entry.you||undefined}><Standing entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/></li>;
+  return entries.length>50?<RowWindow as='ol' items={entries} itemKey='id' className='hig-reward-rows' rowHeight={64} gap={2}
+    tabThrough={verifiedMarkInteractive&&verifiedMark!=null?hasVerifiedMark:false} renderRow={renderStanding}/>:
+    <ol className='hig-reward-rows'>{entries.map(renderStanding)}</ol>;
+ },[loading,entries,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive]);
+ const pinned=you&&<div className='hig-reward-row' data-you><Standing entry={you} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/></div>;
  return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
   {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
   {promo&&<section className='hig-surface hig-reward-promo'>
    <div className='hig-reward-promo-top'><span className='hig-reward-eyebrow hig-number'>{promo.eyebrow}</span>{promo.rules&&<Onward link={promo.rules} className='hig-reward-rules'>{promo.rules.label}<SwapIcon name='chevron' size={16}/></Onward>}</div>
    {figure!=null&&(promo.figure!=null&&promo.figure!==false?<div className='hig-reward-amount'>{figure}</div>:<p className='hig-reward-amount'>{figure}</p>)}
    {caption!=null&&caption!==false&&caption!==''&&(typeof caption==='string'||typeof caption==='number'?<p className='hig-reward-caption hig-number'>{caption}</p>:<div className='hig-reward-caption hig-number'>{caption}</div>)}
-   {promo.goal!==undefined&&<div className='hig-reward-track' aria-hidden='true'><span style={{width:`${(share??0)*100}%`}}/></div>}
+   {promo.goal!==undefined&&<div className='hig-reward-track' aria-hidden='true'><span style={{'--hig-reward-fill':`${(share??0)*100}%`} as React.CSSProperties}/></div>}
    {(promo.headline||promo.description)&&<p className='hig-reward-summary'>{promo.headline&&<strong>{promo.headline}</strong>}{promo.headline&&promo.description?' ':null}{promo.description}</p>}
    {(promo.streak||promo.drawing)&&<dl className="hig-reward-streak">
     {promo.streak&&<>
@@ -174,7 +185,7 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    <div className='hig-reward-list' aria-busy='true'>{skeletons.map(index=><div key={index} className='hig-skeleton hig-reward-skeleton' aria-hidden='true'/>)}</div>
   </>:(entries.length>0||listTitle||scoreTitle)&&<div className='hig-reward-list'>
    {(listTitle||scoreTitle)&&<div className='hig-reward-columns hig-number'><span>{listTitle}</span><span>{scoreTitle}</span></div>}
-   {entries.length>0&&<ol className='hig-reward-rows'>{entries.map(entry=><Standing key={entry.id} entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>)}</ol>}
+   {standings}
   </div>}
   {pagination&&<div className='hig-reward-pagination'>
    {pagination.previous?<Button intent='secondary' disabled={pagination.previous.disabled} onClick={pagination.previous.onSelect}>{pagination.previous.label}</Button>:<span/>}

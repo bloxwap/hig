@@ -59,3 +59,16 @@ it('announces description changes once and coalesces duplicate ids with error pr
   expect(announce).toHaveBeenCalledTimes(2);expect(announce).toHaveBeenLastCalledWith('Failed. Retry now',{queue:false});
  }finally{Object.defineProperty(Platform,'OS',descriptor);AccessibilityInfo.announceForAccessibilityWithOptions=original;}
 });
+
+it('formats only changed persistent notice rows on host updates',()=>{
+ const format=jest.fn((message,dismiss)=>dismiss+' '+message);
+ const messages={dismissNotice:format}, onDismiss=jest.fn();
+ const notices=Array.from({length:40},(_,i)=>({id:String(i),message:'Notice '+i,severity:'info'}));
+ const board=items=>h(HIGProvider,{messages},h(Toast,{notices:items,onDismiss}));
+ mount(board(notices));
+ format.mockClear();
+ act(()=>root.update(board(notices.map(n=>({...n})))));
+ expect(format).toHaveBeenCalledTimes(0);
+ act(()=>root.update(board([{...notices[0],message:'Changed'},...notices.slice(1)])));
+ expect(format).toHaveBeenCalledTimes(1);
+});

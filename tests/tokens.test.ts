@@ -11,6 +11,25 @@ describe('platform contracts',()=>{
  it('checks approved text pairs',()=>{expect(contrast.pairs.every(p=>p.aa)).toBe(true);});
  it('checks all 12 non-text indicator pairs at 3:1',()=>{expect(contrast.nonText).toHaveLength(12);for(const pair of contrast.nonText){expect(pair.passes,`${pair.fg}/${pair.bg}: ${pair.ratio}`).toBe(true);expect(pair.ratio).toBeGreaterThanOrEqual(3);}});
  it('preserves unknown/zero/locale',()=>{expect(formatNumber(null)).toBe('—');expect(formatNumber(0)).toBe('0');expect(formatNumber(1234.5,'de-DE')).toBe('1.234,5');});
+ it('reads current formatting options when a caller reuses the object',()=>{
+  const options = {maximumFractionDigits: 2};
+  expect(formatNumber(1.234, 'en-US', options)).toBe('1.23');
+  options.maximumFractionDigits = 1;
+  expect(formatNumber(1.234, 'en-US', options)).toBe('1.2');
+  options.maximumFractionDigits = NaN;
+  expect(formatNumber(1.234, 'en-US', options)).toBe('—');
+ });
+ it('respects inherited, non-enumerable and accessor options',()=>{
+  const inherited = Object.create({maximumFractionDigits: 0});
+  const hidden = Object.defineProperty({}, 'maximumFractionDigits', {value: 1});
+  let digits = 2;
+  const dynamic = {get maximumFractionDigits(){return digits;}};
+  expect(formatNumber(1.234, 'en-US', inherited)).toBe('1');
+  expect(formatNumber(1.234, 'en-US', hidden)).toBe('1.2');
+  expect(formatNumber(1.234, 'en-US', dynamic)).toBe('1.23');
+  digits = 0;
+  expect(formatNumber(1.234, 'en-US', dynamic)).toBe('1');
+ });
  it('requires registered native faces',()=>{expect(()=>nativeFont({version:'0.1.2',faces:[]},'Bloxwap Sans',400)).toThrow();});
 });
 describe('token CSS roles (#65, #66)',()=>{

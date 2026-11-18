@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.2
+
+- Improve React and React Native rendering performance for animated readouts, charts, lists, and pickers.
+- Apply consistent 16-pixel horizontal padding to gesture sheets, token action progress, and nested sheets.
+- Improve documentation startup and search performance.
+
 ## 0.9.1
 
 - Add PositionsBlock and ClaimRewardBlock on React and React Native. The reward flow shows the prize and destination, then opens ConfirmBlock before crediting the wallet.

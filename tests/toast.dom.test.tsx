@@ -5,6 +5,7 @@ import {afterEach,beforeAll,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,render,screen,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {Toaster,toast,dismissToast} from '../packages/hig/react/src/toast';
+import {Toast} from '../packages/hig/react/src/status';
 import {Button} from '../packages/hig/react/src/button';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 // jsdom has no pointer capture, which Sonner asks for on every press inside a toast.
@@ -136,4 +137,17 @@ describe('web toasts: the unified API over Sonner',()=>{
   expect(css).toContain("[data-hig-motion='reduced'] [data-sonner-toast],[data-hig-motion='reduced'] [data-sonner-toast] > * { transition:none!important;animation:none!important; }");
   expect(css).toContain('.hig-toast-item[data-described] { border-radius:22px;padding-block:8px; }');
  });
+});
+
+it('formats only changed persistent notice rows on host updates',()=>{
+ const format=vi.fn((message:string,dismiss:string)=>dismiss+' '+message);
+ const messages={dismissNotice:format}, onDismiss=vi.fn();
+ const notices=Array.from({length:40},(_,i)=>({id:String(i),message:'Notice '+i,severity:'info' as const}));
+ const board=(items:typeof notices)=><HIGProvider messages={messages}><Toast notices={items} onDismiss={onDismiss}/></HIGProvider>;
+ const view=render(board(notices));
+ format.mockClear();
+ view.rerender(board(notices.map(n=>({...n}))));
+ expect(format).toHaveBeenCalledTimes(0);
+ view.rerender(board([{...notices[0],message:'Changed'},...notices.slice(1)]));
+ expect(format).toHaveBeenCalledTimes(1);
 });

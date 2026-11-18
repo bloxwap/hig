@@ -7,6 +7,9 @@ import {PresetGroup,type PresetOption} from '../preset-group.js';
 import {AnimatedNumberReadout} from '../animated-number.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {SwapIcon} from './swap/shared.js';
+const PickerHeader = React.memo(ScreenHeader);
+const PickerAction = React.memo(Button);
+
 /** The row that opens the host's own entry of a value no quick choice holds, such as a keypad. */
 export interface PresetPickerCustom {
  /** The row's text: Custom amount. */
@@ -92,14 +95,14 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const {messages}=useHIG();
  const customSelected=custom?(custom.selected??custom.value!==undefined):false;
  return <section {...rest} className={`hig-preset-picker${className?` ${className}`:''}`} data-intent={intent==='destructive'?intent:undefined}>
-  {title!==undefined&&<ScreenHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
+  {title!==undefined&&<PickerHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
   <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
   {custom&&<button type='button' className='hig-swap-setting' aria-pressed={customSelected} aria-label={custom.accessibilityLabel} data-testid={custom.testID} onClick={custom.onSelect}><span>{custom.label}</span>{custom.value!==undefined?<span className='hig-swap-setting-value'>{custom.value}<SwapIcon name='chevron' size={16}/></span>:<SwapIcon name='chevron' size={16}/>}<PressDecoration kind='row'/></button>}
   {presets.length>0&&<PresetGroup<T> label={presetsLabel??title} options={presets} value={selected} onValueChange={onPresetChange} columns={columns} selectedIntent={intent} suppressFeedback={suppressFeedback}/>}
   {children}
   <div className='hig-target-actions'>
-   {onCancel&&<Button fullWidth intent='secondary' suppressFeedback={suppressFeedback} data-testid={cancelTestID} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</Button>}
-   <Button fullWidth intent={intent} disabled={submitDisabled} busy={busy} suppressFeedback={suppressFeedback} data-testid={submitTestID} onClick={onSubmit}>{submitLabel}</Button>
+   {onCancel&&<PickerAction fullWidth intent='secondary' suppressFeedback={suppressFeedback} data-testid={cancelTestID} onClick={onCancel}>{cancelLabel??messages.cancel??en.cancel}</PickerAction>}
+   <PickerAction fullWidth intent={intent} disabled={submitDisabled} busy={busy} suppressFeedback={suppressFeedback} data-testid={submitTestID} onClick={onSubmit}>{submitLabel}</PickerAction>
   </div>
  </section>;
 }

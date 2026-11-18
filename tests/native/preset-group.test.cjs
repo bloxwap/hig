@@ -103,3 +103,22 @@ it('draws each label on one line that shrinks to fit its column instead of wrapp
 it('takes the selected intent the host gives it',()=>{
  expect(chips(mount({value:-1,selectedIntent:'destructive'}))[5].props.intent).toBe('destructive');
 });
+
+it('rereads only changed chips and uses the latest selection callback',()=>{
+ const reads=new Set();
+ const options=Array.from({length:40},(_,value)=>({value,get label(){reads.add(value);return String(value);}}));
+ const first=jest.fn(),next=jest.fn();
+ const tree=mount({options,value:0,onValueChange:first,columns:5});
+ reads.clear();
+ act(()=>root.update(h(HIGProvider,{},h(PresetGroup,{options,value:1,onValueChange:next,columns:5}))));
+ expect([...reads]).toEqual([0,1]);
+ press(chips(tree)[39]);
+ expect(next).toHaveBeenCalledWith(39);
+ expect(first).not.toHaveBeenCalled();
+});
+
+it('validates replacement choices even when the selection is unchanged',()=>{
+ const option={value:10,label:'Ten'};
+ mount({options:[option],value:10});
+ expect(()=>act(()=>root.update(h(HIGProvider,{},h(PresetGroup,{options:[option,option],value:10}))))).toThrow('Choices requires unique keys');
+});

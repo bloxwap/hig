@@ -66,3 +66,16 @@ describe('Badge tone and dot',()=>{
   expect(RN.StyleSheet.flatten(chip.props.style)).toMatchObject({flexDirection:'row',backgroundColor:`${colors.negative}26`});
  });
 });
+
+it('reads custom children for a busy name only when the host has not supplied one',()=>{
+ const textContent=require('../../packages/hig/native/src/text-content');
+ const reading=jest.spyOn(textContent,'plainText');
+ const children=React.createElement(RN.Text,null,'Submit trade');
+ const button=props=>React.createElement(Button,{contentMode:'custom',...props},children);
+ for(let i=0;i<20;i++)render(button({disabled:i%2===0}));
+ render(button({busy:true,accessibilityLabel:'Submitting'}));
+ expect(reading).toHaveBeenCalledTimes(0);
+ const tree=render(button({busy:true}));
+ expect(reading).toHaveBeenCalledTimes(1);
+ expect(control(tree).props.accessibilityLabel).toContain('Submit trade');
+});

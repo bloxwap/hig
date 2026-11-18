@@ -1,7 +1,7 @@
 import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts';
 import {useAsyncResult} from './async-result.js';
-import React,{useContext,useEffect,useMemo,useRef,useState} from 'react';
-import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
+import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {Animated,BackHandler,Easing,Platform,Pressable,StyleSheet,View,type StyleProp,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
 import {Raised,useColors,useControllable,useHIG,useMessages,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
@@ -11,12 +11,12 @@ import {figureProps} from './figure.js';
 import {Toast,useTransientNotice} from './status.js';
 import {VerticalAddress,addressKind} from './data.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
-import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapHostContext,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
+import {DownIcon,FlipIcon,MenuIcon,ResetIcon,SmallChevron,SwapCapsule,SwapKeypad,SwapNumberText,TokenArt} from './swap-parts.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapPicker,SwapSettings} from './swap-views.js';
 import {addressColor,applyAmountKey,formatPercent,shortAddress,swapAction,swapParentView,testAmount,unitsToEntry,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
 export {swapAction,swapParentView,type SwapAction,type SwapArtwork,type SwapChain,type SwapDenomination,type SwapFee,type SwapFigure,type SwapToken,type SwapView,type SwapWallet} from './swap-shared.js';
-/** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet, and sizes itself, so the panel does not animate its own height. */
+/** What a host surface lends the panel. A sheet passes its backend's list, so list drags hand off to the sheet,. */
 export {SwapHostContext} from './swap-parts.js';
 export {SwapAmountCard,SwapPill,type SwapAmountCardProps,type SwapPillProps} from './swap-amount-card.js';
 /** A fixed place the assets go, in place of a token the user picks: a wallet, a staking pool, a trading account. Shown as a compact To card with no amount. */
@@ -135,7 +135,6 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  const [isReceiving,setReceiving]=useControllable(receiving,false,onReceivingChange);
  // `amount` seeds the first render too, in the default denomination at the initial From token's price.
  const [entry,setEntry]=useState(()=>amount===undefined?'0':unitsToEntry(boundedUnits(amount),defaultMode,from?.price??0));const [fromMode,setFromMode]=useState(defaultMode);const [toMode,applyToMode]=useState(defaultMode);
- const host=useContext(SwapHostContext);
  const [ownView,keepView]=useState<SwapView>('main');const view=viewProp??ownView;
  const show=(next:SwapView)=>{if(next===view)return;if(viewProp===undefined)keepView(next);onViewChange?.(next);};
  const back=()=>show(swapParentView(view));
@@ -230,6 +229,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   const shown=side==='from'?input:mode==='token'?receivedUnits:receivedUsd;
   const options={minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false};
   const prefix=mode==='usd'?'$':'',suffix=side==='from'&&entry.endsWith('.')?'.':'';
+  const formattedEntry=side==='from'&&mode==='token'&&!(showReceive&&receive)?localizeDecimal(entry,locale):undefined;
   return <View testID={`swap-card-${side}`} style={{backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'}}><Raised>
    <View>
     {/* A locked side shows its token but offers no picker. */}
@@ -242,8 +242,8 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
     {/* The slot above is the accessible control for the picker; this larger target is for touch only. */}
     {locked?null:<Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>!submitting&&show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{alignItems:'center',gap:8,paddingTop:4,paddingHorizontal:16,paddingBottom:20}}>
-     <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:side==='from'&&mode==='token'?localizeDecimal(entry,locale):`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
-      <AnimatedNumberReadout value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+     <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:formattedEntry??`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
+      <AnimatedNumberReadout value={shown} formattedValue={formattedEntry} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
      </View>
      {denominationSwitch&&<SwapCapsule disabled={submitting} label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>!submitting&&(side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd'))}>
       <Text accessible={false} style={[small,{opacity:0.5}]}>=</Text>
@@ -299,31 +299,29 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   :view==='from'?<SwapPicker side={view} onBack={back} tokens={fromTokens??tokens} loading={fromTokensLoading} chains={chainList} hotTokenIds={hotTokenIds} selected={from} onSelect={token=>{if(!submitting)setFrom(token);}} wallet={wallet} onConnect={submitting?undefined:onConnect} onDisconnect={submitting?undefined:onDisconnect} receiving={isReceiving} onReceivingChange={receive?value=>{if(!submitting)setReceiving(value);}:undefined}/>
   :view==='to'?<SwapPicker side={view} onBack={back} tokens={tokens} chains={chainList} hotTokenIds={hotTokenIds} selected={to} onSelect={token=>{if(!submitting)setTo(token);}} wallet={wallet} recipient={recipient} onRecipientChange={value=>{if(!submitting)onRecipientChange?.(value);}} onScanRecipient={submitting?undefined:onScanRecipient}/>
   :<SwapSettings view={view} onViewChange={show} onBack={back} denomination={defaultMode} onDenominationChange={denominationSwitch?changeDenomination:undefined} slippage={slippage} onSlippageChange={value=>{if(!submitting)onSlippageChange?.(value);}} fee={fee} fees={fees} quoteLoading={quoteLoading}>{settings}</SwapSettings>;
- return <View testID='swap-panel' style={[{direction,width:'100%',maxWidth:448,alignSelf:'center'},style]}><SwapStage view={view} animateHeight={host.animateHeight!==false}>{body}</SwapStage></View>;
+ return <View testID='swap-panel' style={[{direction,width:'100%',maxWidth:448,alignSelf:'center'},style]}><SwapStage view={view}>{body}</SwapStage></View>;
 }
 const viewDepth=(view:SwapView)=>view==='main'?0:view==='slippage'||view==='fees'?2:1;
 const stageEasing=Easing.bezier(0.22,1,0.36,1);
-/** Shows one view at a time. A push slides in from the trailing side and a pop from the leading side while the container height eases to the new view; reduced motion swaps at once. */
-function SwapStage({view,animateHeight,children}:React.PropsWithChildren<{view:SwapView;animateHeight:boolean}>){
+/** A push enters from the trailing side and a pop from the leading side. Content determines the stage height. */
+function SwapStage({view,children}:React.PropsWithChildren<{view:SwapView}>){
  const {reducedMotion,direction}=useHIG();
- const shown=useRef(view),travel=useRef(0),slide=useRef(new Animated.Value(1)).current,height=useRef(new Animated.Value(0)).current,measured=useRef<number|null>(null);
- const [sized,setSized]=useState(false);
+ const shown=useRef(view),travel=useRef(0);
+ const [slide]=useState(()=>new Animated.Value(1));
  if(shown.current!==view)travel.current=(viewDepth(view)>=viewDepth(shown.current)?1:-1)*(direction==='rtl'?-1:1);
  useEffect(()=>{
-  if(shown.current===view)return;shown.current=view;
+  const changed=shown.current!==view;
+  shown.current=view;
   if(reducedMotion){slide.setValue(1);return;}
-  slide.setValue(0);Animated.timing(slide,{toValue:1,duration:260,easing:stageEasing,useNativeDriver:Platform.OS!=='web'}).start();
+  if(!changed)return;
+  slide.setValue(0);
+  const animation=Animated.timing(slide,{toValue:1,duration:260,easing:stageEasing,useNativeDriver:Platform.OS!=='web',isInteraction:false});
+  animation.start();
+  return ()=>animation.stop();
  },[view,reducedMotion,slide]);
- const sizing=animateHeight&&!reducedMotion;
- const onLayout=(event:LayoutChangeEvent)=>{
-  const next=event.nativeEvent.layout.height;if(!sizing||!(next>0))return;
-  if(measured.current===null)height.setValue(next);else if(next!==measured.current)Animated.timing(height,{toValue:next,duration:260,easing:stageEasing,useNativeDriver:false}).start();
-  measured.current=next;if(!sized)setSized(true);
- };
- const fitted=sizing&&sized;
- return <Animated.View testID='swap-stage' style={fitted?{height,overflow:'hidden'}:undefined}>
-  <Animated.View onLayout={onLayout} style={[fitted?{position:'absolute',left:0,right:0,top:0}:null,{opacity:slide,transform:[{translateX:slide.interpolate({inputRange:[0,1],outputRange:[travel.current*48,0]})}]}]}>{children}</Animated.View>
- </Animated.View>;
+ return <View testID='swap-stage'>
+  <Animated.View style={{opacity:slide,transform:[{translateX:slide.interpolate({inputRange:[0,1],outputRange:[travel.current*48,0]})}]}}>{children}</Animated.View>
+ </View>;
 }
 
 /** @deprecated Renamed `SwapBlock`. The old name keeps working until the next major release. */

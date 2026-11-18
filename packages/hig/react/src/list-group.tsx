@@ -3,8 +3,9 @@ import { ArrowUpRight } from '@bloxwap/icons/react/arrow-up-right';
 import { Check } from '@bloxwap/icons/react/check';
 import { ChevronRight } from '@bloxwap/icons/react/chevron-right';
 import React,{Children,forwardRef,useId,useRef} from 'react';
+import {useBusySpinner} from './use-busy-spinner.js';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {PressDecoration,useControllable,useHIG} from './provider.js';
+import {PressDecoration,useControllable,useBusyLabel} from './provider.js';
 /** A text action on the trailing edge of a `ListGroup` heading, such as “Cancel all”. */
 export interface ListGroupAction {
  /** Host text drawn as the action and naming it. */
@@ -79,24 +80,25 @@ const external=<ArrowUpRight size={20} className='hig-list-row-chevron' data-gly
 const check=<Check size={20} className='hig-list-row-check'/>;
 /** One row of a `ListGroup`: the label leads; a value, icons, a badge or a control trail. With `onSelect` or `href` the whole row is one target and shows a disclosure chevron; with `checked` or `onCheckedChange` the whole row is a switch; otherwise the row is static, so a control in `trailing` is its only target. The ref reaches the row's element. */
 export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<HTMLElement>>=/* @__PURE__ */forwardRef<HTMLElement,ListRowProps>(function ListRow({label,description,tone,leading,value,valueLabel,valueTone,trailing,onSelect,href,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,className,...rest},ref){
- const {messages}=useHIG();const descriptionId=useId();const input=useRef<HTMLInputElement>(null);
+ const providerBusy=useBusyLabel();const descriptionId=useId();const input=useRef<HTMLInputElement>(null);
  const [on,setOn]=useControllable(checked,defaultChecked??false,onCheckedChange);
  const pressable=onSelect!=null||href!=null;
  const toggles=!pressable&&(checked!==undefined||defaultChecked!==undefined||onCheckedChange!=null);
  const text=typeof value==='string'||typeof value==='number';
- const busyText=busyLabel??messages.busy??en.busy;
+ const busyText=busyLabel??providerBusy??en.busy;
  const labelId=useId();
  // A switch row's input is named by this visible label (aria-labelledby), so the name is drawn and read once.
  const name=<span id={toggles?labelId:undefined} className='hig-list-row-label' data-tone={tone}>{label}</span>;
  const glyphKind=disclosure??(selected!==undefined?'none':'chevron');
- const glyph=busy&&!toggles?<span className='hig-button-spinner hig-list-row-spinner' aria-hidden='true'/>:selected?check:pressable?(glyphKind==='chevron'?chevron:glyphKind==='external'?external:null):null;
+ const showSpinner=useBusySpinner(!!busy&&!toggles);
+ const glyph=showSpinner?<span className='hig-button-spinner hig-list-row-spinner' aria-hidden='true'/>:selected?check:pressable?(glyphKind==='chevron'?chevron:glyphKind==='external'?external:null):null;
  const swatch=toggles?<label className='hig-choice hig-switch'><input ref={input} role='switch' type='checkbox' checked={on} disabled={disabled} aria-busy={busy||undefined} aria-labelledby={labelId} aria-describedby={shown(description)?descriptionId:undefined} onChange={event=>{if(!busy)setOn(event.target.checked);}}/></label>:null;
  const content=<>
   {leading!=null&&<span className='hig-list-row-leading' aria-hidden='true'>{leading}</span>}
   {shown(description)?<span className='hig-list-row-text'>{name}<span id={descriptionId} className='hig-list-row-description'>{description}</span></span>:name}
   {value!=null&&<span className='hig-list-row-value' data-tone={text&&valueTone&&valueTone!=='muted'?valueTone:undefined}>{!text&&valueLabel?<><span aria-hidden='true'>{value}</span><span className='hig-sr-only'>{valueLabel}</span></>:value}</span>}
   {(trailing!=null||swatch)&&<span className='hig-list-row-trailing'>{trailing}{swatch}</span>}
-  {glyph}
+  {busy&&!toggles?<span aria-hidden="true" className="hig-list-row-busy-slot">{glyph}</span>:glyph}
   {busy&&!toggles&&busyText?<span role='status' className='hig-busy hig-sr-only'> · {busyText}</span>:null}
  </>;
  const classes=`hig-list-row${className?` ${className}`:''}`;

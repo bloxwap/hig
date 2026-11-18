@@ -1,4 +1,4 @@
-import {describe,expect,it} from 'vitest';
+import {describe,expect,it,vi} from 'vitest';
 import {tokens} from '../packages/hig/tokens/src/index';
 import {numberFlowBezier,numberFlowBezierAt,numberFlowCurve,numberFlowDefaults,numberFlowDelta,numberFlowDeltas,numberFlowDigitLength,numberFlowEasingCSS,numberFlowEasingSamples,numberFlowGlyph,numberFlowLoopStart,numberFlowMaxDuration,numberFlowNeutral,resolveNumberFlowTiming,resolveNumberFlowTimings,sampleNumberFlowEasing,type NumberFlowPlace} from '../packages/hig/contracts/src/number-flow';
 import {createAnimatedNumberModel,createFormattedAnimatedNumberModel,numberFlowAnchorSide,numberFlowPlaces,numberFlowTokenKeys} from '../packages/hig/react/src/animated-number-model';
@@ -7,6 +7,22 @@ import {createAnimatedNumberModel,createFormattedAnimatedNumberModel,numberFlowA
 const places=(text:string):NumberFlowPlace[]=>{const [whole,fraction='']=text.split('.');return [...Array.from(whole,(digit,index)=>({key:`i${whole.length-1-index}`,digit:Number(digit),place:whole.length-1-index})),...Array.from(fraction,(digit,index)=>({key:`f${index}`,digit:Number(digit),place:-1-index}))];};
 
 describe('how far a place turns',()=>{
+ it.each([3,8,9,24])('matches re-ordered keys, missing keys and repeated previous keys for %i places',count=>{
+  const previous=places('1'.repeat(count));
+  previous[count-1]={...previous[0],digit:7};
+  const next=[{...previous[1],digit:3},{...previous[0],digit:9},{key:'new',place:null,digit:4}];
+  expect([...numberFlowDeltas(previous,next,{trend:1}).values()]).toEqual([2,2,4]);
+ });
+ it.each([6,12])('matches keyed turns when unique places grow, shrink or move at %i digits',count=>{
+  const previous=places('1'.repeat(count)+'.39');
+  const grown=places('2'.repeat(count+1)+'.48');
+  const shrunk=places('3'.repeat(count-1)+'.5');
+  const reordered=[...grown].reverse();
+  for(const next of [grown,shrunk,reordered]){
+   const options={trend:1,continuous:true};
+   expect(numberFlowDeltas(previous,next,{...options,uniqueKeys:true})).toEqual(numberFlowDeltas(previous,next,options));
+  }
+ });
  it('takes the short way its own digits point when the change has no direction',()=>{
   expect(numberFlowDelta(2,7,0)).toBe(5);expect(numberFlowDelta(7,2,0)).toBe(-5);expect(numberFlowDelta(4,4,0)).toBe(0);
  });
@@ -47,6 +63,19 @@ describe('the turns of a whole reading',()=>{
   expect(Object.fromEntries(numberFlowDeltas(places('00'),places('59'),{trend:-1,digits:{1:{max:5}}}))).toEqual({i1:-1,i0:-1});
   expect(Object.fromEntries(numberFlowDeltas(places('00'),places('59'),{trend:-1}))).toEqual({i1:-5,i0:-1});
  });
+ it('aligns surviving places after a leading digit arrives, including a change at the other end',()=>{
+  const previous=places('2'.repeat(160)),next=places('1'+'2'.repeat(159)+'3');
+  const previousSearch=vi.spyOn(previous,'findIndex'),nextSearch=vi.spyOn(next,'findIndex');
+  expect(numberFlowLoopStart(previous,next)).toBe(160);
+  expect(numberFlowLoopStart(next,previous)).toBe(160);
+  expect(previousSearch.mock.calls.length+nextSearch.mock.calls.length).toBeLessThanOrEqual(6);
+ });
+ it('finds a changed place across reordered and repeated places',()=>{
+  const one={key:'ones',place:0,digit:1},fraction={key:'fraction',place:-1,digit:2};
+  const previous=[one,fraction,{...one,digit:3}],next=[{...one,digit:3},one,fraction];
+  expect(numberFlowLoopStart(previous,next)).toBeUndefined();
+  expect(numberFlowLoopStart(previous,[...next,{...fraction,place:4}])).toBe(4);
+ });
  it('loops the places below the highest one that changed when the figure is continuous',()=>{
   expect(numberFlowLoopStart(places('120'),places('130'))).toBe(1);expect(numberFlowLoopStart(places('120'),places('120'))).toBeUndefined();
   // 120 to 130 counting up: the tens moves one, and the ones, unchanged, goes once round.
@@ -59,19 +88,20 @@ describe('the turns of a whole reading',()=>{
 });
 
 describe('timings',()=>{
- it('defaults to NumberFlow’s: 900 ms on its curve to move, 450 ms ease-out to fade, and the roll follows the slide',()=>{
+ it('defaults to NumberFlow’s: 500 ms on its curve to move, 250 ms ease-out to fade, and the roll follows the slide',()=>{
   expect(resolveNumberFlowTimings({})).toEqual({transform:numberFlowDefaults.transform,spin:numberFlowDefaults.transform,opacity:numberFlowDefaults.opacity});
-  expect(numberFlowDefaults).toEqual({transform:{duration:900,easing:'number-flow'},opacity:{duration:450,easing:'ease-out'}});
+  expect(numberFlowDefaults).toEqual({transform:{duration:500,easing:'number-flow'},opacity:{duration:250,easing:'ease-out'}});
  });
  it('lets `duration` set the movement and half of it the fade, and each timing override its part',()=>{
   expect(resolveNumberFlowTimings({duration:320})).toMatchObject({transform:{duration:320,easing:'number-flow'},spin:{duration:320},opacity:{duration:160,easing:'ease-out'}});
   const timings=resolveNumberFlowTimings({duration:320,spinTiming:{duration:500,easing:'ease-out'},transformTiming:{easing:'standard'},opacityTiming:{duration:180}});
   expect(timings).toEqual({transform:{duration:320,easing:'standard'},spin:{duration:500,easing:'ease-out'},opacity:{duration:180,easing:'ease-out'}});
   // The roll follows `transformTiming` until `spinTiming` is given.
-  expect(resolveNumberFlowTimings({transformTiming:{duration:700,easing:[0.2,0,0,1]}}).spin).toEqual({duration:700,easing:[0.2,0,0,1]});
+  expect(resolveNumberFlowTimings({transformTiming:{duration:700,easing:[0.2,0,0,1]}}).spin).toEqual({duration:500,easing:[0.2,0,0,1]});
  });
  it('keeps durations between zero and the cap and ignores what it cannot use',()=>{
-  const fallback={duration:900,easing:'number-flow'} as const;
+  expect(resolveNumberFlowTimings({duration:3000})).toMatchObject({transform:{duration:500},spin:{duration:500},opacity:{duration:250}});
+  const fallback={duration:500,easing:'number-flow'} as const;
   expect(resolveNumberFlowTiming({duration:-5},fallback).duration).toBe(0);expect(resolveNumberFlowTiming({duration:1e9},fallback).duration).toBe(numberFlowMaxDuration);
   expect(resolveNumberFlowTiming({duration:Number.NaN,easing:'bounce' as never},fallback)).toEqual(fallback);
   expect(resolveNumberFlowTiming({easing:[2,0,0,1]},fallback).easing).toBe('number-flow');expect(resolveNumberFlowTiming({easing:[0.3,-0.4,0.6,1.4]},fallback).easing).toEqual([0.3,-0.4,0.6,1.4]);
@@ -135,4 +165,26 @@ describe('the web model as NumberFlow sees it',()=>{
   for(const key of ['pre:0','affix:prefix','digit:number:0','digit:number:3','sep:number:2'])expect(numberFlowAnchorSide(key)).toBe(1);
   for(const key of ['sep:number:-1','digit:number:-1','post:0','affix:suffix','affix:stale','digit:exponent:0','sep:exponent:0'])expect(numberFlowAnchorSide(key)).toBe(-1);
  });
+});
+
+it('builds ASCII host-formatted reels without probing locale glyphs',()=>{
+ const Original=Intl.NumberFormat;
+ const formats=vi.spyOn(Intl,'NumberFormat').mockImplementation(function(locale,options){return new Original(locale,options);});
+ try{
+  const model=createFormattedAnimatedNumberModel('USD 12.05','ar-EG',true);
+  expect(model.tokens.filter(token=>token.digit).map(token=>token.value)).toEqual([1,2,0,5]);
+  expect(formats).not.toHaveBeenCalled();
+  const mixed=createFormattedAnimatedNumberModel('📈 ١2٣4','ar-EG',true);
+  expect(mixed.tokens.map(token=>[token.key,token.text])).toEqual([['literal:0','📈 '],['digit:number:3','١'],['digit:number:2','2'],['digit:number:1','٣'],['digit:number:0','4']]);
+  expect(createFormattedAnimatedNumberModel('١ and 2','ar-EG',true).tokens.filter(token=>token.digit).map(token=>token.value)).toEqual([1,2]);
+ }finally{formats.mockRestore();}
+});
+
+it('reuses the digit table across formats while keeping different numbering systems independent',()=>{
+ const decimal=createAnimatedNumberModel(12,'en-US',{maximumFractionDigits:0});
+ const currency=createAnimatedNumberModel(12,'en-US',{style:'currency',currency:'USD'});
+ expect(currency.digits).toBe(decimal.digits);
+ const arabic=createAnimatedNumberModel(12,'en-US',{numberingSystem:'arab'});
+ expect(arabic.digits?.[1]).toBe('١');
+ expect(arabic.digits).not.toBe(decimal.digits);
 });

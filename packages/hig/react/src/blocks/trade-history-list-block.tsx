@@ -2,6 +2,7 @@
 import { ArrowDown } from '@bloxwap/icons/react/arrow-down';
 import { ArrowUp } from '@bloxwap/icons/react/arrow-up';
 import { ChevronRight } from '@bloxwap/icons/react/chevron-right';
+import {RowWindow} from '../row-window.js';
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
@@ -70,28 +71,43 @@ export interface TradeHistoryListBlockProps extends Omit<React.HTMLAttributes<HT
 }
 const pnlFormat={style:'currency',currency:'USD',signDisplay:'exceptZero',minimumSignificantDigits:4,maximumSignificantDigits:4} as const;
 const skeletons=[0,1,2,3];
+function formatLeverageText(leverage:number|null|undefined,locale?:string){
+ return leverage==null?'':`${formatNumber(leverage,locale)}×`;
+}
+function sideText(label:string,leverage:string,note?:string){
+ return `${label}${leverage?' '+leverage:''}${note?' '+note:''}`;
+}
 /** How a row reads its side: `Short 20×`, or `Short` without leverage. */
-export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{leverageNote?:string},labels:Pick<TradeHistoryListLabels,'long'|'short'>,locale?:string):string=>`${trade.side==='long'?labels.long:labels.short}${trade.leverage!=null?` ${formatNumber(trade.leverage,locale)}×`:''}${trade.leverageNote?` ${trade.leverageNote}`:''}`;
+export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{leverageNote?:string},labels:Pick<TradeHistoryListLabels,'long'|'short'>,locale?:string):string=>sideText(trade.side==='long'?labels.long:labels.short,formatLeverageText(trade.leverage,locale),trade.leverageNote);
 const arrow=(side:'long'|'short')=>(side==='long'?<ArrowUp size={16}/>:<ArrowDown size={16}/>);
 const chevron=<ChevronRight size={20} className='hig-trade-row-chevron'/>;
-/** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
-export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,stickyHeader,headingId,className,...rest}:TradeHistoryListBlockProps){
+const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOptions}:{
+ trade:TradeHistoryItem;long:string;short:string;onSelect?:TradeHistoryListBlockProps['onSelect'];pnlOptions:Intl.NumberFormatOptions;
+}){
  const locale=useNumberLocale();const present=usePresentNumber();
- const row=(trade:TradeHistoryItem)=>{
+ const pnl=trade.pnl;
   const result=trade.pnlOptions??pnlOptions;
-  const side=tradeHistorySide(trade,labels,locale),tone=trade.pnl==null||trade.pnl===0?undefined:trade.pnl>0?'up':'down';
+  const tone=pnl==null||pnl===0?undefined:pnl>0?'up':'down';
+  const formatKey=result===pnlFormat?undefined:JSON.stringify(result);
+  const leverage=React.useMemo(()=>formatLeverageText(trade.leverage,locale),[trade.leverage,locale]);
+  const interactive=!!onSelect;
+  const spokenPnl=React.useMemo(()=>interactive?formatNumber(pnl,locale,present(result)):'',[interactive,pnl,locale,present,result,formatKey]);
+  const amount=React.useMemo(()=><AnimatedNumberReadout value={pnl} options={result}/>,[pnl,result,formatKey]);
   const content=<>
    <span className='hig-asset-row-icon' aria-hidden='true'>{typeof trade.icon==='string'?<img src={trade.icon} alt=''/>:trade.icon??trade.symbol??trade.name.slice(0,3)}</span>
-   <span className='hig-trade-row-identity'><strong>{trade.name}</strong><span className='hig-trade-row-side' data-side={trade.side}>{arrow(trade.side)}<span className='hig-sr-only'>{trade.side==='long'?labels.long:labels.short} </span>{trade.leverage!=null&&`${formatNumber(trade.leverage,locale)}×`}{trade.leverageNote&&<span className='hig-trade-row-note'>{trade.leverageNote}</span>}</span></span>
-   <span className='hig-trade-row-result'><strong className='hig-trade-pnl' data-tone={tone}><AnimatedNumberReadout value={trade.pnl} options={result}/></strong>{trade.tag?<span className='hig-trade-row-meta'><span className='hig-trade-row-tag'>{trade.tag}</span>{trade.time&&<><span aria-hidden='true'>·</span><span>{trade.time}</span></>}</span>:trade.time&&<span>{trade.time}</span>}</span>
+   <span className='hig-trade-row-identity'><strong>{trade.name}</strong><span className='hig-trade-row-side' data-side={trade.side}>{arrow(trade.side)}<span className='hig-sr-only'>{trade.side==='long'?long:short} </span>{leverage}{trade.leverageNote&&<span className='hig-trade-row-note'>{trade.leverageNote}</span>}</span></span>
+   <span className='hig-trade-row-result'><strong className='hig-trade-pnl' data-tone={tone}>{amount}</strong>{trade.tag?<span className='hig-trade-row-meta'><span className='hig-trade-row-tag'>{trade.tag}</span>{trade.time&&<><span aria-hidden='true'>·</span><span>{trade.time}</span></>}</span>:trade.time&&<span>{trade.time}</span>}</span>
    {onSelect&&chevron}
   </>;
-  return <li key={trade.id}>{onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,side,formatNumber(trade.pnl,locale,present(result)),trade.tag,trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}<PressDecoration kind='row'/></button>:<div className='hig-trade-row'>{content}</div>}</li>;
- };
+  return onSelect?<button type='button' className='hig-trade-row' aria-label={[trade.name,sideText(trade.side==='long'?long:short,leverage,trade.leverageNote),spokenPnl,trade.tag,trade.time].filter(Boolean).join(', ')} onClick={()=>onSelect(trade)}>{content}<PressDecoration kind='row'/></button>:<div className='hig-trade-row'>{content}</div>;
+});
+/** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
+export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,stickyHeader,headingId,className,...rest}:TradeHistoryListBlockProps){
+ const row=(trade:TradeHistoryItem)=><li key={trade.id}><TradeRow trade={trade} long={labels.long} short={labels.short} onSelect={onSelect} pnlOptions={pnlOptions}/></li>;
  const body=loading?<>{loadingLabel&&<p className='hig-sr-only' role='status'>{loadingLabel}</p>}<div className='hig-trade-rows' aria-busy='true'>{skeletons.map(index=><div key={index} className='hig-skeleton hig-trade-skeleton' aria-hidden='true'/>)}</div></>
   :error?<p className='hig-swap-empty hig-trade-error' role='alert'>{error}</p>
   :trades.length===0?<p className='hig-swap-empty' role='status'>{labels.emptyDescription?<><strong className='hig-trade-empty-title'>{labels.empty}</strong><span className='hig-trade-empty-description'>{labels.emptyDescription}</span></>:labels.empty}</p>
-  :<ul className='hig-trade-rows' aria-label={labels.title}>{trades.map(row)}</ul>;
+  :trades.length>50?<RowWindow items={trades} itemKey='id' className='hig-trade-rows' label={labels.title} rowHeight={56} gap={8} tabThrough={!!onSelect} renderRow={row}/>:<ul className='hig-trade-rows' aria-label={labels.title}>{trades.map(row)}</ul>;
  return <section {...rest} className={`hig-trade-history-list${className?` ${className}`:''}`}>
   <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {notice!=null&&notice!==false&&<div className='hig-trade-notice'>{notice}</div>}

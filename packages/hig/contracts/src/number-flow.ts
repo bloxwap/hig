@@ -23,9 +23,9 @@ export interface NumberFlowPlace {key:string;digit:number;place:number|null}
 /** NumberFlow's default settle, sampled at equal steps of time (number-flow, MIT). */
 export const numberFlowCurve:readonly number[]=[0,.005,.019,.039,.066,.096,.129,.165,.202,.24,.278,.316,.354,.39,.426,.461,.494,.526,.557,.586,.614,.64,.665,.689,.711,.731,.751,.769,.786,.802,.817,.831,.844,.856,.867,.877,.887,.896,.904,.912,.919,.925,.931,.937,.942,.947,.951,.955,.959,.962,.965,.968,.971,.973,.976,.978,.98,.981,.983,.984,.986,.987,.988,.989,.99,.991,.992,.992,.993,.994,.994,.995,.995,.996,.996,.9963,.9967,.9969,.9972,.9975,.9977,.9979,.9981,.9982,.9984,.9985,.9987,.9988,.9989,1];
 /** No part of the motion runs longer than this, whatever the host asks for. */
-export const numberFlowMaxDuration=3000;
-/** NumberFlow's defaults: 900 ms on its settle for movement, 450 ms ease-out for fades. */
-export const numberFlowDefaults:{readonly transform:NumberFlowResolvedTiming;readonly opacity:NumberFlowResolvedTiming}={transform:{duration:900,easing:'number-flow'},opacity:{duration:450,easing:'ease-out'}};
+export const numberFlowMaxDuration=500;
+/** NumberFlow's defaults: 500 ms on its settle for movement, 250 ms ease-out for fades. */
+export const numberFlowDefaults:{readonly transform:NumberFlowResolvedTiming;readonly opacity:NumberFlowResolvedTiming}={transform:{duration:500,easing:'number-flow'},opacity:{duration:250,easing:'ease-out'}};
 
 const beziers:Readonly<Record<string,readonly [number,number,number,number]>>={standard:[0.22,1,0.36,1],linear:[0,0,1,1],ease:[0.25,0.1,0.25,1],'ease-in':[0.42,0,1,1],'ease-out':[0,0,0.58,1],'ease-in-out':[0.42,0,0.58,1]};
 const finite=(value:unknown):value is number=>typeof value==='number'&&Number.isFinite(value);
@@ -36,10 +36,11 @@ export function numberFlowBezier(easing:NumberFlowEasing):readonly [number,numbe
  if(easing==='number-flow')return null;
  return typeof easing==='string'?beziers[easing]??beziers.standard:easing;
 }
+let sampledEasingCSS:string|undefined;
 /** The curve as a CSS easing function, for the Web Animations API. `linear()` needs a browser from 2023; pass `sampled=false` for the nearest bezier instead. */
 export function numberFlowEasingCSS(easing:NumberFlowEasing,sampled=true):string{
  const bezier=numberFlowBezier(easing);
- if(!bezier)return sampled?`linear(${numberFlowCurve.join(',')})`:`cubic-bezier(${beziers.standard.join(',')})`;
+ if(!bezier)return sampled?(sampledEasingCSS??=`linear(${numberFlowCurve.join(',')})`):`cubic-bezier(${beziers.standard.join(',')})`;
  return `cubic-bezier(${bezier.join(',')})`;
 }
 /** A cubic bezier's progress at time `x` (both 0 to 1): Newton's method, then bisection where the slope is too flat. */
@@ -70,7 +71,8 @@ export function sampleNumberFlowEasing(samples:readonly number[],progress:number
 }
 /** A host timing over a fallback: a finite duration is kept within 0 and `numberFlowMaxDuration`, a known curve is kept, anything else falls back. */
 export function resolveNumberFlowTiming(timing:NumberFlowTiming|undefined,fallback:NumberFlowResolvedTiming):NumberFlowResolvedTiming{
- const duration=finite(timing?.duration)?Math.max(0,Math.min(numberFlowMaxDuration,timing.duration)):fallback.duration;
+ const requested=finite(timing?.duration)?timing.duration:fallback.duration;
+ const duration=Math.max(0,Math.min(numberFlowMaxDuration,requested));
  return {duration,easing:validEasing(timing?.easing)?timing.easing:fallback.easing};
 }
 /**
@@ -78,7 +80,7 @@ export function resolveNumberFlowTiming(timing:NumberFlowTiming|undefined,fallba
  * half of it. `transformTiming` is also the roll's timing until `spinTiming` says otherwise, as in NumberFlow.
  */
 export function resolveNumberFlowTimings({duration,spinTiming,transformTiming,opacityTiming}:{duration?:number;spinTiming?:NumberFlowTiming;transformTiming?:NumberFlowTiming;opacityTiming?:NumberFlowTiming}):NumberFlowTimings{
- const shorthand=finite(duration)?duration:undefined,transform=resolveNumberFlowTiming(transformTiming,resolveNumberFlowTiming({duration:shorthand},numberFlowDefaults.transform));
+ const shorthand=finite(duration)?Math.min(numberFlowMaxDuration,duration):undefined,transform=resolveNumberFlowTiming(transformTiming,resolveNumberFlowTiming({duration:shorthand},numberFlowDefaults.transform));
  return {transform,spin:resolveNumberFlowTiming(spinTiming,transform),opacity:resolveNumberFlowTiming(opacityTiming,resolveNumberFlowTiming({duration:shorthand===undefined?undefined:shorthand/2},numberFlowDefaults.opacity))};
 }
 /** How many glyphs a place rolls through before it wraps: ten, or `max + 1` where `digits` limits an integer place, and never fewer than the digit it must show. */
@@ -101,32 +103,73 @@ export function numberFlowDelta(previous:number,value:number,trend:number,length
 }
 /** The highest place that changed between two readings, in display order, or `undefined` when none did. Places at or below it loop when the figure is continuous. */
 export function numberFlowLoopStart(previous:readonly NumberFlowPlace[],next:readonly NumberFlowPlace[]):number|undefined{
- const same=(places:readonly NumberFlowPlace[],place:NumberFlowPlace)=>places.some(other=>other.place===place.place&&other.digit===place.digit);
- const changed=[previous.find(place=>place.place!==null&&!same(next,place))?.place,next.find(place=>place.place!==null&&!same(previous,place))?.place].filter((place):place is number=>typeof place==='number');
- return changed.length?Math.max(...changed):undefined;
+ // Growing or shrinking at the leading edge leaves a shared suffix in the same numeric places.
+ let oldEnd=previous.length,newEnd=next.length;
+ if(oldEnd!==newEnd){
+  while(oldEnd&&newEnd){
+   const old=previous[oldEnd-1],current=next[newEnd-1];
+   if(old.place!==current.place||old.digit!==current.digit)break;
+   oldEnd--;newEnd--;
+  }
+ }
+ function firstChanged(places:readonly NumberFlowPlace[],end:number,other:readonly NumberFlowPlace[]){
+  let offset=0;
+  for(let index=0;index<end;index++){
+   const {place,digit}=places[index];
+   if(place===null)continue;
+   const aligned=other[index+offset];
+   if(aligned?.place===place&&aligned.digit===digit)continue;
+   const match=other.findIndex(candidate=>candidate.place===place&&candidate.digit===digit);
+   if(match<0)return place;
+   // After an insertion or removal the next surviving place usually has the same displacement.
+   offset=match-index;
+  }
+ }
+ const removed=firstChanged(previous,oldEnd,next),added=firstChanged(next,newEnd,previous);
+ return removed===undefined?added:added===undefined?removed:Math.max(removed,added);
+}
+interface NumberFlowTurnOptions {trend:number;digits?:NumberFlowDigits;continuous?:boolean;
+ /** Each key occurs once in the previous reading, as in the React and native reel models. */
+ uniqueKeys?:boolean;
+}
+/** Visit each new place with its starting digit, signed travel and reel length. */
+export function forEachNumberFlowTurn(previous:readonly NumberFlowPlace[],next:readonly NumberFlowPlace[],{trend,digits,continuous=false,uniqueKeys=false}:NumberFlowTurnOptions,visit:(place:NumberFlowPlace,from:number,delta:number,length:number)=>void):void{
+ // Typical prices have only a few places. For longer readings, index the previous places once.
+ let before:Map<string,number>|undefined;
+ const start=continuous&&trend?numberFlowLoopStart(previous,next):undefined;
+ const offset=previous.length-next.length;
+ for(let index=0;index<next.length;index++){
+  const place=next[index],aligned=uniqueKeys?previous[index+offset]:undefined;
+  let from=0;
+  if(aligned?.key===place.key)from=aligned.digit;
+  else if(previous.length>8&&next.length>1){
+   if(!before){
+    before=new Map();
+    for(const old of previous)before.set(old.key,old.digit);
+   }
+   from=before.get(place.key)??0;
+  }else for(let oldIndex=previous.length-1;oldIndex>=0;oldIndex--){
+   if(previous[oldIndex].key===place.key){from=previous[oldIndex].digit;break;}
+  }
+  const length=digits?numberFlowDigitLength(digits,place.place,Math.max(place.digit,from)):10;
+  const loop=start!==undefined&&place.place!==null&&start>=place.place;
+  visit(place,from,numberFlowDelta(from,place.digit,trend,length,loop),length);
+ }
 }
 /**
  * The turn of every place in the new reading, by key. A place the old reading did not have starts from zero, as it does in
  * NumberFlow. `trend` is the resolved direction of the whole change (-1, 0 or 1); places the new reading dropped are not listed.
  */
-export function numberFlowDeltas(previous:readonly NumberFlowPlace[],next:readonly NumberFlowPlace[],{trend,digits,continuous=false}:{trend:number;digits?:NumberFlowDigits;continuous?:boolean}):Map<string,number>{
- const before=new Map(previous.map(place=>[place.key,place])),start=continuous&&trend?numberFlowLoopStart(previous,next):undefined,deltas=new Map<string,number>();
- for(const place of next){
-  const old=before.get(place.key)?.digit??0,length=numberFlowDigitLength(digits,place.place,Math.max(place.digit,old));
-  deltas.set(place.key,numberFlowDelta(old,place.digit,trend,length,start!==undefined&&place.place!==null&&start>=place.place));
- }
+export function numberFlowDeltas(previous:readonly NumberFlowPlace[],next:readonly NumberFlowPlace[],options:NumberFlowTurnOptions):Map<string,number>{
+ const deltas=new Map<string,number>();
+ forEachNumberFlowTurn(previous,next,options,(place,_from,delta)=>deltas.set(place.key,delta));
  return deltas;
 }
 /** The glyph index a reel shows at a position that has turned any number of times either way. */
 export function numberFlowGlyph(position:number,length=10):number{return ((Math.round(position)%length)+length)%length;}
-const bidiControls=/[؜‎‏‪-‮⁦-⁩]/u;
-function strongRTL(character:string):boolean{
- const point=character.codePointAt(0);if(point===undefined)return false;
- if((point>=0x0660&&point<=0x0669)||(point>=0x06f0&&point<=0x06f9)||(point>=0x066a&&point<=0x066c))return false;
- return (point>=0x0590&&point<=0x08ff)||(point>=0xfb1d&&point<=0xfdff)||(point>=0xfe70&&point<=0xfefc)||(point>=0x10800&&point<=0x10fff)||(point>=0x1e800&&point<=0x1edff)||(point>=0x1ee00&&point<=0x1eeff);
-}
+// Arabic-script decimal digits and separators remain eligible for a left-to-right reel.
+const reorderedNumberText=/[\u0590-\u065f\u066d-\u06ef\u06fa-\u08ff\u200e\u200f\u202a-\u202e\u2066-\u2069\ufb1d-\ufdff\ufe70-\ufefc\u{10800}-\u{10fff}\u{1e800}-\u{1eeff}]/u;
 /** Whether text can be drawn place by place from left to right without reordering it: no bidi controls and no right-to-left letters (Arabic-script digits are fine). */
 export function numberFlowNeutral(text:string):boolean{
- for(const character of Array.from(text))if(bidiControls.test(character)||strongRTL(character))return false;
- return true;
+ return !reorderedNumberText.test(text);
 }

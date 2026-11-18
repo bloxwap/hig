@@ -90,13 +90,26 @@ it('retargets from the current reel position, snaps for reduced motion, and canc
  const motion=jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);void motion;
  mount(example({value:9,trend:1,duration:900},{reducedMotion:false}));measure();const state=global.__numberReanimated;
  update(example({value:10,trend:1,duration:900},{reducedMotion:false}));
- expect(state.animations).toHaveLength(1);expect(state.animations[0].toValue).toBe(10);expect(state.animations[0].config).toMatchObject({duration:600,reduceMotion:'never',easing:{bezier:[0.22,1,0.36,1]}});
+ expect(state.animations).toHaveLength(1);expect(state.animations[0].toValue).toBe(10);expect(state.animations[0].config).toMatchObject({duration:500,reduceMotion:'never',easing:{bezier:[0.22,1,0.36,1]}});
  const position=state.animations[0].value;expect(position.value).toBe(9);position.value=9.4;
  update(example({value:11,trend:1,duration:900},{reducedMotion:false}));
  expect(state.animations).toHaveLength(2);expect(state.animations[1].toValue).toBe(11);expect(state.animations[1].value).toBe(position);expect(position.value).toBe(9.4);
  update(example({value:12,trend:1,duration:900},{reducedMotion:true}));
  expect(state.animations).toHaveLength(2);expect(position.value).toBe(2);expect(state.cancel).toHaveBeenCalled();
  const cancellations=state.cancel.mock.calls.length;act(()=>root.unmount());root=null;expect(state.cancel.mock.calls.length).toBeGreaterThan(cancellations);
+});
+
+it('chooses a slide destination from the position at UI execution time',()=>{
+ mount(example({value:1,trend:1}));measure();update(example({value:2,trend:1}));
+ const state=global.__numberReanimated,position=state.animations[0].value;
+ let pending;
+ jest.spyOn(require('react-native-worklets'),'scheduleOnUI').mockImplementation((worklet,...args)=>{pending=()=>worklet(...args);});
+ position.value=2;
+ update(example({value:3,trend:1}));
+ expect(state.animations).toHaveLength(1);
+ position.value=3.5;
+ pending();
+ expect(state.animations[1].toValue).toBe(13);
 });
 
 it('starts the first slide from the latest digit after stationary updates',()=>{
@@ -172,4 +185,33 @@ describe('the readout is as wide as what it draws',()=>{
   update(example({value:1000,prefix:'$',style:{fontSize:20,lineHeight:28}},{direction:'rtl'}));
   expect(flow()).toEqual(['reading']);expect(StyleSheet.flatten(container().props.style)).toEqual({position:'relative'});
  });
+});
+
+it('resolves flow timings only in flow mode and reuses them across balance updates',()=>{
+ const duration=jest.fn(()=>200),spinTiming={get duration(){return duration();}};
+ mount(example({value:1,spinTiming}));
+ update(example({value:2,spinTiming}));
+ expect(duration).not.toHaveBeenCalled();
+ update(example({value:3,spinTiming,motion:'flow'}));
+ expect(duration).toHaveBeenCalled();duration.mockClear();
+ update(example({value:4,spinTiming,motion:'flow'}));
+ expect(duration).not.toHaveBeenCalled();
+});
+
+it('reuses host-formatted reels until the displayed digits change',()=>{
+ const model=jest.spyOn(require('../../packages/hig/native/src/animated-number-model'),'createFormattedReelModel');
+ const figure=(value,formattedValue)=>example({value,formattedValue,animateFormatted:true});
+ mount(figure(1.01,'1.0'));measure();model.mockClear();
+ for(let tick=2;tick<=5;tick++)update(figure(1+tick/100,'1.0'));
+ expect(model).not.toHaveBeenCalled();
+ update(figure(1.1,'1.1'));expect(model).toHaveBeenCalledTimes(1);
+ expect(finalText().props.accessibilityLabel).toBe('Price: 1.1');
+});
+
+it('uses the static reading before requesting reel data for a bidi affix',()=>{
+ const parts=jest.spyOn(Intl.NumberFormat.prototype,'formatToParts');
+ mount(example({prefix:'מחיר ',value:2}));update(example({prefix:'מחיר ',value:3}));
+ expect(parts).not.toHaveBeenCalled();
+ expect(finalText().props.accessibilityLabel).toBe('Price: מחיר 3');
+ update(example({prefix:'USD ',value:4}));expect(parts).toHaveBeenCalled();
 });

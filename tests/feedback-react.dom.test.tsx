@@ -20,3 +20,29 @@ it('keeps menu disclosure quiet and reports one accepted selection after the hos
  await userEvent.click(screen.getByRole('menuitem',{name:'Select'}));expect(order).toEqual(['action','feedback']);expect(emit.mock.calls).toHaveLength(1);
  await userEvent.click(screen.getByRole('button',{name:'Actions'}));await userEvent.click(screen.getByRole('menuitem',{name:'Cancel'}));expect(emit).toHaveBeenCalledOnce();
 });
+
+it('keeps consumers stable through equivalent storage hydration and unrelated parent renders',async()=>{
+ const draw=vi.fn();
+ function Probe(){useFeedback();draw();return null;}
+ const content=<Probe/>,read=vi.fn(async()=>({sound:false,haptics:false,volume:.3,motion:true}));
+ const storage={read,write:vi.fn()},factory=(preferences:FeedbackPreferences)=>new FeedbackController({preferences});
+ const scene=()=> <FeedbackProvider storage={storage} createController={factory}>{content}</FeedbackProvider>;
+ const view=render(scene());
+ await waitFor(()=>expect(read).toHaveBeenCalledOnce());
+ view.rerender(scene());expect(draw).toHaveBeenCalledTimes(1);
+});
+
+it('updates runtime and haptic consumers only for the preferences they read',async()=>{
+ const {useFeedbackRuntime,useHapticsEnabled}=await import('../packages/hig/feedback/src/react');
+ const runtimeDraw=vi.fn(),hapticDraw=vi.fn();
+ function Runtime(){const {motion,sink}=useFeedbackRuntime();runtimeDraw(motion);return <button onClick={()=>sink.emit({id:'tick',source:'preview',intent:'selection',origin:'pointer'})}>Emit</button>;}
+ function Haptic(){hapticDraw(useHapticsEnabled());return null;}
+ function Settings(){const {update}=useFeedback();return <><button onClick={()=>update({volume:.7,sound:true})}>Sound</button><button onClick={()=>update({haptics:true})}>Haptics</button><button onClick={()=>update({motion:false})}>Motion</button></>;}
+ const sound=adapter();
+ render(<FeedbackProvider createController={preferences=>new FeedbackController({preferences,sound})}><Runtime/><Haptic/><Settings/></FeedbackProvider>);
+ await userEvent.click(screen.getByText('Sound'));
+ expect(runtimeDraw.mock.calls).toEqual([[true]]);expect(hapticDraw.mock.calls).toEqual([[false]]);
+ await userEvent.click(screen.getByText('Emit'));expect(sound.play).toHaveBeenCalledOnce();
+ await userEvent.click(screen.getByText('Haptics'));await userEvent.click(screen.getByText('Motion'));
+ expect(runtimeDraw.mock.calls).toEqual([[true],[false]]);expect(hapticDraw.mock.calls).toEqual([[false],[true]]);
+});

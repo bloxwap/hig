@@ -75,3 +75,15 @@ it('keeps static script weights, explicit script/family overrides, scale caps an
  act(()=>root.update(h(HIGProvider,{fontFamilies:{700:'LegacyBold'}},h(Text,{style:{fontWeight:'bold'}},'한국어'))));
  expect(style(root.root.findByType(RNText))).toMatchObject({fontFamily:'LegacyBold',fontWeight:'normal'});
 });
+
+it('resolves a repeated missing font weight once per registered family',()=>{
+ const keys=jest.fn(Reflect.ownKeys);
+ const ko=new Proxy({400:'Regular',600:'SemiBold'},{ownKeys:keys});
+ const renderLabels=family=>h(HIGProvider,{fontFamiliesByScript:{ko:family}},
+  ...Array.from({length:40},(_,i)=>h(Text,{key:i,style:{fontWeight:'500'}},'한국어')));
+ mount(renderLabels(ko));
+ expect(keys.mock.calls.length).toBe(1);
+ expect(root.root.findAllByType(RNText).every(node=>style(node).fontFamily==='Regular')).toBe(true);
+ act(()=>root.update(renderLabels({600:'NewSemiBold'})));
+ expect(root.root.findAllByType(RNText).every(node=>style(node).fontFamily==='NewSemiBold')).toBe(true);
+});

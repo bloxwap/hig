@@ -163,3 +163,54 @@ describe('trade history host slots (Unreleased)',()=>{
   expect(ref.current!.style.background).toBe('var(--hig-overlay)');expect(spoken(document.querySelector('.hig-trade-details dd')!)).toBe('3,734 AMZN');
  });
 });
+
+it('keeps long histories accessible by list position and keyboard',async()=>{
+ const history=Array.from({length:250},(_,i)=>({...trades[0],id:String(i),name:'Trade '+i}));
+ const select=vi.fn();
+ render(<HIGProvider><TradeHistoryListBlock labels={list} trades={history} onSelect={select}/><button>After history</button></HIGProvider>);
+ const rows=screen.getByRole('list',{name:list.title});
+ expect(within(rows).getAllByRole('listitem').length).toBeLessThan(30);
+ expect(within(rows).getAllByRole('listitem')[0].getAttribute('aria-setsize')).toBe('250');
+ screen.getByRole('button',{name:'After history'}).focus();const user=userEvent.setup();
+ await user.tab({shift:true});await user.tab({shift:true});await user.keyboard('{Enter}');
+ expect(select.mock.calls[0][0]).toBe(history[248]);
+});
+
+it('reuses unchanged trade rows when the footer or one trade updates',()=>{
+ const reads=Array<number>(40).fill(0);
+ const item=(index:number,pnl:number)=>({...trades[0],id:String(index),get pnl(){reads[index]++;return pnl;}});
+ const history=reads.map((_,index)=>item(index,index)),select=vi.fn();
+ const tree=(items:TradeHistoryItem[],footer:string)=><HIGProvider reducedMotion><TradeHistoryListBlock labels={{...list}} trades={items} onSelect={select} footer={footer}/></HIGProvider>;
+ const {rerender}=render(tree(history,'Loading'));
+ reads.fill(0);rerender(tree(history,'Loaded'));expect(reads.every(count=>count===0)).toBe(true);
+ const updated=history.slice();updated[12]=item(12,812);rerender(tree(updated,'Loaded'));
+ expect(reads.filter(Boolean)).toEqual([1]);expect(reads[12]).toBe(1);
+});
+
+it('keeps unchanged trade amounts idle when density changes',()=>{
+ let optionReads=0;
+ const pnlOptions:Intl.NumberFormatOptions={style:'currency',currency:'USD',get maximumFractionDigits(){optionReads++;return 2;}};
+ const rows=Array.from({length:50},(_,index)=>({...trades[0],id:String(index)}));
+ const child=<TradeHistoryListBlock labels={list} trades={rows} pnlOptions={pnlOptions}/>;
+ const view=render(<HIGProvider density='comfortable' reducedMotion>{child}</HIGProvider>);
+ expect(optionReads).toBeGreaterThan(0);
+ optionReads=0;
+ view.rerender(<HIGProvider density='compact' reducedMotion>{child}</HIGProvider>);
+ expect(optionReads).toBe(0);
+ view.rerender(<HIGProvider density='compact' reducedMotion locale='de-DE'>{child}</HIGProvider>);
+ expect(spoken(screen.getAllByRole('listitem')[0])).toContain('1,41');
+});
+
+it('updates the trade result when a refreshed row reuses edited format options',()=>{
+ const options={maximumFractionDigits:1};
+ const scene=(time:string,locale='en-US')=><HIGProvider locale={locale}><TradeHistoryListBlock labels={list} onSelect={()=>{}} trades={[{...trades[0],pnlOptions:options,time}]}/></HIGProvider>;
+ const {rerender}=render(scene('2d'));
+ const reading=()=>spoken(document.querySelector('.hig-trade-pnl')!);
+ expect(reading()).toBe('1.4');
+ options.maximumFractionDigits=2;
+ rerender(scene('3d'));
+ expect(reading()).toBe('1.41');
+ expect(screen.getByRole('button',{name:'Amazon, Short 20×, 1.41, 3d'})).toBeTruthy();
+ rerender(scene('4d','de-DE'));
+ expect(screen.getByRole('button',{name:'Amazon, Short 20×, 1,41, 4d'})).toBeTruthy();
+});

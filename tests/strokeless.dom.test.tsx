@@ -10,6 +10,7 @@ import {SearchInput} from '../packages/hig/react/src/field';
 import {Accordion} from '../packages/hig/react/src/navigation';
 import {EmptyState} from '../packages/hig/react/src/status';
 import {Filter} from '../packages/hig/react/src/selection';
+import * as asyncResult from '../packages/hig/react/src/async-result';
 import {InstallCommand} from '../packages/hig/react/src/blocks';
 import {Toaster,toast,dismissToast} from '../packages/hig/react/src/toast';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -28,7 +29,7 @@ describe('fill and space instead of strokes',()=>{
   expect(rule(':root')).toContain('--hig-fill:var(--hig-surface); --hig-fill-raised:var(--hig-nested)');
   expect(rule('.hig-surface,.hig-dialog,.hig-gesture-sheet')).toContain('--hig-fill:var(--hig-nested); --hig-fill-raised:var(--hig-border)');
   expect(rule('.hig-input')).toContain('background:var(--hig-fill)');
-  expect(rule('.hig-segments')).toContain('background:var(--hig-fill)');
+  expect(rule('.hig-segments::before')).toContain('background:var(--hig-fill)');
   expect(rule('.hig-segment-indicator')).toContain('background:var(--hig-fill-raised)');
   expect(rule('.hig-badge')).toContain('background:var(--hig-fill)');
  });
@@ -71,12 +72,21 @@ describe('fill and space instead of strokes',()=>{
  });
  it('sizes a comfortable segmented control to the 44px button height',()=>{expect(rule('.hig-segment span')).toContain('min-height:calc(var(--hig-button) - 8px)');
   // The 4px inset is the label's own padding, so each segment's target is the full control height.
-  expect(rule('.hig-segments')).toContain('padding:0 4px');expect(rule('.hig-segment')).toContain('padding-block:4px');});
+  expect(rule('.hig-segments')).toContain('padding:0 4px');expect(rule('.hig-segment')).toContain('padding-block:calc(4px + var(--hig-segment-inset))');});
 });
 describe('reviewed component changes',()=>{
  it('shows a leading spinner on a busy button and keeps the busy text in the name only',()=>{
+  vi.useFakeTimers();
   render(<><Button busy>Review order</Button><IconButton busy label='Confirm'>✓</IconButton><Button>Idle</Button></>);
   const busy=screen.getByRole('button',{name:'Review order · Working'});
+  const slot=busy.firstElementChild;
+  expect(slot?.className).toBe('hig-button-spinner-placeholder');
+  expect(screen.getByRole('button',{name:'Confirm'}).querySelector('.hig-button-spinner-placeholder')).toBeNull();
+  act(()=>vi.advanceTimersByTime(999));
+  expect(busy.querySelector('.hig-button-spinner')).toBeNull();
+  act(()=>vi.advanceTimersByTime(1));
+  vi.useRealTimers();
+  expect(busy.firstElementChild).toBe(slot);
   expect(busy.firstElementChild?.className).toBe('hig-button-spinner');expect(busy.firstElementChild?.getAttribute('aria-hidden')).toBe('true');
   expect(busy.querySelector('[role=status]')?.className).toContain('hig-sr-only');
   expect(screen.getByRole('button',{name:'Confirm'}).firstElementChild?.className).toBe('hig-button-spinner');
@@ -94,15 +104,15 @@ describe('reviewed component changes',()=>{
   const input=screen.getByRole('searchbox',{name:'Search markets'});expect(ref.current).toBe(input);expect(input.className).toContain('host');
   expect(input.parentElement?.className).toBe('hig-search-input');expect(input.previousElementSibling?.classList.contains('hig-search-icon')).toBe(true);
   expect(rule('.hig-search-icon')).toContain('inset-inline-start:16px');
-  // Every text field takes the button height (44 touch, 36 compact); the search text starts 42px in, 6px after the glass.
-  expect(rule('.hig-input')).toContain('min-height:var(--hig-button)');expect(rule('.hig-search-input')).not.toContain('--hig-control');expect(rule('.hig-search-input > .hig-input')).toContain('padding-inline-start:42px');
+  // Every text field reserves at least a 44px target; the search text starts 42px in, 6px after the glass.
+  expect(rule('.hig-input')).toContain('min-height:max(44px,var(--hig-button))');expect(rule('.hig-search-input')).not.toContain('--hig-control');expect(rule('.hig-search-input > .hig-input')).toContain('padding-inline-start:42px');
  });
  it('puts an outline chevron on the trailing edge of the accordion header and turns it when open',async()=>{
   const changed=vi.fn();render(<Accordion title='Advanced options' onOpenChange={changed}><p>Body</p></Accordion>);
   const summary=screen.getByText('Advanced options').closest('summary')!;expect(summary.lastElementChild?.classList.contains('hig-accordion-chevron')).toBe(true);
   expect(rule('.hig-select-chevron,.hig-select-check,.hig-accordion-chevron')).toContain('fill:none;stroke:currentColor');
   expect(rule('.hig-accordion[open] > .hig-accordion-summary .hig-accordion-chevron')).toContain('transform:rotate(180deg)');
-  expect(rule('.hig-accordion[open]::details-content')).toContain('block-size:auto');
+  expect(rule('.hig-accordion::details-content')).toContain('transition:opacity');
   await userEvent.click(summary);expect(changed).toHaveBeenCalledWith(true);
  });
  it('centres EmptyState under a symbol and makes the description optional',()=>{
@@ -166,14 +176,13 @@ describe('Filter',()=>{
   cleanup();render(<Filter label='Chain' options={options} defaultValue='' disabled/>);
   expect(screen.getAllByRole('radio').every(radio=>(radio as HTMLInputElement).disabled)).toBe(true);expect(screen.getByRole('radiogroup').getAttribute('aria-disabled')).toBe('true');
  });
- it('inverts the chosen capsule, draws the check in, and stops the motion when reduced',()=>{
+ it('inverts the chosen capsule, scales the check in, and stops the motion when reduced',()=>{
   expect(rule('.hig-filter')).toContain('overflow-x:auto');
   expect(rule('.hig-filter-chip:has(input:checked)')).toContain('background:var(--hig-text);color:var(--hig-background)');
-  // Hidden as well as undrawn: a round-capped stroke at full offset would still paint a dot in the empty ring.
-  expect(rule('.hig-filter-mark path')).toContain('stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset');
-  expect(rule('.hig-filter-chip:has(input:checked) .hig-filter-mark path')).toContain('stroke-dashoffset:0;opacity:1');
+  expect(rule('.hig-filter-mark > svg')).toContain('opacity:0;transform:scale(.4);transition:opacity');
+  expect(rule('.hig-filter-chip:has(input:checked) .hig-filter-mark > svg')).toContain('opacity:1;transform:scale(1)');
   expect(rule('.hig-filter-chip:has(input:checked) .hig-filter-mark')).toContain('background:currentColor');
-  for(const selector of ['.hig-filter-chip','.hig-filter-mark','.hig-filter-mark > img','.hig-filter-mark path'])expect(stopped(selector,'transition'),selector).toEqual({media:true,provider:true});
+  for(const selector of ['.hig-filter-mark > img','.hig-filter-mark > svg'])expect(stopped(selector,'transition'),selector).toEqual({media:true,provider:true});
  });
  it('spaces side-by-side actions 8px apart through one token, at every density',()=>{
   expect(rule(':root')).toContain('--hig-action-gap:var(--hig-space-sm,8px)');
@@ -191,10 +200,48 @@ describe('Filter',()=>{
  it('presents floating lists with a fade, eases the switch track with its thumb, and stops both under reduced motion',()=>{
   expect(rule('.hig-select-list,.hig-popover')).toContain('animation:hig-present');
   // Durations come from the motion tokens, and every one has a stop in both preference paths (tests/motion-css.test.ts).
-  expect(rule('.hig-switch input')).toContain('transition:background-color var(--hig-motion-duration-fast) ease');
-  for(const selector of ['.hig-button','.hig-switch input','.hig-switch input::before'])expect(stopped(selector,'transition'),selector).toEqual({media:true,provider:true});
+  expect(rule('.hig-switch input::after')).toContain('transition:opacity var(--hig-motion-duration-fast)');
+  for(const selector of ['.hig-button','.hig-switch input','.hig-switch input::before','.hig-switch input::after'])expect(stopped(selector,'transition'),selector).toEqual({media:true,provider:true});
   for(const selector of ['.hig-select-list','.hig-popover'])expect(stopped(selector,'animation'),selector).toEqual({media:true,provider:true});
   // A popover portalled out of the provider carries data-hig-motion itself.
   expect(css).toMatch(/\[data-hig-motion='reduced'\]\.hig-popover[,{ ][^}]*\{ animation:none; \}/);
  });
+});
+
+it('hides a visible busy spinner in the completion commit and delays the next operation',()=>{
+ vi.useFakeTimers();
+ try{
+  const commits=vi.fn(),button=(busy:boolean)=><React.Profiler id='save' onRender={commits}><Button busy={busy}>Save</Button></React.Profiler>;
+  const view=render(button(true));act(()=>vi.advanceTimersByTime(1000));
+  expect(view.container.querySelector('.hig-button-spinner')).toBeTruthy();commits.mockClear();
+  view.rerender(button(false));expect(commits).toHaveBeenCalledTimes(1);
+  view.rerender(button(true));act(()=>vi.advanceTimersByTime(999));expect(view.container.querySelector('.hig-button-spinner')).toBeNull();
+ }finally{vi.useRealTimers();}
+});
+
+it('starts a fresh spinner delay for each busy operation',()=>{
+ vi.useFakeTimers();
+ try{
+  const view=render(<Button busy>Save</Button>);
+  act(()=>vi.advanceTimersByTime(700));
+  view.rerender(<Button>Save</Button>);
+  view.rerender(<Button busy>Save</Button>);
+  act(()=>vi.advanceTimersByTime(999));
+  expect(view.container.querySelector('.hig-button-spinner')).toBeNull();
+  act(()=>vi.advanceTimersByTime(1));
+  expect(view.container.querySelector('.hig-button-spinner')).toBeTruthy();
+ }finally{vi.useRealTimers();}
+});
+
+it('keeps the install command stable across unrelated provider changes and updates its translated action',()=>{
+ const renders=vi.spyOn(asyncResult,'useAsyncResult');
+ try{
+  const command=<InstallCommand command="npm i" onCopy={()=>{}}/>;
+  const {rerender}=render(<HIGProvider density="comfortable">{command}</HIGProvider>);
+  renders.mockClear();
+  rerender(<HIGProvider density="compact">{command}</HIGProvider>);
+  expect(renders).not.toHaveBeenCalled();
+  rerender(<HIGProvider density="compact" messages={{copyInstallCommand:'Copier'}}>{command}</HIGProvider>);
+  expect(screen.getByRole('button',{name:'Copier'})).toBeTruthy();
+ }finally{renders.mockRestore();}
 });

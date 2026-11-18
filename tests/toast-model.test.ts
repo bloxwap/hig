@@ -1,4 +1,5 @@
 import {describe,expect,it} from 'vitest';
+import {notificationDelta,type NotificationMessage} from '../packages/hig/contracts/src/announcements';
 import {readFileSync} from 'node:fs';
 import {TOAST_DURATION,TOAST_EXIT,TOAST_FLICK,TOAST_GAP,TOAST_HOLD,TOAST_MAX_DURATION,TOAST_MOTION,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_QUEUE_LIMIT,TOAST_SPRING,TOAST_STACK_SCALE,TOAST_SWIPE_THRESHOLD,TOAST_VISIBLE,TOAST_WIDTH,toastCap,toastClockPause,toastClockRun,toastDrag,toastDuration,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastEntry} from '../packages/hig/contracts/src/toast';
 const add=(list:readonly ToastEntry<string>[],key:number,value:string,options:{id?:string|number;duration?:number}={},limit?:number)=>toastUpsert(list,{key,id:options.id??key,duration:options.duration,value},limit);
@@ -136,4 +137,18 @@ describe('toast clock',()=>{
   clock=toastClockPause(clock,2500);expect(clock).toEqual({remaining:2500,startedAt:null});expect(toastClockPause(clock,9000)).toBe(clock);
   clock=toastClockPause(toastClockRun(clock,10000),99999);expect(clock.remaining).toBe(0);
  });
+});
+
+it('uses the final content and first position of duplicate announcement IDs',()=>{
+ const notices:NotificationMessage[]=[
+  {id:'a',message:'Transient error',severity:'error'},
+  {id:'b',message:'Still failed',severity:'error'},
+  {id:'a',message:'Recovered',severity:'success'},
+  {id:'c',message:'Another failure',severity:'error'},
+ ];
+ const first=notificationDelta(new Map(),notices);
+ expect(first.id).toBe('b');
+ expect([...first.next.keys()]).toEqual(['a','b','c']);
+ expect(first.next.get('a')).toBe(JSON.stringify(['Recovered','success']));
+ expect(notificationDelta(first.next,notices).message).toBeUndefined();
 });

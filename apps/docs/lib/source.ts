@@ -1,6 +1,6 @@
 import {createElement, Fragment} from 'react';
 import {loader} from 'fumadocs-core/source';
-import type {Folder} from 'fumadocs-core/page-tree';
+import type {Folder, Node, Root} from 'fumadocs-core/page-tree';
 import {docs} from '../.source/server';
 import groups from '@/src/component-groups.json';
 import content from '@/src/content.json';
@@ -29,3 +29,21 @@ export const source = loader({
     }],
   },
 });
+
+
+// Send the navigation fields the browser uses. Root-folder tabs also need file references to match equivalent pages.
+function navigationNode<T extends Root | Node>(node:T,inRootFolder=false):T {
+  const result={...node};
+  for(const key of Object.keys(result) as (keyof T)[]){
+    if(result[key]===undefined)delete result[key];
+  }
+  const keepFileRefs=inRootFolder||(node.type==='folder'&&Boolean(node.root));
+  if(!keepFileRefs&&'$ref' in result)delete result.$ref;
+  if(result.type==='page')delete result.$id;
+  if('children' in result)result.children=result.children.map(child=>navigationNode(child,keepFileRefs));
+  if('index' in result && result.index)result.index=navigationNode(result.index,keepFileRefs);
+  if('fallback' in result && result.fallback)result.fallback=navigationNode(result.fallback);
+  return result;
+}
+
+export const navigationTree=navigationNode(source.getPageTree());

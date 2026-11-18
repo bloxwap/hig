@@ -5,11 +5,17 @@ const {IconButton}=require('../../packages/hig/native/src/button');
 const {Button,busyAccessibilityLabel}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
 let root;
+beforeEach(()=>jest.useFakeTimers());
+afterEach(()=>jest.useRealTimers());
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;});
 it('shows a leading spinner instead of a busy suffix while keeping a spaced accessible name (#121)',()=>{
  act(()=>{root=create(h(Button,{busy:true},'Log ','out'));});
  const runs=root.root.findAllByType(RNText);
  expect(runs.map(node=>React.Children.toArray(node.props.children).join(''))).toEqual(['Log out']);
+ const slot=root.root.findAll(node=>node.props.accessibilityElementsHidden&&node.props.style?.width===20&&node.props.style?.height===20)[0];
+ expect(slot).toBeDefined();expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+ act(()=>jest.advanceTimersByTime(1000));
+ expect(root.root.findByType(ActivityIndicator).props.style).toMatchObject({width:20,height:20});
  const spinner=root.root.findByType(ActivityIndicator);expect(spinner.parent.children[0]).toBe(spinner);
  expect(busyAccessibilityLabel('Log out','Working','ios')).toBe('Log out · Working');
  expect(busyAccessibilityLabel('로그아웃','처리 중','android')).toBe('로그아웃');
@@ -27,6 +33,7 @@ it('keeps a trailing icon on the label line: the row stops wrapping and the labe
  act(()=>root.update(h(Button,null,'Get my 4% discount')));
  expect(row().flexWrap).toBe('wrap');expect(StyleSheet.flatten(root.root.findAllByType(RNText)[0].props.style).flexShrink).toBeUndefined();
  act(()=>root.update(h(Button,{busy:true},'Get my 4% discount')));
+ act(()=>jest.advanceTimersByTime(1000));
  expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(1);expect(row().flexWrap).toBe('wrap');
 });
 it('is 44dp tall with a 48dp touch target; a busy IconButton swaps its icon for the spinner',()=>{
@@ -34,9 +41,32 @@ it('is 44dp tall with a 48dp touch target; a busy IconButton swaps its icon for 
  const control=root.root.findAll(node=>node.props.accessibilityRole==='button')[0];
  expect(StyleSheet.flatten(control.props.style({pressed:false}))).toMatchObject({minHeight:44,paddingVertical:10});expect(control.props.hitSlop).toEqual({top:2,bottom:2});
  act(()=>root.update(h(IconButton,{label:'Confirm',busy:true},h(RNText,null,'icon'))));
+ act(()=>jest.advanceTimersByTime(999));
+ expect(root.root.findAllByType(RNText)).toHaveLength(1);expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+ act(()=>jest.advanceTimersByTime(1));
  expect(root.root.findAllByType(RNText)).toHaveLength(0);expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(1);
  const icon=root.root.findAll(node=>node.props.accessibilityRole==='button')[0];
  expect(StyleSheet.flatten(icon.props.style({pressed:false}))).toMatchObject({minHeight:44,minWidth:44});expect(icon.props.accessibilityLabel).toBe('Confirm');
  act(()=>root.update(h(IconButton,{label:'Confirm'},h(RNText,null,'icon'))));
  expect(root.root.findAllByType(RNText)).toHaveLength(1);expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+});
+
+it('cancels the spinner delay when a short operation finishes',()=>{
+ act(()=>{root=create(h(Button,{busy:true},'Save'));});
+ act(()=>jest.advanceTimersByTime(700));
+ act(()=>root.update(h(Button,null,'Save')));
+ act(()=>root.update(h(Button,{busy:true},'Save')));
+ act(()=>jest.advanceTimersByTime(999));
+ expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(0);
+ act(()=>jest.advanceTimersByTime(1));
+ expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(1);
+});
+
+it('hides a visible busy spinner in the completion commit and delays the next operation',()=>{
+ const commits=jest.fn(),button=busy=>h(React.Profiler,{id:'save',onRender:commits},h(Button,{busy},'Save'));
+ act(()=>{root=create(button(true));});act(()=>jest.advanceTimersByTime(1000));
+ expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(1);commits.mockClear();
+ act(()=>root.update(button(false)));expect(commits).toHaveBeenCalledTimes(1);
+ act(()=>root.update(button(true)));act(()=>jest.advanceTimersByTime(999));
+ expect(root.root.findAllByType(ActivityIndicator)).toHaveLength(0);
 });

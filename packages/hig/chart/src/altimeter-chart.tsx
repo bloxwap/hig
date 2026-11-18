@@ -1,6 +1,6 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
-import {appendLiveTail,beginTrail,fillTrail,historyPath,visibleFrames} from './chart-renderer.js';
+import {appendTrailSample,appendLiveTail,beginTrail,fillTrail,historyPath,visibleFrames} from './chart-renderer.js';
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
@@ -129,7 +129,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  const box=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null),pill=useRef<HTMLSpanElement>(null);
  const targetRows=useRef(new Map<string,HTMLDivElement>()),targetLabels=useRef(new Map<string,HTMLSpanElement>()),effects=useRef<HTMLDivElement>(null);
  const levels=useMemo(()=>validTargets(targets),[targets]);
- const crossings=useRef(targetCrossings()),cancelBurst=useRef<(()=>void)|undefined>(undefined);
+ const crossings=useMemo(()=>targetCrossings({immutableTargets:true}),[]),cancelBurst=useRef<(()=>void)|undefined>(undefined);
  const [stale,setStale]=useState(false);
  const controlled=price!==undefined;
  const latest=useRef<number|null>(usable(price)?price:null);
@@ -161,7 +161,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
   try{context=surface.getContext('2d');}catch{/* No canvas: the caption and the price reading remain. */}
   let width=container.clientWidth,sampled=-Infinity,shown:number|null|undefined;
   let lastFrame=-Infinity,lastBurst=-Infinity;
-  crossings.current.reset();
+  crossings.reset();
   const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(entries=>{width=entries[0].contentRect.width;});
   observer?.observe(container);
   // The canvas cannot read CSS variables, so it takes the font stack the box resolved, again once fonts load.
@@ -170,7 +170,9 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
   const readFont=()=>{const resolved=typeof getComputedStyle==='function'?getComputedStyle(container).fontFamily:'';if(resolved)font=resolved;widths.clear();};
   readFont();document.fonts?.ready.then(readFont).catch(()=>{});
   const motion=priceTween();let display=NaN;
-  const layout=targetLayout();
+  const layout=targetLayout({reuseSettled:true});
+  let appliedPositions:ReturnType<typeof layout.update>|undefined;
+  let targetLabelBounds:(readonly [number,number])[]=[];
   let ticks:AltimeterTick[]=[],anchor=NaN,spacing=0,format:Intl.NumberFormat|undefined,formatKey='';
   const labels=new Map<number,string>();
   const show=(next:number|null)=>{if(next!==shown){shown=next;setReading(next);}};
@@ -178,8 +180,8 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
    const {colors,locale,priceOptions,optionsKey,reducedMotion,levels,degen,position,targetLabelInsets}=settings.current,target=latest.current;
    const previousDisplay=display;
    const resumed=now-lastFrame>2000;lastFrame=now;
-   if(resumed){crossings.current.reset();cancelBurst.current?.();}
-   if(target==null){display=NaN;motion.reset();ticks=[];sampled=-Infinity;show(null);crossings.current.reset();cancelBurst.current?.();}
+   if(resumed){crossings.reset();cancelBurst.current?.();}
+   if(target==null){display=NaN;motion.reset();ticks=[];sampled=-Infinity;show(null);crossings.reset();cancelBurst.current?.();}
    else{
     display=motion.update(target,now,reducedMotion||resumed);
     // Re-anchor the ladder before a drifting price runs past its ticks.
@@ -189,31 +191,35 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
     if(now-sampled>=ALTIMETER_SAMPLE_MS){
      const keep=(Math.max(width,0)/ALTIMETER_FLOW_PX)*1000+2000;
      // Start flat, and again after a pause (a hidden tab stops the frames), so no line bridges the gap.
-     if(ticks.length===0||now-sampled>2000)ticks=[{t:now-keep,p:display}];
-     ticks.push({t:now,p:display});
-     while(ticks.length>2&&ticks[1].t<now-keep)ticks.shift();
+     if(now-sampled>2000)ticks=[];
+     appendTrailSample(ticks,{t:now,p:display},now-keep);
      sampled=now;show(target);
     }
    }
    const positions=layout.update(levels,display,spacing,height,now,reducedMotion||resumed,targetLabelInsets);
-   for(const level of levels){
-    const row=targetRows.current.get(level.id);if(!row)continue;
-    const label=targetLabels.current.get(level.id);
-    const position=positions.get(level.id);
-    if(!position){row.style.visibility='hidden';if(label)label.style.visibility='hidden';continue;}
-    const {anchor,labelTop,pinned}=position;
-    row.style.visibility=pinned?'hidden':'visible';
-    row.style.transform=`translateY(${anchor}px)`;
-    row.style.borderTopColor=pinned?'transparent':'currentColor';
-    if(pinned){if(row.dataset.higAltimeterPinned!==pinned)row.dataset.higAltimeterPinned=pinned;}
-    else if(row.dataset.higAltimeterPinned)delete row.dataset.higAltimeterPinned;
-    // Line tracking is immediate. Only the side offset eases, before collision and edge constraints.
-    if(label&&labelTop!==undefined){
-     label.style.visibility='visible';
-     label.style.transform=`translateY(${labelTop}px)`;
+   if(positions!==appliedPositions){
+    appliedPositions=positions;
+    targetLabelBounds=[];
+    for(const {labelTop} of positions.values())if(labelTop!==undefined)targetLabelBounds.push([labelTop,labelTop+18]);
+    for(const level of levels){
+     const row=targetRows.current.get(level.id);if(!row)continue;
+     const label=targetLabels.current.get(level.id);
+     const position=positions.get(level.id);
+     if(!position){row.style.visibility='hidden';if(label)label.style.visibility='hidden';continue;}
+     const {anchor,labelTop,pinned}=position;
+     row.style.visibility=pinned?'hidden':'visible';
+     row.style.transform=`translateY(${anchor}px)`;
+     row.style.borderTopColor=pinned?'transparent':'currentColor';
+     if(pinned){if(row.dataset.higAltimeterPinned!==pinned)row.dataset.higAltimeterPinned=pinned;}
+     else if(row.dataset.higAltimeterPinned)delete row.dataset.higAltimeterPinned;
+     // Line tracking is immediate. Only the side offset eases, before collision and edge constraints.
+     if(label&&labelTop!==undefined){
+      label.style.visibility='visible';
+      label.style.transform=`translateY(${labelTop}px)`;
+     }
     }
    }
-   const crossed=target==null||!levels.length?[]:crossings.current.update(display,levels);
+   const crossed=target==null?[]:crossings.update(display,levels,degen&&!reducedMotion);
    let trailEnd:number|undefined;
    // Keep DOM writes together; the canvas and labels use the same resolved geometry.
    if(context&&width>0){
@@ -221,8 +227,6 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
     if(surface.width!==w)surface.width=w;
     if(surface.height!==h)surface.height=h;
     context.setTransform(ratio,0,0,ratio,0,0);
-    const targetLabelBounds:(readonly [number,number])[]=[];
-    for(const {labelTop} of positions.values())if(labelTop!==undefined)targetLabelBounds.push([labelTop,labelTop+18]);
     const spread=position&&usable(position.breakEvenPrice)&&target!=null?(target-position.breakEvenPrice)*(position.side==='short'?-1:1):0;
     trailEnd=drawAltimeter(context,{width,height,now,phase:reducedMotion?0:gridPhase(now),ticks,display,anchor,spacing,font,targetLabelBounds,breakEvenPrice:position?.breakEvenPrice,colors:{grid:colors.nested,ladder:colors.muted,line:position?positionColor(spread,colors):colors.action},label:value=>{let text=labels.get(value);if(text===undefined){text=format!.format(value);labels.set(value,text);}return text;},labelWidth:text=>{let size=widths.get(text);if(size===undefined){size=context!.measureText(text).width;widths.set(text,size);}return size;}});
    }

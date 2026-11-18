@@ -3,10 +3,11 @@ import { ArrowDown } from '@bloxwap/icons/native/arrow-down';
 import React from 'react';
 import {Image,Pressable,View,type NativeScrollEvent,type NativeSyntheticEvent,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
-import {useColors,useFills,useHIG,useNumberLocale,usePresentNumber} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
 import {ChevronIcon} from './icons.js';
 import {ScreenHeader} from './screen-header.js';
+import {ListWithIntro,PickerFlatList} from './picker-flat-list.js';
 import {StickyHeaderLayout,stickyHeaderFill,useStickyHeaderScroll} from './sticky-header.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import type {AssetArtwork} from './asset-balance-row.js';
@@ -109,39 +110,55 @@ export interface TradeHistoryListBlockProps {
  testID?:string;
 }
 const pnlFormat:Intl.NumberFormatOptions={style:'currency',currency:'USD',signDisplay:'exceptZero',minimumSignificantDigits:4,maximumSignificantDigits:4};
+function formatLeverageText(leverage:number|null|undefined,locale?:string){
+ return leverage==null?'':`${formatNumber(leverage,locale)}×`;
+}
+function sideText(label:string,leverage:string,note?:string){
+ return `${label}${leverage?' '+leverage:''}${note?' '+note:''}`;
+}
 /** How a row reads its side: `Short 20×`, or `Short` without leverage. */
-export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{leverageNote?:string},labels:Pick<TradeHistoryListLabels,'long'|'short'>,locale?:string):string=>`${trade.side==='long'?labels.long:labels.short}${trade.leverage!=null?` ${formatNumber(trade.leverage,locale)}×`:''}${trade.leverageNote?` ${trade.leverageNote}`:''}`;
+export const tradeHistorySide=(trade:Pick<TradeHistoryItem,'side'|'leverage'>&{leverageNote?:string},labels:Pick<TradeHistoryListLabels,'long'|'short'>,locale?:string):string=>sideText(trade.side==='long'?labels.long:labels.short,formatLeverageText(trade.leverage,locale),trade.leverageNote);
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 const avatar=40,skeletons=[0,1,2,3],dot='·';
 const keyOf=(trade:TradeHistoryItem)=>trade.id;
 function Gap(){return <View style={{height:8}}/>;}
 /** Points up; a short turns it over. */
 function Arrow({color,down}:{color:string;down:boolean}){const Symbol=down?ArrowDown:ArrowUp;return <Symbol size={16} color={color}/>;}
-/** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
-export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,listChrome,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryListBlockProps){
- const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
- const listScroll=useStickyHeaderScroll();
+const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOptions,testID}:{
+ trade:TradeHistoryItem;long:string;short:string;onSelect?:TradeHistoryListBlockProps['onSelect'];pnlOptions:Intl.NumberFormatOptions;testID?:string;
+}){
+ const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale(),present=usePresentNumber();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});
  const meta={fontSize:14,lineHeight:20,color:colors.muted} as const;
- const draw=(trade:TradeHistoryItem)=>{
+ const pnl=trade.pnl;
   const side=trade.side==='long'?colors.up:colors.down,result=trade.pnlOptions??pnlOptions;
-  const reading=[trade.name,tradeHistorySide(trade,labels,locale),formatNumber(trade.pnl,locale,present(result)),trade.tag,trade.time].filter(Boolean).join(', ');
+  const amountId=testID?`${testID}-${trade.id}-pnl`:undefined;
+  const formatKey=result===pnlFormat?undefined:JSON.stringify(result);
+  const leverage=React.useMemo(()=>formatLeverageText(trade.leverage,locale),[trade.leverage,locale]);
+  const spokenPnl=React.useMemo(()=>formatNumber(pnl,locale,present(result)),[pnl,locale,present,result,formatKey]);
+  const reading=[trade.name,sideText(trade.side==='long'?long:short,leverage,trade.leverageNote),spokenPnl,trade.tag,trade.time].filter(Boolean).join(', ');
+  const amount=React.useMemo(()=><AnimatedNumberReadout value={pnl} options={result} tone={pnl==null||pnl===0?'text':pnl>0?'up':'down'} testID={amountId} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>,[pnl,result,formatKey,amountId]);
   const content=<>
    <View {...hidden}>{typeof trade.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:trade.icon}} style={shape as object}/>:<View style={shape}>{trade.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{trade.symbol??trade.name.slice(0,3)}</Text>}</View>}</View>
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
     <Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{trade.name}</Text>
-    <View testID={testID?`${testID}-${trade.id}-side`:undefined} style={{flexDirection:'row',alignItems:'center',gap:4}}><Arrow color={side} down={trade.side==='short'}/>{trade.leverage!=null?<Text style={{fontSize:14,lineHeight:20,fontWeight:'600',color:side}}>{`${formatNumber(trade.leverage,locale)}×`}</Text>:null}{trade.leverageNote?<Text testID={testID?`${testID}-${trade.id}-leverage-note`:undefined} numberOfLines={1} style={{...meta,flexShrink:1}}>{trade.leverageNote}</Text>:null}</View>
+    <View testID={testID?`${testID}-${trade.id}-side`:undefined} style={{flexDirection:'row',alignItems:'center',gap:4}}><Arrow color={side} down={trade.side==='short'}/>{trade.leverage!=null?<Text style={{fontSize:14,lineHeight:20,fontWeight:'600',color:side}}>{leverage}</Text>:null}{trade.leverageNote?<Text testID={testID?`${testID}-${trade.id}-leverage-note`:undefined} numberOfLines={1} style={{...meta,flexShrink:1}}>{trade.leverageNote}</Text>:null}</View>
    </View>
    <View {...hidden} style={trade.tag?{alignItems:'flex-end',justifyContent:'center',flexShrink:1}:{alignItems:'flex-end',justifyContent:'center'}}>
-    <AnimatedNumberReadout value={trade.pnl} options={result} tone={trade.pnl==null||trade.pnl===0?'text':trade.pnl>0?'up':'down'} testID={testID?`${testID}-${trade.id}-pnl`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>
+    {amount}
     {trade.tag?<View testID={testID?`${testID}-${trade.id}-meta`:undefined} style={{direction,flexDirection:'row',alignItems:'center',gap:4,flexShrink:1}}><Text numberOfLines={1} style={{...meta,flexShrink:1}}>{trade.tag}</Text>{trade.time?<><Text style={meta}>{dot}</Text><Text style={meta}>{trade.time}</Text></>:null}</View>
      :trade.time?<Text style={meta}>{trade.time}</Text>:null}
    </View>
   </>;
   return onSelect?<Pressable key={trade.id} testID={testID?`${testID}-${trade.id}`:undefined} accessibilityRole='button' accessibilityLabel={reading} onPress={()=>onSelect(trade)} style={({pressed})=>row(pressed)}>{content}<View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View></Pressable>
    :<View key={trade.id} testID={testID?`${testID}-${trade.id}`:undefined} accessible accessibilityLabel={reading} style={row(false)}>{content}</View>;
- };
+});
+/** A history of closed trades as one screen: a header, then one row per trade with the asset, its side and leverage in the market direction colour, and the net result in the market direction colour over its age. */
+export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerAction,pnlOptions=pnlFormat,loading,loadingLabel,error,notice,footer,renderList,listChrome,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:TradeHistoryListBlockProps){
+ const colors=useColors(),fills=useFills(),direction=useLayoutDirection();
+ const listScroll=useStickyHeaderScroll();
+ const draw=(trade:TradeHistoryItem)=><TradeRow trade={trade} long={labels.long} short={labels.short} onSelect={onSelect} pnlOptions={pnlOptions} testID={testID} key={trade.id}/>;
  // The empty and error lines keep 32 above them and none below: the block's (or the host sheet's) 16 bottom inset is the only space under the text.
  const plain={paddingTop:32,paddingBottom:0,textAlign:'center',fontSize:14,lineHeight:20} as const;
  const body=loading?<View testID={testID?`${testID}-loading`:undefined} accessible={!!loadingLabel} accessibilityLabel={loadingLabel} accessibilityState={{busy:true}} style={{gap:8}}>{skeletons.map(index=><View key={index} style={{minHeight:56,borderRadius:28,backgroundColor:fills.raised}}/>)}</View>
@@ -155,6 +172,13 @@ export function TradeHistoryListBlock({labels,trades,onSelect,onBack,headerActio
  const noticeView=notice!=null&&notice!==false?<View testID={testID?`${testID}-notice`:undefined} style={{gap:8}}>{notice}</View>:null;
  const footerView=footer!=null&&footer!==false?<View testID={testID?`${testID}-footer`:undefined} style={{gap:8}}>{footer}</View>:null;
  let hosted:React.ReactElement|null=null;
+ // A sticky block owns a bounded scroller. Keep the notice and footer in that scroller.
+ const windowed=!!stickyHeader&&!renderList&&!body&&trades.length>50;
+ const hasNotice=noticeView!=null;
+ if(windowed)return <PickerFlatList<TradeHistoryItem|null> listComponent={ListWithIntro<TradeHistoryItem>} data={trades} keyExtractor={item=>item?`trade:${item.id}`:'notice'} testID={testID} header={header}
+  headerTestID={testID?`${testID}-sticky-header`:'trade-history-sticky-header'} sticky scrollComponent={scrollComponent} background={stickyHeaderBackground} inset={16} direction={direction} rowHeight={64}
+  renderItem={({item,index})=><View style={{direction,paddingHorizontal:16,paddingTop:index===0||(index===1&&hasNotice)?16:index===1?0:8}}>{item?draw(item):noticeView}</View>}
+  ListFooterComponent={footerView?<View style={{direction,paddingHorizontal:16,paddingTop:16}}>{footerView}</View>:null}/>;
  if(!body&&renderList){
   const scroll=stickyHeader?{onScroll:listScroll.onScroll,scrollEventThrottle:listScroll.scrollEventThrottle}:null;
   const base={trades,renderItem:({item}:{item:TradeHistoryItem})=>draw(item),keyExtractor:keyOf,ItemSeparatorComponent:Gap,...scroll};

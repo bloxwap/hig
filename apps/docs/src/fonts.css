@@ -1,1 +1,28 @@
+@font-face {
+  font-family:"HIG Docs Sans";
+  src:url("../fonts/docs-sans-extended.woff2") format("woff2");
+  font-weight:100 900;
+  font-display:swap;
+}
+@font-face {
+  font-family:"HIG Docs Sans";
+  src:url("../fonts/docs-sans-common.woff2") format("woff2");
+  font-weight:100 900;
+  font-display:swap;
+  unicode-range:U+20-7E,U+A0,U+A3,U+B7,U+2013-2014,U+2018-2019,U+201C-201D,U+2026,U+20AC,U+2192,U+2197;
+}
+@font-face {
+  font-family:"HIG Docs Mono";
+  src:url("../fonts/docs-mono-extended.woff2") format("woff2");
+  font-weight:100 900;
+  font-display:swap;
+}
+@font-face {
+  font-family:"HIG Docs Mono";
+  src:url("../fonts/docs-mono-common.woff2") format("woff2");
+  font-weight:100 900;
+  font-display:swap;
+  unicode-range:U+20-7E,U+A0,U+A3,U+B7,U+2013-2014,U+2018-2019,U+201C-201D,U+2026,U+20AC,U+2192,U+2197;
+}
+:root { --font-bloxwap-sans: "HIG Docs Sans","HIG Docs Sans Fallback"; --font-bloxwap-mono: "HIG Docs Mono"; }
 body { margin: 0; font-family: var(--font-bloxwap-sans),system-ui,sans-serif; }

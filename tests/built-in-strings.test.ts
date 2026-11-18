@@ -72,5 +72,11 @@ describe('HIGMessages catalog',()=>{
   const wrong=resolveMessages(defaultMessages,{close:42 as unknown as string,pageOf:'Seite' as unknown as HIGMessages['pageOf']});
   expect(wrong.close).toBe('Close');expect(wrong.pageOf('1','2')).toBe('Page 1 of 2');
   expect(resolveMessages(defaultMessages)).toBe(defaultMessages);
+  expect(resolveMessages(fr,{close:fr.close})).not.toBe(fr);
+  expect(resolveMessages(fr,{close:fr.close,pageOf:fr.pageOf,dismiss:undefined},true)).toBe(fr);
+  expect(resolveMessages(fr,{pageOf:'invalid' as unknown as HIGMessages['pageOf']},true)).toBe(fr);
+  const formatter=()=> 'Page personnalisée';
+  expect(resolveMessages(fr,{pageOf:formatter},true).pageOf).toBe(formatter);
+  expect(fr.pageOf).toBe(defaultMessages.pageOf);
  });
 });

@@ -82,12 +82,7 @@ export function applyAmountKey(current:string,key:string,mode:SwapDenomination,d
  return limit!==undefined&&dot!==-1&&next.length-dot-1>limit?current:next;
 }
 /** Case-insensitive substring or in-order subsequence match. */
-export function fuzzyMatch(query:string,text:string):boolean{
- const needle=query.toLowerCase().replace(/\s+/g,''),haystack=text.toLowerCase();
- if(haystack.includes(needle))return true;
- let matched=0;for(let index=0;index<haystack.length&&matched<needle.length;index++)if(haystack[index]===needle[matched])matched++;
- return matched===needle.length;
-}
+export {fuzzyMatch} from '@bloxwap/hig/contracts';
 const numberMark='\uE000';
 /** A number in the swap card that can change while it is on screen. It always updates place by place (never by swapping the text), and `template` keeps it inside its localized sentence: `template={messages.swapFee}` renders "Fee " around the moving amount. */
 export function SwapNumber({template,...number}:AnimatedNumberProps&{template?:(value:string)=>string}){

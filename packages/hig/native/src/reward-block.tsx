@@ -1,9 +1,9 @@
 import React from 'react';
 import {formatCountdown,watchCountdown} from '@bloxwap/hig/contracts';
-import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {Image,Pressable,View,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
-import {useColors,useFills,useHIG,useNumberLocale,usePresentNumber} from './provider.js';
+import {useColors,useFills,useLayoutDirection,useMonoFontFamily,useNumberLocale,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {Button} from './button.js';
 import {SegmentedControl} from './radio-group.js';
@@ -12,6 +12,7 @@ import {AnimatedNumberReadout,NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
+import {ListWithIntro,PickerFlatList} from './picker-flat-list.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 import {figureProps,type Figure} from './figure.js';
 /** The promotion above the standings: a prize pool filling towards a goal, or a draw with a top prize. Every word is host text. */
@@ -93,6 +94,8 @@ export interface RewardBlockProps {
  header?:boolean;
  /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */
  scrollComponent?:React.ComponentType<ScrollViewProps>;
+ /** A host FlatList, such as a sheet-integrated list, that scrolls the entire screen. Its null cell holds the content before the standings. */
+ listComponent?:React.ComponentType<FlatListProps<RewardEntry|null>>;
  /** The column heading over the names: Top 25 by volume. */
  listTitle?:string;
  /** The column heading over the scores: Entries. */
@@ -134,25 +137,17 @@ const avatar=40,space=' ';
 export function rewardProgress(amount:number|null|undefined,goal:number|null|undefined):number|null{
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
-/** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
-export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries=noEntries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,header:showHeader=true,testID}:RewardBlockProps){
- const colors=useColors(),fills=useFills(),{direction,monoFontFamily}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
- const prefix=testID??'reward',tid=(part:string)=>`${prefix}-${part}`;
- const amount=promo?.amount,money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(typeof amount==='string'?null:amount,promo.goal):null;
- const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
- // A text caption is read with the figure; a host node (such as a live countdown) and a host figure read themselves.
- const captionText=typeof caption==='string'||typeof caption==='number'?String(caption):null,captionNode=captionText===null&&caption!=null&&caption!==false?caption:null;
- const hostFigure=promo?.figure!=null&&promo.figure!==false?promo.figure:null;
- const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;
- const figureStyle={fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9} as const,captionStyle={fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted} as const;
- const standing=(entry:RewardEntry,id:string,style?:ViewStyle,lead?:string)=>{
+const Standing=React.memo(function Standing({entry,id,style,lead,pinned,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive}:{
+ entry:RewardEntry;id:string;style?:ViewStyle;lead?:string;pinned?:boolean;scoreOptions:Intl.NumberFormatOptions;
+} & Pick<RewardBlockProps,'verifiedLabel'|'verifiedMark'|'verifiedMarkInteractive'>){
+ const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),monoFontFamily=useMonoFontFamily(),locale=useNumberLocale(),present=usePresentNumber();
   const figure=entry.detail!=null&&typeof entry.detail==='object'?entry.detail:null,detail=typeof entry.detail==='string'?entry.detail:undefined,score=entry.scoreOptions??scoreOptions;
   const said=figure?formatNumberReadout(figure.value,locale,present(figure.options),figure.formattedValue,figure.prefix,figure.suffix).text:detail;
-  const mine=!!entry.you,reading=[lead,String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,said,formatNumberReadout(entry.score,locale,present(score)).text].filter(Boolean).join(', ');
+  const mine=pinned||!!entry.you,reading=[lead,String(entry.rank),entry.name,entry.verified&&verifiedLabel?verifiedLabel:null,said,formatNumberReadout(entry.score,locale,present(score)).text].filter(Boolean).join(', ');
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   // An interactive host mark stays in the accessibility tree: the row's reading moves to the name, and the mark follows as its own element.
   const split=!!entry.verified&&verifiedMark!=null&&!!verifiedMarkInteractive;
-  return <View key={entry.id} testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,...style}}>
+  return <View testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:pinned?withAlpha(colors.action,0.12):fills.well,...(pinned?{marginTop:16,borderRadius:20}:null),...style}}>
    <Text {...hidden} style={{minWidth:24,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.muted}}>{entry.rank}</Text>
    <View {...hidden}>{typeof entry.avatar==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:entry.avatar}} style={disc as object}/>:<View style={disc}>{entry.avatar??<Text maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{entry.name.slice(0,2)}</Text>}</View>}</View>
    <View {...(split?null:hidden)} style={{flex:1,flexShrink:1,minWidth:0}}>
@@ -165,12 +160,30 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    </View>
    <View {...hidden}><AnimatedNumberReadout value={entry.score} options={score} tone={mine?'positive':'text'} testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
   </View>;
- };
- // Rows are built here so their test ids are code, not JSX text.
- const pinned=you?standing({...you,you:true},tid('you'),{marginTop:16,borderRadius:20,backgroundColor:withAlpha(colors.action,0.12)},youLabel):null;
- const rows=entries.map(entry=>standing(entry,tid(`row-${entry.id}`)));
+});
+const firstStanding:ViewStyle={borderTopLeftRadius:20,borderTopRightRadius:20,overflow:"hidden"};
+const lastStanding:ViewStyle={borderBottomLeftRadius:20,borderBottomRightRadius:20,overflow:"hidden"};
+const onlyStanding:ViewStyle={borderRadius:20,overflow:"hidden"};
+/** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
+export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries=noEntries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,listComponent,header:showHeader=true,testID}:RewardBlockProps){
+ const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),monoFontFamily=useMonoFontFamily(),locale=useNumberLocale(),present=usePresentNumber();
+ const prefix=testID??'reward',tid=(part:string)=>`${prefix}-${part}`;
+ const amount=promo?.amount,money=promo?.amountOptions??wholeDollars,reached=promo?rewardProgress(typeof amount==='string'?null:amount,promo.goal):null;
+ const caption=typeof promo?.caption==='function'?promo.goal!==undefined?promo.caption(formatNumber(promo.goal,locale,present(money))):undefined:promo?.caption;
+ // A text caption is read with the figure; a host node (such as a live countdown) and a host figure read themselves.
+ const captionText=typeof caption==='string'||typeof caption==='number'?String(caption):null,captionNode=captionText===null&&caption!=null&&caption!==false?caption:null;
+ const hostFigure=promo?.figure!=null&&promo.figure!==false?promo.figure:null;
+ const caps={fontFamily:monoFontFamily,fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase'} as const;
+ const figureStyle={fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9} as const,captionStyle={fontFamily:monoFontFamily,fontSize:15,lineHeight:22,color:colors.muted} as const;
+ const standing=(entry:RewardEntry,style?:ViewStyle)=><Standing key={entry.id} entry={entry} id={tid(`row-${entry.id}`)} style={style} scoreOptions={scoreOptions}
+  verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
+ const pinned=you?<Standing key={you.id} pinned entry={you} id={tid('you')} lead={youLabel} scoreOptions={scoreOptions}
+  verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>:null;
+
  const header=<ScreenHeader testID={prefix} title={title} onBack={onBack} action={headerAction}/>;
  const small={fontSize:14,lineHeight:21,color:colors.muted} as const;
+ const windowed=!!listComponent||(!!showHeader&&!!stickyHeader&&!loading&&entries.length>50);
+ const cells=React.useMemo<readonly (RewardEntry|null)[]>(()=>listComponent?(loading?[null]:[null,...entries]):entries,[listComponent,entries,loading]);
  const list=loading?<View testID={tid('loading')} accessible={!!loadingLabel} accessibilityLabel={loadingLabel} accessibilityState={{busy:true}} style={{gap:2,marginTop:16,borderRadius:20,overflow:'hidden'}}>
    {[0,1,2,3,4].map(index=><View key={index} style={{minHeight:64,backgroundColor:fills.raised}}/>)}
   </View>:entries.length>0||listTitle||scoreTitle?<View testID={tid('list')} style={{gap:8,marginTop:16}}>
@@ -178,14 +191,14 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
     <Text testID={tid('list-title')} style={{...caps,flexShrink:1,color:colors.muted}}>{listTitle}</Text>
     <Text testID={tid('score-title')} style={{...caps,flexShrink:1,color:colors.muted,textAlign:'right'}}>{scoreTitle}</Text>
    </View>:null}
-   {entries.length>0?<View testID={tid('rows')} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{rows}</View>:null}
+   {!windowed&&entries.length>0?<View testID={tid('rows')} style={{gap:2,borderRadius:20,overflow:'hidden'}}>{entries.map(entry=>standing(entry))}</View>:null}
   </View>:null;
  const pages=pagination?<View testID={tid('pagination')} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8,marginTop:16}}>
    <View style={{flex:1,alignItems:'flex-start'}}>{pagination.previous?<Button testID={tid('previous')} intent='secondary' disabled={pagination.previous.disabled} onPress={pagination.previous.onSelect}>{pagination.previous.label}</Button>:null}</View>
    {pagination.label?<Text testID={tid('page')} accessibilityLiveRegion='polite' style={{...small,fontFamily:monoFontFamily,textAlign:'center'}}>{pagination.label}</Text>:null}
    <View style={{flex:1,alignItems:'flex-end'}}>{pagination.next?<Button testID={tid('next')} intent='secondary' disabled={pagination.next.disabled} onPress={pagination.next.onSelect}>{pagination.next.label}</Button>:null}</View>
   </View>:null;
- const body=<>
+ const beforeRows=<>
   {promo?<Surface testID={tid('promo')} style={{gap:12,marginTop:16}}>
    <View style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
     <Text testID={tid('eyebrow')} style={{...caps,flexShrink:1,color:colors.muted}}>{promo.eyebrow}</Text>
@@ -220,9 +233,22 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
   {pinned}
   {status?<Text testID={tid('status')} accessibilityLiveRegion='polite' style={{...small,marginTop:16,paddingHorizontal:4}}>{status}</Text>:null}
   {list}
+ </>;
+ const afterRows=<>
   {pages}
   {footnote?<Text testID={tid('footnote')} style={{fontSize:14,lineHeight:21,color:colors.muted,marginTop:16,paddingHorizontal:4}}>{footnote}</Text>:null}
  </>;
+ if(windowed)return <PickerFlatList listComponent={listComponent??ListWithIntro<RewardEntry>} data={cells} keyExtractor={entry=>entry?`standing:${entry.id}`:'intro'} testID={testID}
+  header={showHeader?header:null} headerTestID={tid('sticky-header')} sticky={!!showHeader&&stickyHeader} background={stickyHeaderBackground} scrollComponent={scrollComponent}
+  inset={16} direction={direction} rowHeight={66}
+  renderItem={({item,index})=>{
+   if(!item)return <View style={{paddingHorizontal:16}}>{beforeRows}</View>;
+   const first=index===1,last=index===entries.length;
+   return <View style={{paddingHorizontal:16,paddingTop:first?(listTitle||scoreTitle?8:0):2}}>
+    {standing(item,first&&last?onlyStanding:first?firstStanding:last?lastStanding:undefined)}
+   </View>;
+  }} ListFooterComponent={<View style={{paddingHorizontal:16}}>{afterRows}</View>}/>;
+ const body=<>{beforeRows}{afterRows}</>;
  if(!showHeader)return <View testID={testID} style={{padding:16,paddingTop:0}}>{body}</View>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID={tid('sticky-header')} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
  return <View testID={testID} style={{padding:16}}>

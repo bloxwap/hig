@@ -46,12 +46,12 @@ it('SoundHapticsBlock: one card per channel with a switch, and the volume steps 
 });
 it('SoundHapticsBlock: the device and a live meter for an input channel; extras hide while off; a disabled channel is dimmed and blocked',()=>{
  let view=mount(SoundHapticsBlock,{title:'Sound',sections:sections()});
- expect(text(host(view,'sound-mic-source'))).toBe('iPhone Microphone');expect(flat(host(view,'sound-mic-level'))).toMatchObject({width:'17%',backgroundColor:nativeSrgb.action});
+ expect(text(host(view,'sound-mic-source'))).toBe('iPhone Microphone');expect(flat(host(view,'sound-mic-level'))).toMatchObject({width:'100%',transform:[{scaleX:.17}],transformOrigin:'left center',backgroundColor:nativeSrgb.action});
  expect(flat(host(view,'sound-mic-meter'))).toMatchObject({height:4});expect(host(view,'sound-mic-meter').props.importantForAccessibility).toBe('no-hide-descendants');
  expect(button(view,'sound-mic-volume-1').props.intent).toBe('primary');
  view=mount(SoundHapticsBlock,{title:'Sound',sections:sections({checked:false})});expect(has(view,'sound-effects-body')).toBe(false);
  view=mount(SoundHapticsBlock,{title:'Sound',sections:[{id:'mic',label:'Mic',checked:true,onCheckedChange:noop,level:null,volume:{label:'Gain',options:[0.5,1],value:1,onValueChange:noop}}]});
- expect(flat(host(view,'sound-mic-level')).width).toBe('0%');expect(has(view,'sound-mic-volume-0.25')).toBe(false);expect(button(view,'sound-mic-volume-0.5').props.children).toBe('50%');
+ expect(flat(host(view,'sound-mic-level')).transform).toEqual([{scaleX:0}]);expect(has(view,'sound-mic-volume-0.25')).toBe(false);expect(button(view,'sound-mic-volume-0.5').props.children).toBe('50%');
  const flip=jest.fn();view=mount(SoundHapticsBlock,{title:'Sound',sections:sections({disabled:true,onCheckedChange:flip})});
  expect(host(view,'sound-effects-switch').props.accessibilityState).toMatchObject({disabled:true});expect(flat(host(view,'sound-effects-switch')).opacity).toBe(0.5);expect(button(view,'sound-effects-volume-0.5').props.disabled).toBe(true);
  press(view,'sound-effects-switch');expect(flip).not.toHaveBeenCalled();
@@ -174,4 +174,21 @@ it('lays a setting row out as web does: a 48dp switch with 12 above and below it
  expect(flat(host(view,'signals-trend-items')).gap).toBe(2);
  view=mount(SoundHapticsBlock,{title:'Sound',sections:sections()});
  expect(flat(host(view,'sound-effects'))).toMatchObject({paddingTop:4,paddingBottom:16});expect(flat(host(view,'sound-haptics'))).toMatchObject({paddingTop:4,paddingBottom:4});
+});
+
+it('updates the microphone level without rebuilding unchanged volume steps',()=>{
+ let reads=0;
+ const options=[0.25,0.5,0.75,1];
+ Object.defineProperty(options,0,{get:()=>{reads++;return 0.25;}});
+ const onValueChange=jest.fn();
+ const app=(level,value)=>h(HIGProvider,{reducedMotion:true,direction:'rtl'},h(SoundHapticsBlock,{title:'Audio',sections:[{id:'mic',label:'Mic',checked:true,onCheckedChange:noop,levelLabel:'Input level',level,volume:{label:'Volume',options,value,onValueChange}}]}));
+ act(()=>{root=render(app(.1,.25));});
+ expect(reads).toBeGreaterThan(0);
+ reads=0;
+ act(()=>root.update(app(.8,.25)));
+ expect(host(root.root,'sound-mic-meter').props.accessibilityValue.now).toBe(80);
+ expect(reads).toBe(0);
+ expect(flat(host(root.root,'sound-mic-level'))).toMatchObject({width:'100%',transform:[{scaleX:.8}],transformOrigin:'right center'});
+ act(()=>root.update(app(.8,.5)));
+ expect(button(root.root,'sound-mic-volume-0.5').props.accessibilityState.selected).toBe(true);
 });

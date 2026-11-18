@@ -18,8 +18,8 @@ interface Extent {left:number;right:number}
  * `alone` is one that runs with nothing else on its element, as a plain animation between two positions.
  */
 interface Turn {delta:number;frames:[string,string];animation:Animation;timing:NumberFlowWebTiming;alone:boolean;landed:()=>void}
-interface Reel {frame:HTMLElement;strip:HTMLElement;origin:number;target:number;length:number;glyphs:Map<number,HTMLElement>;active:Turn[]}
-const part='[data-hig-flow-key]',drawnDigit='.hig-number-flow-digit';
+interface Reel {frame:HTMLElement;strip:HTMLElement;origin:number;target:number;length:number;glyphs:Map<number,HTMLElement>;active:Turn[];column?:{element:HTMLElement;low:number;high:number}}
+const part='[data-hig-flow-key]';
 // A browser without `linear()` throws on the first animation that asks for it; from then on every animation takes the fallback.
 let sampledEasing=true;
 // Rolls and slides are added to a transform that already holds the resting position. A browser from before 2023 ignores
@@ -63,42 +63,61 @@ export const numberFlowCommit={
  */
 export class NumberFlowEngine {
  private root:HTMLElement|null=null;private before:Map<string,Before>|null=null;private extent:Extent|null=null;private clip:Animation|null=null;
+ private stable:{parts:NodeListOf<HTMLElement>;left:number[];core:HTMLElement|null;edges:DOMRect|undefined}|null=null;
  private readonly reels=new Map<HTMLElement,Reel>();private readonly slides=new Map<HTMLElement,Turn[]>();private readonly running=new Set<Animation>();private readonly fades=new Map<Element,Animation>();private ghosts=0;private epoch=0;
  /** The element holding the parts. Fading copies are drawn in the empty layers React left in it: one inside the digits, clipped with them, and one for the signs and affixes around them. */
  attach(root:HTMLElement|null){this.root=root;}
  /** Whether anything is still moving. */
  get busy(){return this.running.size>0||this.reels.size>0;}
  /** First: where every part is now, read before the commit that changes them. */
- measure(){
-  const root=this.root;if(!root){this.before=null;return;}
+ measure(sameParts=false){
+  this.stable=null;this.before=null;this.extent=null;
+  const root=this.root;if(!root)return;
+  // React keeps the keyed elements. Only horizontal positions and clip edges can move.
+  if(sameParts){
+   const parts=root.querySelectorAll<HTMLElement>(part),core=root.querySelector<HTMLElement>('.hig-number-flow-digits');
+   this.stable={parts,left:Array.from(parts,element=>element.getBoundingClientRect().left),core,edges:core?.getBoundingClientRect()};
+   return;
+  }
   const before=new Map<string,Before>(),core=root.querySelector<HTMLElement>('.hig-number-flow-digits')?.getBoundingClientRect();this.extent=core?{left:core.left,right:core.right}:null;
-  for(const element of root.querySelectorAll<HTMLElement>(part)){const rect=element.getBoundingClientRect(),shown=element.querySelector(drawnDigit)??element;
+  for(const element of root.querySelectorAll<HTMLElement>(part)){const rect=element.getBoundingClientRect(),shown=element.firstElementChild??element;
    before.set(element.dataset.higFlowKey as string,{element,left:rect.left,top:rect.top,opacity:this.fades.has(element)?Number(getComputedStyle(element).opacity)||0:1,text:shown.textContent??''});}
   this.before=before;
  }
  /** Last, invert, play: slide every part from where it was, fade in what arrived and fade out a copy of what left. Does nothing without a `measure` since the last call. */
  flip(motion:NumberFlowWebMotion){
+  if(this.stable){
+   const {parts,left,core,edges:prior}=this.stable;this.stable=null;
+   if(!additive())return;
+   const shifts=Array.from(parts,(element,index)=>left[index]-element.getBoundingClientRect().left);
+   const edges=core?.getBoundingClientRect();
+   if(shifts.some(dx=>Math.abs(dx)>0.01)||edges&&prior&&(Math.abs(edges.left-prior.left)>0.01||Math.abs(edges.right-prior.right)>0.01)){
+    this.write(()=>{shifts.forEach((dx,index)=>this.slide(parts[index],dx,motion.transform));this.clipEdges(core,edges,prior??null,motion.transform);});
+   }
+   return;
+  }
   const root=this.root,before=this.before,extent=this.extent;this.before=null;this.extent=null;if(!root||!before||!additive())return;
-  const core=root.querySelector<HTMLElement>('.hig-number-flow-digits'),layers={digits:core?.querySelector<HTMLElement>(':scope > .hig-number-flow-ghosts')??null,around:root.querySelector<HTMLElement>(':scope > .hig-number-flow-ghosts')};
+  const core=root.querySelector<HTMLElement>('.hig-number-flow-digits');
   // Read everything first, then write, so the commit costs one layout.
-  const now=Array.from(root.querySelectorAll<HTMLElement>(part)),keys=now.map(element=>element.dataset.higFlowKey as string),present=new Set(keys),rects=now.map(element=>element.getBoundingClientRect()),edges=core?.getBoundingClientRect(),origins={digits:layers.digits?.getBoundingClientRect(),around:layers.around?.getBoundingClientRect()};
+  const now=Array.from(root.querySelectorAll<HTMLElement>(part)),keys=now.map(element=>element.dataset.higFlowKey as string),present=new Set(keys),rects=now.map(element=>element.getBoundingClientRect()),edges=core?.getBoundingClientRect();
+  const layers:{digits?:HTMLElement|null;around?:HTMLElement|null}={},origins:{digits?:DOMRect;around?:DOMRect}={};
+  for(const [key,prior] of before){
+   if(present.has(key)||key.startsWith('ghost:')||!prior.text)continue;
+   const kind=/^(?:digit|sep):/.test(key)?'digits':'around';
+   if(layers[kind]===undefined){
+    layers[kind]=(kind==='digits'?core:root)?.querySelector<HTMLElement>(':scope > .hig-number-flow-ghosts')??null;
+    origins[kind]=layers[kind]?.getBoundingClientRect();
+   }
+  }
   const shift=new Map<string,number>();
   now.forEach((_,index)=>{const prior=before.get(keys[index]);if(prior&&!keys[index].startsWith('ghost:'))shift.set(keys[index],prior.left-rects[index].left);});
   // Everything from here on writes.
   this.write(()=>{
   // A part with no place of its own in both readings travels with its nearest neighbour that has one, on the side it is anchored to.
   const travel=(order:readonly string[],index:number,side:-1|1)=>{for(const direction of [side,-side])for(let at=index+direction;at>=0&&at<order.length;at+=direction){const dx=shift.get(order[at]);if(dx!==undefined)return dx;}return 0;};
-  const slide=(element:HTMLElement,dx:number)=>{if(Math.abs(dx)<=0.01)return;
-   const frames:[string,string]=[`translateX(${dx}px)`,'translateX(0px)'],flight=this.join(element,this.slides.get(element)??[]),alone=!flight.length&&retimable();
-   const move:Omit<Turn,'animation'>&{animation:Animation|null}={delta:dx,frames,animation:null,timing:motion.transform,alone,landed:()=>{const rest=(this.slides.get(element)??[]).filter(other=>other!==move);if(rest.length)this.slides.set(element,rest);else this.slides.delete(element);}};
-   // A part rests where the layout puts it, so alone its slide is these same keyframes without the addition.
-   move.animation=this.play(element,{transform:frames},motion.transform,alone?{}:{composite:'add'},move.landed);
-   if(move.animation)flight.push(move as Turn);
-   if(flight.length)this.slides.set(element,flight);else this.slides.delete(element);
-  };
   now.forEach((element,index)=>{const key=keys[index],prior=before.get(key);
-   if(prior){slide(element,prior.left-rects[index].left);return;}
-   slide(element,travel(keys,index,numberFlowAnchorSide(key)));
+   if(prior){this.slide(element,prior.left-rects[index].left,motion.transform);return;}
+   this.slide(element,travel(keys,index,numberFlowAnchorSide(key)),motion.transform);
    const fade=this.play(element,{opacity:[0,1]},motion.opacity,{},()=>this.fades.delete(element));if(fade)this.fades.set(element,fade);
   });
   const order=Array.from(before.keys());
@@ -109,46 +128,94 @@ export class NumberFlowEngine {
    const dx=travel(order,index,numberFlowAnchorSide(key)),ghost=document.createElement('span');
    ghost.className=`${prior.element.className} hig-number-flow-ghost`;ghost.dataset.higFlowKey=`ghost:${++this.ghosts}`;ghost.textContent=prior.text;
    ghost.style.left=`${prior.left-origin.left-dx}px`;ghost.style.top=`${prior.top-origin.top}px`;layer.appendChild(ghost);
-   slide(ghost,dx);
+   this.slide(ghost,dx,motion.transform);
    if(!this.play(ghost,{opacity:[prior.opacity,0]},motion.opacity,{fill:'forwards'},()=>ghost.remove()))ghost.remove();
   });
   // The digits' clip starts at their old edges and travels to their new ones with the parts.
-  if(core&&edges&&extent){const left=extent.left-edges.left,right=edges.right-extent.right;
-   if(Math.abs(left)>0.01||Math.abs(right)>0.01){if(this.clip)this.stop(this.clip);this.clip=this.play(core,{clipPath:[`inset(-1em ${right}px -1em ${left}px)`,'inset(-1em 0px -1em 0px)']},motion.transform,{},()=>{this.clip=null;});}}
+  this.clipEdges(core,edges,extent,motion.transform);
   });
  }
+ private slide(element:HTMLElement,dx:number,timing:NumberFlowWebTiming){if(Math.abs(dx)<=0.01)return;
+   const frames:[string,string]=[`translateX(${dx}px)`,'translateX(0px)'],flight=this.join(element,this.slides.get(element)??[]),alone=!flight.length&&retimable();
+   const move:Omit<Turn,'animation'>&{animation:Animation|null}={delta:dx,frames,animation:null,timing,alone,landed:()=>{const rest=(this.slides.get(element)??[]).filter(other=>other!==move);if(rest.length)this.slides.set(element,rest);else this.slides.delete(element);}};
+   // A part rests where the layout puts it, so alone its slide is these same keyframes without the addition.
+   move.animation=this.play(element,{transform:frames},timing,alone?{}:{composite:'add'},move.landed);
+   if(move.animation)flight.push(move as Turn);
+   if(flight.length)this.slides.set(element,flight);else this.slides.delete(element);
+ }
+
+ private clipEdges(core:HTMLElement|null,edges:DOMRect|undefined,extent:Extent|null,timing:NumberFlowWebTiming){
+  if(core&&edges&&extent){const left=extent.left-edges.left,right=edges.right-extent.right;
+   if(Math.abs(left)>0.01||Math.abs(right)>0.01){if(this.clip)this.stop(this.clip);this.clip=this.play(core,{clipPath:[`inset(-1em ${right}px -1em ${left}px)`,'inset(-1em 0px -1em 0px)']},timing,{},()=>{this.clip=null;});}}
+ }
  /** Turn the places whose digits changed. `glyphs` are the ten digits of the reading's numbering system, zero first. */
- spin(spins:ReadonlyMap<string,NumberFlowSpin>,glyphs:readonly string[],timing:NumberFlowWebTiming){
-  const root=this.root;if(!root||!spins.size||!additive())return;
-  this.write(()=>{for(const place of root.querySelectorAll<HTMLElement>('[data-hig-flow-digit]')){
-   const spin=spins.get(place.dataset.higFlowKey as string);if(!spin||!spin.delta)continue;
-   let reel=this.reels.get(place);
-   if(reel&&reel.length!==spin.length){this.settle(place,reel);reel=undefined;}
-   if(!reel){const frame=document.createElement('span'),strip=document.createElement('span');frame.className='hig-number-flow-window';strip.className='hig-number-flow-strip';frame.appendChild(strip);place.appendChild(frame);place.dataset.spinning='';reel={frame,strip,origin:spin.from,target:spin.from,length:spin.length,glyphs:new Map(),active:[]};this.reels.set(place,reel);}
-   const turning=reel,target=turning.target+spin.delta;
-   // A glyph is put on its row with a transform, the unit the strip travels in: WebKit resolves a transform's percentages against
-   // the box snapped to device pixels and `top` against the unsnapped one, so rows placed with `top` drift from the strip's
-   // travel by up to half a device pixel a glyph, and the digit would jump by that much when the reel is taken away.
-   // The strip holds the glyphs between wherever the place can be drawn right now (its target less what is still in flight) and
-   // its new target. A place that keeps turning the same way faster than it settles would grow without bound, so past four
-   // turns of the reel the turns in flight land at once and this one starts from the last target.
-   let low=turning.target,high=turning.target;for(const turn of turning.active){if(turn.delta>0)low-=turn.delta;else high-=turn.delta;}
-   low=Math.min(low,target);high=Math.max(high,target);
-   if(high-low>turning.length*4){for(const turn of turning.active)this.stop(turn.animation);turning.active=[];low=Math.min(turning.target,target);high=Math.max(turning.target,target);}
-   for(const [position,glyph] of turning.glyphs)if(position<low||position>high){glyph.remove();turning.glyphs.delete(position);}
-   for(let position=low;position<=high;position++)if(!turning.glyphs.has(position)){const glyph=document.createElement('span');glyph.className='hig-number-flow-glyph';glyph.textContent=glyphs[numberFlowGlyph(position,turning.length)]??'';glyph.style.transform=`translateY(${(position-turning.origin)*100}%)`;turning.strip.appendChild(glyph);turning.glyphs.set(position,glyph);}
-   turning.target=target;turning.strip.style.transform=`translateY(${-(target-turning.origin)*100}%)`;
-   turning.active=this.join(turning.strip,turning.active);
-   const rest=-(target-turning.origin)*100,frames:[string,string]=[`translateY(${spin.delta*100}%)`,'translateY(0%)'],alone=!turning.active.length&&retimable();
-   const turn:Omit<Turn,'animation'>&{animation:Animation|null}={delta:spin.delta,frames,animation:null,timing,alone,landed:()=>{turning.active=turning.active.filter(other=>other!==turn);if(!turning.active.length&&this.reels.get(place)===turning)this.settle(place,turning);}};
-   // Alone, the turn is written from where the strip is to where it rests; in company it is added to the strip's resting place.
-   turn.animation=alone?this.play(turning.strip,{transform:[`translateY(${rest+spin.delta*100}%)`,`translateY(${rest}%)`]},timing,{},turn.landed):this.play(turning.strip,{transform:frames},timing,{composite:'add'},turn.landed);
-   if(turn.animation)turning.active.push(turn as Turn);else if(!turning.active.length)this.settle(place,turning);
-  }});
+ spin(spins:ReadonlyMap<string,NumberFlowSpin>,glyphs:readonly string[],timing:NumberFlowWebTiming,pruneDetached=false){
+  const root=this.root;if(!root||(!spins.size&&!pruneDetached)||!additive())return;
+  this.write(()=>{
+   // With only digit rolls enabled there is no layout snapshot to retire places that left.
+   if(pruneDetached)for(const [place,reel] of this.reels)if(!root.contains(place))this.settle(place,reel);
+   if(!spins.size)return;
+   for(const place of root.querySelectorAll<HTMLElement>('[data-hig-flow-digit]')){
+    const spin=spins.get(place.dataset.higFlowKey as string);if(!spin||!spin.delta)continue;
+    let reel=this.reels.get(place);
+    if(reel&&reel.length!==spin.length){this.settle(place,reel);reel=undefined;}
+    const firstRoll=!reel;
+    if(!reel){const frame=document.createElement('span'),strip=document.createElement('span');frame.className='hig-number-flow-window';strip.className='hig-number-flow-strip';frame.appendChild(strip);reel={frame,strip,origin:spin.from,target:spin.from,length:spin.length,glyphs:new Map(),active:[]};this.reels.set(place,reel);}
+    const turning=reel,target=turning.target+spin.delta;
+    // A glyph is put on its row with a transform, the unit the strip travels in: WebKit resolves a transform's percentages against
+    // the box snapped to device pixels and `top` against the unsnapped one, so rows placed with `top` drift from the strip's
+    // travel by up to half a device pixel a glyph, and the digit would jump by that much when the reel is taken away.
+    // The strip holds the glyphs between wherever the place can be drawn right now (its target less what is still in flight) and
+    // its new target. A place that keeps turning the same way faster than it settles would grow without bound, so past four
+    // turns of the reel the turns in flight land at once and this one starts from the last target.
+    let low=turning.target,high=turning.target;for(const turn of turning.active){if(turn.delta>0)low-=turn.delta;else high-=turn.delta;}
+    low=Math.min(low,target);high=Math.max(high,target);
+    if(high-low>turning.length*4){for(const turn of turning.active)this.stop(turn.animation);turning.active=[];low=Math.min(turning.target,target);high=Math.max(turning.target,target);}
+    const priorColumn=turning.column;
+    // Expand a partial column or a destination inside it back to individually aligned rows.
+    if(priorColumn&&(low>priorColumn.low||high<priorColumn.high||(target>priorColumn.low&&target<=priorColumn.high))){
+     priorColumn.element.remove();turning.column=undefined;
+    }
+    // Position the first and last rows independently, keeping both ends aligned even when multiline spacing rounds.
+    if(firstRoll&&high-low>=4){
+     const column=document.createElement('span');column.className='hig-number-flow-glyph';
+     column.style.transform=`translateY(${(low-turning.origin)*100}%)`;
+     let text=glyphs[numberFlowGlyph(low,turning.length)];
+     for(let position=low+1;position<high;position++)text+='\n'+glyphs[numberFlowGlyph(position,turning.length)];
+     column.textContent=text;
+     turning.strip.appendChild(column);turning.column={element:column,low,high:high-1};
+    }
+    let spare:HTMLElement[]|undefined;
+    for(const [position,glyph] of turning.glyphs)if(position<low||position>high){
+     (spare??=[]).push(glyph);
+     turning.glyphs.delete(position);
+    }
+    for(let position=low;position<=high;position++){
+     if(turning.column&&position===turning.column.low){position=turning.column.high;continue;}
+     if(turning.glyphs.has(position))continue;
+     const reused=spare?.pop(),glyph=reused??document.createElement('span');
+     glyph.textContent=glyphs[numberFlowGlyph(position,turning.length)]??'';
+     glyph.style.transform=`translateY(${(position-turning.origin)*100}%)`;
+     if(!reused){glyph.className='hig-number-flow-glyph';turning.strip.appendChild(glyph);}
+     turning.glyphs.set(position,glyph);
+    }
+    if(spare)for(const unused of spare)unused.remove();
+    turning.target=target;turning.strip.style.transform=`translateY(${-(target-turning.origin)*100}%)`;
+    if(firstRoll){place.appendChild(turning.frame);place.dataset.spinning='';}
+    turning.active=this.join(turning.strip,turning.active);
+    const rest=-(target-turning.origin)*100,frames:[string,string]=[`translateY(${spin.delta*100}%)`,'translateY(0%)'],alone=!turning.active.length&&retimable();
+    const turn:Omit<Turn,'animation'>&{animation:Animation|null}={delta:spin.delta,frames,animation:null,timing,alone,landed:()=>{turning.active=turning.active.filter(other=>other!==turn);if(!turning.active.length&&this.reels.get(place)===turning)this.settle(place,turning);}};
+    // Alone, the turn is written from where the strip is to where it rests; in company it is added to the strip's resting place.
+    turn.animation=alone?this.play(turning.strip,{transform:[`translateY(${rest+spin.delta*100}%)`,`translateY(${rest}%)`]},timing,{},turn.landed):this.play(turning.strip,{transform:frames},timing,{composite:'add'},turn.landed);
+    if(turn.animation)turning.active.push(turn as Turn);else if(!turning.active.length)this.settle(place,turning);
+   }
+  });
  }
  /** Stop everything where it is going: the parts are left exactly as React drew them. */
  cancel(){
-  this.before=null;this.extent=null;this.clip=null;this.epoch++;this.slides.clear();
+  this.stable=null;this.before=null;this.extent=null;this.clip=null;this.epoch++;
+  if(!this.busy)return;
+  this.slides.clear();
   for(const [place,reel] of Array.from(this.reels))this.settle(place,reel);
   for(const animation of Array.from(this.running))this.stop(animation);
   this.fades.clear();for(const layer of this.root?.querySelectorAll('.hig-number-flow-ghosts')??[])layer.replaceChildren();

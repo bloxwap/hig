@@ -2,7 +2,7 @@
 import React,{useState} from 'react';
 import {readFileSync} from 'node:fs';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen,within} from '@testing-library/react';
+import {act,cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {FromPickerBlock,ToPickerBlock} from '../packages/hig/react/src/blocks/pickers';
 import type {SwapToken} from '../packages/hig/react/src/blocks/swap-block';
@@ -88,4 +88,83 @@ describe('FromPickerBlock',()=>{
  it('is free of overlay and sheet backends, so a host can place it in any container',()=>{
   expect(readFileSync('packages/hig/react/src/blocks/pickers.tsx','utf8')).not.toMatch(/dialog|gesture-sheet|radix|vaul/);
  });
+});
+
+it('ranks each available hot token once while preserving the remaining catalog order',()=>{
+ const props={tokens,onSelect:vi.fn()};
+ const {rerender}=render(<ToPickerBlock {...props} hotTokenIds={['missing',aero.id,aero.id,eth.id]}/>);
+ expect(rows()).toEqual([aero.name,eth.name,usdc.name]);
+ rerender(<ToPickerBlock {...props} hotTokenIds={[aero.id,usdc.id,eth.id]}/>);
+ expect(rows()).toEqual([eth.name,usdc.name,aero.name]);
+});
+
+it('windows a large token catalog while retaining named sections and full counts',()=>{
+ const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),name:'Token '+i}));
+ const hot=catalog.slice(-100).map(token=>token.id);
+ render(<ToPickerBlock tokens={catalog} hotTokenIds={hot} onSelect={vi.fn()}/>);
+ const lists=screen.getAllByRole('list');
+ expect(lists).toHaveLength(2);
+ expect(lists.map(list=>list.querySelector('[role=listitem]')?.getAttribute('aria-setsize'))).toEqual(['100','900']);
+ expect(screen.getAllByRole('listitem').length).toBeLessThan(65);
+});
+
+it('scans a large catalog once per typing burst and resolves an immediate Enter against the field',()=>{
+ vi.useFakeTimers();
+ try{
+  let reads=0;
+  const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),get keywords(){reads++;return 'key'+i;}}));
+  const select=vi.fn();
+  const view=render(<ToPickerBlock tokens={catalog} onSelect={select}/>);
+  const input=screen.getByRole('searchbox') as HTMLInputElement;
+  for(const value of ['k','ke','key999'])fireEvent.change(input,{target:{value}});
+  expect(input.value).toBe('key999');expect(reads).toBe(0);
+  act(()=>vi.advanceTimersByTime(150));
+  expect(reads).toBe(1000);expect(rows()).toHaveLength(1);
+  fireEvent.change(input,{target:{value:'key888'}});
+  fireEvent.keyDown(input,{key:'Enter'});
+  expect(reads).toBe(1000);expect(select.mock.calls[0][0]).toBe(catalog[888]);
+  const renamed=catalog.map(token=>({...token,keywords:'replaced'}));
+  view.rerender(<ToPickerBlock tokens={renamed} onSelect={select}/>);
+  expect(rows()).toHaveLength(0);
+ }finally{vi.useRealTimers();}
+});
+
+it('keeps visible token rows stable while typing and redraws only changed selection and focus',()=>{
+ const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i)}));
+ const tokenRowProps=vi.fn((token:SwapToken)=>({'data-token':token.id}));
+ const props={tokens:catalog,onSelect:vi.fn(),tokenRowProps,onAddressChange:vi.fn()};
+ const picker=(address:string,selected:SwapToken)=><ToPickerBlock {...props} address={address} selected={selected}/>;
+ const view=render(picker('',catalog[0]));
+ expect(tokenRowProps.mock.calls.length).toBeGreaterThan(1);
+ tokenRowProps.mockClear();
+ view.rerender(picker('0x1',catalog[0]));
+ const address=tokenRowProps.mock.calls.length;
+ tokenRowProps.mockClear();
+ view.rerender(picker('0x1',catalog[1]));
+ const selection=tokenRowProps.mock.calls.map(([token])=>token.id);
+ tokenRowProps.mockClear();
+ const input=screen.getByRole('searchbox');
+ fireEvent.keyDown(input,{key:'ArrowDown'});
+ const focus=tokenRowProps.mock.calls.map(([token])=>token.id);
+ fireEvent.keyDown(input,{key:'ArrowUp'});
+ tokenRowProps.mockClear();
+ for(const value of ['e','et','eth'])fireEvent.change(input,{target:{value}});
+ expect({address,selection,focus,typing:tokenRowProps.mock.calls.length}).toEqual({address:0,selection:['0','1'],focus:['0','1'],typing:0});
+});
+
+it('does no chain discovery for a hidden filter and reuses visible options while typing',()=>{
+ let idReads=0,nameReads=0;
+ const catalog=Array.from({length:1000},(_,i)=>({...eth,id:String(i),get chainId(){idReads++;return i%20;}}));
+ const options=Array.from({length:20},(_,i)=>({chainId:i,get name(){nameReads++;return 'Chain '+i;}}));
+ const props={tokens:catalog,onSelect:vi.fn()};
+ const view=render(<ToPickerBlock {...props} chainFilter={false}/>);
+ const hiddenReads=idReads;
+ view.rerender(<ToPickerBlock {...props} chains={options}/>);
+ expect(screen.getAllByRole('radio')).toHaveLength(21);
+ nameReads=0;
+ const input=screen.getByRole('searchbox');
+ for(const value of ['e','et','eth'])fireEvent.change(input,{target:{value}});
+ expect({hiddenReads,typedReads:nameReads}).toEqual({hiddenReads:0,typedReads:0});
+ fireEvent.click(screen.getByRole('radio',{name:'Chain 2'}));
+ expect(screen.getByRole('radio',{name:'Chain 2'})).toHaveProperty('checked',true);
 });
