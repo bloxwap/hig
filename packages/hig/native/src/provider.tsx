@@ -141,7 +141,7 @@ export function usePresentNumber():<T extends Intl.NumberFormatOptions|undefined
 export function useNumberLocale():string{return useContext(NumberLocaleContext);}
 const RaisedContext=createContext(false);
 /** Marks content that sits on a Surface, Dialog or sheet. HIG has no resting strokes, so wells inside step up one fill to stay visible. */
-export function Raised({children}:React.PropsWithChildren){return <RaisedContext.Provider value={true}>{children}</RaisedContext.Provider>;}
+export function Raised({children,raised=true}:React.PropsWithChildren<{/** `false` keeps the enclosing elevation, so a host can toggle the step without remounting its content. Default `true`. */raised?:boolean}>){const parent=useContext(RaisedContext);return <RaisedContext.Provider value={raised||parent}>{children}</RaisedContext.Provider>;}
 /** Fills for the current elevation: `well` for inputs, tracks and neutral chips; `raised` for what sits on a well (a selected segment). On the page they are `surface` and `nested`; inside a Surface, Dialog or sheet, `nested` and `border`. */
 export function useFills():{well:string;raised:string}{const colors=useContext(ColorsContext);return useContext(RaisedContext)?{well:colors.nested,raised:colors.border}:{well:colors.surface,raised:colors.nested};}
 /** The nearest HIGProvider's colour table (sRGB by default). Every HIG native component paints through this; hosts may read it for their own views. */

@@ -133,3 +133,10 @@ it('keeps the capsule reading across steady chart samples and formats a changed 
  expect(reads).toHaveBeenCalledWith(101);
  expect(chartView().props.accessibilityLabel).toMatch(/101/);
 });
+it('reports a DEGEN crossing with its target and the direction the price moved',()=>{
+ const onTargetCross=jest.fn(),props={price:100,targets:[{id:'entry',price:100.01}],degen:true,onTargetCross};
+ mount(props);frame(1000);expect(onTargetCross).not.toHaveBeenCalled();
+ act(()=>root.update(tree({...props,price:100.02})));frame(1200);frame(1500);
+ expect(root.root.findAllByType(Circle)).toHaveLength(48);
+ expect(onTargetCross).toHaveBeenCalledTimes(1);expect(onTargetCross).toHaveBeenLastCalledWith(expect.objectContaining({id:'entry'}),'up');
+});

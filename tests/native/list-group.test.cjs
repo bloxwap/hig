@@ -76,3 +76,21 @@ it('renders information as static text with a decorative leading icon',()=>{
  const custom=mount(h(InlineNotice,{...props,icon:h(View,{testID:'custom'})}));
  expect(custom.findAll(node=>node.props.accessibilityElementsHidden&&node.findAll(child=>child.props.testID==='custom').length>0).length).toBeGreaterThan(0);
 });
+
+it('keeps a row\'s resting and pressed fills at every elevation',()=>{
+ const {Raised}=require('../../packages/hig/native/src/provider');
+ const fills=tree=>{const press=all(tree,'row').find(node=>typeof node.props.style==='function');return [false,true].map(pressed=>StyleSheet.flatten(press.props.style({pressed})).backgroundColor);};
+ const row=h(ListRow,{label:'Signals',testID:'row',onSelect:()=>{}});
+ expect(fills(mount(row))).toEqual([colors.surface,colors.nested]);
+ // One elevation up, as in a sheet, wells step a shade; rows do not.
+ expect(fills(mount(h(Raised,null,row)))).toEqual([colors.surface,colors.nested]);
+});
+
+it('centres the leading mark and the trailing glyph on a two-line label',()=>{
+ const slot=(tree,id)=>{let node=host(tree,id).parent;while(node&&typeof node.type!=='string')node=node.parent;return flat(node);};
+ const marks={leading:h(View,{testID:'lead'}),trailing:h(View,{testID:'trail'}),testID:'row',onSelect:()=>{}};
+ let tree=mount(h(ListRow,{label:'Bank transfer',description:'One to three days',...marks}));
+ expect(slot(tree,'lead').alignSelf).toBe('center');
+ tree=mount(h(ListRow,{label:'Bank transfer',...marks}));
+ expect(slot(tree,'lead').alignSelf).toBeUndefined();
+});

@@ -1,5 +1,5 @@
 import {BackdropBlur} from './backdrop-blur.js';
-import {GestureSheetHeaderContext,sheetGripStyle,sheetHandlePadding} from './sheet-header-glow.js';
+import {GestureSheetHeaderContext,GestureSheetSurfaceContext,sheetGripStyle,sheetHandlePadding} from './sheet-header-glow.js';
 import {gestureSheetAnimationConfigs} from './gesture-sheet-motion.js';
 export {gestureSheetAnimationConfigs} from './gesture-sheet-motion.js';
 import {validateSnapPoints} from './gesture-sheet-model.js';
@@ -227,7 +227,8 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  const content=contentMode==='custom'
   ?<View {...accessibility} testID={id('content')} collapsable={false} style={[enableDynamicSizing?styles.shrink:styles.grow,{paddingHorizontal:16,direction:env.direction}]}>{hiddenTitle}{children}</View>
   :<GestureSheetScrollView {...accessibility} testID={id('content')} style={enableDynamicSizing?styles.shrink:styles.grow} contentContainerStyle={{paddingVertical:tokens.space.xl,paddingHorizontal:16,paddingBottom:tokens.space.xl+bottom,direction:env.direction}}><Stack><Heading ref={heading}>{title}</Heading>{description?<Text>{description}</Text>:null}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></GestureSheetScrollView>;
- const lifted=<GestureSheetHeaderContext.Provider value={contentMode}>{raised?<Raised>{content}</Raised>:content}</GestureSheetHeaderContext.Provider>;
+ const painted=StyleSheet.flatten(backgroundStyle)?.backgroundColor,surfaceColor=typeof painted==='string'?painted:colors.overlay;
+ const lifted=<GestureSheetSurfaceContext.Provider value={surfaceColor}><GestureSheetHeaderContext.Provider value={contentMode}><Raised raised={raised}>{content}</Raised></GestureSheetHeaderContext.Provider></GestureSheetSurfaceContext.Provider>;
  return <View testID={id('')} pointerEvents={open?'box-none':'none'} style={StyleSheet.absoluteFill} onLayout={onRoom}>
   {backdropOpacity>0?<Reanimated.View testID={id('backdrop')} pointerEvents={open?'auto':'none'} style={[StyleSheet.absoluteFill,backdropStyle]}>{backdropVisible&&<BackdropBlur/>}<Pressable accessible={false} importantForAccessibility='no' style={[styles.fill,styles.backdrop]} onPress={dismissible?requestClose:undefined}/></Reanimated.View>:null}
   <GestureDetector gesture={pan}>

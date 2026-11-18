@@ -20,7 +20,7 @@ Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds withou
 
 | Component | Key props and behavior |
 | --- | --- |
-| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`; optional `position`, `targets`, `targetLabelInsets` and `degen` (default false). |
+| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`; optional `position`, `targets`, `targetLabelInsets`, `degen` (default false) and `onTargetCross`. |
 | `AltimeterTarget` | `{id, price, label?, color?}`. A horizontal dotted level with an optional right-aligned text label and CSS color. |
 | `bitcoinPrice` | The default `feed`: the Bitcoin mid price from Hyperliquid's public best-bid/offer WebSocket. |
 | `OutcomeChart` | Required `summary`; `outcomes` (host-owned, `null` while unknown) or `feed`; `height` (default 360) and optional `targetLabelInsets`. |
@@ -66,7 +66,7 @@ Targets use stable, unique IDs and finite positive prices. Pass a new array when
 
 Use `targetLabelInsets={{top:48, bottom:72}}` on either chart to reserve room for controls over the plot. Each value measures from the plot edge to the outer edge of the label, in CSS pixels on web or layout points on native. Altimeter target text defaults to 8 on each edge. Outcome capsules default to 0. Lines, ticks, and price scaling keep their original coordinates. Outcome connectors follow the displaced capsules.
 
-`degen` responds to the eased, visible price crossing a target, including an exact touch, once per arrival. Initial prices, new or edited target prices, missing data, feed replacement and resuming after a frame gap longer than two seconds re-arm detection without replaying old crossings. Targets crossed in the same frame share one burst using the last crossed target's color. Bursts have a 600ms cooldown with no queue, a 260ms pill shake and a 520ms particle fade. Web bursts use the Web Animations API; unsupported browsers retain the chart and targets. Turning DEGEN off or enabling reduced motion cancels an active effect. The catalog's **targets** state includes a DEGEN switch and price controls to preview crossings.
+`degen` responds to the eased, visible price crossing a target, including an exact touch, once per arrival. Initial prices, new or edited target prices, missing data, feed replacement and resuming after a frame gap longer than two seconds re-arm detection without replaying old crossings. Targets crossed in the same frame share one burst using the last crossed target's color. Bursts have a 600ms cooldown with no queue, a 260ms pill shake and a 520ms particle fade. Web bursts use the Web Animations API; unsupported browsers retain the chart and targets. Turning DEGEN off or enabling reduced motion cancels an active effect. `onTargetCross(target, direction)` is called with each burst, with the target the price crossed and `up` or `down`, so a host can add its own sound or haptic; it follows the same cooldown and is silent with DEGEN off or under reduced motion. The catalog's **targets** state includes a DEGEN switch and price controls to preview crossings.
 
 The shake and dispersing particles take their visual cue from [Liveline](https://github.com/benjitaylor/liveline); here the trigger is a target crossing rather than momentum.
 

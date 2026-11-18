@@ -3,6 +3,8 @@ import {StyleSheet,View} from 'react-native';
 import Svg,{Defs,LinearGradient,Rect,Stop} from 'react-native-svg';
 
 export const GestureSheetHeaderContext=React.createContext<'default'|'custom'|false>(false);
+/** The colour the enclosing sheet paints its surface, so a pinned header fades content into the sheet rather than into a host-supplied page colour. */
+export const GestureSheetSurfaceContext=React.createContext<string|undefined>(undefined);
 export function useBlockHorizontalInset(){
  return React.useContext(GestureSheetHeaderContext)?0:8;
 }

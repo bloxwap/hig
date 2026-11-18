@@ -50,8 +50,15 @@ export interface LoginBlockProps {
   lastUsed?: LoginProvider | null;
   /** Disable provider rows while the host starts authentication. */
   disabled?: boolean;
-  analyticsEnabled: boolean;
-  onAnalyticsChange: (enabled: boolean) => void;
+  /** Providers whose sign-in is in flight: their rows are disabled while the others stay open. */
+  pending?: readonly LoginProvider[];
+  analyticsEnabled?: boolean;
+  /** Omit to leave the analytics row out, for a host with nothing to consent to. */
+  onAnalyticsChange?: (enabled: boolean) => void;
+  /** Draw the analytics switch unavailable, such as while consent loads. */
+  analyticsDisabled?: boolean;
+  /** Open Terms or Privacy the host's own way, such as an in-app browser. Without it the link opens its URL. */
+  onOpenLink?: (url: string, link: 'terms' | 'privacy') => void;
   labels?: Partial<typeof loginCopy>;
   termsUrl?: string;
   privacyUrl?: string;

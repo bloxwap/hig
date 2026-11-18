@@ -147,7 +147,7 @@ const Standing=React.memo(function Standing({entry,id,style,lead,pinned,scoreOpt
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   // An interactive host mark stays in the accessibility tree: the row's reading moves to the name, and the mark follows as its own element.
   const split=!!entry.verified&&verifiedMark!=null&&!!verifiedMarkInteractive;
-  return <View testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:pinned?withAlpha(colors.action,0.12):fills.well,...(pinned?{marginTop:16,borderRadius:20}:null),...style}}>
+  return <View testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:pinned?withAlpha(colors.action,0.12):colors.surface,...(pinned?{marginTop:16,borderRadius:20}:null),...style}}>
    <Text {...hidden} style={{minWidth:24,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.muted}}>{entry.rank}</Text>
    <View {...hidden}>{typeof entry.avatar==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:entry.avatar}} style={disc as object}/>:<View style={disc}>{entry.avatar??<Text maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{entry.name.slice(0,2)}</Text>}</View>}</View>
    <View {...(split?null:hidden)} style={{flex:1,flexShrink:1,minWidth:0}}>

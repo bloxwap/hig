@@ -24,6 +24,8 @@ export interface AltimeterChartProps extends Omit<ViewProps,'children'> {
  /** Top and bottom clearance for target text only. Defaults to 8 per edge. */
  targetLabelInsets?:TargetLabelInsets;
  degen?:boolean;
+ /** Called with each DEGEN burst: the target the displayed price just crossed and the direction it moved. Shares the burst's cooldown and reduced-motion rule. */
+ onTargetCross?:(target:AltimeterTarget,direction:'up'|'down')=>void;
 }
 
 const noTargets:readonly AltimeterTarget[]=[];
@@ -58,13 +60,14 @@ function BurstEffect({burst,now,x,y,width}:{burst:Burst;now:number;x:number;y:nu
 }
 
 /** Native SVG price ladder, scrolling trail and position readout. Stops drawing and unsubscribes in the background. */
-export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,degen=false,...view}:AltimeterChartProps){
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=noTargets,targetLabelInsets,degen=false,onTargetCross,...view}:AltimeterChartProps){
  const colors=useColors(),reducedMotion=useReducedMotion(),monoFontFamily=useMonoFontFamily(),messages=useMessages(),locale=useNumberLocale();
  const [width,setWidth]=useState(0),[frame,setFrame]=useState(emptyFrame),[stale,setStale]=useState(false);
  const [active,setActive]=useState(AppState.currentState==null||AppState.currentState==='active');
  useEffect(()=>{const sub=AppState.addEventListener('change',state=>setActive(state==='active'));return ()=>sub.remove();},[]);
  const levels=useMemo(()=>validTargets(targets),[targets]);
  const controlled=price!==undefined,latest=useRef<number|null>(null);
+ const onCross=useRef(onTargetCross);onCross.current=onTargetCross;
  const wake=useRef<(()=>void)|null>(null),published=useRef(emptyFrame);
  const settings=useRef({width,height,reducedMotion,degen,levels,targetLabelInsets});
  useEffect(()=>{settings.current={width,height,reducedMotion,degen,levels,targetLabelInsets};if(controlled)latest.current=validPrice(price)?price:null;wake.current?.();},[width,height,reducedMotion,degen,levels,targetLabelInsets,controlled,price]);
@@ -120,6 +123,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
    const hit=crossings.update(display,levels,degen&&!reducedMotion).at(-1);
    if(hit&&degen&&!reducedMotion&&now-lastBurst>=ALTIMETER_BURST_COOLDOWN_MS){
     burst={start:now,direction:display>previous?'up':'down',color:hit.color};lastBurst=now;
+    onCross.current?.(hit,burst.direction);
    }
    if(!degen||reducedMotion||(burst&&now-burst.start>=tokens.motion.base*2))burst=undefined;
    if(!gap&&(previous!==display||lastSettings!==settings.current)&&levels.some(level=>level.label)){
@@ -242,7 +246,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
       ?<LadderInk rows={ladder} hidden={hidden} ticks={ladderTicks} width={width} color={colors.muted} font={monoFontFamily}/>
       :ladder.map(row=>{
        const y=row.y+ladderShift,covered=bounds.some(level=>level.labelTop!=null&&y+7>level.labelTop-2&&y-7<level.labelTop+20);
-       return <G key={row.price} opacity={.75}><Path d={row.ticks} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={row.y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fill={colors.muted}>{row.label}</SvgText>}</G>;
+       return <G key={row.price}><Path d={row.ticks} strokeOpacity={.75} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={row.y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fillOpacity={.75} fill={colors.muted}>{row.label}</SvgText>}</G>;
       })}</G>
     </Svg>}
     {history&&end+2>18&&<View pointerEvents="none" style={{position:'absolute',top:0,left:18,width:end+2-18,height,overflow:'hidden'}}>

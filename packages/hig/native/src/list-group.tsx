@@ -110,9 +110,9 @@ function Check({color,testID}:{color:string;testID?:string}){return <SharedCheck
 function External({color,rtl,testID}:{color:string;rtl:boolean;testID?:string}){return <ArrowUpRight size={20} color={color} testID={testID} style={{transform:rtl?[{scaleX:-1}]:undefined}}/>;}
 /** One row of a ListGroup: the label leads; a value, icons, a badge or a control trail. With `onSelect` the whole row is one button and shows a disclosure chevron; with `checked` or `onCheckedChange` the whole row is a switch; otherwise the row is static, so a control in `trailing` is its only target. Other Pressable props, such as `android_disableSound`, `hitSlop` or `onLongPress`, reach the row, and the ref reaches its view. */
 export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttributes<React.ComponentRef<typeof View>>>=/* @__PURE__ */forwardRef<React.ComponentRef<typeof View>,ListRowProps>(function ListRow({label,description,accessibilityLabel,tone,leading,value,valueLabel,valueTone,trailing,onSelect,disabled,selected,busy,busyLabel,disclosure,checked,defaultChecked,onCheckedChange,testID,...rest},ref){
- const colors=useColors(),fills=useFills(),{direction,busy:providerBusy,reducedMotion}=useRowEnvironment();const [internal,setInternal]=useState(!!defaultChecked);
+ const colors=useColors(),{direction,busy:providerBusy,reducedMotion}=useRowEnvironment();const [internal,setInternal]=useState(!!defaultChecked);
  const toggles=!onSelect&&(checked!==undefined||defaultChecked!==undefined||onCheckedChange!=null);
- const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'flex-start',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?fills.raised:fills.well,opacity:disabled?0.5:1});
+ const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'flex-start',gap:12,minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:pressed?colors.nested:colors.surface,opacity:disabled?0.5:1});
  const text=typeof value==='string'||typeof value==='number';
  const described=shown(description),about=described?plainText(description):'';
  const reading=accessibilityLabel??[label,about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ');
@@ -126,7 +126,9 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
  const announced=!onSelect&&!toggles&&(selected!==undefined||!!busy||named)&&trailing==null;
  const grouped=named&&trailing!=null;
  const quiet=onSelect||toggles||announced?hidden:{},textQuiet=grouped?hidden:quiet;
- const lead=leading==null?null:<View {...hidden} style={first}>{leading}</View>;
+ // A label with a description is two lines: the leading mark and the trailing glyph centre on the whole label, as on web, instead of riding the first line.
+ const centred=described?{alignSelf:'center'} as const:null;
+ const lead=leading==null?null:<View {...hidden} style={[first,centred]}>{leading}</View>;
  const labelColor=tone==='destructive'?colors.negative:tone==='muted'?colors.muted:colors.text;
  const descriptionStyle={fontSize:14,lineHeight:20,color:colors.muted};
  // Text, one Text element, or a fragment or array holding bare text (`<>Ends in <Text>3m</Text></>`) keeps the muted line, since a bare string cannot sit in a View; richer host content is laid out as given.
@@ -151,7 +153,7 @@ export const ListRow:React.ForwardRefExoticComponent<ListRowProps&React.RefAttri
   :selected?<Check color={colors.text} testID={testID?`${testID}-check`:undefined}/>
   :onSelect?(glyphKind==='chevron'?chevron:glyphKind==='external'?<External color={colors.muted} rtl={direction==='rtl'} testID={testID?`${testID}-external`:undefined}/>:null):null;
  const reserveSpinner=!!busy&&!toggles;
- const end=glyph||reserveSpinner?<View {...hidden} style={reserveSpinner?[first,busyGlyphSlot]:first}>{glyph}</View>:null;
+ const end=glyph||reserveSpinner?<View {...hidden} style={[first,reserveSpinner?busyGlyphSlot:null,centred]}>{glyph}</View>:null;
  if(toggles){
   const on=checked??internal;
   const hint=[about||null,text?String(value):valueLabel??null].filter(Boolean).join(', ')||undefined;

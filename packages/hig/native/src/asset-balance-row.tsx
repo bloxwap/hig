@@ -57,7 +57,7 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
  const strong=disabled?colors.muted:colors.text;
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol.slice(0,3)}</Text>}</View>;
- const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed&&!disabled?fills.raised:fills.well});
+ const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed&&!disabled?colors.nested:colors.surface});
  const content=<>
   <View {...hidden} style={disabled?{opacity:0.5}:undefined}>{art}</View>
   <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:strong}}>{name}</Text><Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{symbol}</Text></View>

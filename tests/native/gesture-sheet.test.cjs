@@ -137,3 +137,18 @@ it('draws nothing behind its handle: no highlight sits in the top corner of the 
  const source=require('node:fs').readFileSync(require.resolve('../../packages/hig/native/src/sheet-header-glow.tsx'),'utf8');
  expect(source).not.toContain('RadialGradient');expect(source).toContain('SheetHeaderScrim');
 });
+
+it('tells its content the colour it paints, and keeps content mounted when the elevation step is switched',()=>{
+ const {GestureSheetSurfaceContext}=require('../../packages/hig/native/src/sheet-header-glow');
+ const {useColors,useFills}=require('../../packages/hig/native/src/provider');
+ const seen=[];let mounts=0;
+ function Probe(){const surface=React.useContext(GestureSheetSurfaceContext),colors=useColors(),fills=useFills();React.useEffect(()=>{mounts++;},[]);seen.push({surface,overlay:colors.overlay,stepped:fills.well===colors.nested});return null;}
+ const props={open:true,contentMode:'custom',children:h(Probe)};
+ layout(mount(props));
+ expect(seen.at(-1)).toMatchObject({stepped:true});expect(seen.at(-1).surface).toBe(seen.at(-1).overlay);
+ // A host that paints the page colour: a pinned header fades into that colour, and wells stay on the page's shade.
+ act(()=>root.update(tree({...props,raised:false,backgroundStyle:{backgroundColor:'#123456'}})));
+ expect(seen.at(-1)).toMatchObject({surface:'#123456',stepped:false});
+ act(()=>root.update(tree(props)));
+ expect(seen.at(-1)).toMatchObject({stepped:true});expect(mounts).toBe(1);
+});

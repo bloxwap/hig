@@ -36,6 +36,8 @@ export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLEleme
  targetLabelInsets?:TargetLabelInsets;
  /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */
  degen?:boolean;
+ /** Called with each DEGEN burst: the target the displayed price just crossed and the direction it moved. Shares the burst's cooldown and reduced-motion rule. */
+ onTargetCross?:(target:AltimeterTarget,direction:'up'|'down')=>void;
 }
 
 /** Inset of the ladder's tick marks from the chart edges. */
@@ -121,7 +123,7 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  * price ladder that keeps the current price at the vertical center, and the current price at the trail's tip. It
  * accepts optional target lines and opt-in DEGEN crossing feedback. Web only.
  */
-export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,degen=false,style,...props}:AltimeterChartProps){
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,degen=false,onTargetCross,style,...props}:AltimeterChartProps){
  const {locale,messages,reducedMotion,primaryColor}=useHIG();
  const theme=useColors();
  const [supportsP3,setSupportsP3]=useState(false);
@@ -134,6 +136,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  const targetRows=useRef(new Map<string,HTMLDivElement>()),targetLabels=useRef(new Map<string,HTMLSpanElement>()),effects=useRef<HTMLDivElement>(null);
  const levels=useMemo(()=>validTargets(targets),[targets]);
  const crossings=useMemo(()=>targetCrossings({immutableTargets:true}),[]),cancelBurst=useRef<(()=>void)|undefined>(undefined);
+ const onCross=useRef(onTargetCross);onCross.current=onTargetCross;
  const [stale,setStale]=useState(false);
  const controlled=price!==undefined;
  const latest=useRef<number|null>(usable(price)?price:null);
@@ -241,6 +244,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
     if(hit&&degen&&!reducedMotion&&now-lastBurst>=ALTIMETER_BURST_COOLDOWN_MS&&effects.current){
      lastBurst=now;cancelBurst.current?.();
      cancelBurst.current=burstAtPill(pill.current,effects.current,hit.color??colors.action,display>previousDisplay?'up':'down');
+     onCross.current?.(hit,display>previousDisplay?'up':'down');
     }
    }
   };

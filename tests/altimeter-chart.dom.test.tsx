@@ -316,3 +316,16 @@ it('requests a Display P3 canvas and draws position colours from the brand palet
  context.calls.length=0;rerender(view('short'));frame(1016);
  expect(context.calls).toContainEqual(['addColorStop',1,'color(display-p3 1 0.24 0.62)']);
 });
+
+it('reports a DEGEN crossing with its target and direction, and stays quiet with DEGEN off',()=>{
+ const motion=recordAnimations(),onTargetCross=vi.fn(),targets=[{id:'tp',price:100.01,label:'Take profit'}];
+ const view=(price:number,degen=true)=><HIGProvider><AltimeterChart summary='DEGEN' price={price} targets={targets} degen={degen} onTargetCross={onTargetCross}/></HIGProvider>;
+ try{
+  const {rerender,unmount}=render(view(100,false));frame(1000);
+  rerender(view(100.02,false));frame(1400);frame(1700);expect(onTargetCross).not.toHaveBeenCalled();
+  rerender(view(100.02));frame(1800);
+  rerender(view(100));frame(2000);frame(2100);frame(2300);
+  expect(onTargetCross).toHaveBeenCalledTimes(1);expect(onTargetCross).toHaveBeenLastCalledWith(expect.objectContaining({id:'tp'}),'down');
+  unmount();
+ }finally{motion.restore();}
+});

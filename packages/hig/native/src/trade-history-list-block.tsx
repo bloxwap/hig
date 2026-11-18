@@ -129,7 +129,7 @@ const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOption
 }){
  const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale(),present=usePresentNumber();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
- const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});
+ const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?colors.nested:colors.surface});
  const meta={fontSize:14,lineHeight:20,color:colors.muted} as const;
  const pnl=trade.pnl;
   const side=trade.side==='long'?colors.up:colors.down,result=trade.pnlOptions??pnlOptions;

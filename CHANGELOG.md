@@ -11,6 +11,13 @@
 - Hand a list inside the native sheet its own scroll events, so a windowed list keeps drawing rows, and keep hearing close requests after a host declines one.
 - Draw `WalletAddress` with HIG's own `QRCode` on web and native. `cuer` is no longer a peer, and the native `wallet-address` entry no longer exports the `qrGeometry` helper of the earlier drawing. The `@bloxwap/hig/react/wallet-address-core` path and its `WalletAddressCoreProps` name are removed, since `react/wallet-address` is the same component; `@bloxwap/hig/native/wallet-address-core` stays as the entry that loads no SVG library.
 - Remove the grey highlight native sheets drew in the top-left corner behind the handle and header. A pinned header still fades the content that scrolls under it.
+- Fade a pinned header in a native sheet into the colour the sheet paints, including a `backgroundStyle` colour, instead of a colour the host passes. Switching a sheet's `raised` no longer remounts its content.
+- Keep rows on the same fills at every elevation: list rows, setting cards, asset, trade and reward rows and the position flag card rest on `surface` and press to `nested` in a sheet as on the page.
+- Centre a native `ListRow`'s leading mark and trailing glyph on a two-line label, as on web.
+- Lay `TradeHistoryDetailBlock` figures out two to a row, so a long size no longer runs into the figure beside it.
+- Add `onTargetCross` to `AltimeterChart` on web and native, called with each DEGEN burst.
+- Add `pending`, `analyticsDisabled` and `onOpenLink` to `LoginBlock`, and make its analytics row optional. The native block also takes `testID`, `titleRef` and `headingHint`.
+- Fade the native chart's price ladder ticks and labels themselves instead of their group.
 - Export `Avatar` from the avatar entries alone. `@bloxwap/hig/react/status` and `@bloxwap/hig/native/status` no longer export it; the native status one was the frame without the generated face, so a native host now needs `react-native-svg` to draw an `Avatar`.
 - Remove every superseded name and path instead of carrying it: the `recipes` import paths (`react/recipes`, `react/recipes/<name>`, `native/recipes`), `SwapPanelBlock`, `SwapPanel` and their props types with the `react/blocks/swap-panel-block` and `react/blocks/swap-panel` paths, `FromPicker` and `ToPicker` with their props types, and the chart prop `dgen` (use `degen`). Nothing in the package is marked deprecated any more. `node codemods/superseded.mjs --write <files>` rewrites a host's imports to the current paths and names.
 
