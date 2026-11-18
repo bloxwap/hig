@@ -3280,7 +3280,7 @@
       },
       "drawOutcomes": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function drawOutcomes(ctx: CanvasRenderingContext2D, frame: {\n    width: number;\n    height: number;\n    now: number;\n    phase: number;\n    grid: string;\n    scale?: OutcomeScale;\n    trails: readonly OutcomeTrail[];\n}): void;"
+        "signature": "export declare function drawOutcomes(ctx: CanvasRenderingContext2D, frame: {\n    width: number;\n    height: number;\n    now: number;\n    phase: number;\n    grid: string;\n    scale?: OutcomeScale;\n    gridRows?: readonly number[];\n    trails: readonly OutcomeTrail[];\n}): void;"
       },
       "OUTCOME_LIMIT": {
         "entry": "@bloxwap/hig/chart",

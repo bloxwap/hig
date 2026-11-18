@@ -39,26 +39,42 @@ const OWNED_HANDLE=new Set(['children','aria-hidden','ref','dangerouslySetInnerH
 const OWNED_BACKEND_DATA=new Set(['data-vaul-drawer','data-vaul-drawer-direction','data-vaul-delayed-snap-points','data-vaul-snap-points','data-vaul-custom-container','data-vaul-animate','data-vaul-overlay','data-vaul-snap-points-overlay','data-vaul-handle','data-vaul-drawer-visible','data-vaul-handle-hitarea']);
 const DYNAMIC_BACKEND=new Set<SnapPointBackendProp>(['snapPoints','snapPoint','activeSnapPoint','setActiveSnapPoint','fadeFromIndex','snapToSequentialPoint']);
 const safeProps=<Props extends object>(props:Props|undefined,owned:Set<string>)=>Object.fromEntries(Object.entries(props??{}).filter(([key])=>!owned.has(key)&&!OWNED_BACKEND_DATA.has(key))) as Props;
-function useDynamicHeight(open:boolean,enabled:boolean,reducedMotion:boolean,panel:React.RefObject<HTMLDivElement|null>,content:HTMLDivElement|null){
- const animation=useRef<Animation|null>(null);
- useEffect(()=>{
-  if(!open||!enabled||!content)return;
-  const card=panel.current;if(!card)return;
+function useDynamicHeight(open:boolean,reducedMotion:boolean){
+ const cleanup=useRef<(()=>void)|null>(null);
+ return useCallback((content:HTMLDivElement|null)=>{
+  cleanup.current?.();cleanup.current=null;
+  const card=content?.parentElement;if(!open||!content||!card)return;
   let previous:number|null=null;
-  const cancel=()=>{const current=animation.current;animation.current=null;current?.cancel();};
+  let running:{animation:Animation;from:number;to:number;minHeight:string}|null=null;
+  const cancel=()=>{
+   if(!running)return;
+   const {animation,minHeight}=running;running=null;
+   animation.onfinish=animation.oncancel=null;
+   animation.cancel();card.style.minHeight=minHeight;
+  };
   const measure=(entries?:ResizeObserverEntry[])=>{
    const next=entries?.[0]?.borderBoxSize?.[0]?.blockSize??content.getBoundingClientRect().height;
    if(previous!==null&&Math.abs(previous-next)<.5)return;
-   const from=animation.current?card.getBoundingClientRect().height:previous;previous=next;
-   if(from===null||Math.abs(from-next)<.5)return;
-   if(reducedMotion||card.style.height||typeof card.animate!=='function'){cancel();return;}
-   cancel();const current=card.animate([{height:`${from}px`},{height:`${next}px`}],{duration:270,easing:'cubic-bezier(.26,.08,.25,1)'});animation.current=current;
-   current.onfinish=current.oncancel=()=>{if(animation.current===current)animation.current=null;};
+   let from=previous;previous=next;
+   if(running){
+    const progress=running.animation.effect?.getComputedTiming().progress??0;
+    from=running.from+(running.to-running.from)*progress;
+    cancel();
+   }
+   if(from===null||Math.abs(from-next)<.5||reducedMotion||card.style.height||typeof card.animate!=='function')return;
+   // Keep the larger surface behind the content. Move its visible edge into place
+   // without resizing the scroll container on every frame or touching Vaul's drag transform.
+   const extent=Math.max(from,next),sign=card.dataset.vaulDrawerDirection==='top'?-1:1;
+   const minHeight=card.style.minHeight;
+   if(from>next)card.style.minHeight=`${extent}px`;
+   const animation=card.animate([{translate:`0 ${sign*(extent-from)}px`},{translate:`0 ${sign*(extent-next)}px`}],{...VIEW_SWAP,fill:'both'});
+   running={animation,from,to:next,minHeight};
+   animation.onfinish=animation.oncancel=()=>{if(running?.animation===animation)cancel();};
   };
   const resize=typeof ResizeObserver==='undefined'?null:new ResizeObserver(measure);resize?.observe(content,{box:'border-box'});measure();
   const inline=typeof MutationObserver==='undefined'?null:new MutationObserver(()=>{if(card.style.height)cancel();});inline?.observe(card,{attributes:true,attributeFilter:['style']});
-  return()=>{resize?.disconnect();inline?.disconnect();cancel();};
- },[open,enabled,reducedMotion,panel,content]);
+  cleanup.current=()=>{resize?.disconnect();inline?.disconnect();cancel();};
+ },[open,reducedMotion]);
 }
 // Vaul 1.1.2 writes motion styles before requesting a controlled close. If the host
 // rejects that request, restore the last resting styles without remounting its card.
@@ -78,7 +94,7 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
  const themeStyle=useThemeStyle();
  const currentOpen=useRef(open);currentOpen.current=open;
  const panel=useRef<HTMLDivElement>(null),backdrop=useRef<HTMLDivElement>(null),motion=useRef<(()=>void)|null>(null),frame=useRef<number|null>(null);
- const [anatomy,setAnatomy]=useState<HTMLDivElement|null>(null);
+ const setAnatomy=useDynamicHeight(open,reducedMotion);
  const refCleanup=useRef<(()=>void)|null>(null),releasePosition=useRef<(()=>void)|null>(null);
  // Vaul's internal ref composition predates React callback-ref cleanup returns.
  const setPanel=useCallback((element:HTMLDivElement|null)=>{panel.current=element;if(typeof contentRef==='function'){if(!element&&refCleanup.current){const cleanup=refCleanup.current;refCleanup.current=null;cleanup();}else{const cleanup=contentRef(element);refCleanup.current=typeof cleanup==='function'?cleanup:null;}}else if(contentRef)contentRef.current=element;},[contentRef]);
@@ -86,7 +102,6 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
  useEffect(()=>{if(!open){motion.current=null;releasePosition.current?.();releasePosition.current=null;}},[open]);
  const {onAnimationEnd,...backend}=safeProps(backendProps,OWNED_ROOT);
  const dynamic=!!enableDynamicSizing&&((backend.direction??'bottom')==='top'||(backend.direction??'bottom')==='bottom');
- useDynamicHeight(open,dynamic,reducedMotion,panel,anatomy);
  const {className,onPointerDownCapture,onFocusOutside,onInteractOutside,style,...content}=safeProps(contentProps,OWNED_CONTENT);
  const {className:overlayClass,...overlay}=safeProps(overlayProps,OWNED_OVERLAY);
  const {className:handleClass,...grip}=safeProps(handleProps,OWNED_HANDLE);

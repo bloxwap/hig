@@ -18,7 +18,7 @@ const css=readFileSync(join(root,'packages/hig/tokens/dist/tokens.css'),'utf8')+
 const inputs=['packages/hig/react/src/gesture-sheet.tsx','packages/hig/react/src/styles.css','packages/hig/package.json','scripts/gesture-sheet-browser-smoke.mjs'];
 const result={checkedAt:new Date().toISOString(),sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),sourceDirty:!!execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).trim(),inputHashes:Object.fromEntries(inputs.map(file=>[file,createHash('sha256').update(readFileSync(join(root,file))).digest('hex')])),backend:'vaul@1.1.2',browserVersions:{},engines:{}};
 async function drag(page,locator,distance){const r=await locator.boundingBox();assert.ok(r);await page.mouse.move(r.x+r.width/2,r.y+Math.min(10,r.height/2));await page.mouse.down();await page.mouse.move(r.x+r.width/2,r.y+distance,{steps:12});await page.mouse.up();}
-async function heightAnimation(page,retain=false){await page.waitForFunction(retain=>{const animation=document.querySelector('[role=dialog]')?.getAnimations().find(animation=>animation.effect?.getKeyframes?.().some(frame=>frame.height!==undefined));if(animation&&retain)window.retainedAnimation=animation;return!!animation;},retain);}
+async function resizeAnimation(page,retain=false){await page.waitForFunction(retain=>{const animation=document.querySelector('[role=dialog]')?.getAnimations().find(animation=>animation.effect?.getKeyframes?.().some(frame=>frame.translate!==undefined));if(animation&&retain)window.retainedAnimation=animation;return!!animation;},retain);}
 for(const [engine,type] of Object.entries({chromium,webkit})){
  const browser=await launchBrowser(type,{headless:true});const cases=[];result.engines[engine]=cases;result.browserVersions[engine]=browser.version();
  const overall=setTimeout(()=>browser.close().catch(()=>{}),90000);
@@ -46,18 +46,18 @@ for(const [engine,type] of Object.entries({chromium,webkit})){
     if(options.dynamic){
      const input=page.getByLabel('Rechercher'),toggle=page.getByRole('button',{name:'Toggle details'});await input.fill('BTC');await input.focus();
      const transform=await sheet.evaluate(el=>{window.retainedPanel=el;window.retainedInput=el.querySelector('input');return el.style.transform;});
-     await toggle.evaluate(el=>el.click());if(!options.reduced)await heightAnimation(page);
+     await toggle.evaluate(el=>el.click());if(!options.reduced)await resizeAnimation(page);
      await page.waitForFunction(({start,cap})=>{const height=document.querySelector('[role=dialog]').getBoundingClientRect().height;return cap?Math.abs(height-cap)<1:height>start+100;},{start:initial.height,cap:options.cap});await page.waitForTimeout(250);
      const grown=await sheet.boundingBox();assert.ok(options.cap?Math.abs(grown.height-options.cap)<1:grown.height>initial.height+100,'dynamic content must grow to its intrinsic or capped height');
      if(options.cap){const scrolling=await sheet.evaluate(el=>{const body=el.querySelector('.hig-gesture-dynamic');return{client:body.clientHeight,scroll:body.scrollHeight,overflow:getComputedStyle(body).overflowY};});assert.equal(scrolling.overflow,'auto');assert.ok(scrolling.scroll>scrolling.client,'capped dynamic anatomy must scroll');}
-     if(options.reduced)assert.equal(await sheet.evaluate(el=>el.getAnimations().filter(animation=>animation.effect?.getKeyframes?.().some(frame=>frame.height!==undefined)).length),0,'reduced motion must not create height animations');
+     if(options.reduced)assert.equal(await sheet.evaluate(el=>el.getAnimations().filter(animation=>animation.effect?.getKeyframes?.().some(frame=>frame.translate!==undefined)).length),0,'reduced motion must not create height animations');
      if(options.direction==='top')assert.ok(Math.abs(grown.y)<1,'a top sheet must grow downward from the top edge');
      assert.equal(await sheet.evaluate(el=>el.style.height),'');assert.equal(await sheet.evaluate(el=>el===window.retainedPanel&&el.querySelector('input')===window.retainedInput),true);assert.equal(await input.inputValue(),'BTC');assert.equal(await input.evaluate(el=>document.activeElement===el),true);assert.equal(await sheet.evaluate(el=>el.style.transform),transform);
      await page.screenshot({path:join(output,`${engine}-${options.name}-grown.png`)});
-     await toggle.evaluate(el=>el.click());if(!options.reduced)await heightAnimation(page);await page.waitForFunction(start=>Math.abs(document.querySelector('[role=dialog]').getBoundingClientRect().height-start)<1,initial.height);await page.waitForTimeout(250);
+     await toggle.evaluate(el=>el.click());if(!options.reduced)await resizeAnimation(page);await page.waitForFunction(start=>Math.abs(document.querySelector('[role=dialog]').getBoundingClientRect().height-start)<1,initial.height);await page.waitForTimeout(250);
      assert.ok(Math.abs((await sheet.boundingBox()).height-initial.height)<1,'dynamic content must shrink back to its intrinsic height');assert.equal(await sheet.evaluate(el=>el===window.retainedPanel&&el.querySelector('input')===window.retainedInput),true);assert.equal(await input.inputValue(),'BTC');assert.equal(await input.evaluate(el=>document.activeElement===el),true);assert.equal(await sheet.evaluate(el=>el.style.height),'');
      if(!options.reduced){
-      await toggle.evaluate(el=>el.click());await heightAnimation(page);await page.waitForTimeout(40);await toggle.evaluate(el=>el.click());await heightAnimation(page);await page.waitForTimeout(40);await toggle.evaluate(el=>el.click());await heightAnimation(page,true);
+      await toggle.evaluate(el=>el.click());await resizeAnimation(page);await page.waitForTimeout(40);await toggle.evaluate(el=>el.click());await resizeAnimation(page);await page.waitForTimeout(40);await toggle.evaluate(el=>el.click());await resizeAnimation(page,true);
       await page.keyboard.press('Escape');await sheet.waitFor({state:'hidden'});assert.equal(await page.evaluate(()=>window.retainedAnimation?.playState),'idle','close must cancel the in-flight dynamic height animation');
      }else{await page.keyboard.press('Escape');await sheet.waitFor({state:'hidden'});}
     }else if(options.name==='focus-scroll-drag'){
