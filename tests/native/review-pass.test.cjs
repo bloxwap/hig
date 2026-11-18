@@ -81,11 +81,12 @@ it('Accordion is a strokeless card whose trailing chevron and content animate; r
   act(()=>header(reduced).props.onPress(event));expect(timing).not.toHaveBeenCalled();expect(reduced.findAllByType(RNText).map(n=>n.props.children)).toEqual(['Advanced','Body']);
  }finally{timing.mockRestore();}
 });
-it('Toast notices are one-row capsules: severity symbol, message, action, then an x close control; no stroke or visible dismiss text',()=>{
+it('Toast notices are one-row pills in their accent: severity symbol in a tile, message, action, then an x close control; no visible dismiss text',()=>{
  const dismissed=jest.fn();const retry=h(Button,{onPress:jest.fn()},'Retry');
  const tree=mount(h(Toast,{notices:[{id:'1',message:'Order failed',severity:'error',action:retry}],onDismiss:dismissed}));
- const capsule=json(root.toJSON(),n=>jsonStyle(n)?.backgroundColor===colors.nested);
- expect(jsonStyle(capsule)).toMatchObject({flexDirection:'row',alignItems:'center',minHeight:44,borderRadius:22});expect(jsonStyle(capsule).borderWidth).toBeUndefined();
+ const capsule=json(root.toJSON(),n=>jsonStyle(n)?.backgroundColor===colors.background&&jsonStyle(n)?.minHeight===52);
+ // The border and glow take the severity's role; the fill is the page colour.
+ expect(jsonStyle(capsule)).toMatchObject({flexDirection:'row',alignItems:'center',minHeight:52,borderRadius:9999,borderWidth:2,borderColor:colors.negative});
  const parts=capsule.children;expect(parts).toHaveLength(4);
  expect(json(parts[0],n=>n.type==='ExpoImage').props.tintColor).toBe(colors.negative);
  expect(jsonStyle(parts[1])).toMatchObject({flex:1});expect(json(parts[1],n=>n.type==='Text').children).toEqual(['Order failed']);

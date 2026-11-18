@@ -2,8 +2,8 @@
 import React from 'react';
 import {Button} from '@bloxwap/hig/react/button';
 import {Text,Stack} from '@bloxwap/hig/react/surface';
-import {toast,dismissToast} from '@bloxwap/hig/react/toast';
-const components={Stack,Text,Button,toast,dismissToast};
+import {toast,dismissToast,ToastAction} from '@bloxwap/hig/react/toast';
+const components={Stack,Text,Button,toast,dismissToast,ToastAction};
 export function Example({name}:{name:string;state?:string;previewDialog?:typeof import('@bloxwap/hig/react/overlay').Dialog}){const C=components;
-function preview(){switch(name){case "Toaster":return <><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>;
+function preview(){switch(name){case "Toaster":return <><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.toast.success('+$125.50',{id:'payout',accent:'up',action:<C.ToastAction onClick={()=>C.dismissToast('payout')}>Share</C.ToastAction>})}>Show a payout</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Check this transfer before retrying',{id:'recovery',description:'An earlier transfer may have gone through. Check your history first.',duration:Infinity,action:<C.ToastAction onClick={()=>C.dismissToast('recovery')}>I checked</C.ToastAction>,secondaryAction:<C.ToastAction onClick={()=>C.dismissToast('recovery')}>Close</C.ToastAction>})}>Show a stacked notice</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>;
 default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack>{preview()}</C.Stack>;}

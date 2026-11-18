@@ -7,11 +7,12 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import {TOAST_DURATION,TOAST_EXIT,TOAST_GAP,TOAST_HOLD,TOAST_MOTION,TOAST_NARROW,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_REDUCED_FADE,TOAST_SPRING,TOAST_VISIBLE,TOAST_WIDTH,toastClockPause,toastClockRun,toastDrag,toastDuration,toastEdge,toastEnterFrom,toastExitTo,toastGrab,toastLeave,toastOrder,toastRemove,toastSlot,toastSwipeAxis,toastSwipeDirections,toastSwipeDismisses,toastSwipeOut,toastUpsert,type ToastBaseOptions,type ToastCall,type ToastClock,type ToastEntry,type ToastId,type ToastPosition,type ToastSeverity,type ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
 import {useColors,useHIG} from './provider.js';
-import {ToastNotice} from './status.js';
+import {ToastNotice,toastFrame} from './status.js';
+export {ToastAction} from './status.js';
 import {speak} from './announce.js';
-export type {ToastBaseOptions,ToastCall,ToastId,ToastPosition,ToastSeverity,ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
+export type {ToastAccent,ToastBaseOptions,ToastCall,ToastId,ToastLayout,ToastPosition,ToastSeverity,ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
 
-export interface ToastOptions extends ToastBaseOptions {/** A control drawn before the close button, such as a `Button` that retries. */action?:React.ReactNode}
+export interface ToastOptions extends ToastBaseOptions {/** The primary action, usually a `ToastAction` pill: before the close button, or in the action row of a stacked notice. */action?:React.ReactNode;/** A second, quieter action; the notice is then stacked. */secondaryAction?:React.ReactNode;/** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */icon?:React.ReactNode}
 export interface ToasterProps {
  /** The corner or edge the stack hangs from. Default `bottom-center`, as on web. `left` and `right` are the physical sides in either direction, as in Sonner; only the capsule's content mirrors under right-to-left. */
  position?:ToastPosition;
@@ -31,7 +32,7 @@ export interface ToasterProps {
  testID?:string;
 }
 
-interface ToastValue {message:string;description?:string;severity:ToastSeverity;action?:React.ReactNode;dismissName?:string;onDismiss?:()=>void;onAutoClose?:()=>void}
+interface ToastValue {message:string;description?:string;severity:ToastSeverity;action?:React.ReactNode;secondaryAction?:React.ReactNode;icon?:React.ReactNode;accent?:ToastOptions['accent'];layout?:ToastOptions['layout'];onPress?:()=>void;pressName?:string;dismissName?:string;onDismiss?:()=>void;onClose?:()=>void;onAutoClose?:()=>void}
 type Entry=ToastEntry<ToastValue>;
 // One store for the app, so `toast()` works from anywhere, not only from components. Mounted hosts subscribe; the last one mounted draws.
 let entries:readonly Entry[]=[],sequence=0;
@@ -54,10 +55,10 @@ function leave(key:number,expired:boolean):void{
 }
 function forget(key:number):void{const next=toastRemove(entries,key);if(next!==entries){entries=next;emit();}}
 function raise(message:string,options:ToastOptions={}):ToastId{
- const {severity='info',description,action,dismissName,duration,id,onDismiss,onAutoClose}=options;
+ const {severity='info',description,action,secondaryAction,icon,accent,layout,onPress,pressName,dismissName,duration,id,onDismiss,onClose,onAutoClose}=options;
  // As in Sonner, an empty string is not an id: the notice gets the next one.
  const key=++sequence,resolved=typeof id==='number'||(typeof id==='string'&&id.length>0)?id:key;
- entries=toastUpsert(entries,{key,id:resolved,duration:toastDuration(duration),value:{message,description,severity,action,dismissName,onDismiss,onAutoClose}});emit();
+ entries=toastUpsert(entries,{key,id:resolved,duration:toastDuration(duration),value:{message,description,severity,action,secondaryAction,icon,accent,layout,onPress,pressName,dismissName,onDismiss,onClose,onAutoClose}});emit();
  return resolved;
 }
 /** Dismisses one notice by id, or every notice when the id is omitted. */
@@ -139,6 +140,10 @@ const Card=memo(function Card({entry,front,hidden,interactive,lift,gap,visible,r
  // The store drops the notice once the exit has had time to play. The exit itself never waits for this thread.
  useEffect(()=>{if(!leaving)return;gone.value=true;const timer=setTimeout(()=>forget(id),TOAST_EXIT.duration+50);return()=>clearTimeout(timer);},[leaving,id,gone]);
  const dismiss=useCallback(()=>leave(id,false),[id]);
+ // The close control tells the owner first; a swipe is `dismiss` alone.
+ // Read through a ref, so raising the notice again with nothing new to show does not draw its capsule again.
+ const owner=useRef(value);owner.current=value;
+ const close=useCallback(()=>{owner.current.onClose?.();leave(id,false);},[id]);
  const pan=useMemo(()=>Gesture.Pan().enabled(interactive).activeOffsetX([-8,8]).activeOffsetY([-8,8])
   // A finger on the notice holds every notice's time, whether or not it goes on to swipe.
   .onBegin(()=>{'worklet';runOnJS(hold)(id,true);})
@@ -178,11 +183,13 @@ const Card=memo(function Card({entry,front,hidden,interactive,lift,gap,visible,r
  const cardStyle=useAnimatedStyle(()=>{'worklet';return {opacity:opacity.value,transform:[{translateX:dragX.value},{translateY:y.value+dragY.value},{scaleX:scaleX.value},{scaleY:scaleY.value}]};});
  const contentStyle=useAnimatedStyle(()=>{'worklet';return {opacity:content.value};});
  const onLayout=useCallback((event:LayoutChangeEvent)=>{const {width,height}=event.nativeEvent.layout;size.value={width,height};report(id,height);},[id,report,size]);
+ // The frame (border, glow, fill, radius) moves with the card; the capsule inside draws only its content, which fades on its own.
+ const frame=useMemo(()=>toastFrame(colors,{severity:value.severity,accent:value.accent,described:!!value.description,stacked:value.layout==='stacked'||value.secondaryAction!=null}).style,[colors,value.severity,value.accent,value.description,value.layout,value.secondaryAction]);
  const name=testID===undefined?undefined:`${testID}-toast`;
  // A notice behind a collapsed stack, or past the visible ones, shows no content: it takes no touches and assistive technology skips it.
  return <GestureDetector gesture={pan}>
-  <Reanimated.View testID={name} onLayout={onLayout} pointerEvents={interactive?'auto':'none'} accessibilityElementsHidden={hidden||(!front&&!interactive)} importantForAccessibility={hidden||(!front&&!interactive)?'no-hide-descendants':'auto'} style={[styles.card,lift===1?styles.top:styles.bottom,narrow?styles.narrow:styles.wide,{backgroundColor:colors.nested},cardStyle]}>
-   <Reanimated.View style={contentStyle}><Capsule message={value.message} description={value.description} severity={value.severity} action={value.action} dismissName={value.dismissName} onDismiss={dismiss} hug style={styles.bare}/></Reanimated.View>
+  <Reanimated.View testID={name} onLayout={onLayout} pointerEvents={interactive?'auto':'none'} accessibilityElementsHidden={hidden||(!front&&!interactive)} importantForAccessibility={hidden||(!front&&!interactive)?'no-hide-descendants':'auto'} style={[styles.card,lift===1?styles.top:styles.bottom,narrow?styles.narrow:styles.wide,frame,cardStyle]}>
+   <Reanimated.View style={contentStyle}><Capsule message={value.message} description={value.description} severity={value.severity} action={value.action} secondaryAction={value.secondaryAction} icon={value.icon} accent={value.accent} layout={value.layout} onPress={value.onPress} pressName={value.pressName} dismissName={value.dismissName} onDismiss={close} hug style={styles.bare}/></Reanimated.View>
   </Reanimated.View>
  </GestureDetector>;
 });
@@ -290,11 +297,11 @@ export function Toaster({position='bottom-center',expand=false,visibleToasts=TOA
 const styles=StyleSheet.create({
  layer:{direction:'ltr'},
  rail:{position:'absolute'},
- // The capsule's own fill, radius and shadow sit on the moving view, so the content inside can fade without the capsule going with it.
- card:{position:'absolute',borderRadius:22,boxShadow:'0 4px 16px #0006'},
+ // The notice's frame (`toastFrame`: border, glow, fill, radius) sits on the moving view, so the content inside can fade without the frame going with it.
+ card:{position:'absolute'},
  top:{top:0},
  bottom:{bottom:0},
  narrow:{maxWidth:'100%'},
  wide:{maxWidth:TOAST_WIDTH},
- bare:{backgroundColor:'transparent',boxShadow:undefined},
+ bare:{backgroundColor:'transparent',boxShadow:undefined,borderWidth:0},
 });

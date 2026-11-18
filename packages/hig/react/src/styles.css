@@ -298,23 +298,43 @@ img.hig-avatar { object-fit:cover; }
 :where(.hig-surface)[data-severity='warning'] { --hig-alert-tone:var(--hig-warning); }
 :where(.hig-surface)[data-severity='success'],:where(.hig-surface)[data-severity='tip'] { --hig-alert-tone:var(--hig-positive); }
 :where(.hig-surface)[data-severity='default'] { --hig-alert-tone:var(--hig-text);background:color-mix(in srgb,var(--hig-text) 6%,var(--hig-surface)); }
-/* A notice is one capsule row: severity symbol, message, optional action, close. */
-.hig-toast-item { display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:var(--hig-button,44px);padding-block:5px;padding-inline:16px 5px;border:1px solid transparent;border-radius:9999px;background:var(--hig-nested);color:var(--hig-text);box-shadow:0 8px 24px #0006;font:500 1rem/1.5 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);overflow-wrap:anywhere; }
+/* A notice is a pill in its accent: a 2px border with a glow, the symbol in a tinted tile, the message, tinted action pills, close. */
+.hig-toast-item { --hig-toast-accent:var(--hig-info);box-sizing:border-box;display:flex;align-items:center;gap:12px;width:fit-content;max-width:min(100%,28rem);min-height:52px;padding:2px 4px 2px 8px;border:2px solid var(--hig-toast-accent);border-radius:9999px;background:color-mix(in srgb,var(--hig-background) 95%,transparent);color:var(--hig-text);box-shadow:0 0 24px color-mix(in srgb,var(--hig-toast-accent) 55%,transparent);font:600 .875rem/1.25 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);overflow-wrap:anywhere; }
+.hig-toast-item[data-severity='success'] { --hig-toast-accent:var(--hig-positive); }
+.hig-toast-item[data-severity='warning'] { --hig-toast-accent:var(--hig-warning); }
+.hig-toast-item[data-severity='error'] { --hig-toast-accent:var(--hig-negative); }
+.hig-toast-item[data-accent='up'] { --hig-toast-accent:var(--hig-up); }
+.hig-toast-item[data-accent='down'] { --hig-toast-accent:var(--hig-down); }
+.hig-toast-tile { flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;overflow:hidden;color:var(--hig-toast-accent);background:color-mix(in oklab,var(--hig-toast-accent) 15%,transparent); }
+.hig-toast-tile > :is(img,svg:not(.hig-toast-icon)) { max-width:100%;max-height:100%; }
 .hig-toast-icon,.hig-toast-close > svg { flex:none;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
-.hig-toast-icon { color:var(--hig-info); }
-.hig-toast-item[data-severity='success'] .hig-toast-icon { color:var(--hig-positive); }
-.hig-toast-item[data-severity='warning'] .hig-toast-icon { color:var(--hig-warning); }
-.hig-toast-item[data-severity='error'] .hig-toast-icon { color:var(--hig-negative); }
-.hig-toast-message { flex:1;min-width:0; }
-/* A notice with a description is two lines tall, so its corners keep the one-line radius. */
-.hig-toast-item[data-described] { border-radius:22px;padding-block:8px; }
-.hig-toast-description { display:block;font-weight:400; }
+.hig-toast-icon { width:18px;height:18px;stroke-width:2.5; }
+.hig-toast-message { flex:1;min-width:0;padding-block:6px; }
+.hig-toast-description { display:block;margin-block-start:2px;color:var(--hig-muted);font-size:.75rem;font-weight:500;line-height:1.35; }
+/* A notice with a description is two lines tall, so its corners keep a fixed radius. */
+.hig-toast-item[data-described] { border-radius:16px;padding-block:6px; }
+/* The tile and message as one whole-pill control. */
+.hig-toast-body { appearance:none;display:flex;flex:1;align-items:center;gap:12px;min-width:0;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:start;cursor:pointer; }
+.hig-toast-body:active { opacity:.8; }
+.hig-toast-body:focus-visible { outline:2px solid var(--hig-toast-accent);outline-offset:2px;border-radius:9999px; }
+/* Stacked: the message row, then a full-width row of actions; concentric with the 18px pills (18 + 12 inset + 2 border). */
+.hig-toast-item[data-layout='stacked'] { flex-direction:column;align-items:stretch;gap:12px;width:100%;padding:12px;border-radius:32px; }
+.hig-toast-row { display:flex;align-items:flex-start;gap:12px;min-width:0; }
+.hig-toast-actions { display:grid;grid-template-columns:1fr;gap:8px; }
+.hig-toast-actions[data-count='2'] { grid-template-columns:1fr 1fr; }
+.hig-toast-actions > .hig-toast-action { width:100%; }
+.hig-toast-action { appearance:none;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;margin:0;padding:0 12px;border:0;border-radius:9999px;background:color-mix(in srgb,currentColor 15%,transparent);color:var(--hig-toast-accent);font:800 .875rem/1 var(--hig-font-sans,'Bloxwap Sans',system-ui,sans-serif);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none; }
+.hig-toast-action[data-rank='secondary'] { color:var(--hig-muted); }
+.hig-toast-action:active { background:color-mix(in srgb,currentColor 22%,transparent); }
+.hig-toast-action:focus-visible { outline:2px solid currentColor;outline-offset:2px; }
+.hig-toast-action-icon { display:inline-flex; }
+.hig-toast-action-icon > svg { width:16px;height:16px; }
 /* Inside Sonner's fixed-width slot the capsule hugs its content and centres. */
 [data-sonner-toast] .hig-toast-item { margin-inline:auto; }
 .hig-toast-item .hig-button { min-height:44px;padding-block:2px; }
-/* 32px disc with a 44px hit area. */
 /* The target is the full button height (44 touch, 36 compact); the 32px disc is drawn inside it and negative margins keep the capsule's size. */
 .hig-toast-close { appearance:none;position:relative;isolation:isolate;flex:none;display:inline-grid;place-items:center;width:var(--hig-button,44px);height:var(--hig-button,44px);margin:calc((32px - var(--hig-button,44px))/2);padding:0;border:0;border-radius:50%;background:transparent;color:var(--hig-muted);cursor:pointer; }
+.hig-toast-item[data-layout='stacked'] .hig-toast-close { margin-block:-4px;margin-inline:0 -4px; }
 .hig-toast-close::before { content:'';position:absolute;z-index:-1;inset:calc((var(--hig-button,44px) - 32px)/2);border-radius:50%; }
 .hig-toast-close:active { color:var(--hig-text); }
 .hig-toast-close:active::before { background:var(--hig-border); }
@@ -490,6 +510,7 @@ img.hig-avatar { object-fit:cover; }
   .hig-table-sort:hover { color:var(--hig-text);background:var(--hig-nested); }
   .hig-toast-close:hover { color:var(--hig-text); }
   .hig-toast-close:hover::before { background:var(--hig-border); }
+  .hig-toast-action:hover { background:color-mix(in srgb,currentColor 22%,transparent); }
   .hig-filter-chip:hover:not(:has(input:checked,input:disabled)) { background:var(--hig-fill-raised); }
   .hig-accordion-summary:hover .hig-accordion-chevron { color:var(--hig-text); }
   .hig-breadcrumb .hig-link:hover { color:var(--hig-text);text-decoration:underline; }

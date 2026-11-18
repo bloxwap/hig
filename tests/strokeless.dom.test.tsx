@@ -22,7 +22,9 @@ const rule=(selector:string)=>{const blocks=css.split(`\n${selector} {`).slice(1
 const stopped=(selector:string,prop:'transition'|'animation')=>{const found={media:false,provider:false};postcss.parse(css).walkDecls(prop,decl=>{if(decl.value!=='none')return;const parent=decl.parent as postcss.Rule;const media=parent.parent?.type==='atrule'&&/prefers-reduced-motion:\s*reduce/.test((parent.parent as postcss.AtRule).params);if(media&&parent.selectors.includes(selector))found.media=true;if(!media&&parent.selectors.includes(`[data-hig-motion='reduced'] ${selector}`))found.provider=true;});return found;};
 describe('fill and space instead of strokes',()=>{
  it('draws no resting stroke on surfaces, inputs, overlays or tables',()=>{
-  for(const selector of ['.hig-surface,.hig-dialog,.hig-select-list','.hig-input','.hig-popover','.hig-table-scroll','.hig-toast-item']){const body=rule(selector);expect(body).toContain('border:1px solid transparent');expect(body).not.toMatch(/solid var\(--hig-border\)/);}
+  for(const selector of ['.hig-surface,.hig-dialog,.hig-select-list','.hig-input','.hig-popover','.hig-table-scroll']){const body=rule(selector);expect(body).toContain('border:1px solid transparent');expect(body).not.toMatch(/solid var\(--hig-border\)/);}
+  // The one exception: a toast floats over everything and announces its severity, so its border is the severity's accent with a matching glow, never a neutral --hig-border stroke.
+  const toast=rule('.hig-toast-item');expect(toast).toContain('border:2px solid var(--hig-toast-accent)');expect(toast).not.toMatch(/solid var\(--hig-border\)/);
   expect(css).not.toMatch(/border-bottom:1px solid var\(--hig-border\)/);
  });
  it('steps control wells one shade lighter inside a surface or overlay',()=>{

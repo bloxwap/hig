@@ -21,9 +21,21 @@ export interface ToastBaseOptions {
  id?:ToastId;
  /** Called once when the notice is dismissed: its close control, a swipe, or `dismissToast`. */
  onDismiss?:()=>void;
+ /** Called when the person presses the close control, before `onDismiss`; not for a swipe, the time running out or `dismissToast`. Use it to keep a closed notice closed. */
+ onClose?:()=>void;
  /** Called once when the notice's time runs out. */
  onAutoClose?:()=>void;
+ /** Glows in the market direction (`up`, `down`) instead of the severity's colour: a payout, a trade signal. The severity still picks the symbol and how it is announced. */
+ accent?:ToastAccent;
+ /** `stacked` puts the actions in a full-width row under the message, for a longer notice; a notice with a secondary action is always stacked. Default `inline`. */
+ layout?:ToastLayout;
+ /** Makes the symbol and message one control that runs this, as a whole-pill tap; the close control stays separate. The caller dismisses the notice in it if it should go. */
+ onPress?:()=>void;
+ /** Accessible name of the `onPress` control when the message alone does not say what it does. */
+ pressName?:string;
 }
+export type ToastAccent='up'|'down';
+export type ToastLayout='inline'|'stacked';
 /** `toast` as each platform exports it, with that platform's options: the call itself, a shorthand per severity, and `dismiss`, which is `dismissToast`. Each returns the notice's id. */
 export interface ToastCall<Options> {
  (message:string,options?:Options):ToastId;

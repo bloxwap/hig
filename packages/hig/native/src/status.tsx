@@ -87,32 +87,85 @@ function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Ea
  },[duration,easing,value]);
  return value;
 }
+const severityAccent={info:'info',success:'positive',warning:'warning',error:'negative'} as const;
+const hex=(color:string)=>/^#[0-9a-f]{6}$/i.test(color);
+/** `color` at `alpha` (0–1) over whatever is behind, as web color-mix with transparent; a colour that is not #rrggbb stays opaque. */
+const alphaOf=(color:string,alpha:number)=>hex(color)?color+Math.round(alpha*255).toString(16).padStart(2,'0'):color;
+export interface ToastFrameOptions {severity?:Notice['severity'];accent?:'up'|'down';described?:boolean;stacked?:boolean}
+/**
+ * A notice's frame: its accent colour (the severity's role, or the market direction's) and the
+ * pill's border, glow, fill and radius. `ToastNotice` draws it; the `Toaster` draws it on the card
+ * that moves, so a notice behind a collapsed stack keeps its edge while its content is hidden.
+ */
+export function toastFrame(colors:Readonly<Record<string,string>>,{severity='info',accent,described=false,stacked=false}:ToastFrameOptions):{accent:string;style:ViewStyle}{
+ const color=accent?colors[accent]:colors[severityAccent[severity]];
+ return {accent:color,style:{borderWidth:2,borderColor:color,backgroundColor:colors.background,borderRadius:stacked?32:described?16:9999,boxShadow:hex(color)?`0 0 24px ${alphaOf(color,0.55)}`:undefined}};
+}
+const ToastActionContext=React.createContext<{accent:string;rank:'primary'|'secondary'}|null>(null);
 export interface ToastNoticeProps {
  message:string;
- /** A second line under the message, in regular weight. */
+ /** A second line under the message, smaller and muted. */
  description?:string;
  severity?:Notice['severity'];
+ /** The primary action, usually a `ToastAction`: inline before the close control, or in the action row of a stacked notice. */
  action?:React.ReactNode;
+ /** A second, quieter action beside the primary one; the notice is then stacked. */
+ secondaryAction?:React.ReactNode;
+ /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */
+ icon?:React.ReactNode;
+ /** Takes the market direction's colour (`up`, `down`) for the border, glow and tile instead of the severity's. */
+ accent?:'up'|'down';
+ /** `stacked` moves the actions to a full-width row under the message. Default `inline`. */
+ layout?:'inline'|'stacked';
+ /** Makes the tile and message one button. */
+ onPress?:()=>void;
+ /** Accessible name of the `onPress` button; defaults to the message. */
+ pressName?:string;
  /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */
  dismissName?:string;
  /** Draws the close control and takes its press. Omitted, the notice has none. */
  onDismiss?:()=>void;
  /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */
  hug?:boolean;
- /** Merged over the capsule's fill, radius and shadow. */
+ /** Merged over the capsule's frame (border, glow, fill, radius). */
  style?:StyleProp<ViewStyle>;
 }
-/** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. */
-export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
+/**
+ * One notice: a pill with a border and glow in its accent (the severity's colour, or the market
+ * direction's), the symbol in a tinted tile, the message with an optional muted description, the
+ * actions as tinted pills and the close control on the trailing edge. A longer notice or one with
+ * two actions stacks its actions under the message. Shared by `Toast` and the transient `Toaster`
+ * of `@bloxwap/hig/native/toast`; it announces nothing itself.
+ */
+export function ToastNotice({message,description,severity='info',action,secondaryAction,icon,accent,layout='inline',onPress,pressName,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
  const messages=useMessageOverrides();const direction=useLayoutDirection();const colors=useColors();
- const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null;
- return <View accessibilityLiveRegion='none' style={[{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'},style]}>
-  <SeverityIcon kind={severity} color={colors[severityRole[severity]]}/>
-  {/* Filling its parent, the message takes the room that is left. Hugging, nothing in the row may grow, or the row would take all the room it is offered. */}
-  <View style={hug?{flexShrink:1,minWidth:0}:{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{message}</Text>{description?<Text>{description}</Text>:null}</View>
-  {action}
+ const stacked=layout==='stacked'||secondaryAction!=null;
+ const frame=toastFrame(colors,{severity,accent,described:!!description,stacked});
+ const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:stacked?'flex-start':'center'}}><CloseIcon color={colors.muted}/></Button>:null;
+ const tile=icon===null?null:<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={{width:36,height:36,borderRadius:18,overflow:'hidden',alignItems:'center',justifyContent:'center',backgroundColor:alphaOf(frame.accent,0.15)}}>{icon??<SeverityIcon kind={severity} color={frame.accent}/>}</View>;
+ const text=<View style={hug&&!stacked?{flexShrink:1,minWidth:0}:{flex:1,minWidth:0}}><Text style={{fontWeight:'600',fontSize:14,lineHeight:18}}>{message}</Text>{description?<Text style={{fontSize:12,lineHeight:16,fontWeight:'500',color:colors.muted,marginTop:2}}>{description}</Text>:null}</View>;
+ const row={flexDirection:'row' as const,alignItems:stacked?'flex-start' as const:'center' as const,gap:12};
+ const lead=onPress?<Button intent='ghost' contentMode='custom' accessibilityLabel={pressName??message} onPress={onPress} style={[row,{flexShrink:1,flexGrow:hug&&!stacked?0:1,minWidth:0,paddingHorizontal:0,paddingVertical:0,minHeight:36,backgroundColor:'transparent'}]}>{tile}{text}</Button>:<>{tile}{text}</>;
+ const actions=(rank:'primary'|'secondary',node:React.ReactNode)=>node?<ToastActionContext.Provider value={{accent:frame.accent,rank}}>{node}</ToastActionContext.Provider>:null;
+ if(stacked)return <View accessibilityLiveRegion='none' style={[{direction,gap:12,padding:12},frame.style,style]}>
+  <View style={row}>{lead}{close}</View>
+  {action||secondaryAction?<View style={{flexDirection:'row',gap:8}}>{action?<View style={{flex:1}}>{actions('primary',action)}</View>:null}{secondaryAction?<View style={{flex:1}}>{actions('secondary',secondaryAction)}</View>:null}</View>:null}
+ </View>;
+ return <View accessibilityLiveRegion='none' style={[{direction,...row,minHeight:52,paddingVertical:4,paddingLeft:8,paddingRight:8},frame.style,style]}>
+  {lead}
+  {actions('primary',action)}
   {close}
  </View>;
+}
+export interface ToastActionProps {children?:React.ReactNode;/** Drawn before the label. */icon?:React.ReactNode;onPress:()=>void;accessibilityLabel?:string;testID?:string}
+/** A toast's action as a tinted pill in the notice's accent (muted as a secondary action). Its press is the caller's: dismiss the notice in it if it should go. */
+export function ToastAction({children,icon,onPress,accessibilityLabel,testID}:ToastActionProps){
+ const colors=useColors();const context=React.useContext(ToastActionContext);
+ const color=context?.rank==='secondary'?colors.muted:context?.accent??colors.info;
+ return <Button intent='ghost' contentMode='custom' testID={testID} accessibilityLabel={accessibilityLabel} onPress={onPress} style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6,minHeight:36,paddingHorizontal:12,paddingVertical:0,borderRadius:9999,backgroundColor:alphaOf(color,0.15)}}>
+  {icon}
+  {typeof children==='string'?<Text style={{fontWeight:'800',fontSize:14,color}}>{children}</Text>:children}
+ </Button>;
 }
 const PersistentNotice = React.memo(function PersistentNotice({
  id, message, severity, action, dismiss, formatDismiss, onDismiss, description, closable

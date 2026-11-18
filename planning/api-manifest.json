@@ -1094,9 +1094,21 @@
         "entry": "status",
         "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
       },
+      "ToastNoticeAccent": {
+        "entry": "status",
+        "signature": "export type ToastNoticeAccent = 'up' | 'down';"
+      },
+      "ToastNoticeProps": {
+        "entry": "status",
+        "signature": "export interface ToastNoticeProps {\n    message: React.ReactNode;\n    /** A second line under the message, smaller and muted. With one the capsule keeps a fixed corner radius, not a full pill. */\n    description?: React.ReactNode;\n    severity?: Notice['severity'];\n    /** The primary action, usually a `ToastAction`: inline before the close control, or in the action row of a stacked notice. */\n    action?: React.ReactNode;\n    /** A second, quieter action beside the primary one; the notice is then stacked. */\n    secondaryAction?: React.ReactNode;\n    /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode;\n    /** Takes the market direction's colour (`up`, `down`) for the border, glow and tile instead of the severity's. */\n    accent?: ToastNoticeAccent;\n    /** `stacked` moves the actions to a full-width row under the message. Default `inline`. */\n    layout?: 'inline' | 'stacked';\n    /** Makes the tile and message one button. */\n    onPress?: () => void;\n    /** Accessible name of the `onPress` button. */\n    pressName?: string;\n    /** Accessible name of the close button. */\n    dismissName?: string;\n    /** Omit for a notice the host closes itself; the close button is then not drawn. */\n    onDismiss?: () => void;\n}"
+      },
       "ToastNotice": {
         "entry": "status",
-        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode; /** A second line under the message, in regular weight. With one the capsule keeps a fixed corner radius, not a full pill. */\n    description?: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
+        "signature": "export declare function ToastNotice({ message, description, severity, action, secondaryAction, icon, accent, layout, onPress, pressName, dismissName, onDismiss }: ToastNoticeProps): React.JSX.Element;"
+      },
+      "ToastAction": {
+        "entry": "status",
+        "signature": "export declare function ToastAction({ children, icon, onClick, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & {\n    icon?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "Toast": {
         "entry": "status",
@@ -1164,7 +1176,7 @@
       },
       "ToastOptions": {
         "entry": "toast",
-        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode; /** A second, quieter action; the notice is then stacked. */\n    secondaryAction?: React.ReactNode; /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode; /** Drawn in place of the message text (a live countdown, a figure in a numeric face); `message` stays what is announced and what names the close button. */\n    messageNode?: React.ReactNode;\n}"
       },
       "dismissToast": {
         "entry": "toast",
@@ -2632,13 +2644,29 @@
         "entry": "status",
         "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
+      "ToastFrameOptions": {
+        "entry": "status",
+        "signature": "export interface ToastFrameOptions {\n    severity?: Notice['severity'];\n    accent?: 'up' | 'down';\n    described?: boolean;\n    stacked?: boolean;\n}"
+      },
+      "toastFrame": {
+        "entry": "status",
+        "signature": "export declare function toastFrame(colors: Readonly<Record<string, string>>, { severity, accent, described, stacked }: ToastFrameOptions): {\n    accent: string;\n    style: ViewStyle;\n};"
+      },
       "ToastNoticeProps": {
         "entry": "status",
-        "signature": "export interface ToastNoticeProps {\n    message: string;\n    /** A second line under the message, in regular weight. */\n    description?: string;\n    severity?: Notice['severity'];\n    action?: React.ReactNode;\n    /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */\n    dismissName?: string;\n    /** Draws the close control and takes its press. Omitted, the notice has none. */\n    onDismiss?: () => void;\n    /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */\n    hug?: boolean;\n    /** Merged over the capsule's fill, radius and shadow. */\n    style?: StyleProp<ViewStyle>;\n}"
+        "signature": "export interface ToastNoticeProps {\n    message: string;\n    /** A second line under the message, smaller and muted. */\n    description?: string;\n    severity?: Notice['severity'];\n    /** The primary action, usually a `ToastAction`: inline before the close control, or in the action row of a stacked notice. */\n    action?: React.ReactNode;\n    /** A second, quieter action beside the primary one; the notice is then stacked. */\n    secondaryAction?: React.ReactNode;\n    /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode;\n    /** Takes the market direction's colour (`up`, `down`) for the border, glow and tile instead of the severity's. */\n    accent?: 'up' | 'down';\n    /** `stacked` moves the actions to a full-width row under the message. Default `inline`. */\n    layout?: 'inline' | 'stacked';\n    /** Makes the tile and message one button. */\n    onPress?: () => void;\n    /** Accessible name of the `onPress` button; defaults to the message. */\n    pressName?: string;\n    /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */\n    dismissName?: string;\n    /** Draws the close control and takes its press. Omitted, the notice has none. */\n    onDismiss?: () => void;\n    /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */\n    hug?: boolean;\n    /** Merged over the capsule's frame (border, glow, fill, radius). */\n    style?: StyleProp<ViewStyle>;\n}"
       },
       "ToastNotice": {
         "entry": "status",
-        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss, hug, style }: ToastNoticeProps): React.JSX.Element;"
+        "signature": "export declare function ToastNotice({ message, description, severity, action, secondaryAction, icon, accent, layout, onPress, pressName, dismissName, onDismiss, hug, style }: ToastNoticeProps): React.JSX.Element;"
+      },
+      "ToastActionProps": {
+        "entry": "status",
+        "signature": "export interface ToastActionProps {\n    children?: React.ReactNode; /** Drawn before the label. */\n    icon?: React.ReactNode;\n    onPress: () => void;\n    accessibilityLabel?: string;\n    testID?: string;\n}"
+      },
+      "ToastAction": {
+        "entry": "status",
+        "signature": "export declare function ToastAction({ children, icon, onPress, accessibilityLabel, testID }: ToastActionProps): React.JSX.Element;"
       },
       "Toast": {
         "entry": "status",
@@ -2794,7 +2822,7 @@
       },
       "ToastOptions": {
         "entry": "toast",
-        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode; /** A second, quieter action; the notice is then stacked. */\n    secondaryAction?: React.ReactNode; /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode;\n}"
       },
       "ToasterProps": {
         "entry": "toast",

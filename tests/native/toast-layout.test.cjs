@@ -20,9 +20,10 @@ it('renders all notices with body typography inside a bounded scrolling viewport
  expect(scroll.props.nestedScrollEnabled).toBe(true);
  expect(StyleSheet.flatten(scroll.props.style)).toMatchObject({flexGrow:0,flexShrink:1});
  for(const notice of notices){
-  for(const text of [notice.message,notice.description]){
+  // The message in 14/18, the description under it in 12/16; both still scale with Dynamic Type.
+  for(const [text,size] of [[notice.message,{fontSize:14,lineHeight:18}],[notice.description,{fontSize:12,lineHeight:16}]]){
    const run=tree.findAllByType(RNText).find(node=>node.props.children===text);
-   expect(StyleSheet.flatten(run.props.style)).toMatchObject({fontSize:16,lineHeight:24});
+   expect(StyleSheet.flatten(run.props.style)).toMatchObject(size);
    expect(run.props.allowFontScaling).not.toBe(false);
    expect(run.props.numberOfLines).toBeUndefined();
   }
