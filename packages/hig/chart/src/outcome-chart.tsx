@@ -4,7 +4,7 @@ import {appendTrailSample,appendLiveTail,beginTrail,historyPath,visibleFrames} f
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
-import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
+import {NumberFlow} from '@bloxwap/hig/react/animated-number';
 import {priceTween,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,easeInOut,gridPhase,type AltimeterTick} from './altimeter-model.js';
 import {OUTCOME_LIMIT,capsuleCenters,labelBounds,type TargetLabelInsets,outcomeChance,outcomeColors,outcomeScale,outcomeTicks,outcomeY,type Outcome,type OutcomeFeed,type OutcomeScale} from './outcome-model.js';
 import {championsLeagueWinner} from './champions-league.js';
@@ -200,7 +200,7 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
      </svg>
      <ul ref={list} style={{position:'absolute',top:0,right:EDGE,width:'min(55%, 200px)',height:'100%',margin:0,padding:0,listStyle:'none'}}>
       {shown.map((outcome,index)=><li key={outcome.id} data-hig-outcome={outcome.id} style={{position:'absolute',insetInline:0,top:rest[index]-CAPSULE/2,height:CAPSULE,boxSizing:'border-box',display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,paddingInline:14,border:`1px solid ${paint(outcome,index)}`,borderRadius:tokens.radius.pill,background:colors.background,color:paint(outcome,index),fontSize:16,fontWeight:600,lineHeight:1.5,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>
-       <span style={{minWidth:0,overflow:'hidden',textOverflow:'ellipsis'}}>{outcome.label}</span><AnimatedNumberReadout value={outcomeChance(outcome.price)} options={CHANCE}/>
+       <span style={{minWidth:0,overflow:'hidden',textOverflow:'ellipsis'}}>{outcome.label}</span><NumberFlow motion="slide" value={outcomeChance(outcome.price)} options={CHANCE}/>
       </li>)}
      </ul>
     </>}

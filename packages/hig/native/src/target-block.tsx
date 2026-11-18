@@ -11,7 +11,7 @@ import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {PresetGroup} from './preset-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 /** What the target does: close in profit, or cap the loss. */
 export type TargetKind='take-profit'|'stop-loss';
@@ -152,7 +152,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <View style={{minWidth:side,alignItems:'flex-end'}}>{info?(()=>{const button=<IconButton intent='ghost' label={info} suppressFeedback testID='target-info' accessibilityState={{expanded:open}} onPress={()=>setOpen(!open)}><SeverityIcon kind='info' color={colors.text}/></IconButton>;return pair?<View testID='target-header-actions' style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>{button}{headerAction}</View>:button;})():headerAction}</View>
   </View>;
  const body=<>
-  <View style={{alignItems:'center',marginTop:16}}><AnimatedNumberReadout testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
+  <View style={{alignItems:'center',marginTop:16}}><NumberFlow motion="slide" testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {note&&!info?<Text testID='target-note' style={{color:colors.muted,fontSize:14,lineHeight:21,textAlign:'center',marginTop:16}}>{note}</Text>:null}
   <PriceCard testID='target-prices' style={{gap:12,marginTop:16,minWidth:0}}>
    {position||orderType?<View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
@@ -166,7 +166,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
     {order.map((price,index)=><View key={price} accessible accessibilityLabel={`${labels[price]}, ${formatNumberReadout(prices[price],locale,present(priceOptions)).text}`} testID={`target-${price}`} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
-     <View {...hidden}><AnimatedNumberReadout value={prices[price]} options={priceOptions} tone={price==='trigger'?(stop?'negative':'positive'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
+     <View {...hidden}><NumberFlow motion="slide" value={prices[price]} options={priceOptions} tone={price==='trigger'?(stop?'negative':'positive'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
      <Text {...hidden} numberOfLines={1} style={{color:colors.muted,fontSize:12,lineHeight:16}}>{labels[price]}</Text>
     </View>)}
    </View>

@@ -6,7 +6,7 @@ import {Text} from './surface.js';
 import {Field,Input} from './field.js';
 import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {SwapSubview} from './swap-parts.js';
 import {FromPickerBlock,ToPickerBlock} from './pickers.js';
 import {formatPercent,shortAddress,slippagePresets,type SwapChain,type SwapDenomination,type SwapFee,type SwapToken,type SwapWallet} from './swap-shared.js';
@@ -51,8 +51,8 @@ export function SwapSettings({view,onViewChange,onBack,denomination,onDenominati
  const row=(name:string,value:string,target:SwapSettingsView,live?:React.ReactNode)=><Pressable accessibilityRole='button' accessibilityLabel={`${name}: ${value}`} testID={`swap-setting-${target}`} onPress={()=>onViewChange(target)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingVertical:8,paddingHorizontal:16,borderRadius:9999,backgroundColor:pressed?fills.raised:fills.well})}>
   <Text style={{fontWeight:'600'}}>{name}</Text><View style={{flexDirection:'row',alignItems:'center',gap:6}}>{live??<Text style={{color:colors.muted}}>{value}</Text>}<View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View></View>
  </Pressable>;
- const feeRow=(name:string,amount:number|null,total?:boolean)=><View key={name} style={{flexDirection:'row',justifyContent:'space-between',gap:12,paddingTop:total?12:0}}><Text style={{color:total?colors.text:colors.muted,fontWeight:total?'600':'400'}}>{name}</Text>{amount!=null?<AnimatedNumberReadout testID={total?'swap-fee-total':undefined} value={amount} options={usdOptions} style={{fontWeight:total?'600':'400'}}/>:<Text testID={total?'swap-fee-total':undefined} style={{fontWeight:total?'600':'400'}}>{feeText}</Text>}</View>;
- const slippageRow=onSlippageChange?row(t.swapSlippageTitle,formatPercent(slippage),'slippage',<AnimatedNumberReadout value={slippage*100} formattedValue={formatPercent(slippage).slice(0,-1)} suffix='%' tone='muted'/>):null,feesRow=row(t.swapFees,feeText,'fees',feeKnown?<AnimatedNumberReadout value={fee} options={usdOptions} tone='muted'/>:undefined);
+ const feeRow=(name:string,amount:number|null,total?:boolean)=><View key={name} style={{flexDirection:'row',justifyContent:'space-between',gap:12,paddingTop:total?12:0}}><Text style={{color:total?colors.text:colors.muted,fontWeight:total?'600':'400'}}>{name}</Text>{amount!=null?<NumberFlow motion="slide" testID={total?'swap-fee-total':undefined} value={amount} options={usdOptions} style={{fontWeight:total?'600':'400'}}/>:<Text testID={total?'swap-fee-total':undefined} style={{fontWeight:total?'600':'400'}}>{feeText}</Text>}</View>;
+ const slippageRow=onSlippageChange?row(t.swapSlippageTitle,formatPercent(slippage),'slippage',<NumberFlow motion="slide" value={slippage*100} formattedValue={formatPercent(slippage).slice(0,-1)} suffix='%' tone='muted'/>):null,feesRow=row(t.swapFees,feeText,'fees',feeKnown?<NumberFlow motion="slide" value={fee} options={usdOptions} tone='muted'/>:undefined);
  return <SwapSubview title={title} onBack={onBack} testID={`swap-view-${view}`}>
   {view==='settings'?<View style={{gap:12}}>
    {onDenominationChange&&<SegmentedControl label={t.swapDenomination} options={[{value:'usd',label:t.swapDollars},{value:'token',label:t.swapUnits}]} value={denomination} onValueChange={value=>onDenominationChange(value as SwapDenomination)}/>}

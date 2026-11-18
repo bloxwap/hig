@@ -865,22 +865,6 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
-      "name": "AnimatedNumberReadout",
-      "slug": "animated-number-readout",
-      "entry": "animated-number",
-      "family": "financial-data",
-      "web": "<><C.AnimatedNumberReadout label=\"Estimated quantity\" value={empty?null:range} stale={!!error} trend={0} prefix=\"≈ \" suffix=\" units\"/><C.Slider label=\"Estimated quantity\" value={range} onValueChange={setRange}/></>",
-      "native": "<><C.AnimatedNumberReadout label=\"Estimated quantity\" value={empty?null:range} stale={!!error} trend={0} prefix=\"≈ \" suffix=\" units\"/><C.Slider label=\"Estimated quantity\" value={range} onValueChange={setRange}/></>",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ],
-      "a11y": "One final localized reading with prefix/suffix stays accessible; decorative per-place motion honors reduced motion, latest value wins and no live region or feedback is emitted.",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
-    },
-    {
       "name": "NumberFlow",
       "slug": "number-flow",
       "entry": "animated-number",
@@ -894,7 +878,8 @@
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ],
       "a11y": "One final localized reading stays accessible while the digits roll; the moving copy is hidden, reduced motion draws each value at once and no live region or feedback is emitted.",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -906,6 +891,10 @@
         "continuous": {
           "web": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>",
           "native": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>"
+        },
+        "slide": {
+          "web": "<><C.NumberFlow motion=\"slide\" label=\"Sample price\" value={range}/><C.Slider label=\"Sample price\" value={range} onValueChange={setRange}/></>",
+          "native": "<><C.NumberFlow motion=\"slide\" label=\"Sample price\" value={range}/><C.Slider label=\"Sample price\" value={range} onValueChange={setRange}/></>"
         }
       }
     },

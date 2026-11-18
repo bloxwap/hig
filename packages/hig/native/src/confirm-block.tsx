@@ -5,7 +5,7 @@ import {View,type ScrollViewProps} from 'react-native';
 import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button} from './button.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 /** One more line under Network, such as a fee: host text on both edges. */
@@ -113,7 +113,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
  const tertiaryInert=held||!!tertiaryAction?.disabled;
  const body=<>
   {amount!==undefined?<View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
-   <AnimatedNumberReadout testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+   <NumberFlow motion="slide" testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
    {symbol?<Text testID={id('symbol')} style={{fontSize:24,lineHeight:32,fontWeight:'600',color:colors.muted}}>{symbol}</Text>:null}
   </View>:null}
   {lines.length?<View testID={id('details')} style={{gap:12,paddingHorizontal:4}}>

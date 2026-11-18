@@ -123,7 +123,7 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  const latest=useRef({open,onOpenChange,onDismiss,onChange,onHardwareBackPress,onClosed,returnFocusRef,titleRef,contentMode});latest.current={open,onOpenChange,onDismiss,onChange,onHardwareBackPress,onClosed,returnFocusRef,titleRef,contentMode};
  // Layout the JS side needs: the room under the top inset sizes the content box. It changes on rotation and when Android resizes the window for the keyboard, not while the sheet moves.
  const [room,setRoom]=useState(()=>Math.max(0,(hostHeight??0)-top));
- const roomValue=useSharedValue(room),contentHeight=useSharedValue(0),position=useSharedValue(OFFSCREEN),dragStart=useSharedValue(0),rebase=useSharedValue(0),dragging=useSharedValue(false),closing=useSharedValue(false),shown=useSharedValue(open),keyboard=useSharedValue(0),kick=useSharedValue(0);
+ const roomValue=useSharedValue(room),contentHeight=useSharedValue(0),position=useSharedValue(OFFSCREEN),dragStart=useSharedValue(0),rebase=useSharedValue(0),scrolled=useSharedValue(false),dragging=useSharedValue(false),closing=useSharedValue(false),shown=useSharedValue(open),keyboard=useSharedValue(0),kick=useSharedValue(0);
  const points=useSharedValue<readonly SheetSnapPoint[]>(snapPoints??[]),dynamic=useSharedValue(enableDynamicSizing),ceiling=useSharedValue(maxDynamicContentSize??0),canDismiss=useSharedValue(dismissible),reduce=useSharedValue(env.reducedMotion);
  const detentCount=enableDynamicSizing?1:(snapPoints??[]).length;
  const active=useSharedValue(Math.max(0,Math.min(initialIndex,detentCount-1)));
@@ -193,20 +193,20 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   position.value=withTiming(target,motion,finished=>{'worklet';if(finished)runOnJS(settled)(index);});
  });
  const pan=useMemo(()=>Gesture.Pan().activeOffsetY([-6,6]).failOffsetX([-28,28])
-  .onStart(()=>{'worklet';cancelAnimation(position);dragStart.value=position.value;rebase.value=0;dragging.value=true;closing.value=false;})
+  .onStart(()=>{'worklet';cancelAnimation(position);dragStart.value=position.value;rebase.value=0;scrolled.value=false;dragging.value=true;closing.value=false;})
   .onChange(event=>{
    'worklet';
    const list=positions.value;if(list.length===0)return;
    const space=roomValue.value,highest=list[0],lowest=list[list.length-1];
    // At the top detent with the content scrolled, the scroller owns the drag. The sheet holds still and the drag is rebased, so it picks up from here once the content is back at its top.
-   if(scrollers.value>0&&dragStart.value<=highest+0.5&&(scrollY.value>0||event.translationY-rebase.value<0)){rebase.value=event.translationY;position.value=highest;return;}
+   if(scrollers.value>0&&dragStart.value<=highest+0.5&&(scrollY.value>0||event.translationY-rebase.value<0)){if(scrollY.value>0)scrolled.value=true;rebase.value=event.translationY;position.value=highest;return;}
    position.value=dragPosition(dragStart.value+event.translationY-rebase.value,highest,lowest,space,canDismiss.value);
   })
   .onEnd(event=>{
    'worklet';
    dragging.value=false;
    const list=positions.value;if(list.length===0)return;
-   const space=roomValue.value,target=releaseTarget(position.value,event.velocityY,list,space,canDismiss.value);
+   const space=roomValue.value,target=releaseTarget(position.value,event.velocityY,list,space,canDismiss.value,dragStart.value,scrolled.value);
    const motion={...gestureSheetAnimationConfigs,reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
    if(target<0){closing.value=true;runOnJS(requestClose)();position.value=withTiming(space,motion,finished=>{'worklet';if(finished)runOnJS(finishClose)();});return;}
    const index=list.length-1-target;active.value=index;

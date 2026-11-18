@@ -7,7 +7,7 @@ import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {Field,Input,SearchInput} from './field.js';
 import {Filter} from './radio-group.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {SwitchRow} from './switch-row.js';
 import {LeaveIcon,LockIcon,ScanIcon,SwapHostContext,TokenIcon,WalletIcon} from './swap-parts.js';
 import {addressColor,pickerRows,shortAddress,type SwapChain,type SwapToken,type SwapWallet} from './swap-shared.js';
@@ -62,7 +62,7 @@ const TokenPickerRow=React.memo(function TokenPickerRow({token,isSelected,headin
   <Pressable nativeID={host?.nativeID} accessibilityHint={host?.accessibilityHint} accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={host?.testID??`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
    <TokenIcon token={token}/>
    <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.detail??token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
-   {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
+   {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><NumberFlow motion="slide" testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<NumberFlow motion="slide" testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
   </Pressable>
  </View>;
 });

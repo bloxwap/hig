@@ -6,7 +6,7 @@ const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {PositionBlock}=require('../../packages/hig/native/src/position-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {ListGroup,ListRow}=require('../../packages/hig/native/src/list-group');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
@@ -36,12 +36,12 @@ it('shows the host title as the heading, Close and Back only with their handlers
 it('reads the summary in order: live figures, host text, tones, and an unknown figure as a dash',()=>{
  let view=mount();
  expect(lines(view)).toEqual(['Notional, $400','Fee, $0.53','Liquidation, -2.5%']);
- const flows=view.findAllByType(AnimatedNumberReadout);expect(flows.map(flow=>[flow.props.value,flow.props.tone])).toEqual([[400,'text'],[0.53,'negative'],[-0.025,'negative']]);
+ const flows=view.findAllByType(NumberFlow);expect(flows.map(flow=>[flow.props.value,flow.props.tone])).toEqual([[400,'text'],[0.53,'negative'],[-0.025,'negative']]);
  expect(flat(host(view,'position-details'))).toMatchObject({gap:12,marginTop:16,paddingHorizontal:20});expect(flat(host(view,'position-details')).backgroundColor).toBeUndefined();expect(flat(host(view,'position-details')).borderRadius).toBeUndefined();
  view=mount({details:[{id:'fee',label:'Fee',value:'2% of profit',tone:'muted'},{label:'Bust',value:{value:null},tone:'positive'},{label:'Size',value:{value:10,prefix:'~',suffix:' USDC'}}],note:'Minimum $10 margin.'});
  expect(lines(view)).toEqual(['Fee, 2% of profit','Bust, —','Size, ~10 USDC']);expect(has(view,'position-detail-fee')).toBe(true);
  const words=host(view,'position-detail-fee').findAll(node=>node.type==='Text'&&node.props.children==='2% of profit')[0];expect(flat(words).color).toBe(nativeSrgb.muted);
- expect(view.findAllByType(AnimatedNumberReadout)).toHaveLength(2);expect(text(host(view,'position-note'))).toBe('Minimum $10 margin.');
+ expect(view.findAllByType(NumberFlow)).toHaveLength(2);expect(text(host(view,'position-note'))).toBe('Minimum $10 margin.');
  view=mount({details:[]});expect(has(view,'position-details')).toBe(false);expect(has(view,'position-note')).toBe(false);expect(has(view,'position-groups')).toBe(false);
 });
 
@@ -77,7 +77,7 @@ it('strikes a waived value through, reads the host word after it, and keeps a la
  const view=mount({details:[{id:'fee',label:'Fee',value:{value:0.53,options:usd},tone:'muted',struck:'Waived'},{id:'genesis',label:'Builder fee',value:'2.5 bps',labelAccessory:h(View,{testID:'genesis-badge',accessible:true,accessibilityRole:'button',onPress:explain})},{id:'plain',label:'Notional',value:'$400'}]});
  expect(host(view,'position-detail-fee').props.accessibilityLabel).toBe('Fee, $0.53, Waived');
  const line=host(view,'position-detail-fee-struck').children.find(child=>child.props.pointerEvents==='none');expect(flat(line)).toMatchObject({position:'absolute',top:'50%',height:1,backgroundColor:nativeSrgb.muted});
- expect(host(view,'position-detail-fee-struck').findAllByType(AnimatedNumberReadout)).toHaveLength(1);
+ expect(host(view,'position-detail-fee-struck').findAllByType(NumberFlow)).toHaveLength(1);
  // With an accessory the line is not one element: the label reads the line, and the accessory is its own element after it.
  expect(host(view,'position-detail-genesis').props.accessible).toBeUndefined();expect(host(view,'position-detail-genesis-label').props.accessibilityLabel).toBe('Builder fee, 2.5 bps');expect(has(view,'genesis-badge')).toBe(true);
  expect(has(view,'position-detail-plain-struck')).toBe(false);expect(host(view,'position-detail-plain').props.accessibilityLabel).toBe('Notional, $400');
@@ -98,7 +98,7 @@ it('takes switch rows and live figures inside the groups',()=>{
  const change=jest.fn();
  const view=mount({groups:[[{id:'size',label:'Size',value:{value:10,options:usd},onSelect:()=>{}},{id:'reduce',label:'Reduce only',value:'Off',checked:false,onCheckedChange:change}]]});
  const size=all(view,'position-row-size').find(node=>typeof node.type!=='string'&&'onPress' in node.props);expect(size.props.accessibilityLabel).toBe('Size, $10.00');
- expect(view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='position-row-size-value').props.value).toBe(10);
+ expect(view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='position-row-size-value').props.value).toBe(10);
  const toggle=host(view,'position-row-reduce');expect(toggle.props.accessibilityRole).toBe('switch');expect(toggle.props.accessibilityLabel).toBe('Reduce only');expect(toggle.props.accessibilityHint).toBe('Off');expect(toggle.props.accessibilityState).toMatchObject({checked:false});
  expect(flat(toggle)).toMatchObject({minHeight:56,paddingHorizontal:20,backgroundColor:nativeSrgb.surface});
  act(()=>{all(view,'position-row-reduce').find(node=>'onPress' in node.props).props.onPress({});});expect(change).toHaveBeenCalledWith(true);

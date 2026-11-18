@@ -414,22 +414,14 @@
       "support": "renderer"
     },
     {
-      "name": "AnimatedNumberReadout",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ],
-      "support": "renderer"
-    },
-    {
       "name": "NumberFlow",
       "states": [
         "default",
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ],
       "support": "renderer"
     },

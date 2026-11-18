@@ -8,7 +8,7 @@ import {Button} from './button.js';
 import {CloseIcon,EditIcon,QrIcon} from './icons.js';
 import {ListGroup,ListRow} from './list-group.js';
 import {SwitchRow} from './switch-row.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {figureProps,figureReading,type Figure} from './figure.js';
 import {addressColor} from './swap-shared.js';
 import type {AssetArtwork} from './asset-balance-row.js';
@@ -100,7 +100,7 @@ function ProfileListRow({row}:{row:ProfileRow}){
  const style={fontSize:16,lineHeight:24,textAlign:'right' as const};
  if(isProfileFigure(value)){
   const reading=figureReading(value,locale,present(value.options));
-  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<AnimatedNumberReadout {...figureProps(value)} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
+  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<NumberFlow motion="slide" {...figureProps(value)} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
  }
  return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} valueTone={tone} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
 }

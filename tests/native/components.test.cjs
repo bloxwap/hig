@@ -69,8 +69,8 @@ it('native accordion emits one silent disclosure intent instead of duplicate act
  const target=tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0];act(()=>target.props.onPress({stopPropagation:()=>{},isDefaultPrevented:()=>false}));expect(emit).toHaveBeenCalledTimes(1);expect(emit.mock.calls[0][0].intent).toBe('disclosure');
 });
 it('optional native number motion exposes one quiet accessible final reading',()=>{
- const {Text}=require('react-native');const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');const {HIGProvider}=require('../../packages/hig/native/src/provider');
- const element=(value,reducedMotion=false)=>React.createElement(HIGProvider,{reducedMotion},React.createElement(AnimatedNumberReadout,{value,label:'Price',testID:'animated-price'}));
+ const {Text}=require('react-native');const {NumberFlow}=require('../../packages/hig/native/src/animated-number');const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const element=(value,reducedMotion=false)=>React.createElement(HIGProvider,{reducedMotion},React.createElement(NumberFlow,{motion:'slide',value,label:'Price',testID:'animated-price'}));
  mount(element(1));act(()=>root.update(element(4,true)));
  const readings=root.root.findAllByType(Text).filter(node=>node.props.testID==='animated-price');expect(readings).toHaveLength(1);expect(readings[0].props.accessibilityLabel).toBe('Price: 4');expect(readings[0].props.accessibilityLiveRegion).toBeUndefined();
 });

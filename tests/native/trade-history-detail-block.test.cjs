@@ -6,7 +6,7 @@ const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {TradeHistoryDetailBlock}=require('../../packages/hig/native/src/trade-history-detail-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
@@ -20,8 +20,8 @@ const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const flat=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
-const flows=(view,id)=>all(view,id)[0].findAllByType(AnimatedNumberReadout);
-const figure=view=>view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='trade-pnl-value');
+const flows=(view,id)=>all(view,id)[0].findAllByType(NumberFlow);
+const figure=view=>view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='trade-pnl-value');
 const button=(view,id)=>view.findAllByType(Button).find(node=>node.props.testID===id);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
@@ -70,9 +70,9 @@ it('keeps the host wording of the return on margin around a live number, in the 
 });
 it('lists the host figures three to a line, a label over its value: a number is a live readout with its format and affixes, a string is drawn as given',()=>{
  let view=mount();const card=host(view,'trade-details');expect(flat(card)).toMatchObject({flexDirection:'row',flexWrap:'wrap',rowGap:16,marginTop:20});expect(flat(card).backgroundColor).toBeUndefined();
- const live=card.findAllByType(AnimatedNumberReadout);expect(live.map(flow=>flow.props.value)).toEqual([267.6,3.734]);
+ const live=card.findAllByType(NumberFlow);expect(live.map(flow=>flow.props.value)).toEqual([267.6,3.734]);
  expect(live[0].props).toMatchObject({options:{style:'currency',currency:'USD'},tone:'text'});expect(live[1].props).toMatchObject({suffix:' AMZN',options:{maximumFractionDigits:6}});
- expect(host(view,'trade-detail-Held').findAllByType(AnimatedNumberReadout)).toHaveLength(0);
+ expect(host(view,'trade-detail-Held').findAllByType(NumberFlow)).toHaveLength(0);
  expect(host(view,'trade-detail-Held').findAll(node=>node.type==='Text').map(text)).toEqual(['Held','38m 20s']);
  expect(host(view,'trade-detail-Entry').findAll(node=>node.type==='Text'&&text(node)==='Entry').map(node=>flat(node).color)).toEqual([nativeSrgb.muted]);
  expect(flat(host(view,'trade-detail-Entry'))).toMatchObject({width:'50%',gap:2});

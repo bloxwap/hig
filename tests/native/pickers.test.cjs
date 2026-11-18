@@ -6,7 +6,7 @@ const {FlatList,TextInput}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {FromPickerBlock,ToPickerBlock}=require('../../packages/hig/native/src/blocks');
 const pickers=require('../../packages/hig/native/src/pickers');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {SwapHostContext}=require('../../packages/hig/native/src/swap-parts');
 const h=React.createElement;
 const eth={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.5,price:2000};
@@ -117,7 +117,7 @@ it('uses the host surface\'s list component so the list scrolls inside a sheet, 
 });
 // Number flow: a row's balance and its dollar value are live numbers, so a balance that changes while the list is open moves its digits.
 it('picker rows show the balance and its value as live numbers that follow the token',()=>{
- const flow=(tree,id)=>tree.findAll(n=>n.type===AnimatedNumberReadout&&n.props.testID===id);
+ const flow=(tree,id)=>tree.findAll(n=>n.type===NumberFlow&&n.props.testID===id);
  const reading=(tree,id)=>[].concat(tree.findAll(n=>n.type==='Text'&&n.props.testID===id)[0].props.children).join('');
  const list=held=>h(FromPickerBlock,{tokens:[{...eth,balance:held},usdc],onSelect:jest.fn()});
  let tree=mount(list(0.5));

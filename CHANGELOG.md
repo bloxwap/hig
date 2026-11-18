@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Remove the React and React Native `AnimatedNumberReadout` export. Import `NumberFlow` from the same `animated-number` entry and pass `motion="slide"` to retain the previous transition.
+
 ## 0.10.0
 
 - Add `AdvancedBlock` on React and React Native: the unified-exchange switch, setup tasks with their completion, a warning callout, wallet export rows and account deletion.
@@ -8,6 +12,7 @@
 - Draw the altimeter chart in Display P3 where the host supports it: a P3 canvas on web, and the P3 palette on iOS under `HIGProvider colorSpace="display-p3"`. sRGB stays the fallback and the Android palette.
 - Move the native sheet on one curve: opening, closing, snapping and resizing use the measured Vaul Dynamic Drawer curve, `cubic-bezier(.26,.08,.25,1)`, over 270 ms.
 - Make HIG's own engine the one native gesture sheet. `@bloxwap/hig/native/gesture-sheet` no longer wraps `@gorhom/bottom-sheet`, which is no longer a peer; the `@bloxwap/hig/native/gesture-sheet-next` path is removed. Hosts mount `GestureSheetHost` in place of `BottomSheetModalProvider` and scroll sheet content with `GestureSheetScrollView`. The backend-typed props are gone: `modalRef`, `sheetRef`, `handleComponent`, `backgroundComponent`, `backdropComponent`, `animationConfigs`, `containerStyle`, `keyboardBehavior`, `keyboardBlurBehavior`, `android_keyboardInputMode` and `enableContentPanningGesture`. The native `SwapSheet` draws in the same sheet.
+- Dismiss the native sheet less eagerly. A flick now closes it only after the sheet has moved 24 points and when its momentum would carry it a quarter of the way to closed; before, any release at 500 points per second closed it, including a fast scroll back to the top of a list that never moved the sheet. A drag that began by scrolling the content settles by position alone.
 - Hand a list inside the native sheet its own scroll events, so a windowed list keeps drawing rows, and keep hearing close requests after a host declines one.
 - Draw `WalletAddress` with HIG's own `QRCode` on web and native. `cuer` is no longer a peer, and the native `wallet-address` entry no longer exports the `qrGeometry` helper of the earlier drawing. The `@bloxwap/hig/react/wallet-address-core` path and its `WalletAddressCoreProps` name are removed, since `react/wallet-address` is the same component; `@bloxwap/hig/native/wallet-address-core` stays as the entry that loads no SVG library.
 - Remove the grey highlight native sheets drew in the top-left corner behind the handle and header. A pinned header still fades the content that scrolls under it.

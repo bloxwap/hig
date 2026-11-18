@@ -7,7 +7,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import type {HIGMessages} from '@bloxwap/hig/contracts/messages';
 import {useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {BarMark,type BarMarkElement} from '../bar-mark.js';
 import {ScreenHeader} from './screen-header.js';
 export type {BarMarkElement,BarMarkFigure,BarMarkTone} from '../bar-mark.js';
@@ -59,7 +59,7 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const showChains=chains!==undefined&&chains.length>1;
- const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout key='value' value={total} options={usd}/>;
+ const headline=units!==undefined&&value==null?<NumberFlow motion="slide" key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<NumberFlow motion="slide" key='value' value={total} options={usd}/>;
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>
   <ScreenHeader title={symbol} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {(assets||showChains)&&<div className='hig-token-bars'>

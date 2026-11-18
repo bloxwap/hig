@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {Button} from '../button.js';
 import {ScreenHeader} from './screen-header.js';
 import {AddressReadout} from './address-readout.js';
@@ -21,7 +21,7 @@ export function ClaimRewardBlock({amount, symbol, walletAddress, chain, details,
   const disabled = !Number.isFinite(amount) || amount <= 0 || !walletAddress.trim() || !chain.trim();
   return <section className="hig-confirm hig-claim-reward-block">
     <ScreenHeader title={labels.title}/>
-    <p className="hig-confirm-amount"><AnimatedNumberReadout value={amount} options={{maximumFractionDigits:6}}/> <span className="hig-confirm-symbol">{symbol}</span></p>
+    <p className="hig-confirm-amount"><NumberFlow motion="slide" value={amount} options={{maximumFractionDigits:6}}/> <span className="hig-confirm-symbol">{symbol}</span></p>
     <dl className="hig-confirm-details">
       {details?.map(detail => <div key={detail.label}><dt>{detail.label}</dt><dd>{detail.value}</dd></div>)}
       <div style={{flexWrap:'wrap'}}><dt>{labels.wallet}</dt><dd style={{marginInlineStart:'auto'}}><AddressReadout address={walletAddress}/></dd></div>

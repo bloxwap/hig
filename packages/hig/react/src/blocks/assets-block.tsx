@@ -10,7 +10,7 @@ import {SearchInput} from '../field.js';
 import {Filter,SegmentedControl} from '../selection.js';
 import {Badge} from '../status.js';
 import {Button} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {ScreenHeader,HeaderClose} from './screen-header.js';
 /** A market's live heat signal: `watch` while it is being watched, `up` or `down` once it trends. */
 export type AssetSignal='watch'|'up'|'down';
@@ -280,7 +280,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const sectionHeader=(entry:AssetCategory,remaining:number|null)=>{
   const countdown=remaining!=null?formatCountdown(remaining,locale):null;
   const badge=countdown?{visible:`${t.opensIn} ${countdown.visible}`,spoken:`${t.opensIn} ${countdown.spoken}`,tone:'neutral' as const}:entry.status?{visible:entry.status.label,spoken:entry.status.label,tone:entry.status.tone??'positive'}:null;
-  return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{countdown&&remaining!=null?<AnimatedNumberReadout value={Math.ceil(remaining/1000)} formattedValue={countdown.visible} animateFormatted duration={paused?0:undefined} prefix={`${t.opensIn} `}/>:badge.visible}</Badge>}</div>;
+  return <div className='hig-assets-section-header'><h3 id={`${id}-${entry.id}`} aria-label={badge?`${entry.label}, ${badge.spoken}`:undefined}>{entry.label}</h3>{badge&&<Badge aria-hidden='true' className='hig-assets-status' data-countdown={countdown?'':undefined} tone={badge.tone}>{countdown&&remaining!=null?<NumberFlow motion="slide" value={Math.ceil(remaining/1000)} formattedValue={countdown.visible} animateFormatted duration={paused?0:undefined} prefix={`${t.opensIn} `}/>:badge.visible}</Badge>}</div>;
  };
  const renderHeading=(entry:AssetCategory)=>{
   const at=opensAtTime(entry);

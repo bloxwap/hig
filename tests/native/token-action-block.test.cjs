@@ -7,7 +7,7 @@ const {TokenActionBlock,tokenActionLabel}=require('../../packages/hig/native/src
 const blocks=require('../../packages/hig/native/src/blocks');
 const {BarMark}=require('../../packages/hig/native/src/bar-mark');
 const {Button}=require('../../packages/hig/native/src/button');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 const assets=[{id:'staked',label:'Staked',value:300,tone:'negative'},{id:'core',label:'Core',value:259,tone:'positive'},{id:'paper',label:'Paper',value:200}];
@@ -19,7 +19,7 @@ const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const title=view=>text(all(view,'token-title').find(node=>typeof node.type==='string'));
 const bars=view=>view.findAllByType(BarMark);
-const total=view=>bars(view)[0].findAllByType(AnimatedNumberReadout)[0];
+const total=view=>bars(view)[0].findAllByType(NumberFlow)[0];
 const buttons=view=>view.findAllByType(Button).filter(button=>String(button.props.testID).startsWith('token-action-'));
 const label=button=>text(button.findAll(node=>typeof node.type==='string'&&node.props.testID===button.props.testID)[0]??button);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
@@ -94,7 +94,7 @@ it('draws actions only without bars, or one bar without the other',()=>{
 });
 it('moves live legend figures place by place inside the block',()=>{
  const view=mount({assets:[{id:'staked',label:'Staked',value:320,detail:{value:320,options:{style:'currency',currency:'USD'}}},{id:'core',label:'Core',value:239,detail:'$239'}]});
- const figure=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='token-assets-detail-staked');expect(figure.props).toMatchObject({value:320,tone:'faint'});
+ const figure=view.findAllByType(NumberFlow).find(node=>node.props.testID==='token-assets-detail-staked');expect(figure.props).toMatchObject({value:320,tone:'faint'});
  expect(all(view,'token-assets-legend-staked').find(node=>typeof node.type==='string').props.accessibilityLabel).toBe('Staked, $320.00, 57.2%');
 });
 

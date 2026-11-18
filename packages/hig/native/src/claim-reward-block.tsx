@@ -1,7 +1,7 @@
 import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React from 'react';
 import {View} from 'react-native';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {Button} from './button.js';
 import {ScreenHeader} from './screen-header.js';
 import {Stack, Text} from './surface.js';
@@ -30,7 +30,7 @@ export function ClaimRewardBlock({amount, symbol, walletAddress, chain, details,
   return <Stack style={{paddingHorizontal:horizontalInset}}>
     <ScreenHeader title={labels.title}/>
     <View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',gap:8}}>
-      <AnimatedNumberReadout value={amount} options={{maximumFractionDigits:6}} style={{fontSize:44,lineHeight:50,fontWeight:'700'}}/>
+      <NumberFlow motion="slide" value={amount} options={{maximumFractionDigits:6}} style={{fontSize:44,lineHeight:50,fontWeight:'700'}}/>
       <Text tone="muted" style={{fontSize:24,fontWeight:'600'}}>{symbol}</Text>
     </View>
     <View style={{gap:12,paddingHorizontal:4}}>

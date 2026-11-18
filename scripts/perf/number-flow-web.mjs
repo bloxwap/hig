@@ -1,4 +1,4 @@
-// NumberFlow and AnimatedNumberReadout under load, in headless Chromium: what a change costs the main thread. The page is
+// NumberFlow under load, in headless Chromium: what a change costs the main thread. The page is
 // bundled from source the way scripts/number-flow-browser-smoke.mjs bundles its page (React's profiling build, so
 // React.Profiler counts commits in a production bundle). Chromium's own counters are read over a CDP session
 // (Performance.getMetrics) around each scenario and the page records its requestAnimationFrame intervals.
@@ -44,13 +44,13 @@ const flag=name=>process.argv.find(argument=>argument.startsWith(`--${name}=`))?
 const runs=Math.max(1,Number(flag('runs'))||3),only=flag('only')?.split(','),profile=flag('profile')?.split(':'),trace=flag('trace')?.split(':'),least=flag('stat')==='min',against=flag('against'),motions=flag('motion')?.split(',')??['flow','slide'],quiet=process.argv.includes('--quiet-page'),warm=process.argv.includes('--warm');
 const production=process.argv.includes('--production');
 const pageSource=sources=>`import React,{Profiler,useState} from 'react';import {createRoot} from '${production?'react-dom/client':'react-dom/profiling'}';import {flushSync} from 'react-dom';
-import {HIGProvider} from './${sources}/provider';import {AnimatedNumberReadout} from './${sources}/animated-number';
+import {HIGProvider} from './${sources}/provider';import {NumberFlow} from './${sources}/animated-number';
 const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2};
 // The first currency crosses 1,000 and the first percentage crosses zero, so figures gain and lose places and signs as well as roll.
 const formats=[{options:usd,start:997.25,step:2.5},{options:{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'},start:0.0042,step:0.006},{options:usd,start:64250.1,step:180},{options:{style:'percent',maximumFractionDigits:1},start:0.482,step:0.02}];
 let commits=0,setBoard=()=>{};
 function Harness(){const [board,set]=useState({motion:'flow',values:[]});setBoard=set;
- return <HIGProvider><div id='board'>{board.values.map((value,index)=><span className='cell' key={index}><AnimatedNumberReadout motion={board.motion} value={value} options={formats[index%formats.length].options}/></span>)}</div></HIGProvider>;}
+ return <HIGProvider><div id='board'>{board.values.map((value,index)=><span className='cell' key={index}><NumberFlow motion={board.motion} value={value} options={formats[index%formats.length].options}/></span>)}</div></HIGProvider>;}
 createRoot(document.getElementById('root')).render(<Profiler id='perf' onRender={()=>{commits++;}}><Harness/></Profiler>);
 const random=seed=>()=>{seed=(seed+0x6d2b79f5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
 const frame=()=>new Promise(done=>requestAnimationFrame(done)),wait=ms=>new Promise(done=>setTimeout(done,ms)),until=time=>wait(Math.max(0,time-performance.now()));

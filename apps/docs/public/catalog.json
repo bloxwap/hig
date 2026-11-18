@@ -518,17 +518,6 @@
       ]
     },
     {
-      "name": "AnimatedNumberReadout",
-      "route": "components/animated-number-readout",
-      "entry": "animated-number",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ]
-    },
-    {
       "name": "NumberFlow",
       "route": "components/number-flow",
       "entry": "animated-number",
@@ -538,7 +527,8 @@
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ]
     },
     {

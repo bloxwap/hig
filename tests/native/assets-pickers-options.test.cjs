@@ -10,7 +10,7 @@ const {TokenActionBlock}=require('../../packages/hig/native/src/token-action-blo
 const pickers=require('../../packages/hig/native/src/pickers');
 const blocks=require('../../packages/hig/native/src/blocks');
 const core=require('../../packages/hig/native/src/wallet-address-core');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {Button}=require('../../packages/hig/native/src/button');
 const {Usd,Percent}=require('../../packages/hig/native/src/data');
 const h=React.createElement;
@@ -21,7 +21,7 @@ const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const outer=(view,id)=>all(view,id).find(node=>node.props.accessibilityLabel!==undefined);
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
-const flows=view=>view.findAllByType(AnimatedNumberReadout);
+const flows=view=>view.findAllByType(NumberFlow);
 const reading=(view,id)=>text(view.findAll(node=>node.type==='Text'&&node.props.testID===id)[0]);
 
 describe('AssetBalanceRow',()=>{

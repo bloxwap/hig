@@ -1,6 +1,6 @@
 "use client";
 import React,{useId} from 'react';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 export type BarPnlSide='long'|'short';
 export type BarPnlResult='profit'|'loss'|'flat';
 export type BarPnlKind='liquidation'|'mark'|'entry';
@@ -73,6 +73,6 @@ export function BarPnl({entry,mark,liquidation,side,labels,title,description,pri
    <span className='hig-bar-pnl-rest' style={{flexGrow:1-to}}/>
    {positions.liquidation!==undefined&&<span className='hig-bar-pnl-liquidation' style={{insetInlineStart:`${positions.liquidation*100}%`}}/>}
   </div>
-  <dl className='hig-bar-pnl-readouts'>{order.map(kind=><div key={kind} data-kind={kind}><dt>{labels[kind]}</dt><dd><AnimatedNumberReadout value={values[kind]} options={compact?barPnlCompactOptions(values[kind],priceOptions):priceOptions}/></dd></div>)}</dl>
+  <dl className='hig-bar-pnl-readouts'>{order.map(kind=><div key={kind} data-kind={kind}><dt>{labels[kind]}</dt><dd><NumberFlow motion="slide" value={values[kind]} options={compact?barPnlCompactOptions(values[kind],priceOptions):priceOptions}/></dd></div>)}</dl>
  </section>;
 }

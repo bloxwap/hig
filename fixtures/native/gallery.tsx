@@ -1,7 +1,7 @@
 // Generated from planning/examples.json.
 import React,{useRef,useState} from 'react';
 import {View} from 'react-native';
-import {AnimatedNumberReadout,NumberFlow,NumberFlowGroup} from '@bloxwap/hig/native/animated-number';
+import {NumberFlow,NumberFlowGroup} from '@bloxwap/hig/native/animated-number';
 import {AssetBalanceRow} from '@bloxwap/hig/native/asset-balance-row';
 import {Avatar} from '@bloxwap/hig/native/avatar';
 import {BarMark} from '@bloxwap/hig/native/bar-mark';
@@ -28,9 +28,9 @@ import {Slider} from '@bloxwap/hig/native/slider';
 import {Badge,Alert,Callout,Toast,Spinner,Progress,Skeleton,EmptyState,StatusIndicator,InlineNotice} from '@bloxwap/hig/native/status';
 import {Text,Heading,Stack,Inline,Surface,Card,Separator} from '@bloxwap/hig/native/surface';
 import {Switch} from '@bloxwap/hig/native/switch';
-import {Toaster,toast,dismissToast} from '@bloxwap/hig/native/toast';
+import {Toaster,toast,dismissToast,ToastAction} from '@bloxwap/hig/native/toast';
 import {WalletAddress} from '@bloxwap/hig/native/wallet-address';
-const C={ScreenHeader,MarketRow,AccountBlock,TokenActionBlock,ManagePositionBlock,TradeHistoryListBlock,TradeHistoryDetailBlock,TargetBlock,PositionBlock,RewardBlock,AssetsBlock,ConfirmBlock,PresetPickerBlock,ProfileBlock,SoundHapticsBlock,SignalsBlock,NotificationsBlock,TradeEntry,SwapBlock,FromPickerBlock,ToPickerBlock,InstallCommand,MarketingHero,Field,Label,Input,TextArea,SearchInput,Badge,Alert,Callout,Toast,Toaster,toast,dismissToast,Spinner,Progress,Skeleton,EmptyState,Avatar,StatusIndicator,Confetti,Switch,Checkbox,RadioGroup,SegmentedControl,Filter,PresetGroup,Select,Slider,Text,Heading,Stack,Inline,Surface,Card,Separator,BrandMark,CheckIcon,Tabs,Accordion,Navigation,BottomNavigation,Pagination,Search,BackButton,Dialog,Sheet,GestureSheet,AlertDialog,Menu,HelpText,NumberReadout,Usd,Percent,Metric,Stat,Row,VerticalAddress,WalletAddress,QRCode,BarMark,AssetBalanceRow,List,Button,IconButton,Link,HIGProvider,AnimatedNumberReadout,NumberFlow,NumberFlowGroup,BarPnl,ListGroup,InlineNotice,ListRow,LoginBlock,DepositBlock,LanguageBlock,AltimeterChart,PositionsBlock,ClaimRewardBlock,GestureSheetScrollView,GestureSheetHost,AdvancedBlock};
+const C={ScreenHeader,MarketRow,AccountBlock,TokenActionBlock,ManagePositionBlock,TradeHistoryListBlock,TradeHistoryDetailBlock,TargetBlock,PositionBlock,RewardBlock,AssetsBlock,ConfirmBlock,PresetPickerBlock,ProfileBlock,SoundHapticsBlock,SignalsBlock,NotificationsBlock,TradeEntry,SwapBlock,FromPickerBlock,ToPickerBlock,InstallCommand,MarketingHero,Field,Label,Input,TextArea,SearchInput,Badge,Alert,Callout,Toast,Toaster,toast,dismissToast,ToastAction,Spinner,Progress,Skeleton,EmptyState,Avatar,StatusIndicator,Confetti,Switch,Checkbox,RadioGroup,SegmentedControl,Filter,PresetGroup,Select,Slider,Text,Heading,Stack,Inline,Surface,Card,Separator,BrandMark,CheckIcon,Tabs,Accordion,Navigation,BottomNavigation,Pagination,Search,BackButton,Dialog,Sheet,GestureSheet,AlertDialog,Menu,HelpText,NumberReadout,Usd,Percent,Metric,Stat,Row,VerticalAddress,WalletAddress,QRCode,BarMark,AssetBalanceRow,List,Button,IconButton,Link,HIGProvider,NumberFlow,NumberFlowGroup,BarPnl,ListGroup,InlineNotice,ListRow,LoginBlock,DepositBlock,LanguageBlock,AltimeterChart,PositionsBlock,ClaimRewardBlock,GestureSheetScrollView,GestureSheetHost,AdvancedBlock};
 interface ExampleProps {name:string;state?:string}
 function PreviewButton({name,state='default'}:ExampleProps){
 const rows=state==='empty'?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];
@@ -54,7 +54,7 @@ case "Tabs":return <C.Tabs label='Example modes' items={[{value:'preview',label:
 case "Badge":return <C.Badge>Demo data</C.Badge>;
 case "InlineNotice":return state==="success"?<C.InlineNotice severity='success' title='Transfer complete' description='Your funds are available.'/>:state==="warning"?<C.InlineNotice severity='warning' title='Transfer delayed' description='Allow an extra business day.'/>:state==="error"?<C.InlineNotice severity='error' title='Transfer failed' description='Check the account details before trying again.'/>:<C.InlineNotice severity='info' title='Transfer timing' description='Bank transfers usually arrive within three business days.'/>;
 case "Callout":return <C.Callout title='Display-only values'><C.Text>Keep raw financial strings in host business logic.</C.Text></C.Callout>;
-case "Toaster":return <><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>;
+case "Toaster":return <><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.toast.success('+$125.50',{id:'payout',accent:'up',action:<C.ToastAction onPress={()=>C.dismissToast('payout')}>Share</C.ToastAction>})}>Show a payout</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Check this transfer before retrying',{id:'recovery',description:'An earlier transfer may have gone through. Check your history first.',duration:Infinity,action:<C.ToastAction onPress={()=>C.dismissToast('recovery')}>I checked</C.ToastAction>,secondaryAction:<C.ToastAction onPress={()=>C.dismissToast('recovery')}>Close</C.ToastAction>})}>Show a stacked notice</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>;
 case "Progress":return <C.Progress label='Loading markets' value={busy?undefined:40}/>;
 case "Spinner":return <C.Spinner label='Fetching prices'/>;
 case "Skeleton":return <C.Skeleton label='Loading balance'/>;
@@ -149,8 +149,7 @@ const error=state==='error'?'Data unavailable. Retry when connected.':undefined;
 function preview(){switch(name){case "Slider":return <C.Slider label='Volume preview' value={range} onValueChange={setRange} disabled={disabled}/>;
 case "Pagination":return <C.Pagination page={range} total={100} onPageChange={setRange}/>;
 case "Confetti":return <><C.Button onPress={()=>setRange(range+1)}>Celebrate</C.Button><C.Confetti trigger={range-25} options={{particleCount:80,spread:70,origin:{y:0.7}}}/></>;
-case "AnimatedNumberReadout":return <><C.AnimatedNumberReadout label="Estimated quantity" value={empty?null:range} stale={!!error} trend={0} prefix="≈ " suffix=" units"/><C.Slider label="Estimated quantity" value={range} onValueChange={setRange}/></>;
-case "NumberFlow":return state==="countdown"?<><C.Inline><C.NumberFlowGroup><C.NumberFlow label="Minutes left" value={Math.floor((100-range)*9/60)} trend={-1} suffix="m "/><C.NumberFlow label="Seconds left" value={((100-range)*9)%60} trend={-1} digits={{1:{max:5}}} options={{minimumIntegerDigits:2}} suffix="s"/></C.NumberFlowGroup></C.Inline><C.Slider label="Time elapsed" value={range} onValueChange={setRange}/></>:state==="continuous"?<><C.NumberFlow label="Points" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label="Points" value={range} onValueChange={setRange}/></>:<><C.NumberFlow label="Mark price" value={empty?null:960+range} stale={!!error} options={{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}}/><C.Slider label="Mark price" value={range} onValueChange={setRange}/></>;
+case "NumberFlow":return state==="countdown"?<><C.Inline><C.NumberFlowGroup><C.NumberFlow label="Minutes left" value={Math.floor((100-range)*9/60)} trend={-1} suffix="m "/><C.NumberFlow label="Seconds left" value={((100-range)*9)%60} trend={-1} digits={{1:{max:5}}} options={{minimumIntegerDigits:2}} suffix="s"/></C.NumberFlowGroup></C.Inline><C.Slider label="Time elapsed" value={range} onValueChange={setRange}/></>:state==="continuous"?<><C.NumberFlow label="Points" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label="Points" value={range} onValueChange={setRange}/></>:state==="slide"?<><C.NumberFlow motion="slide" label="Sample price" value={range}/><C.Slider label="Sample price" value={range} onValueChange={setRange}/></>:<><C.NumberFlow label="Mark price" value={empty?null:960+range} stale={!!error} options={{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}}/><C.Slider label="Mark price" value={range} onValueChange={setRange}/></>;
 default:return <C.Text>Platform example unavailable.</C.Text>;}}
 return <C.Stack style={['List','Table','OutcomeChart'].includes(name)?{flex:1}:undefined}>{preview()}</C.Stack>;}
 function PreviewDialog({name}:ExampleProps){
@@ -332,7 +331,6 @@ const previews:ReadonlyMap<string,React.ComponentType<ExampleProps>>=new Map(Obj
   "Slider": PreviewSlider,
   "Pagination": PreviewSlider,
   "Confetti": PreviewSlider,
-  "AnimatedNumberReadout": PreviewSlider,
   "NumberFlow": PreviewSlider,
   "Dialog": PreviewDialog,
   "AlertDialog": PreviewDialog,

@@ -8,7 +8,7 @@ import {Surface,Text} from './surface.js';
 import {Button} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
-import {AnimatedNumberReadout,NumberFlow} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
@@ -155,10 +155,10 @@ const Standing=React.memo(function Standing({entry,id,style,lead,pinned,scoreOpt
      <Text testID={`${id}-name`} accessible={split} accessibilityLabel={split?reading:undefined} numberOfLines={1} style={{flexShrink:1,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{entry.name}</Text>
      {entry.verified?(verifiedMark!=null?<View testID={`${id}-verified`}>{verifiedMark}</View>:<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>):null}
     </View>
-    {figure?<View {...hidden} style={{alignItems:'flex-start'}}><AnimatedNumberReadout testID={`${id}-detail`} {...figureProps(figure)} tone='muted' style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20}}/></View>
+    {figure?<View {...hidden} style={{alignItems:'flex-start'}}><NumberFlow motion="slide" testID={`${id}-detail`} {...figureProps(figure)} tone='muted' style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20}}/></View>
      :detail?<Text {...hidden} numberOfLines={1} style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:null}
    </View>
-   <View {...hidden}><AnimatedNumberReadout value={entry.score} options={score} tone='text' testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
+   <View {...hidden}><NumberFlow motion="slide" value={entry.score} options={score} tone='text' testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
   </View>;
 });
 const firstStanding:ViewStyle={borderTopLeftRadius:20,borderTopRightRadius:20,overflow:"hidden"};
@@ -211,7 +211,7 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
     <View testID={tid('figure')} style={{alignItems:'flex-start'}}>{hostFigure}</View>
     {captionText?<Text testID={tid('caption')} style={captionStyle}>{captionText}</Text>:null}
    </View>:amount!==undefined||captionText?<View testID={tid('amount')} accessible accessibilityLabel={[amount===undefined?null:typeof amount==='string'?amount:formatNumberReadout(amount,locale,present(money)).text,captionText].filter(Boolean).join(' ')} style={{gap:4}}>
-    {amount===undefined?null:<View {...hidden} style={{alignItems:'flex-start'}}>{typeof amount==='string'?<Text style={{...figureStyle,color:colors.text}}>{amount}</Text>:<AnimatedNumberReadout value={amount} options={money} tone='text' style={figureStyle}/>}</View>}
+    {amount===undefined?null:<View {...hidden} style={{alignItems:'flex-start'}}>{typeof amount==='string'?<Text style={{...figureStyle,color:colors.text}}>{amount}</Text>:<NumberFlow motion="slide" value={amount} options={money} tone='text' style={figureStyle}/>}</View>}
     {captionText?<Text {...hidden} testID={tid('caption')} style={captionStyle}>{captionText}</Text>:null}
    </View>:null}
    {captionNode?<View testID={tid('caption')} style={{marginTop:-8}}>{captionNode}</View>:null}
@@ -219,8 +219,8 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    {promo.headline||promo.description?<Text testID={tid('summary')} style={{fontSize:16,lineHeight:24,color:colors.muted}}>{promo.headline?<Text style={{fontWeight:'600',color:colors.text}}>{promo.headline}</Text>:null}{promo.headline&&promo.description?space:null}{promo.description}</Text>:null}
    {promo.streak||promo.drawing?<View style={{direction,flexDirection:'row',gap:8}}>
     {promo.streak?<>
-    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.label}</Text><AnimatedNumberReadout {...figureProps(promo.streak.count)}/></View>
-    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.rewardLabel}</Text><AnimatedNumberReadout {...figureProps(promo.streak.reward)} tone="text"/></View>
+    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.label}</Text><NumberFlow motion="slide" {...figureProps(promo.streak.count)}/></View>
+    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.rewardLabel}</Text><NumberFlow motion="slide" {...figureProps(promo.streak.reward)} tone="text"/></View>
     </>:null}
     {promo.drawing&&<DrawingCountdown key={promo.drawing.at} drawing={promo.drawing}/>}
    </View>:null}

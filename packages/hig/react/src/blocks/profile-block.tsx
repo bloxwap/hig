@@ -6,7 +6,7 @@ import {PressDecoration,useHIG} from '../provider.js';
 import {useStickyHeader} from './sticky-header.js';
 import {Button,IconButton} from '../button.js';
 import {ListGroup,ListRow} from '../list-group.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {figureProps,type Figure} from '../figure.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {qrIcon} from './screen-header.js';
@@ -81,7 +81,7 @@ const editIcon=<PenLine size={20}/>;
 const isProfileFigure=(value:unknown):value is ProfileFigure=>value!=null&&typeof value==='object'&&!React.isValidElement(value)&&!Array.isArray(value)&&!(Symbol.iterator in value)&&'value' in value;
 function rowValue(row:ProfileRow):React.ReactNode{
  const {value,tone}=row;if(value==null)return value;
- if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><AnimatedNumberReadout {...figureProps(value)}/></span>;
+ if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><NumberFlow motion="slide" {...figureProps(value)}/></span>;
  return tone?<span className='hig-profile-value' data-tone={tone}>{value}</span>:value;
 }
 /**

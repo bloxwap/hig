@@ -655,17 +655,6 @@
       ]
     },
     {
-      "name": "AnimatedNumberReadout",
-      "route": "components/animated-number-readout",
-      "family": "financial-data",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ]
-    },
-    {
       "name": "NumberFlow",
       "route": "components/number-flow",
       "family": "financial-data",
@@ -675,7 +664,8 @@
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ]
     },
     {

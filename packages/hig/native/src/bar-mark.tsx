@@ -22,7 +22,7 @@ export interface BarMarkElement {
 export type BarMarkFigure=Figure;
 /**
  * Draws a live legend figure. The bar-mark entry imports no animation engine, so without a renderer a figure is drawn
- * formatted, without movement. `TokenActionBlock` supplies one that moves place by place through `AnimatedNumberReadout`,
+ * formatted, without movement. `TokenActionBlock` supplies one that moves place by place through `NumberFlow`,
  * and a host that installs the animated-number peers can do the same around its own `BarMark`.
  */
 export type BarMarkFigureRenderer=(figure:BarMarkFigure,props:{testID?:string})=>React.ReactNode;

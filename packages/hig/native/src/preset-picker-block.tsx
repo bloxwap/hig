@@ -7,7 +7,7 @@ import {Text} from './surface.js';
 import {Button} from './button.js';
 import {PresetGroup,type PresetOption} from './preset-group.js';
 import {ChevronIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 const PickerHeader = React.memo(ScreenHeader);
@@ -59,9 +59,9 @@ export interface PresetPickerBlockProps<T extends string|number=number> {
  valueSuffix?:string;
  /** What the figure is read as before its value: Size. */
  valueLabel?:string;
- /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn and read as given, static unless `animateFormatted`; `value` still decides known or unknown. As `AnimatedNumberReadout` `formattedValue`. */
+ /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn and read as given, static unless `animateFormatted`; `value` still decides known or unknown. As `NumberFlow` `formattedValue`. */
  formattedValue?:string;
- /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `AnimatedNumberReadout` `animateFormatted`. */
+ /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `NumberFlow` `animateFormatted`. */
  animateFormatted?:boolean;
  /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. A chip without `testID` takes `<testID>-preset-<value>`. */
  presets:readonly PresetOption<T>[];
@@ -147,7 +147,7 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const chips=adjustable&&group?<View testID={adjustable.testID??id('adjustable')} accessible accessibilityRole='adjustable' accessibilityLabel={label} accessibilityValue={range(current)} accessibilityActions={[{name:'increment',label:adjustable.incrementLabel},{name:'decrement',label:adjustable.decrementLabel}]} onAccessibilityAction={event=>step(event.nativeEvent.actionName==='increment'?1:-1)}>{group}</View>:group;
  const header=title!==undefined?<PickerHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>:null;
  const body=<>
-  <View style={{alignItems:'center'}}><AnimatedNumberReadout testID={id('headline')} value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
+  <View style={{alignItems:'center'}}><NumberFlow motion="slide" testID={id('headline')} value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {custom?<Pressable {...custom.pressProps} testID={custom.testID??id('custom')} accessibilityRole='button' accessibilityLabel={custom.accessibilityLabel??(custom.value!==undefined?`${custom.label}, ${custom.value}`:undefined)} accessibilityState={{selected:customSelected}} onPress={custom.onSelect} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:customSelected?buttonTint(destructive?colors.negative:colors.action):pressed?fills.raised:fills.well,opacity:customSelected&&pressed?0.9:1})}>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:customSelected?onFill:colors.text}}>{custom.label}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>

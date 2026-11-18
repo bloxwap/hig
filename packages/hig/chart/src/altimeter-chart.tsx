@@ -4,7 +4,7 @@ import {appendTrailSample,appendLiveTail,beginTrail,fillTrail,historyPath,visibl
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
-import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
+import {NumberFlow} from '@bloxwap/hig/react/animated-number';
 import {ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,gridPhase,labelDecimalsFor,ladderPrices,priceTween,tickSpacingFor,type AltimeterTick} from './altimeter-model.js';
 import {drawPlusGrid,monoFallback,monoFont} from './plus-grid.js';
 import {bitcoinPrice,type AltimeterFeed} from './bitcoin-price.js';
@@ -264,7 +264,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
    </div>
    {reading==null
     ?<p role='status' style={{position:'absolute',inset:0,margin:0,display:'grid',placeItems:'center',color:colors.muted,fontFamily:'var(--hig-font-sans, inherit)'}}>{stale?(messages.stale??en.stale):(messages.loadingChart??en.loadingChart)}</p>
-    :<span ref={pill} data-hig-altimeter-price style={{position:'absolute',right:EDGE,top:height/2-18,height:36,minWidth:110,boxSizing:'border-box',display:'flex',alignItems:'center',justifyContent:'center',paddingInline:10,border:`1px solid ${capsuleColor}`,borderRadius:tokens.radius.pill,background:colors.background,color:capsuleColor,fontSize:16,fontWeight:600,lineHeight:1,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{pillValue!=null&&Number.isFinite(pillValue)?<AnimatedNumberReadout value={pillValue} options={pillOptions}/>:'—'}</span>}
+    :<span ref={pill} data-hig-altimeter-price style={{position:'absolute',right:EDGE,top:height/2-18,height:36,minWidth:110,boxSizing:'border-box',display:'flex',alignItems:'center',justifyContent:'center',paddingInline:10,border:`1px solid ${capsuleColor}`,borderRadius:tokens.radius.pill,background:colors.background,color:capsuleColor,fontSize:16,fontWeight:600,lineHeight:1,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{pillValue!=null&&Number.isFinite(pillValue)?<NumberFlow motion="slide" value={pillValue} options={pillOptions}/>:'—'}</span>}
    <div ref={effects} aria-hidden style={{position:'absolute',inset:0,pointerEvents:'none'}}/>
   </div>
   {levels.length>0&&<ul className='hig-sr-only'>{levels.map(level=><li key={level.id}>{level.label?`${level.label}: `:''}{targetFormat.format(level.price)}</li>)}</ul>}

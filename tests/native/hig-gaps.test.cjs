@@ -77,19 +77,19 @@ describe('SwapAmountCard and SwapPill (native, as web)',()=>{
  const {SwapAmountCard,SwapPill}=require('../../packages/hig/native/src/swap-amount-card');
  const blocks=require('../../packages/hig/native/src/blocks');
  const panel=require('../../packages/hig/native/src/swap-block');
- const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+ const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
  it('is exported from the blocks aggregate and the swap panel module',()=>{expect(blocks.SwapAmountCard).toBe(SwapAmountCard);expect(blocks.SwapPill).toBe(SwapPill);expect(panel.SwapAmountCard).toBe(SwapAmountCard);expect(panel.SwapPill).toBe(SwapPill);});
  it('draws the slot (context over name, actions and meta trailing) and the amount with prefix, typed fraction digits and a trailing dot',()=>{
   const max=jest.fn(),select=jest.fn();
   const view=mount(h(SwapAmountCard,{testID:'burn',name:'Bloxwap',symbol:'BLOX',context:'Hyperliquid',value:1.5,fractionDigits:2,trailingDot:false,prefix:'$',amountLabel:'Burn amount',onSelect:select,selectLabel:'Choose token',actions:h(SwapPill,{testID:'burn-max',onPress:max},'Max'),meta:'12.5 BLOX',conversion:h(SwapPill,{testID:'burn-usd'},'= $3.00')}));
   expect(text(host(view,'burn-name'))).toBe('Bloxwap');expect(text(host(view,'burn-context'))).toBe('Hyperliquid');expect(text(host(view,'burn-meta'))).toBe('12.5 BLOX');
   const amount=host(view,'burn-amount');expect(amount.props.accessibilityLabel).toBe('Burn amount');expect(amount.props.accessibilityValue).toEqual({text:'$1.50'});
-  const readout=view.findAllByType(AnimatedNumberReadout)[0];expect(readout.props).toMatchObject({value:1.5,prefix:'$',suffix:''});expect(readout.props.options).toMatchObject({minimumFractionDigits:2,maximumFractionDigits:8,useGrouping:false});
+  const readout=view.findAllByType(NumberFlow)[0];expect(readout.props).toMatchObject({value:1.5,prefix:'$',suffix:''});expect(readout.props.options).toMatchObject({minimumFractionDigits:2,maximumFractionDigits:8,useGrouping:false});
   const slot=view.findAll(node=>node.props.testID==='burn-select'&&typeof node.props.onPress==='function')[0];expect(slot.props.accessibilityLabel).toBe('Choose token');act(()=>slot.props.onPress());expect(select).toHaveBeenCalledTimes(1);
   const pill=view.findAll(node=>node.props.testID==='burn-max'&&node.props.accessibilityRole==='button'&&typeof node.type!=='string')[0];expect(pill.props.accessibilityRole).toBe('button');act(()=>pill.props.onPress());expect(max).toHaveBeenCalledTimes(1);
   expect(all(host(view,'burn-conversion'),'burn-usd').length).toBeGreaterThan(0);
   const dotted=mount(h(SwapAmountCard,{testID:'d',name:'USD Coin',symbol:'USDC',value:12,trailingDot:true,suffix:'%',amountLabel:'Amount'}));
-  expect(host(dotted,'d-amount').props.accessibilityValue).toEqual({text:'12.%'});expect(dotted.findAllByType(AnimatedNumberReadout)[0].props.suffix).toBe('.%');
+  expect(host(dotted,'d-amount').props.accessibilityValue).toEqual({text:'12.%'});expect(dotted.findAllByType(NumberFlow)[0].props.suffix).toBe('.%');
   expect(all(dotted,'d-select')).toHaveLength(0);expect(all(dotted,'d-actions')).toHaveLength(0);
  });
  it('SwapPill draws text muted, passes Pressable props and reads as unavailable when disabled',()=>{

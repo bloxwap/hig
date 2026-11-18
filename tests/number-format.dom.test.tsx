@@ -5,7 +5,7 @@ import {cleanup,render,screen} from '@testing-library/react';
 import {presentNumberFormat} from '../packages/hig/contracts/src/index';
 import {HIGProvider,useNumberLocale,usePresentNumber,type HIGProviderProps} from '../packages/hig/react/src/provider';
 import {NumberReadout,Usd,Percent} from '../packages/hig/react/src/data';
-import {AnimatedNumberReadout} from '../packages/hig/react/src/animated-number';
+import {NumberFlow} from '../packages/hig/react/src/animated-number';
 import {AssetBalanceRow} from '../packages/hig/react/src/asset-balance-row';
 import {BarPnl} from '../packages/hig/react/src/bar-pnl';
 import {AccountBlock} from '../packages/hig/react/src/blocks/account-block';
@@ -51,7 +51,7 @@ describe('HIGProvider numberFormat',()=>{
  it('reads dollars the host way in the blocks, rows, bars and readouts, and the per-call options still win',()=>{
   render(<HIGProvider {...french}>
    <Usd value={12.5}/><Usd value={12.5} options={{currencyDisplay:'code'}}/><Percent value={5}/>
-   <AnimatedNumberReadout value={3} options={{style:'currency',currency:'EUR'}}/>
+   <NumberFlow motion="slide" value={3} options={{style:'currency',currency:'EUR'}}/>
    <AccountBlock assets={[{id:'sol',name:'Solana',symbol:'SOL',value:203}]} balance={1042.09}/>
    <TokenActionBlock symbol='HYPE' name='Hyperliquid' value={759} assets={[]} chains={[]} actions={[]}/>
    <AssetBalanceRow name='Hyperliquid' symbol='HYPE' value={759} balance={13.2}/>
@@ -88,20 +88,20 @@ describe('HIGProvider numberFormat',()=>{
 describe('numberFormat.locale and formattedValue (Unreleased)',()=>{
  it('formats numbers in the number locale while the interface keeps its own',()=>{
   const usd=()=>plain(document.querySelector('[data-usd] .hig-number')?.textContent);
-  const {container}=render(<HIGProvider locale='de-DE' numberFormat={{locale:'en-US'}}><span data-usd><Usd value={1234.5}/></span><AnimatedNumberReadout value={1234.5}/></HIGProvider>);
+  const {container}=render(<HIGProvider locale='de-DE' numberFormat={{locale:'en-US'}}><span data-usd><Usd value={1234.5}/></span><NumberFlow motion="slide" value={1234.5}/></HIGProvider>);
   expect(usd()).toBe('$1,234.50');expect(reading()).toEqual(['1,234.5']);expect(container.querySelector('[lang]')!.getAttribute('lang')).toBe('de-DE');
   cleanup();render(<HIGProvider locale='de-DE'><span data-usd><Usd value={1234.5}/></span></HIGProvider>);expect(usd()).toBe('1.234,50 $');
   cleanup();render(<HIGProvider locale='de-DE' numberFormat={{locale:' '}}><span data-usd><Usd value={1234.5}/></span></HIGProvider>);expect(usd()).toBe('1.234,50 $');
  });
  it('draws host-formatted text static by default and place by place with animateFormatted',()=>{
-  const view=render(<AnimatedNumberReadout value={90} formattedValue='01:30'/>);
+  const view=render(<NumberFlow motion="slide" value={90} formattedValue='01:30'/>);
   expect(reading()).toEqual(['01:30']);expect(document.querySelectorAll('.hig-animated-number-visual > span')).toHaveLength(1);
-  view.rerender(<AnimatedNumberReadout value={1234.5} formattedValue='1 234,50 $' animateFormatted prefix='≈ '/>);
+  view.rerender(<NumberFlow motion="slide" value={1234.5} formattedValue='1 234,50 $' animateFormatted prefix='≈ '/>);
   expect(reading()).toEqual(['≈ 1 234,50 $']);
   const places=[...document.querySelectorAll('.hig-animated-number-visual > span')].map(node=>node.textContent);
   expect(places).toEqual(['1',' ','2','3','4',',','5','0',' $']);
   // Unknown values still read as the dash whatever the host text says.
-  view.rerender(<AnimatedNumberReadout value={null} formattedValue='0' animateFormatted/>);expect(reading()).toEqual(['—']);
+  view.rerender(<NumberFlow motion="slide" value={null} formattedValue='0' animateFormatted/>);expect(reading()).toEqual(['—']);
  });
 });
 

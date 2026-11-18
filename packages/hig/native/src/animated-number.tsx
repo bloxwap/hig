@@ -22,7 +22,7 @@ export interface AnimatedNumberProps extends NumberProps {
   * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new
   * value on NumberFlow's curve, a place the figure gains rolls up from zero as it fades in, and a new value joins the roll in
   * flight. `'slide'` is the short settle: the reel eases straight to the new digit and a newer value retargets it.
-  * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading native cannot lay out place by
+  * `NumberFlow` flows by default. A reading native cannot lay out place by
   * place (right-to-left, unmeasured glyphs) is drawn static either way.
   */
  motion?:'flow'|'slide';
@@ -268,21 +268,15 @@ function useGlyphMetrics(key:string|null,columnRows:number){
  return {metrics:metrics?.key===key?metrics:null,probe:probe?.key===key?probe:null};
 }
 
-/** `AnimatedNumberReadout` with NumberFlow's motion by default: the same component and the same props, under the name the product uses for it. */
-export function NumberFlow({motion='flow',...props}:AnimatedNumberProps){return <AnimatedNumberReadout motion={motion} {...props}/>;}
-export type NumberFlowProps=AnimatedNumberProps;
-/** On web, moves the flowing figures inside it together when one changes width. Native figures change width at once, so this draws its children and nothing else; it exists so one tree serves both platforms. */
-export function NumberFlowGroup({children}:{children?:React.ReactNode}){return <>{children}</>;}
-/**
- * A number that moves place by place when its value changes. It slides by default; `motion='flow'` (or `NumberFlow`, which is
- * this component flowing by default) gives it NumberFlow's motion. Either way assistive technology gets one static reading,
- * and reduced motion draws each new value at once.
- */
-export function AnimatedNumberReadout(props:AnimatedNumberProps){
+/** A localized number that rolls through changes and honors reduced motion. */
+export function NumberFlow(props:NumberFlowProps){
  // A parent render can observe a new system font scale before the dimensions notification arrives.
  return <MemoNumberReadout {...props} requestedOptionsKey={JSON.stringify(props.options)} renderFontScale={currentFontScale()}/>;
 }
-const MemoNumberReadout=memo(function NativeNumberReadout({requestedOptionsKey,renderFontScale,value,options:requested,formattedValue,animateFormatted,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration:requestedDuration,motion='slide',animated=true,spinTiming,transformTiming,opacityTiming,digits,continuous=false}:AnimatedNumberProps&{requestedOptionsKey?:string;renderFontScale:number}){
+export type NumberFlowProps=AnimatedNumberProps;
+/** On web, moves the flowing figures inside it together when one changes width. Native figures change width at once, so this draws its children and nothing else; it exists so one tree serves both platforms. */
+export function NumberFlowGroup({children}:{children?:React.ReactNode}){return <>{children}</>;}
+const MemoNumberReadout=memo(function NativeNumberReadout({requestedOptionsKey,renderFontScale,value,options:requested,formattedValue,animateFormatted,stale,label,tone='text',style,testID,maxFontSizeMultiplier,trend,prefix,suffix,duration:requestedDuration,motion='flow',animated=true,spinTiming,transformTiming,opacityTiming,digits,continuous=false}:AnimatedNumberProps&{requestedOptionsKey?:string;renderFontScale:number}){
  const duration=requestedDuration??180,flow=motion==='flow';
  const {locale,staleLabel,numberFormat}=useReadoutFormat(requested?.style==='currency');
  const {direction,fontFamily,fontFamilies,fontFamiliesByScript,letterSpacingByScript,maxFontSizeMultiplier:providerMaxFontSizeMultiplier}=useTextEnvironment();

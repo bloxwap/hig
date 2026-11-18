@@ -3,7 +3,7 @@ import React from 'react';
 import {Button} from '../button.js';
 import {Switch} from '../selection.js';
 import {ListGroup,ListRow} from '../list-group.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {figureProps,type Figure} from '../figure.js';
 import {HeaderClose,ScreenHeader,type HeaderCloseProps,type ScreenHeaderControlProps} from './screen-header.js';
 /** A number the host supplies as a number so it updates place by place: `{value:0.53,options:{style:'currency',currency:'USD'}}`, or Leverage as `{value:40,suffix:'×'}`. `null` reads as unknown. `formattedValue` is the host's own text for it, still moving place by place. */
@@ -58,7 +58,7 @@ export interface PositionBlockProps extends Omit<React.HTMLAttributes<HTMLElemen
  /** Attributes for the header's Close `<button>`; `disabled` draws Close unavailable. */
  closeProps?:HeaderCloseProps;
 }
-const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<AnimatedNumberReadout {...figureProps(value)}/>;
+const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<NumberFlow motion="slide" {...figureProps(value)}/>;
 /** A press anywhere on a switch row that is not on a control toggles the row's switch, through the switch itself so its change and feedback run once. */
 function toggleRow(event:React.MouseEvent<HTMLElement>){
  if((event.target as Element).closest('a,button,input,label,select,textarea'))return;

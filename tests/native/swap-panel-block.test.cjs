@@ -13,7 +13,7 @@ const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {SwapBlock,swapAction}=require('../../packages/hig/native/src/blocks');
 const {SwapSheet}=require('../../packages/hig/native/src/swap-sheet');
 const shared=require('../../packages/hig/native/src/swap-shared');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 const eth={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.5,price:2000};
 const usdc={id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:100,price:1};
@@ -34,7 +34,7 @@ const amount=(tree,side='from')=>node(tree,`swap-amount-${side}`).props.accessib
 // What an element reads as: its accessible name when it has one (a sentence around a live number), else its own text.
 const read=(tree,id)=>{const hit=all(tree,id).find(found=>found.props.accessibilityLabel||found.props.children!==undefined);if(!hit)throw new Error(`No reading for ${id}`);return hit.props.accessibilityLabel??[].concat(hit.props.children).join('');};
 // Live numbers: the readouts under an element (or the element itself when it is one).
-const flows=(tree,id)=>[...new Set(all(tree,id).flatMap(hit=>hit.type===AnimatedNumberReadout?[hit]:hit.findAllByType(AnimatedNumberReadout)))];
+const flows=(tree,id)=>[...new Set(all(tree,id).flatMap(hit=>hit.type===NumberFlow?[hit]:hit.findAllByType(NumberFlow)))];
 const update=props=>{act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(SwapBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;};
 const conversion=(tree,side='from')=>read(tree,`swap-conversion-${side}`);
 const action=tree=>node(tree,'swap-action');
@@ -417,7 +417,7 @@ it('draws host artwork elements in place of image URLs, and host content above t
  expect(has(tree,'usdc-art')).toBe(true);expect(has(tree,'paper-art')).toBe(true);
  expect(has(node(tree,'swap-banner'),'pending')).toBe(true);expect(has(node(tree,'swap-footer'),'recent')).toBe(true);
 });
-// Number flow: every number that can change while the card is on screen is an AnimatedNumberReadout, so a new
+// Number flow: every number that can change while the card is on screen is an NumberFlow, so a new
 // balance, quote, fee or slippage moves its digits instead of swapping the text.
 it('balance, conversion, fee and slippage are live numbers that follow their props, and read as before',()=>{
  const base={from:eth,to:usdc,fee:0.27,slippage:0.01,amount:'0.01'};let tree=mount(base);

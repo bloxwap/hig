@@ -5,7 +5,7 @@ import React from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG} from '../provider.js';
 import {Button} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 /** One more line under Network, such as a fee: host text on both edges. */
 export interface ConfirmDetail {label:string;value:React.ReactNode;
@@ -94,7 +94,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
  const hasLines=address!==undefined||network!==undefined||!!details?.length;
  return <section {...rest} className={`hig-confirm${className?` ${className}`:''}`}>
   <ScreenHeader title={heading} onBack={onBack} backDisabled={backHeld} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
-  {amount!==undefined&&<p className='hig-confirm-amount'><AnimatedNumberReadout value={amount} options={amountOptions} label={amountLabel}/>{symbol?<> <span className='hig-confirm-symbol'>{symbol}</span></>:null}</p>}
+  {amount!==undefined&&<p className='hig-confirm-amount'><NumberFlow motion="slide" value={amount} options={amountOptions} label={amountLabel}/>{symbol?<> <span className='hig-confirm-symbol'>{symbol}</span></>:null}</p>}
   {hasLines&&<dl className='hig-confirm-details' data-one-line={oneLineDetails||undefined}>
    {address!==undefined&&<div><dt>{messages.sendTo??en.sendTo}</dt><dd><AddressReadout address={address}/></dd></div>}
    {network!==undefined&&<div><dt>{messages.sendNetwork??en.sendNetwork}</dt><dd>{network}</dd></div>}

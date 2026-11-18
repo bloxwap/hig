@@ -119,7 +119,6 @@ const previews:Record<string,React.ComponentType<Props>>={
   "Row": DataExamples,
   "Table": DataExamples,
   "VerticalAddress": DataExamples,
-  "AnimatedNumberReadout": AnimatedNumberExamples,
   "NumberFlow": AnimatedNumberExamples,
   "WalletAddress": WalletAddressExamples,
   "QRCode": QrCodeExamples,

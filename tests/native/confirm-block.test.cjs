@@ -9,7 +9,7 @@ const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {ListRow}=require('../../packages/hig/native/src/list-group');
 const labels=view=>host(view,'confirm-details').children.map(line=>line.props.accessibilityLabel);
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 const address='0x1111111111111111111111111111111111111111';
@@ -26,7 +26,7 @@ afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 it('shows the heading, the amount with its ticker, the address in full, the network and the warning',()=>{
  const view=mount();
  expect(text(host(view,'confirm-title'))).toBe('Confirm Send');expect(has(view,'confirm-back')).toBe(false);
- expect(view.findAllByType(AnimatedNumberReadout)[0].props).toMatchObject({value:2.5,options:{maximumFractionDigits:6}});expect(text(host(view,'confirm-amount'))).toBe('2.5');expect(text(host(view,'confirm-symbol'))).toBe('HYPE');
+ expect(view.findAllByType(NumberFlow)[0].props).toMatchObject({value:2.5,options:{maximumFractionDigits:6}});expect(text(host(view,'confirm-amount'))).toBe('2.5');expect(text(host(view,'confirm-symbol'))).toBe('HYPE');
  expect(text(host(view,'confirm-to'))).toBe('0x1111111111111111111\n111111111111111111111');
  // First six and last four in the text colour, the rest muted.
  expect(host(view,'confirm-to').findAll(node=>typeof node.type==='string'&&typeof node.props.children==='string').map(node=>[node.props.children,flat(node).color])).toEqual([['0x1111',nativeSrgb.text],['111111111111111',nativeSrgb.muted],['11111111111111111',nativeSrgb.muted],['1111',nativeSrgb.text]]);expect(text(host(view,'confirm-network'))).toBe('HyperEVM');expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM']);

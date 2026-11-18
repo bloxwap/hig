@@ -37,23 +37,29 @@ export function dragPosition(raw:number,top:number,lowest:number,closed:number,d
 export const SHEET_PROJECTION=0.18;
 /** A release slower than this (points per second) is a placement, not a flick. */
 export const SHEET_FLICK=500;
+/** A flick counts once the sheet has moved this far (points) from where the drag picked it up: a nudge is a placement. */
+export const SHEET_FLICK_TRAVEL=24;
+/** A flick closes the sheet when its momentum lands it past this share of the way from the lowest detent to closed. */
+export const SHEET_FLICK_CLOSE=0.25;
 /**
  * The detent a release settles on, as an index into `positions` (increasing translateY, so index 0 is the tallest), or -1 to
- * close. A flick moves one detent in its direction, or closes from the lowest; a slow release takes the nearest detent, or
- * closes when the sheet is more than half way from the lowest detent to closed.
+ * close. A slow release takes the nearest detent, or closes when the sheet is more than half way from the lowest detent to
+ * closed. A flick moves one detent in its direction; from the lowest it closes when its momentum carries the sheet a quarter
+ * of the way to closed. A release is a flick only when the sheet moved `SHEET_FLICK_TRAVEL` from `start`, where the drag picked
+ * it up, and the drag did not begin as a scroll of the content (`scrolled`): flinging a list back to its top places the sheet,
+ * it does not throw it.
  */
-export function releaseTarget(position:number,velocity:number,positions:readonly number[],closed:number,dismissible:boolean):number{
+export function releaseTarget(position:number,velocity:number,positions:readonly number[],closed:number,dismissible:boolean,start:number,scrolled=false):number{
  'worklet';
  if(positions.length===0)return -1;
  const lowestIndex=positions.length-1,lowest=positions[lowestIndex];
  let nearest=0;
  for(let index=1;index<positions.length;index++)if(Math.abs(positions[index]-position)<Math.abs(positions[nearest]-position))nearest=index;
- if(Math.abs(velocity)>=SHEET_FLICK){
-  const projected=position+velocity*SHEET_PROJECTION;
+ if(!scrolled&&Math.abs(velocity)>=SHEET_FLICK&&Math.abs(position-start)>=SHEET_FLICK_TRAVEL){
   if(velocity>0){
-   // Downward: the next detent below where the finger let go, or closed.
+   // Downward: the next detent below where the finger let go, or closed when the momentum reaches the closing line.
    for(let index=0;index<positions.length;index++)if(positions[index]>position+1)return index;
-   return dismissible&&projected>lowest?-1:lowestIndex;
+   return dismissible&&position+velocity*SHEET_PROJECTION>lowest+(closed-lowest)*SHEET_FLICK_CLOSE?-1:lowestIndex;
   }
   for(let index=lowestIndex;index>=0;index--)if(positions[index]<position-1)return index;
   return 0;

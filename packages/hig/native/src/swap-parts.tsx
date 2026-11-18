@@ -14,7 +14,7 @@ import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Heading,Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import type {SwapArtwork,SwapToken} from './swap-shared.js';
 /** What a host surface supplies to the swap views: a sheet passes its backend's list so drags hand off to the sheet, and turns off the panel's own height animation. */
 export const SwapHostContext=createContext<{listComponent?:React.ComponentType<FlatListProps<SwapToken>>;animateHeight?:boolean}>({});
@@ -68,14 +68,14 @@ export function SwapSubview({title,onBack,testID,children}:React.PropsWithChildr
 }
 // A private-use character stands in for the number while a localized sentence is split around it.
 const numberMark='';
-/** A localized sentence with one live number, such as the fee line. The sentence keeps its translated word order; the number inside it updates through `AnimatedNumberReadout`. `text` is the number as the sentence reads it, and is the whole accessible reading. Without a `value` (loading or unknown) the sentence is plain text around `text`. */
+/** A localized sentence with one live number, such as the fee line. The sentence keeps its translated word order; the number inside it updates through `NumberFlow`. `text` is the number as the sentence reads it, and is the whole accessible reading. Without a `value` (loading or unknown) the sentence is plain text around `text`. */
 export function SwapNumberText({template,text,value,options,formattedValue,suffix,align,testID}: {template:(amount:string)=>string;text:string;value?:number|null;options?:Intl.NumberFormatOptions;formattedValue?:string;suffix?:string;align?:'right';testID?:string}){
  const colors=useColors();const {direction}=useHIG();const type={fontSize:14,lineHeight:19} as const,small={...type,color:colors.muted,textAlign:align};
  const reading=template(text),parts=template(numberMark).split(numberMark);
  if(value==null||!Number.isFinite(value)||parts.length!==2)return <Text testID={testID} style={small}>{reading}</Text>;
  return <View accessible accessibilityLabel={reading} testID={testID} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:align==='right'?'flex-end':'flex-start'}}>
   {parts[0]?<Text accessible={false} style={small}>{parts[0]}</Text>:null}
-  <AnimatedNumberReadout value={value} options={options} formattedValue={formattedValue} suffix={suffix} tone='muted' style={type}/>
+  <NumberFlow motion="slide" value={value} options={options} formattedValue={formattedValue} suffix={suffix} tone='muted' style={type}/>
   {parts[1]?<Text accessible={false} style={small}>{parts[1]}</Text>:null}
  </View>;
 }

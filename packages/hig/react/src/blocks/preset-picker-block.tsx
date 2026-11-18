@@ -4,7 +4,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from '../provider.js';
 import {Button} from '../button.js';
 import {PresetGroup,type PresetOption} from '../preset-group.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {ScreenHeader,type ScreenHeaderControlProps} from './screen-header.js';
 import {SwapIcon} from './swap/shared.js';
 const PickerHeader = React.memo(ScreenHeader);
@@ -38,9 +38,9 @@ export interface PresetPickerBlockProps<T extends string|number=number> extends 
  valueSuffix?:string;
  /** What the figure is read as before its value: Size. */
  valueLabel?:string;
- /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn static unless `animateFormatted`; `value` still decides known or unknown and the direction of a move. As `AnimatedNumberReadout` `formattedValue`. */
+ /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn static unless `animateFormatted`; `value` still decides known or unknown and the direction of a move. As `NumberFlow` `formattedValue`. */
  formattedValue?:string;
- /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `AnimatedNumberReadout` `animateFormatted`. */
+ /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `NumberFlow` `animateFormatted`. */
  animateFormatted?:boolean;
  /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. */
  presets:readonly PresetOption<T>[];
@@ -96,7 +96,7 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const customSelected=custom?(custom.selected??custom.value!==undefined):false;
  return <section {...rest} className={`hig-preset-picker${className?` ${className}`:''}`} data-intent={intent==='destructive'?intent:undefined}>
   {title!==undefined&&<PickerHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
-  <p className='hig-target-amount'><AnimatedNumberReadout value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
+  <p className='hig-target-amount'><NumberFlow motion="slide" value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
   {custom&&<button type='button' className='hig-swap-setting' aria-pressed={customSelected} aria-label={custom.accessibilityLabel} data-testid={custom.testID} onClick={custom.onSelect}><span>{custom.label}</span>{custom.value!==undefined?<span className='hig-swap-setting-value'>{custom.value}<SwapIcon name='chevron' size={16}/></span>:<SwapIcon name='chevron' size={16}/>}<PressDecoration kind='row'/></button>}
   {presets.length>0&&<PresetGroup<T> label={presetsLabel??title} options={presets} value={selected} onValueChange={onPresetChange} columns={columns} selectedIntent={intent} suppressFeedback={suppressFeedback}/>}
   {children}

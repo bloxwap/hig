@@ -2,7 +2,7 @@ const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {Text:RNText,View:RNView,PixelRatio,StyleSheet}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {createNumberReelModel,numberTrendDirection,safeNumberLayout}=require('../../packages/hig/native/src/animated-number-model');
 const h=React.createElement;
 let root;
@@ -13,7 +13,7 @@ beforeEach(()=>{
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();});
 function mount(element){act(()=>{root=create(element);});return root.root;}
 function update(element){act(()=>root.update(element));}
-function example(props={},provider={}){return h(HIGProvider,provider,h(AnimatedNumberReadout,{value:1,label:'Price',testID:'price',...props}));}
+function example(props={},provider={}){return h(HIGProvider,provider,h(NumberFlow,{motion:'slide',value:1,label:'Price',testID:'price',...props}));}
 function finalText(){return root.root.findAllByType(RNText).find(node=>node.props.testID==='price');}
 function measure(width=24,height=56){
  const probes=root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function');expect(probes).toHaveLength(10);

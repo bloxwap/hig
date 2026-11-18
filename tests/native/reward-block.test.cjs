@@ -7,7 +7,7 @@ const {RewardBlock,rewardProgress}=require('../../packages/hig/native/src/reward
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
@@ -36,7 +36,7 @@ it('shows the host title as the heading, Back only with onBack, and the ranked r
  expect(flat(host(view,'reward-rows'))).toMatchObject({gap:2,borderRadius:20,overflow:'hidden'});expect(flat(host(view,'reward-row-a'))).toMatchObject({minHeight:64,paddingHorizontal:20,backgroundColor:nativeSrgb.surface});
  // Names and scores use the same text colour for every standing.
  expect(flat(host(view,'reward-row-me-name')).color).toBe(nativeSrgb.text);expect(flat(host(view,'reward-row-a-name')).color).toBe(nativeSrgb.text);
- const score=id=>view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID===`reward-row-${id}-score`).props;
+ const score=id=>view.findAllByType(NumberFlow).find(flow=>flow.props.testID===`reward-row-${id}-score`).props;
  expect(score('me')).toMatchObject({value:418450,tone:'text'});expect(score('a').tone).toBe('text');expect(score('c').value).toBeNull();
  // Without artwork the avatar shows the first letters; nothing else is drawn without its props.
  expect(host(view,'reward-row-c').findAll(node=>node.type==='Text'&&node.props.children==='Ze')).toHaveLength(1);
@@ -50,7 +50,7 @@ it('draws a prize pool: a muted eyebrow, one large figure, the goal in the capti
  let view=mount({promo:pool});
  expect(text(host(view,'reward-eyebrow'))).toBe('Season 01');expect(flat(host(view,'reward-eyebrow'))).toMatchObject({textTransform:'uppercase',color:nativeSrgb.muted});
  expect(host(view,'reward-amount').props.accessibilityLabel).toBe('$4,037 of $250,000 prize pool');expect(text(host(view,'reward-caption'))).toBe('of $250,000 prize pool');
- const figure=host(view,'reward-amount').findAllByType(AnimatedNumberReadout)[0];expect(figure.props).toMatchObject({value:4037,tone:'text',options:{style:'currency',currency:'USD',maximumFractionDigits:0}});// The same size as the SwapPanel and TargetBlock headline figures.
+ const figure=host(view,'reward-amount').findAllByType(NumberFlow)[0];expect(figure.props).toMatchObject({value:4037,tone:'text',options:{style:'currency',currency:'USD',maximumFractionDigits:0}});// The same size as the SwapPanel and TargetBlock headline figures.
  expect(flat(figure)).toMatchObject({fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9});
  expect(flat(host(view,'reward-track'))).toMatchObject({height:4,borderRadius:2});expect(parseFloat(flat(host(view,'reward-fill')).width)).toBeCloseTo(1.6148,3);expect(flat(host(view,'reward-fill')).backgroundColor).toBe(nativeSrgb.action);expect(host(view,'reward-track').props.importantForAccessibility).toBe('no-hide-descendants');
  // One paragraph: the headline in the text colour, the description continuing it in the muted colour.
@@ -100,7 +100,7 @@ describe('host slots (Unreleased)',()=>{
   // The block's testID prefixes every test ID inside it.
   expect(host(view,'board-you').props.accessibilityLabel).toBe('Your rank, 9, you, $3');
   expect(readings(view,'board')).toEqual(['1, Ada, $1,000','2, Bo, 1,090,779 vol, $12.50']);
-  const detail=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='board-row-w2-detail');expect(detail.props).toMatchObject({value:1090779,suffix:' vol',tone:'muted'});
+  const detail=view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='board-row-w2-detail');expect(detail.props).toMatchObject({value:1090779,suffix:' vol',tone:'muted'});
   const status=host(view,'board-status');expect(text(status)).toBe("You're not ranked yet");expect(status.props.accessibilityLiveRegion).toBe('polite');
   const ids=host(view,'board').findAll(child=>typeof child.type==='string').map(child=>child.props.testID);expect(ids.indexOf('board-you')).toBeLessThan(ids.indexOf('board-status'));expect(ids.indexOf('board-status')).toBeLessThan(ids.indexOf('board-list'));
   expect(has(view,'reward-you')).toBe(false);expect(has(view,'board-header')).toBe(true);expect(has(view,'board-title')).toBe(true);
@@ -145,7 +145,7 @@ describe('host slots (Unreleased)',()=>{
  it('animates a host-formatted detail (Unreleased)',()=>{
   const view=mount({entries:[{id:'a',rank:1,name:'Ada',detail:{value:1090779,formattedValue:'1.090.779',suffix:' vol'},score:5}]});
   expect(host(view,'reward-row-a').props.accessibilityLabel).toBe('1, Ada, 1.090.779 vol, 5');
-  const flow=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='reward-row-a-detail');expect(flow.props).toMatchObject({formattedValue:'1.090.779',animateFormatted:true});
+  const flow=view.findAllByType(NumberFlow).find(node=>node.props.testID==='reward-row-a-detail');expect(flow.props).toMatchObject({formattedValue:'1.090.779',animateFormatted:true});
  });
  it('accepts host elements in the headline',()=>{
   const view=mount({promo:{...pool,headline:h(Text,{testID:'accent'},'Top 100')}});expect(has(view,'accent')).toBe(true);
@@ -154,7 +154,7 @@ describe('host slots (Unreleased)',()=>{
 
 it('draws a host-text amount read with a text caption, a node caption that reads itself, a host figure, and no list without entries',()=>{
  let view=mount({entries:undefined,promo:{eyebrow:'Sweepstakes',amount:'$500',caption:'top prize'}});
- const amount=host(view,'reward-amount');expect(amount.props.accessibilityLabel).toBe('$500 top prize');expect(view.findAllByType(AnimatedNumberReadout)).toHaveLength(0);
+ const amount=host(view,'reward-amount');expect(amount.props.accessibilityLabel).toBe('$500 top prize');expect(view.findAllByType(NumberFlow)).toHaveLength(0);
  expect(view.findAll(node=>typeof node.type==='string'&&node.children.includes('$500')).map(node=>flat(node).color)).toContain(nativeSrgb.text);
  expect(has(view,'reward-list')).toBe(false);expect(has(view,'reward-rows')).toBe(false);
  view=mount({promo:{eyebrow:'Sweepstakes',amount:500,caption:h(View,{testID:'countdown'})}});
@@ -171,7 +171,7 @@ it('rolls the drawing clock to expiry while showing the viewer’s streak multip
   const drawing={at:Date.now()+1500,label:'Prize drawing in',endedLabel:'Drawing time reached'};
   const view=mount({promo:{eyebrow:'Sweepstakes',drawing,streak:{label:'Current streak',count:{value:7,suffix:' days'},rewardLabel:'Entry multiplier',reward:{value:2,suffix:'×'}}}});
   expect(text(view)).toContain('Entry multiplier');
-  const timer=()=>view.findByType(require('../../packages/hig/native/src/animated-number').NumberFlow);
+  const timer=()=>view.find(node=>node.type===require('../../packages/hig/native/src/animated-number').NumberFlow&&node.props.trend===-1);
   expect(timer().props.formattedValue).toBe('0:00:02');
   act(()=>jest.advanceTimersByTime(500));expect(timer().props.value).toBe(1);
   act(()=>jest.advanceTimersByTime(1000));expect(text(view)).toContain(drawing.endedLabel);

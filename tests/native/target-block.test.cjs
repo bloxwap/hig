@@ -7,7 +7,7 @@ const {TargetBlock,targetLayout,targetFormat}=require('../../packages/hig/native
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
@@ -21,7 +21,7 @@ const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const flat=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
 const button=(view,id)=>view.findAllByType(Button).find(node=>node.props.testID===id);
-const amount=view=>view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='target-amount');
+const amount=view=>view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='target-amount');
 const prices=view=>['target-entry','target-trigger'].filter(id=>has(view,id));
 const order=view=>view.findAll(node=>typeof node.type==='string'&&/^target-(entry|trigger)$/.test(String(node.props.testID))).map(node=>node.props.accessibilityLabel);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
@@ -62,11 +62,11 @@ it('titles the price card with the position and order type and reads the two pri
  // Two prices only: the whole bar is filled from entry to the trigger, the trigger edge in the positive role, and there is no tick.
  expect(flat(host(view,'target-move'))).toMatchObject({flexGrow:1,borderStartColor:nativeSrgb.text,borderEndColor:nativeSrgb.buy});expect(flat(host(view,'target-fill'))).toMatchObject({backgroundColor:nativeSrgb.buy,opacity:0.5});expect(has(view,'target-entry-tick')).toBe(false);expect(has(view,'target-mark')).toBe(false);
  expect(host(view,'target-bar').props.importantForAccessibility).toBe('no-hide-descendants');
- const trigger=host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0];expect(trigger.props).toMatchObject({value:65000,tone:'positive'});
+ const trigger=host(view,'target-trigger').findAllByType(NumberFlow)[0];expect(trigger.props).toMatchObject({value:65000,tone:'positive'});
  // A stop loss under entry leads with the trigger in the negative role.
  view=mount({kind:'stop-loss',trigger:64600,value:-0.5});
  expect(order(view)).toEqual(['If triggered, $64,600.00','Entry, $64,700.00']);
- expect(flat(host(view,'target-move'))).toMatchObject({borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(flat(host(view,'target-fill'))).toMatchObject({backgroundColor:nativeSrgb.sell,opacity:0.5});expect(host(view,'target-trigger').findAllByType(AnimatedNumberReadout)[0].props.tone).toBe('negative');
+ expect(flat(host(view,'target-move'))).toMatchObject({borderStartColor:nativeSrgb.sell,borderEndColor:nativeSrgb.text});expect(flat(host(view,'target-fill'))).toMatchObject({backgroundColor:nativeSrgb.sell,opacity:0.5});expect(host(view,'target-trigger').findAllByType(NumberFlow)[0].props.tone).toBe('negative');
  // Without a trigger there is no stretch and only entry reads; without host text there is no title row.
  view=mount({trigger:undefined});expect(has(view,'target-move')).toBe(false);expect(prices(view)).toEqual(['target-entry']);expect(has(view,'target-position')).toBe(false);expect(has(view,'target-note')).toBe(false);
  view=mount({priceOptions:{style:'currency',currency:'USD',maximumFractionDigits:0}});expect(order(view)[1]).toBe('If triggered, $65,000');

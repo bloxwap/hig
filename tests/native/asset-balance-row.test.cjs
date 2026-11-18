@@ -4,7 +4,7 @@ const {create:render,act}=require('react-test-renderer');
 const {StyleSheet,View,Image}=require('react-native');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {AssetBalanceRow}=require('../../packages/hig/native/src/asset-balance-row');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 const tree=props=>h(HIGProvider,{reducedMotion:true},h(AssetBalanceRow,{name:'Solana',symbol:'SOL',testID:'row',...props}));
@@ -13,7 +13,7 @@ const update=props=>{act(()=>{root.update(tree(props));});return root.root;};
 const flat=node=>StyleSheet.flatten(typeof node.props.style==='function'?node.props.style({pressed:false}):node.props.style)??{};
 const host=(view,testID)=>view.findAll(node=>node.props.testID===testID&&typeof node.type==='string')[0];
 const outer=(view,testID)=>view.findAll(node=>node.props.testID===testID&&node.props.accessibilityLabel!==undefined)[0];
-const flows=view=>view.findAllByType(AnimatedNumberReadout);
+const flows=view=>view.findAllByType(NumberFlow);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
 it('is a capsule concentric with its 40dp avatar, laid out by writing direction',()=>{
