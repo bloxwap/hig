@@ -4134,11 +4134,11 @@
       "api": {
         "react": {
           "entry": "@bloxwap/hig/chart",
-          "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
+          "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
         },
         "native": {
           "entry": "chart",
-          "signature": "export declare function AltimeterChart({ summary, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, ...view }: AltimeterChartProps): React.JSX.Element;"
+          "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, ...view }: AltimeterChartProps): React.JSX.Element;"
         }
       }
     },
@@ -4160,7 +4160,7 @@
       "api": {
         "react": {
           "entry": "@bloxwap/hig/chart",
-          "signature": "export declare function OutcomeChart({ summary, outcomes, feed, height, targetLabelInsets, style, ...props }: OutcomeChartProps): React.JSX.Element;"
+          "signature": "export declare function OutcomeChart({ summary, paused, outcomes, feed, height, targetLabelInsets, style, ...props }: OutcomeChartProps): React.JSX.Element;"
         },
         "native": null
       }

@@ -1,10 +1,11 @@
 "use client";
 import React,{useEffect,useMemo,useRef,useState} from 'react';
+import {historyPath,trailFade,visibleFrames} from './chart-renderer.js';
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
 import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
-import {ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,gridPhase,labelDecimalsFor,ladderPrices,priceTween,smoothTrail,tickSpacingFor,trailPoints,type AltimeterTick} from './altimeter-model.js';
+import {ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,gridPhase,labelDecimalsFor,ladderPrices,priceTween,tickSpacingFor,type AltimeterTick} from './altimeter-model.js';
 import {drawPlusGrid,monoFallback,monoFont} from './plus-grid.js';
 import {bitcoinPrice,type AltimeterFeed} from './bitcoin-price.js';
 import type {TargetLabelInsets} from './outcome-model.js';
@@ -17,6 +18,8 @@ export type {AltimeterPosition} from './altimeter-core.js';
 export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>,'children'> {
  /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */
  summary:string;
+ /** Suspend chart frames while an opaque overlay covers the plot. */
+ paused?:boolean;
  /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */
  price?:number|null;
  /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */
@@ -91,23 +94,22 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  ctx.stroke();ctx.globalAlpha=1;
  // The trail stops short of the ladder labels; the pill covers the rest of the row.
  const trailEnd=Math.max(PAD+40,right-Math.max(100,Math.ceil(widest)+22));
- const points=trailPoints(frame.ticks,frame.now,PAD,trailEnd,yFor),last=points.at(-1);
- if(!last)return trailEnd;
- const fade=ctx.createLinearGradient(PAD,0,trailEnd,0);fade.addColorStop(0,transparent(frame.colors.line));fade.addColorStop(1,frame.colors.line);
- ctx.strokeStyle=fade;ctx.lineWidth=2.5;
- ctx.beginPath();smoothTrail(points,ctx);
+ const history=historyPath(ctx,frame.ticks,frame.now,PAD,trailEnd,yFor,yFor(frame.anchor),spacing,frame.anchor);
+ if(!history)return trailEnd;
+ const {last,sink,path}=history;
+ ctx.strokeStyle=trailFade(ctx,frame.ticks,PAD,trailEnd,frame.colors.line);ctx.lineWidth=2.5;
  // From the newest sample to the live price; level end tangents keep the tail inside both prices.
  const dx=trailEnd-last[0];
- if(dx>0)ctx.bezierCurveTo(last[0]+dx/3,last[1],trailEnd-dx/3,center,trailEnd,center);else ctx.lineTo(trailEnd,center);
- ctx.stroke();
+ if(dx>0)sink.bezierCurveTo(last[0]+dx/3,last[1],trailEnd-dx/3,center,trailEnd,center);else sink.lineTo(trailEnd,center);
+ if(path)ctx.stroke(path);else ctx.stroke();
  if(usable(frame.breakEvenPrice)){
   const baseline=yFor(frame.breakEvenPrice);
   if(baseline!==center){
    const bottom=Math.max(0,Math.min(height,baseline));
    const shade=ctx.createLinearGradient(0,center,0,bottom);
    shade.addColorStop(0,frame.colors.line);shade.addColorStop(1,transparent(frame.colors.line));
-   ctx.lineTo(trailEnd,baseline);ctx.lineTo(points[0][0],baseline);ctx.closePath();
-   ctx.fillStyle=shade;ctx.globalAlpha=.5;ctx.fill();ctx.globalAlpha=1;
+   sink.lineTo(trailEnd,baseline);sink.lineTo(history.first,baseline);sink.closePath();
+   ctx.fillStyle=shade;ctx.globalAlpha=.5;if(path){ctx.save();ctx.beginPath();ctx.rect(PAD,0,trailEnd-PAD,height);ctx.clip();ctx.fill(path);ctx.restore();}else ctx.fill();ctx.globalAlpha=1;
   }
  }
  return trailEnd;
@@ -118,8 +120,11 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  * price ladder that keeps the current price at the vertical center, and the current price at the trail's tip. It
  * accepts optional target lines and opt-in DEGEN crossing feedback. Web only.
  */
-export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,dgen,degen=dgen??false,style,...props}:AltimeterChartProps){
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,dgen,degen=dgen??false,style,...props}:AltimeterChartProps){
  const {locale,messages,reducedMotion}=useHIG();const colors=useColors();
+ const pauseFrames=useRef<((paused:boolean)=>void)|undefined>(undefined);
+ const initiallyPaused=useRef(paused);
+ useEffect(()=>{initiallyPaused.current=paused;pauseFrames.current?.(paused);},[paused]);
  const box=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null),pill=useRef<HTMLSpanElement>(null);
  const targetRows=useRef(new Map<string,HTMLDivElement>()),targetLabels=useRef(new Map<string,HTMLSpanElement>()),effects=useRef<HTMLDivElement>(null);
  const levels=useMemo(()=>validTargets(targets),[targets]);
@@ -153,7 +158,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
   const surface=canvas.current,container=box.current;if(!surface||!container)return;
   let context:CanvasRenderingContext2D|null=null;
   try{context=surface.getContext('2d');}catch{/* No canvas: the caption and the price reading remain. */}
-  let width=container.clientWidth,raf=0,sampled=-Infinity,shown:number|null|undefined;
+  let width=container.clientWidth,sampled=-Infinity,shown:number|null|undefined;
   let lastFrame=-Infinity,lastBurst=-Infinity;
   crossings.current.reset();
   const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(entries=>{width=entries[0].contentRect.width;});
@@ -169,7 +174,6 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
   const labels=new Map<number,string>();
   const show=(next:number|null)=>{if(next!==shown){shown=next;setReading(next);}};
   const step=(now:number)=>{
-   raf=requestAnimationFrame(step);
    const {colors,locale,priceOptions,optionsKey,reducedMotion,levels,degen,position,targetLabelInsets}=settings.current,target=latest.current;
    const previousDisplay=display;
    const resumed=now-lastFrame>2000;lastFrame=now;
@@ -208,7 +212,7 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
      label.style.transform=`translateY(${labelTop}px)`;
     }
    }
-   const crossed=target==null?[]:crossings.current.update(display,levels);
+   const crossed=target==null||!levels.length?[]:crossings.current.update(display,levels);
    let trailEnd:number|undefined;
    // Keep DOM writes together; the canvas and labels use the same resolved geometry.
    if(context&&width>0){
@@ -230,8 +234,9 @@ export function AltimeterChart({summary,price,feed=bitcoinPrice,height=320,price
     }
    }
   };
-  raf=requestAnimationFrame(step);
-  return ()=>{cancelAnimationFrame(raf);observer?.disconnect();cancelBurst.current?.();};
+  const frames=visibleFrames(container,step,initiallyPaused.current);
+  pauseFrames.current=frames.setPaused;
+  return ()=>{pauseFrames.current=undefined;frames.stop();observer?.disconnect();cancelBurst.current?.();};
  },[height,controlled,controlled?undefined:feed]);
  return <figure {...props} style={{margin:0,inlineSize:'100%',minInlineSize:0,...style}}>
   <figcaption style={{marginBlockEnd:tokens.space.sm}}>{summary}</figcaption>
