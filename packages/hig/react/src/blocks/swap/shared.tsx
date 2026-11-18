@@ -16,7 +16,7 @@ import { ScanLine } from '@bloxwap/icons/react/scan-line';
 import { SlidersHorizontal } from '@bloxwap/icons/react/sliders-horizontal';
 import { Wallet } from '@bloxwap/icons/react/wallet';
 import { X } from '@bloxwap/icons/react/x';
-import {decimal,decimalMultiply,decimalDivide} from '@bloxwap/hig/contracts';
+import {decimal,decimalMultiply,decimalDivide} from '@bloxwap/hig/contracts/decimal';
 import React from 'react';
 import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
 import {PressDecoration} from '../../provider.js';
@@ -82,7 +82,7 @@ export function applyAmountKey(current:string,key:string,mode:SwapDenomination,d
  return limit!==undefined&&dot!==-1&&next.length-dot-1>limit?current:next;
 }
 /** Case-insensitive substring or in-order subsequence match. */
-export {fuzzyMatch} from '@bloxwap/hig/contracts';
+export {fuzzyMatch} from '@bloxwap/hig/contracts/picker-search';
 const numberMark='\uE000';
 /** A number in the swap card that can change while it is on screen. It always updates place by place (never by swapping the text), and `template` keeps it inside its localized sentence: `template={messages.swapFee}` renders "Fee " around the moving amount. */
 export function SwapNumber({template,...number}:AnimatedNumberProps&{template?:(value:string)=>string}){

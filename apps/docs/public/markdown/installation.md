@@ -9,7 +9,7 @@ npm install @bloxwap/hig@0.9.2
 | Entry | Use |
 | --- | --- |
 | `@bloxwap/hig/tokens`, `@bloxwap/hig/tokens/css` | Semantic tokens and the role CSS |
-| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements, messages and the generated avatar face |
+| `@bloxwap/hig/contracts` | Platform-neutral types, formatting, feedback, announcements, messages and the generated avatar face. Each module is also its own entry, such as `@bloxwap/hig/contracts/format` and `@bloxwap/hig/contracts/decimal`; prefer those where the bundler keeps whole files (Metro) |
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |

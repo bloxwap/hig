@@ -1,5 +1,5 @@
 "use client";
-import {numericRange} from '@bloxwap/hig/contracts';
+import {numericRange} from '@bloxwap/hig/contracts/invariants';
 import React,{useId} from 'react';
 import {useControllable} from './provider.js';
 

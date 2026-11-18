@@ -1,9 +1,9 @@
 import {memoizedRenderer} from './flat-list-options.js';
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React from 'react';
 import {Dimensions,FlatList,Platform,View,StyleSheet,type FlatListProps,type LayoutChangeEvent,type StyleProp,type TextStyle,type ViewStyle} from 'react-native';
 import {formatNumberReadout} from './animated-number-model.js';
-import {presentNumberFormat} from '@bloxwap/hig/contracts';
+import {presentNumberFormat} from '@bloxwap/hig/contracts/environment';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useColors,useMessageOverrides,useMonoFontFamily,useReadoutFormat} from './provider.js';
 import {Text,Surface,Separator} from './surface.js';

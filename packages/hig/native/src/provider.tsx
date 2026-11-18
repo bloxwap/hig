@@ -2,12 +2,12 @@ import type {FeedbackSink,FeedbackIntent} from '@bloxwap/hig/contracts/feedback'
 import React,{useCallback,createContext,useContext,useEffect,useMemo,useState,useRef,useId} from 'react';
 import {AccessibilityInfo,I18nManager,Platform} from 'react-native';
 import {nativeSrgb,nativeDisplayP3,resolvePrimaryColor} from '@bloxwap/hig/tokens';
-import {defaultEnvironment,numberLocale,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts';
-export type {NumberFormatPresentation} from '@bloxwap/hig/contracts';
+import {defaultEnvironment,numberLocale,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts/environment';
+export type {NumberFormatPresentation} from '@bloxwap/hig/contracts/environment';
 import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig/contracts/messages';
 export type {HIGMessages} from '@bloxwap/hig/contracts/messages';
 /** Direction of a host-supplied locale (for example expo-localization's `getLocales()[0]`) for `HIGProvider direction`; see #86. */
-export {localeDirection,type HostLocale} from '@bloxwap/hig/contracts';
+export {localeDirection,type HostLocale} from '@bloxwap/hig/contracts/environment';
 /** Colour space the host paints React Native colours in. `display-p3` is for iOS hosts whose React Native default colour space is Display P3 (an app delegate `defaultColorSpace()` override); there HIG paints its generated `nativeDisplayP3` table (`nativeColors.iosDisplayP3`). Android and web stay sRGB, because HIG publishes no other table for them. */
 export type HIGColorSpace='srgb'|'display-p3';
 /** Roles of HIG's generated colour tables (`colorTable`). */

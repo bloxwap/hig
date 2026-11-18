@@ -1,4 +1,4 @@
-import {formatSignedNumber} from '@bloxwap/hig/contracts';
+import {formatSignedNumber} from '@bloxwap/hig/contracts/format';
 
 /**
  * Native number display. Hermes on iOS ignores `signDisplay` (`exceptZero` drew `12.34%` where Android drew `+12.34%`), so every

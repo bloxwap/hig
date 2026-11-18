@@ -1,11 +1,11 @@
 "use client";
 import type {FeedbackSink,FeedbackIntent} from '@bloxwap/hig/contracts/feedback';
 import React,{useCallback,createContext,useContext,useEffect,useMemo,useState,useRef,useId} from 'react';
-import {defaultEnvironment,numberLocale,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts';
+import {defaultEnvironment,numberLocale,presentNumberFormat,type Environment,type NumberFormatPresentation} from '@bloxwap/hig/contracts/environment';
 import {defaultMessages,resolveMessages,type HIGMessages} from '@bloxwap/hig/contracts/messages';
 import {nativeSrgb,resolvePrimaryColor} from '@bloxwap/hig/tokens';
 export type {HIGMessages} from '@bloxwap/hig/contracts/messages';
-export type {NumberFormatPresentation} from '@bloxwap/hig/contracts';
+export type {NumberFormatPresentation} from '@bloxwap/hig/contracts/environment';
 /** The kind of pressable HIG control a press decoration is drawn in: `button` (Button, the block action buttons and a ListGroup heading action), `icon-button` (IconButton and the SearchInput clear button), `row` (a pressable ListRow, AssetBalanceRow, the WalletAddress copy button or a block row), `switch` (Switch, a switch ListRow and the setting switch rows), `segment` (each SegmentedControl segment) and `back` (the block header's Back, Close and address controls). */
 export type PressDecorationKind='button'|'icon-button'|'row'|'switch'|'segment'|'back';
 export interface PressDecorationInfo {kind:PressDecorationKind;/** The control is disabled or busy and will not act on a press. */disabled:boolean}

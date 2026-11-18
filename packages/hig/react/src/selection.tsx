@@ -1,6 +1,6 @@
 "use client";
 import { Check } from '@bloxwap/icons/react/check';
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React,{useId,useRef} from 'react';
 import {PressDecoration,useControllable} from './provider.js';
 export interface Choice {value:string;label:string;disabled?:boolean}

@@ -1,7 +1,7 @@
 "use client";
 import { CircleCheck } from '@bloxwap/icons/react/circle-check';
 import React from 'react';
-import {formatNumber,formatCountdown,watchCountdown} from '@bloxwap/hig/contracts';
+import {formatNumber,formatCountdown,watchCountdown} from '@bloxwap/hig/contracts/format';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {figureProps,type Figure} from '../figure.js';
 import {SegmentedControl} from '../selection.js';

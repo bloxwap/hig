@@ -2,10 +2,11 @@
 import { ChevronUp } from '@bloxwap/icons/react/chevron-up';
 import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
 import { ChevronsUpDown } from '@bloxwap/icons/react/chevrons-up-down';
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React from 'react';
 import {RowWindow} from './row-window.js';
-import {formatNumber,presentNumberFormat} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
+import {presentNumberFormat} from '@bloxwap/hig/contracts/environment';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useMessageOverrides,useReadoutFormat} from './provider.js';
 export interface NumberProps {value:number|null|undefined;options?:Intl.NumberFormatOptions;stale?:boolean;label?:string;prefix?:string;suffix?:string}

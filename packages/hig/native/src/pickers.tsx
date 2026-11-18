@@ -1,5 +1,5 @@
 import React,{useContext,useEffect,useMemo,useState} from 'react';
-import {createPickerSearch} from '@bloxwap/hig/contracts';
+import {createPickerSearch} from '@bloxwap/hig/contracts/picker-search';
 import {FlatList,Pressable,View,useWindowDimensions,type FlatListProps,type StyleProp,type TextInput,type TextInputProps,type ViewStyle} from 'react-native';
 import {useColors,useFills,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';

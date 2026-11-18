@@ -6,7 +6,7 @@ import { Info } from '@bloxwap/icons/react/info';
 import { TriangleAlert } from '@bloxwap/icons/react/triangle-alert';
 import { X } from '@bloxwap/icons/react/x';
 import {useBusySpinner} from './use-busy-spinner.js';
-import {progressValue} from '@bloxwap/hig/contracts';
+import {progressValue} from '@bloxwap/hig/contracts/invariants';
 import React,{useEffect,useRef,useState} from 'react';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
 import * as en from '@bloxwap/hig/contracts/messages';

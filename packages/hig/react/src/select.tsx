@@ -1,7 +1,7 @@
 "use client";
 import { Check } from '@bloxwap/icons/react/check';
 import { ChevronDown } from '@bloxwap/icons/react/chevron-down';
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React,{useCallback,useEffect,useId,useLayoutEffect,useMemo,useRef,useState} from 'react';
 import {useControllable,useLayoutDirection,useLocale} from './provider.js';
 import {SelectWindow} from './select-window.js';

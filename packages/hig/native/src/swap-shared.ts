@@ -1,4 +1,5 @@
-import {decimal,decimalMultiply,decimalDivide,createPickerSearch} from '@bloxwap/hig/contracts';
+import {decimal,decimalMultiply,decimalDivide} from '@bloxwap/hig/contracts/decimal';
+import {createPickerSearch} from '@bloxwap/hig/contracts/picker-search';
 import type React from 'react';
 // Pure helpers for the SwapBlock block. Same behaviour as the web block's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
@@ -70,7 +71,7 @@ export function applyAmountKey(current:string,key:string,mode:SwapDenomination,d
  return limit!==undefined&&dot!==-1&&next.length-dot-1>limit?current:next;
 }
 /** Case-insensitive substring or in-order subsequence match. */
-export {fuzzyMatch} from '@bloxwap/hig/contracts';
+export {fuzzyMatch} from '@bloxwap/hig/contracts/picker-search';
 /** A slippage fraction as a percent string: 0.005 is `0.5%`. */
 export const formatPercent=(fraction:number):string=>`${Number((fraction*100).toFixed(4))}%`;
 /** A small trial amount: 1% of holdings, capped at about one dollar's worth. */

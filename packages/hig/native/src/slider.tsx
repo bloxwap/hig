@@ -1,4 +1,4 @@
-import {numericRange} from '@bloxwap/hig/contracts';
+import {numericRange} from '@bloxwap/hig/contracts/invariants';
 import React from 'react';
 import {View,Platform,UIManager,requireNativeComponent,type AccessibilityActionEvent,type ViewProps} from 'react-native';
 import SliderBackend from '@react-native-community/slider';

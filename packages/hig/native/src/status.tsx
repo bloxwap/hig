@@ -1,6 +1,6 @@
 import {StaticLoadingRing} from './static-loading-ring.js';
 import {useBusySpinner} from './use-busy-spinner.js';
-import {progressValue} from '@bloxwap/hig/contracts';
+import {progressValue} from '@bloxwap/hig/contracts/invariants';
 import React,{useEffect,useRef,useState} from 'react';
 import {tokens,nativeMetrics} from '@bloxwap/hig/tokens';
 import {capsuleRadius} from './modal-radius.js';

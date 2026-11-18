@@ -1,5 +1,5 @@
 "use client";
-import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts';
+import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts/decimal';
 import {useAsyncResult} from '../async-result.js';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';

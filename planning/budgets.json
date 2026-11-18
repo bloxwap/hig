@@ -25,5 +25,19 @@
   },
   "nativeFonts": {
     "raw": 1400000
+  },
+  "shipped": {
+    "@bloxwap/hig/react/provider": 40280,
+    "@bloxwap/hig/react/button": 43628,
+    "@bloxwap/hig/react/field": 45117,
+    "@bloxwap/hig/react/status": 63289,
+    "@bloxwap/hig/react/toast": 78029,
+    "@bloxwap/hig/react/blocks/swap-block": 261068,
+    "@bloxwap/hig/native/provider": 41200,
+    "@bloxwap/hig/native/button": 57522,
+    "@bloxwap/hig/native/switch": 53299,
+    "@bloxwap/hig/native/list-group": 66109,
+    "@bloxwap/hig/native/swap-block": 291996,
+    "@bloxwap/hig/native/reward-block": 218392
   }
 }

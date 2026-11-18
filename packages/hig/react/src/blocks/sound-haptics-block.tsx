@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
 import {RadioGroup,type Choice} from '../selection.js';

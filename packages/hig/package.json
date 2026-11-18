@@ -31,6 +31,41 @@
       "import": "./contracts/dist/index.js",
       "default": "./contracts/dist/index.js"
     },
+    "./contracts/environment": {
+      "types": "./contracts/dist/environment.d.ts",
+      "import": "./contracts/dist/environment.js",
+      "default": "./contracts/dist/environment.js"
+    },
+    "./contracts/format": {
+      "types": "./contracts/dist/format.d.ts",
+      "import": "./contracts/dist/format.js",
+      "default": "./contracts/dist/format.js"
+    },
+    "./contracts/decimal": {
+      "types": "./contracts/dist/decimal.d.ts",
+      "import": "./contracts/dist/decimal.js",
+      "default": "./contracts/dist/decimal.js"
+    },
+    "./contracts/invariants": {
+      "types": "./contracts/dist/invariants.d.ts",
+      "import": "./contracts/dist/invariants.js",
+      "default": "./contracts/dist/invariants.js"
+    },
+    "./contracts/picker-search": {
+      "types": "./contracts/dist/picker-search.d.ts",
+      "import": "./contracts/dist/picker-search.js",
+      "default": "./contracts/dist/picker-search.js"
+    },
+    "./contracts/language-search": {
+      "types": "./contracts/dist/language-search.d.ts",
+      "import": "./contracts/dist/language-search.js",
+      "default": "./contracts/dist/language-search.js"
+    },
+    "./contracts/rank-picker-tokens": {
+      "types": "./contracts/dist/rank-picker-tokens.d.ts",
+      "import": "./contracts/dist/rank-picker-tokens.js",
+      "default": "./contracts/dist/rank-picker-tokens.js"
+    },
     "./contracts/feedback": {
       "types": "./contracts/dist/feedback.d.ts",
       "import": "./contracts/dist/feedback.js",
@@ -587,6 +622,41 @@
       "types": "./native/dist/swap-sheet.d.ts",
       "import": "./native/dist/swap-sheet.js",
       "default": "./native/dist/swap-sheet.js"
+    },
+    "./native/swap-block": {
+      "types": "./native/dist/swap-block.d.ts",
+      "import": "./native/dist/swap-block.js",
+      "default": "./native/dist/swap-block.js"
+    },
+    "./native/swap-parts": {
+      "types": "./native/dist/swap-parts.d.ts",
+      "import": "./native/dist/swap-parts.js",
+      "default": "./native/dist/swap-parts.js"
+    },
+    "./native/swap-amount-card": {
+      "types": "./native/dist/swap-amount-card.d.ts",
+      "import": "./native/dist/swap-amount-card.js",
+      "default": "./native/dist/swap-amount-card.js"
+    },
+    "./native/market-row": {
+      "types": "./native/dist/market-row.d.ts",
+      "import": "./native/dist/market-row.js",
+      "default": "./native/dist/market-row.js"
+    },
+    "./native/trade-entry": {
+      "types": "./native/dist/trade-entry.d.ts",
+      "import": "./native/dist/trade-entry.js",
+      "default": "./native/dist/trade-entry.js"
+    },
+    "./native/install-command": {
+      "types": "./native/dist/install-command.d.ts",
+      "import": "./native/dist/install-command.js",
+      "default": "./native/dist/install-command.js"
+    },
+    "./native/marketing-hero": {
+      "types": "./native/dist/marketing-hero.d.ts",
+      "import": "./native/dist/marketing-hero.js",
+      "default": "./native/dist/marketing-hero.js"
     },
     "./native/provider": {
       "types": "./native/dist/provider.d.ts",

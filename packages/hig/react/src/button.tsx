@@ -1,6 +1,6 @@
 "use client";
 import React,{forwardRef,useId,useRef} from 'react';
-import type {Intent} from '@bloxwap/hig/contracts';
+import type {Intent} from '@bloxwap/hig/contracts/environment';
 import {useBusySpinner} from './use-busy-spinner.js';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useButtonEnvironment,type PressDecorationKind} from './provider.js';

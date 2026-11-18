@@ -1,5 +1,5 @@
 import { Check } from '@bloxwap/icons/native/check';
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {Animated,Easing,Image,Platform,Pressable,ScrollView,View,type LayoutChangeEvent,type ScrollViewProps} from 'react-native';
 import {tokens} from '@bloxwap/hig/tokens';

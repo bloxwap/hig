@@ -4,7 +4,7 @@ import {scheduleOnUI} from 'react-native-worklets';
 import Reanimated,{cancelAnimation,defineAnimation,Easing,ReduceMotion,useAnimatedStyle,useSharedValue,withTiming,type SharedValue} from 'react-native-reanimated';
 import {forEachNumberFlowTurn,numberFlowDigitLength,numberFlowEasingSamples,resolveNumberFlowTimings,type NumberFlowDigits,type NumberFlowTiming} from '@bloxwap/hig/contracts/number-flow';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {presentNumberFormat} from '@bloxwap/hig/contracts';
+import {presentNumberFormat} from '@bloxwap/hig/contracts/environment';
 import {tokens} from '@bloxwap/hig/tokens';
 import {type NumberProps} from './data.js';
 import {createFormattedReelModel,createNumberFlowRoll,createNumberReelModel,formatNumberReadout,numberFlowReelOffset,numberReelPlace,numberReelPlaces,numberTrendDirection,safeNumberLayout,sampleReelEasing,type NumberTrend} from './animated-number-model.js';

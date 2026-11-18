@@ -1,6 +1,6 @@
 "use client";
 import React,{useEffect,useId,useRef,useState} from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,usePresentNumber,useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';

@@ -1,6 +1,6 @@
 "use client";
 import React,{useId,useMemo} from 'react';
-import {formatNumber} from '@bloxwap/hig/contracts';
+import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {useNumberLocale} from './provider.js';
 import {AnimatedNumberReadout} from './animated-number.js';
 import {figureProps,type Figure} from './figure.js';

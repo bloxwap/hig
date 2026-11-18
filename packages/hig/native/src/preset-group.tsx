@@ -1,4 +1,4 @@
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React from 'react';
 import {View,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors,useControllable,useHIG} from './provider.js';

@@ -7,7 +7,7 @@ import {forEachNumberFlowTurn,numberFlowNeutral,resolveNumberFlowTimings,type Nu
 import {useLayoutDirection,useReadoutFormat,useReducedMotion} from './provider.js';
 import {tokens as higTokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
-import {presentNumberFormat} from '@bloxwap/hig/contracts';
+import {presentNumberFormat} from '@bloxwap/hig/contracts/environment';
 export type AnimatedNumberTrend=-1|0|1|((oldValue:number,newValue:number)=>-1|0|1);
 export type {NumberFlowDigits,NumberFlowEasing,NumberFlowTiming} from '@bloxwap/hig/contracts/number-flow';
 export interface AnimatedNumberProps extends NumberProps {

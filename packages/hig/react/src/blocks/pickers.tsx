@@ -1,6 +1,6 @@
 "use client";
 import React,{useCallback,useEffect,useId,useMemo,useRef,useState} from 'react';
-import {createPickerSearch} from '@bloxwap/hig/contracts';
+import {createPickerSearch} from '@bloxwap/hig/contracts/picker-search';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {RowWindow} from '../row-window.js';
 import {PressDecoration,useHIG} from '../provider.js';

@@ -1,4 +1,4 @@
-import {assertUniqueKeys} from '@bloxwap/hig/contracts';
+import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React,{useState,useRef,useEffect,useMemo} from 'react';
 import {FlatList,View,Text as RNText,useWindowDimensions} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
