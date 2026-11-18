@@ -262,7 +262,8 @@
       "entry": "gesture-sheet",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "scrollable"
       ]
     },
     {

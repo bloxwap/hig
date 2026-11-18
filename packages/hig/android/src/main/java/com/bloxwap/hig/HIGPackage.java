@@ -5,6 +5,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,6 +20,6 @@ public class HIGPackage implements ReactPackage {
   @NonNull
   @Override
   public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext context) {
-    return Collections.<ViewManager>singletonList(new HIGAdjustableViewManager());
+    return Arrays.<ViewManager>asList(new HIGAdjustableViewManager(), new HIGConfettiCanvasManager());
   }
 }

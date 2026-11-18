@@ -1,3 +1,4 @@
+import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React from 'react';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {StickyHeaderLayout} from './sticky-header.js';
@@ -105,12 +106,14 @@ function ProfileListRow({row}:{row:ProfileRow}){
 }
 /** A person's profile as one screen: the address and close controls, the avatar with its status, the name, then the host's sections of rows. */
 export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,avatarLabel,status,onEditName,onShowAddress,onClose,action,sections,footer,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:ProfileBlockProps){
+ const horizontalInset=useBlockHorizontalInset();
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG();
  const art=typeof avatar==='string'?<Image source={{uri:avatar}} style={{width:144,height:144}}/>:avatar??(address?null:<Text style={{fontSize:40,lineHeight:48,fontWeight:'600',color:colors.muted}}>{name?.slice(0,2)}</Text>);
  const shown=sections.filter(section=>section.rows.length>0);
  const disc=<View {...hidden} testID='profile-avatar' style={{width:144,height:144,borderRadius:72,overflow:'hidden',alignItems:'center',justifyContent:'center',backgroundColor:avatar==null&&address?addressColor(address):fills.well}}>{art}</View>;
  const bar=<View testID='profile-bar' style={stickyHeader?{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:44}:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',minHeight:44}}>
   <View style={{minWidth:44,alignItems:'flex-start'}}>{onShowAddress?<RoundButton label={t.showAddress} testID='profile-address' onPress={onShowAddress}><QrIcon color={colors.text}/></RoundButton>:null}</View>
+  <Text testID='profile-title' accessibilityRole='header' style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600'}}>{t.profile}</Text>
   <View style={{minWidth:44,alignItems:'flex-end'}}>{onClose?<RoundButton label={t.close} testID='profile-close' onPress={onClose}><CloseIcon color={colors.text}/></RoundButton>:null}</View>
  </View>;
  const body=<>
@@ -131,8 +134,8 @@ export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,av
   </View>:null}
   {footer!=null?<View testID='profile-footer' style={{marginTop:24}}>{footer}</View>:null}
  </>;
- if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='profile-sticky-header' header={bar} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction}}>{body}</StickyHeaderLayout>;
- return <View testID={testID} style={{direction,padding:16}}>
+ if(stickyHeader)return <StickyHeaderLayout horizontalInset={horizontalInset} testID={testID} headerTestID='profile-sticky-header' header={bar} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction}}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{direction,paddingVertical:16,paddingHorizontal:horizontalInset}}>
   {bar}
   {body}
  </View>;

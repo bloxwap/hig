@@ -7,6 +7,10 @@ Use `npx expo install expo-image`, then rebuild a development client so the nati
 module is linked. The adapter uses one image view with a local SVG source and
 native tint; iOS renders the tinted image at the view size.
 
+Native dialogs and gesture sheets use a background blur when the app links
+`@react-native-community/blur@4.4.1`. Rebuild the native client after installing it.
+Clients without the native view use the dimmed backdrop.
+
 Set a brand accent with `<HIGProvider primaryColor='#ff0000'>` from
 `@bloxwap/hig/native/provider`. It accepts opaque sRGB hex (`#RGB` or `#RRGGBB`),
 sets action/focus colours, and selects black or white text on primary fills.

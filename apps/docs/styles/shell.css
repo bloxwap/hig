@@ -234,3 +234,7 @@ button[data-search-full] kbd {
 .modal-canvas { padding-inline: 0; }
 .modal-canvas > .hig-stack { width: 100%; align-items: center; }
 .modal-canvas .hig-app-modal { position: relative; }
+.modal-canvas .hig-app-modal[data-state="closed"] { display:none; }
+@media (prefers-reduced-motion: no-preference) {
+  .modal-canvas .hig-app-modal[data-modal-motion="full"] { transition-property:opacity,transform,display; transition-behavior:allow-discrete; }
+}

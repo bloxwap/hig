@@ -94,8 +94,8 @@ describe('NumberFlow on native',()=>{
   mount(flow({value:1234.5,prefix:'$'}));measure();
   expect(cells().map(rows)).toEqual(['1','2','3','4','5']);expect(mockClock.values).toHaveLength(0);
   expect(reading().props.accessibilityLabel).toBe('Price: $1,234.5');expect(reading().props.accessibilityLiveRegion).toBeUndefined();
-  // The sliding readout mounts its reels up front: twenty rows a place.
-  act(()=>root.unmount());mount(h(HIGProvider,null,h(AnimatedNumberReadout,{value:1234.5,testID:'price'})));measure();expect(cells().map(cell=>rows(cell).length)).toEqual([20,20,20,20,20]);
+  // Sliding places also stay as one glyph until their first animated change.
+  act(()=>root.unmount());mount(h(HIGProvider,null,h(AnimatedNumberReadout,{value:1234.5,testID:'price'})));measure();expect(cells().map(rows)).toEqual(['1','2','3','4','5']);expect(mockClock.values).toHaveLength(0);
  });
  it('rolls only the places that changed, through the digits between, on NumberFlow’s timing',()=>{
   mount(flow({value:1234}));measure();update(flow({value:1237}));
@@ -214,4 +214,41 @@ it('preserves decorations and lets larger digits use their natural line height',
  expect(StyleSheet.flatten(reading().props.style)).toMatchObject({...style,lineHeight:undefined});
  update(flow({style:{...style,lineHeight:40}}));
  expect(StyleSheet.flatten(reading().props.style).lineHeight).toBe(40);
+});
+
+describe('shared native digit measurements',()=>{
+ const group=items=>h(HIGProvider,null,items.map(([id,props])=>h(NumberFlow,{key:id,testID:id,value:1,...props})));
+ const probes=()=>root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function');
+ const widths=()=>root.root.findAllByType(RNView).map(node=>StyleSheet.flatten(node.props.style)).filter(style=>style?.overflow==='hidden').map(style=>style.width);
+ const event=width=>({nativeEvent:{layout:{x:0,y:0,width,height:24}}});
+ it('measures matching readouts together and transfers the probes when their owner leaves',()=>{
+  mount(group([['a',{}],['b',{}],['c',{tone:'muted'}]]));
+  const late=probes().map(node=>node.props.onLayout);
+  measure(12,24);expect(widths()).toEqual([12,12,12]);
+  update(group([['b',{}],['c',{tone:'muted'}]]));
+  expect(widths()).toEqual([12,12]);expect(probes()).toHaveLength(10);
+  act(()=>late.forEach(layout=>layout(event(100))));
+  expect(widths()).toEqual([12,12]);
+  measure(13,24);expect(widths()).toEqual([13,13]);
+ });
+ it('keeps a new face independent of queued measurements from the old one',()=>{
+  mount(group([['a',{}],['b',{}]]));
+  const late=probes().map(node=>node.props.onLayout);
+  act(()=>late.slice(0,5).forEach(layout=>layout(event(100))));
+  update(group([['a',{style:{fontSize:32}}],['b',{}]]));
+  expect(probes()).toHaveLength(20);
+  act(()=>late.slice(5).forEach(layout=>layout(event(100))));
+  expect(widths()).toEqual([]);
+  act(()=>probes().forEach(probe=>probe.props.onLayout(event(StyleSheet.flatten(probe.props.style).fontSize===32?30:12))));
+  expect(widths()).toEqual([30,12]);
+ });
+ it('remeasures a changed font scale and keeps numbering systems separate',()=>{
+  const items=[['a',{}],['b',{options:{numberingSystem:'beng'}}]];
+  mount(group(items));expect(probes()).toHaveLength(20);
+  act(()=>probes().forEach(probe=>probe.props.onLayout(event(12))));
+  PixelRatio.getFontScale.mockReturnValue(2);
+  update(group(items));expect(widths()).toEqual([]);
+  act(()=>probes().forEach(probe=>probe.props.onLayout(event(24))));
+  expect(widths()).toEqual([24,24]);
+ });
 });

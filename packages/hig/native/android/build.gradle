@@ -1,28 +1,3 @@
-// Android support for @bloxwap/hig/native: the Slider's set-progress accessibility action (#71).
-// Autolinked by React Native / Expo; the host app's React Native Gradle plugin supplies react-android.
-apply plugin: 'com.android.library'
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
-android {
-  namespace 'com.bloxwap.hig'
-  compileSdkVersion safeExtGet('compileSdkVersion', 35)
-  defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 24)
-  }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
-}
-
-repositories {
-  google()
-  mavenCentral()
-}
-
-dependencies {
-  implementation 'com.facebook.react:react-android'
-}
+// Retain the Gradle project location used by manually linked applications.
+apply from: file('../../android/build.gradle')
+android.sourceSets.main.java.srcDirs = ['src/main/java', '../../android/src/main/java']

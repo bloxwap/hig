@@ -151,6 +151,19 @@ export function formatCountdown(remainingMs: number, locale = 'en-US'): {visible
  try { spoken = new Intl.ListFormat(locale, {style: 'narrow', type: 'unit'}).format(words); } catch { spoken = words.join(', '); }
  return {visible, spoken};
 }
+/** Publish whole seconds remaining to an epoch-millisecond deadline, including zero at expiry. */
+export function watchCountdown(at:number,publish:(seconds:number|null)=>void):()=>void {
+ let timer:ReturnType<typeof setTimeout>;
+ function tick(){
+  const remaining=at-Date.now();
+  if(!Number.isFinite(remaining)){publish(null);return;}
+  const seconds=Math.max(0,Math.ceil(remaining/1000));
+  publish(seconds);
+  if(seconds>0)timer=setTimeout(tick,remaining-(seconds-1)*1000);
+ }
+ tick();
+ return ()=>clearTimeout(timer);
+}
 export interface FontManifest { version: string; faces: ReadonlyArray<{family:string; weight:number; asset:string; script:string; registration?:string}> }
 export function nativeFont(manifest: FontManifest, family: string, weight: number, script = 'latin'): string {
  const face = manifest.faces.find(f=>f.family===family && f.weight===weight && f.script===script);

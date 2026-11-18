@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {cleanup,render,screen} from '@testing-library/react';
+import {act,cleanup,render,screen} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {readFileSync} from 'node:fs';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -146,4 +146,19 @@ describe('RewardBlock promo text, slots and a promotion-only pane',()=>{
   unmount();render(<HIGProvider><RewardBlock title='Rewards' promo={{eyebrow:'Soon',headline:'Draws open Monday.'}}/></HIGProvider>);
   expect(q('.hig-reward-amount')).toBeNull();expect(q('.hig-reward-summary')!.textContent).toBe('Draws open Monday.');
  });
+});
+
+it('shows the streak reward and counts down to the supplied prize drawing',()=>{
+ vi.useFakeTimers();
+ try{
+  const drawing={at:Date.now()+1500,label:'Prize drawing in',endedLabel:'Drawing time reached'};
+  render(<RewardBlock title="Leaderboard" promo={{eyebrow:'Sweepstakes',drawing,streak:{label:'Current streak',count:{value:7,suffix:' days'},rewardLabel:'Bonus points',reward:{value:30}}}}/>);
+  expect(screen.getByText('Bonus points')).toBeTruthy();
+  expect(screen.getByRole('timer').textContent).toContain('2 seconds');
+  act(()=>vi.advanceTimersByTime(500));
+  expect(screen.getByRole('timer').textContent).toContain('1 second');
+  act(()=>vi.advanceTimersByTime(1000));
+  expect(screen.queryByRole('timer')).toBeNull();
+  expect(screen.getByText(drawing.endedLabel)).toBeTruthy();
+ }finally{cleanup();vi.useRealTimers();}
 });

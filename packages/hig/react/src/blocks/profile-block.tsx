@@ -100,6 +100,7 @@ export function ProfileBlock({name,nameAccessory,address,avatar,onAvatarPress,av
  return <section {...rest} className={`hig-profile-block${className?` ${className}`:''}`}>
   <div ref={bar} className='hig-profile-bar' data-sticky={stickyHeader||undefined}>
    <span>{onShowAddress&&<IconButton intent='ghost' label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}</IconButton>}</span>
+   <h2 className="hig-screen-title">{messages.profile??en.profile}</h2>
    <span>{onClose&&<IconButton intent='ghost' label={messages.close??en.close} onClick={onClose}><SwapIcon name='close'/></IconButton>}</span>
   </div>
   <div className='hig-profile-identity'>

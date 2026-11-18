@@ -95,12 +95,10 @@ it('insets the inline alert action by the difference between the surface and cap
  const surface=root.root.findAllByType(RN.View).map(n=>RN.StyleSheet.flatten(n.props.style)).find(style=>style?.padding&&style?.borderRadius);
  expect(surface.borderRadius).toBe(surface.padding+22);
 });
-it('renders the Signals label above the heading with a radial gradient on the panel',()=>{
+it('shows the accent label and dialog title on a flat panel',()=>{
  mount({contentMode:'default',accentEyebrow:'Signals'});
  const labels=root.root.findAllByType(RN.Text).map(node=>node.props.children);
- expect(labels.indexOf('Signals')).toBeGreaterThanOrEqual(0);
- expect(labels.indexOf('Signals')).toBeLessThan(labels.indexOf('Approve account'));
- const style=root.root.findByType(RN.ScrollView).props.contentContainerStyle;
- const parse=require('react-native/Libraries/StyleSheet/processBackgroundImage').default;
- expect(parse(style.experimental_backgroundImage)[0]?.type).toBe('radial-gradient');
+ expect(labels).toContain('Approve account');
+ expect(labels).toContain('Signals');
+ expect(root.root.findByType(RN.ScrollView).props.contentContainerStyle.experimental_backgroundImage).toBeUndefined();
 });

@@ -1,7 +1,7 @@
 const React=require('react');
 const {create,act}=require('react-test-renderer');
-const {AppState}=require('react-native');
-const {Rect,Stop,Circle}=require('react-native-svg');
+const {AppState,Platform}=require('react-native');
+const {Rect,Stop,Circle,Path,Text:SvgText}=require('react-native-svg');
 const {nativeSrgb}=require('@bloxwap/hig/tokens');
 const {AltimeterChart}=require('../../packages/hig/native/src/chart');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
@@ -47,4 +47,69 @@ it('shows stale data and disconnects and reconnects the feed with the app lifecy
  act(()=>appChange('background'));expect(stop).toHaveBeenCalledTimes(1);
  act(()=>appChange('active'));expect(feed).toHaveBeenCalledTimes(2);
  act(()=>root.unmount());root=null;expect(stop).toHaveBeenCalledTimes(2);
+});
+
+it('parks while empty, wakes on a price and parks again when the price clears',()=>{
+ mount({price:null});
+ global.requestAnimationFrame.mockClear();frame(1000);
+ expect(global.requestAnimationFrame).not.toHaveBeenCalled();
+ act(()=>root.update(tree({price:123})));
+ expect(global.requestAnimationFrame).toHaveBeenCalledTimes(1);
+ frame(1200);
+ expect(chartView().props.accessibilityLabel).toMatch(/123/);
+ act(()=>root.update(tree({price:null})));
+ global.requestAnimationFrame.mockClear();frame(1300);
+ expect(chartView().props.accessibilityLabel).not.toMatch(/123/);
+ expect(global.requestAnimationFrame).not.toHaveBeenCalled();
+});
+
+it('samples a steady price on its heartbeat while accepting feed changes immediately',()=>{
+ jest.useFakeTimers({doNotFake:['requestAnimationFrame','cancelAnimationFrame']});
+ try{
+  let push;
+  mount({feed:next=>{push=next;return ()=>{};}});
+  act(()=>push(100));frame(1000);global.requestAnimationFrame.mockClear();
+  act(()=>jest.advanceTimersByTime(199));
+  expect(global.requestAnimationFrame).not.toHaveBeenCalled();
+  act(()=>jest.advanceTimersByTime(1));
+  expect(global.requestAnimationFrame).toHaveBeenCalledTimes(1);
+  frame(1200);global.requestAnimationFrame.mockClear();
+  act(()=>push(101));
+  expect(global.requestAnimationFrame).toHaveBeenCalledTimes(1);
+  frame(1240);
+  expect(chartView().props.accessibilityLabel).toMatch(/101/);
+ }finally{
+  if(root){act(()=>root.unmount());root=null;}
+  jest.useRealTimers();
+ }
+});
+
+it('reuses Android ladder text and sampled history between changing price frames',()=>{
+ jest.replaceProperty(Platform,'OS','android');
+ mount({price:100});
+ frame(1000);
+ const axes=()=>root.root.findAllByType(SvgText).filter(text=>text.props.fontSize===13);
+ const curve=()=>root.root.findAllByType(Path).find(path=>path.props.strokeWidth===2.5);
+ const axisRows=axes();
+ expect(axisRows.length).toBeGreaterThan(0);
+ act(()=>root.update(tree({price:100.03})));
+ frame(1100);
+ const history=curve(),commands=history.props.d;
+ frame(1150);
+ expect(axes()).toEqual(axisRows);
+ expect(curve()).toBe(history);
+ expect(curve().props.d).toBe(commands);
+ const labels=axes().map(text=>text.props.children);
+ frame(1500);
+ expect(axes()).toEqual(axisRows);
+ expect(axes().map(text=>text.props.children)).not.toEqual(labels);
+});
+
+it('keeps one continuous historical and live stroke on iOS',()=>{
+ jest.replaceProperty(Platform,'OS','ios');
+ mount({price:100});
+ frame(1000);
+ const strokes=root.root.findAllByType(Path).filter(path=>path.props.strokeWidth===2.5);
+ expect(strokes).toHaveLength(1);
+ expect(strokes[0].props.d).toMatch(/^M.*C.*h/);
 });

@@ -18,3 +18,4 @@ packages/hig/og-fonts/fonts/*.ttf
 
 .validation-tmp/
 *.log
+packages/hig/android/build/

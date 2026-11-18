@@ -2,7 +2,7 @@
 import {configurationCode} from './configuration-code.mjs';
 import React,{useCallback,useEffect,useMemo,useState,lazy,Suspense} from 'react';
 
-import {HIGProvider} from '@bloxwap/hig/react/provider';
+import {HIGProvider,useHIG} from '@bloxwap/hig/react/provider';
 import {Toaster,type ToastPosition} from '@bloxwap/hig/react/toast';
 import {Button} from '@bloxwap/hig/react/button';
 import {Select,SegmentedControl,Switch,Slider} from '@bloxwap/hig/react/selection';
@@ -42,10 +42,11 @@ function StateLinks({entry,state,onStateChange}:{entry:Entry;state:string;onStat
 }
 function ModalPreview({open,onOpenChange,title,children,trigger,contentProps,closeButton,titleHidden}:React.ComponentProps<typeof Dialog>){
  const [popup,setPopup]=useState(false);
- const toggleDialog=(next:boolean)=>{setPopup(next);onOpenChange(true);};
+ const {reducedMotion}=useHIG();
+ const toggleDialog=(next:boolean)=>{setPopup(next);onOpenChange(next);};
  const inlineClose=React.isValidElement<{onClick?:()=>void}>(closeButton)?React.cloneElement(closeButton,{onClick:()=>onOpenChange(false)}):null;
  return <>
-  {open&&!popup&&<div className={contentProps?.className} style={contentProps?.style}>{!titleHidden&&<h2 className='hig-dialog-title'>{title}</h2>}{children}{inlineClose}</div>}
+  {!popup&&<div inert={!open} data-state={open?'open':'closed'} data-modal-motion={reducedMotion?'reduced':'full'} className={contentProps?.className} style={contentProps?.style}>{!titleHidden&&<h2 className='hig-dialog-title'>{title}</h2>}{children}{inlineClose}</div>}
   <Dialog open={popup&&open} onOpenChange={toggleDialog} trigger={trigger} title={title} titleHidden={titleHidden} contentProps={contentProps} closeButton={closeButton}>{children}</Dialog>
  </>;
 }

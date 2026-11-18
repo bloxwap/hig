@@ -1,3 +1,4 @@
+import {useBlockHorizontalInset} from './sheet-header-glow.js';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {formatCountdown} from '@bloxwap/hig/contracts';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
@@ -123,6 +124,7 @@ const disc=44;
  * owns the data and the scrolling, unless `stickyHeader` makes the block its own scroll view.
  */
 export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId=null,view,defaultView='all',onViewChange,category,defaultCategory='',onCategoryChange,query,defaultQuery='',onQueryChange,categoryFilter,filterScrollComponent,loading,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,clearable,paused=false,now:clock=Date.now,emptyAction,autoFocusSearch,enterChoosesFirst,testID}:AssetsBlockProps){
+ const horizontalInset=useBlockHorizontalInset();
  const colors=useColors(),fills=useFills(),t=useMessages(),{direction,locale}=useHIG();
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  const [currentView,setView]=useHostState<AssetsView>(view,defaultView,onViewChange);
@@ -157,7 +159,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  const header=<ScreenHeader title={title??t.assets} testID={id('header')} headingId={headingId} action={onClose?<HeaderClose onClose={onClose} label={t.close} testID={id('close')}/>:undefined}/>;
  const body=<>
   <SearchInput testID={id('search')} accessibilityLabel={t.searchMarkets} placeholder={`${t.searchMarkets}…`} value={currentQuery} onChangeText={setQuery} onClear={clearable?()=>setQuery(''):undefined} autoFocus={autoFocusSearch} returnKeyType='search' onSubmitEditing={enterChoosesFirst?()=>{const first=currentQuery.trim()===''?undefined:sections.flatMap(section=>section.assets).find(asset=>!asset.disabled);if(first)onSelect(first);}:undefined} autoCapitalize='none' autoCorrect={false} spellCheck={false}/>
-  {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent} bleed={16}/>:null}
+  {showFilter?<Filter label={t.marketCategories} options={[{value:'',label:t.assetsAll},...categories.map(entry=>({value:entry.id,label:entry.label}))]} value={currentCategory} onValueChange={setCategory} scrollComponent={filterScrollComponent} bleed={8}/>:null}
   <SegmentedControl hideLabel testID={id('view')} label={t.assetsView} options={[{value:'all',label:t.assetsAll},{value:'positions',label:t.assetsPositions},{value:'trend',label:t.assetsTrend}]} value={currentView} onValueChange={next=>setView(next as AssetsView)}/>
   {sections.length===0?<View style={{gap:16,alignItems:'center'}}>
    <Text testID={id('empty')} accessibilityLiveRegion='polite' style={{alignSelf:'stretch',paddingVertical:32,textAlign:'center',fontSize:14,lineHeight:20,color:colors.muted}}>{empty}</Text>
@@ -176,8 +178,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
   </View>}
  </>;
  // The sticky layout puts the header and the body in separate views, so the body's first gap is its top padding.
- if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID={id('sticky-header')??'assets-sticky-header'} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>;
- return <View testID={testID} style={{direction,padding:16,gap:16}}>
+ if(stickyHeader)return <StickyHeaderLayout horizontalInset={horizontalInset} testID={testID} headerTestID={id('sticky-header')??'assets-sticky-header'} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>;
+ return <View testID={testID} style={{direction,paddingVertical:16,paddingHorizontal:horizontalInset,gap:16}}>
   {header}
   {body}
  </View>;

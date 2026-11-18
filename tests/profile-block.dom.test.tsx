@@ -65,7 +65,7 @@ describe('ProfileBlock',()=>{
 describe('ProfileBlock host slots',()=>{
  it('draws an optional full-width primary action under the name, and the name may be left out for it',async()=>{
   const login=vi.fn();const view=render(<ProfileBlock sections={[]} action={{label:'Log in',onSelect:login}}/>);
-  expect(screen.queryByRole('heading')).toBeNull();expect(document.querySelector('.hig-profile-name')).toBeNull();expect(document.querySelector('.hig-profile-artwork')!.textContent).toBe('');
+  expect(screen.getByRole('heading',{name:'Profile'})).toBeTruthy();expect(document.querySelector('.hig-profile-name')).toBeNull();expect(document.querySelector('.hig-profile-artwork')!.textContent).toBe('');
   const button=screen.getByRole('button',{name:'Log in'});expect(button.dataset.intent).toBe('primary');expect(button.dataset.full).toBe('true');expect(button.parentElement!.className).toBe('hig-profile-identity');
   await userEvent.click(button);expect(login).toHaveBeenCalledTimes(1);
   view.rerender(<ProfileBlock name='Joe' sections={[]} action={{label:'Log in',onSelect:login,intent:'secondary',disabled:true}}/>);

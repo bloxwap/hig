@@ -1,3 +1,5 @@
+import {BackdropBlur} from './backdrop-blur.js';
+import {GestureSheetHeaderContext,SheetHeaderGlow,sheetGripStyle,sheetHandlePadding} from './sheet-header-glow.js';
 import {validateSnapPoints} from './gesture-sheet-model.js';
 import React,{createContext,useCallback,useContext,useEffect,useId,useMemo,useRef,useState} from 'react';
 import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
@@ -98,7 +100,7 @@ export const GestureSheetScrollView=React.forwardRef<React.ComponentRef<typeof R
  useEffect(()=>{scrollers.value+=1;return()=>{scrollers.value-=1;scrollY.value=0;};},[scrollers,scrollY]);
  const onScroll=useAnimatedScrollHandler(event=>{'worklet';scrollY.value=event.contentOffset.y;});
  const animatedProps=useAnimatedProps(()=>{'worklet';return {scrollEnabled:atTop.value};});
- return <GestureDetector gesture={native}><Reanimated.ScrollView keyboardShouldPersistTaps='handled' {...props} ref={ref} bounces={false} overScrollMode='never' scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
+ return <GestureDetector gesture={native}><Reanimated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' {...props} ref={ref} bounces={false} overScrollMode='never' scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
 });
 
 const RESIZE={duration:SHEET_RESIZE.duration,easing:Easing.bezier(...SHEET_RESIZE.curve)};
@@ -106,7 +108,7 @@ const focusOn=(node:FocusTarget)=>{if(!node)return;try{const handle=findNodeHand
 const OFFSCREEN=100000;
 
 /** The sheet itself. It lives in the host's layer (modal) or in place (inline), so a parent re-render reaches it only through the props below. */
-function Surface({open,onOpenChange,title,description,children,contentMode='default',titleRef,returnFocusRef,labelledBy,closeLabel,dismissible=true,presentation='modal',onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,handle=true,backgroundStyle,raised=true,backdropOpacity=1,testID,snapPoints,initialIndex=0,enableDynamicSizing=false,maxDynamicContentSize,onClosed,hostHeight}:GestureSheetProps&{onClosed:()=>void;hostHeight?:number}){
+function Surface({open,onOpenChange,title,description,children,contentMode='default',titleRef,returnFocusRef,labelledBy,closeLabel,dismissible=true,presentation='modal',onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,handle=true,backgroundStyle,raised=true,backdropOpacity=1,testID,snapPoints,initialIndex=0,enableDynamicSizing=false,maxDynamicContentSize,onClosed,hostHeight,backdropVisible}:GestureSheetProps&{backdropVisible:boolean;onClosed:()=>void;hostHeight?:number}){
  const env=useHIG(),colors=useColors(),insets=useSafeAreaInsets();
  const top=topInset??insets.top,bottom=bottomInset??insets.bottom;
  const id=(part:string)=>testID===undefined?undefined:part?`${testID}-${part}`:testID;
@@ -216,14 +218,15 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  const content=contentMode==='custom'
   ?<View {...accessibility} testID={id('content')} collapsable={false} style={[enableDynamicSizing?styles.shrink:styles.grow,{direction:env.direction}]}>{hiddenTitle}{children}</View>
   :<GestureSheetScrollView {...accessibility} testID={id('content')} style={enableDynamicSizing?styles.shrink:styles.grow} contentContainerStyle={{paddingVertical:tokens.space.xl,paddingHorizontal:8,paddingBottom:tokens.space.xl+bottom,direction:env.direction}}><Stack><Heading ref={heading}>{title}</Heading>{description?<Text>{description}</Text>:null}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></GestureSheetScrollView>;
- const lifted=raised?<Raised>{content}</Raised>:content;
+ const lifted=<GestureSheetHeaderContext.Provider value={contentMode}>{raised?<Raised>{content}</Raised>:content}</GestureSheetHeaderContext.Provider>;
  return <View testID={id('')} pointerEvents={open?'box-none':'none'} style={StyleSheet.absoluteFill} onLayout={onRoom}>
-  {backdropOpacity>0?<Reanimated.View testID={id('backdrop')} pointerEvents={open?'auto':'none'} style={[StyleSheet.absoluteFill,styles.backdrop,backdropStyle]}><Pressable accessible={false} importantForAccessibility='no' style={styles.fill} onPress={dismissible?requestClose:undefined}/></Reanimated.View>:null}
+  {backdropOpacity>0?<Reanimated.View testID={id('backdrop')} pointerEvents={open?'auto':'none'} style={[StyleSheet.absoluteFill,backdropStyle]}>{backdropVisible&&<BackdropBlur/>}<Pressable accessible={false} importantForAccessibility='no' style={[styles.fill,styles.backdrop]} onPress={dismissible?requestClose:undefined}/></Reanimated.View>:null}
   <GestureDetector gesture={pan}>
-   <Reanimated.View testID={id('surface')} renderToHardwareTextureAndroid style={[styles.surface,{top,backgroundColor:colors.overlay,borderTopLeftRadius:tokens.radius.xl,borderTopRightRadius:tokens.radius.xl},backgroundStyle,surfaceStyle]}>
+   <Reanimated.View testID={id('surface')} renderToHardwareTextureAndroid style={[styles.surface,{top,backgroundColor:colors.overlay,borderTopLeftRadius:48,borderTopRightRadius:48},backgroundStyle,surfaceStyle]}>
+    <SheetHeaderGlow height={96}/>
     {room>0?<ScrollContext.Provider value={scroll}>
      <View onLayout={onContent} style={[enableDynamicSizing?{maxHeight:limit}:{height:limit},contentMode==='custom'?{paddingBottom:bottom}:null]}>
-      {handle?<View testID={id('handle')} accessible={false} importantForAccessibility='no' style={styles.handle}><View style={[styles.grip,{backgroundColor:colors.action}]}/></View>:null}
+      {handle?<View testID={id('handle')} accessible={false} importantForAccessibility='no' style={styles.handle}><View style={sheetGripStyle(colors.action)}/></View>:null}
       {lifted}
      </View>
     </ScrollContext.Provider>:null}
@@ -247,7 +250,7 @@ export const GestureSheet=React.memo(function GestureSheet(props:GestureSheetPro
  const [mounted,setMounted]=useState(props.open);
  if(props.open&&!mounted)setMounted(true);
  const onClosed=useCallback(()=>setMounted(false),[]);
- const surface=<Surface {...props} hostHeight={inline?undefined:host.height.current} onClosed={onClosed}/>;
+ const surface=<Surface {...props} backdropVisible={mounted||props.open} hostHeight={inline?undefined:host.height.current} onClosed={onClosed}/>;
  useEffect(()=>{if(inline||!host)return;if(mounted)host.show(key,surface);else host.hide(key);});
  useEffect(()=>()=>{if(host)host.hide(key);},[host,key]);
  if(!inline)return null;
@@ -258,8 +261,7 @@ const styles=StyleSheet.create({
  fill:{flex:1},
  backdrop:{backgroundColor:'#000b'},
  surface:{position:'absolute',left:0,right:0,bottom:0,overflow:'hidden'},
- handle:{alignItems:'center',paddingTop:12,paddingBottom:8},
- grip:{width:36,height:5,borderRadius:3},
+ handle:{alignItems:'center',...sheetHandlePadding},
  grow:{flex:1,minHeight:0},
  shrink:{flexShrink:1,minHeight:0},
  hidden:{position:'absolute',width:1,height:1,overflow:'hidden'},

@@ -58,7 +58,8 @@ const reading=()=>{const children=root.root.findAllByType(RNText).find(node=>nod
 describe.each([['NumberFlow',NumberFlow],['AnimatedNumberReadout, sliding',AnimatedNumberReadout]])('%s under load on native',(name,Component)=>{
  const flowing=Component===NumberFlow;
  it('commits once for a change, and not at all while the roll runs',()=>{
-  expect(cost(()=>mount(figure(Component,{value:1234.56})))).toMatchObject({commits:1});
+  // A layout effect assigns the single measuring readout after React commits it.
+  expect(cost(()=>mount(figure(Component,{value:1234.56})))).toMatchObject({commits:2});
   // The ten digits are measured once; the reels are drawn in the commit that follows.
   expect(cost(()=>measure())).toMatchObject({commits:1});
   expect(cost(()=>update(figure(Component,{value:1234.57})))).toMatchObject({commits:1});
@@ -67,13 +68,13 @@ describe.each([['NumberFlow',NumberFlow],['AnimatedNumberReadout, sliding',Anima
   expect(cost(()=>{for(let frame=0;frame<60;frame++)act(()=>advance(16));})).toEqual({commits:0,texts:0,formatters:0});
   expect(turning.every(value=>!value.animating)).toBe(true);
  });
- it('draws one text again for a new value: the reading, and no glyph of any reel',()=>{
+ it('draws the glyph strip once on its first turn and only the reading on later turns',()=>{
   mount(figure(Component,{value:1234.56}));measure();
-  // The first turn of a flowing place mounts its strip of eleven glyphs; a sliding place has had its twenty since it was measured.
-  expect(cost(()=>update(figure(Component,{value:1234.57}))).texts).toBe(flowing?12:1);
+  // The first turn of a flowing place mounts its strip of eleven glyphs; a sliding place mounts its twenty.
+  expect(cost(()=>update(figure(Component,{value:1234.57}))).texts).toBe(flowing?12:21);
   // It was 25 texts for a flowing figure and 134 for a sliding one: every probe, separator and glyph row, changed or not.
   expect(cost(()=>update(figure(Component,{value:1234.58}))).texts).toBe(1);
-  expect(cost(()=>update(figure(Component,{value:1299.58}))).texts).toBe(flowing?23:1);
+  expect(cost(()=>update(figure(Component,{value:1299.58}))).texts).toBe(flowing?23:41);
   expect(cost(()=>update(figure(Component,{value:1211.58}))).texts).toBe(1);
   expect(reading()).toBe('$1,211.58');
  });

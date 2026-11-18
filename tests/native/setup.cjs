@@ -22,6 +22,7 @@ jest.mock('react-native-reanimated',()=>{
    return ref.current;
   },
   useAnimatedStyle:updater=>updater(),
+  useFrameCallback:()=>React.useRef({setActive:jest.fn()}).current,
   Easing:{cubic:value=>value,out:easing=>easing,bezier:(...points)=>({bezier:points})},
   ReduceMotion:{Never:'never',System:'system',Always:'always'},
  };

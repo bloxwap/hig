@@ -99,12 +99,25 @@ it('retargets from the current reel position, snaps for reduced motion, and canc
  const cancellations=state.cancel.mock.calls.length;act(()=>root.unmount());root=null;expect(state.cancel.mock.calls.length).toBeGreaterThan(cancellations);
 });
 
+it('starts the first slide from the latest digit after stationary updates',()=>{
+ mount(example({value:1},{reducedMotion:true}));measure();
+ update(example({value:2},{reducedMotion:true}));
+ update(example({value:3,duration:0},{reducedMotion:false}));
+ const state=global.__numberReanimated;
+ expect(state.values).toHaveLength(0);
+ update(example({value:4},{reducedMotion:false}));
+ expect(state.animations).toHaveLength(1);
+ expect(state.animations[0].value.value).toBe(3);
+ expect(state.animations[0].toValue).toBe(4);
+});
+
 it('wraps a downward reel inside two glyph cycles',()=>{
  jest.spyOn(PixelRatio,'getFontScale').mockReturnValue(1);
  mount(example({value:10,trend:-1},{reducedMotion:false}));measure();const state=global.__numberReanimated;
  const reelRows=()=>root.root.findAllByType(RNText).filter(node=>{const style=StyleSheet.flatten(node.props.style);return style?.textAlign==='center'&&style?.height===56;});
- expect(reelRows()).toHaveLength(40);
+ expect(reelRows()).toHaveLength(2);
  update(example({value:9,trend:-1},{reducedMotion:false}));
+ expect(reelRows()).toHaveLength(20);
  const down=state.animations.find(animation=>animation.toValue===9);
  expect(down).toBeTruthy();expect(down.value.value).toBe(10);
 });

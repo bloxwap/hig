@@ -1,6 +1,6 @@
 "use client";
 import React,{useEffect,useLayoutEffect,useMemo,useRef,useState} from 'react';
-import {historyPath,trailFade,visibleFrames} from './chart-renderer.js';
+import {appendLiveTail,beginTrail,historyPath,visibleFrames} from './chart-renderer.js';
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
@@ -60,13 +60,12 @@ export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;he
  for(const trail of frame.trails){
   const history=historyPath(ctx,trail.ticks,frame.now,PAD,trailEnd,yFor,0,height,frame.scale?.low,frame.scale?.high);
   if(!history)continue;
-  const {last,path,sink}=history,tip=yFor(trail.value);
-  ctx.strokeStyle=trailFade(ctx,trail.ticks,PAD,trailEnd,trail.color);
-  const dx=trailEnd-last[0];
-  if(dx>0)sink.bezierCurveTo(last[0]+dx/3,last[1],trailEnd-dx/3,tip,trailEnd,tip);else sink.lineTo(trailEnd,tip);
+  const end=trailEnd-history.dx,tip=yFor(trail.value)-history.dy;
+  beginTrail(ctx,history,trail.ticks,PAD,trailEnd,trail.color);
+  appendLiveTail(ctx,history.last,end,tip);
   // From the live chance to the capsule, which may sit off the line to clear its neighbors.
-  sink.bezierCurveTo(trailEnd+CONNECTOR/2,tip,trailEnd+CONNECTOR/2,trail.capsule,trailEnd+CONNECTOR,trail.capsule);
-  if(path)ctx.stroke(path);else ctx.stroke();
+  ctx.bezierCurveTo(end+CONNECTOR/2,tip,end+CONNECTOR/2,trail.capsule-history.dy,end+CONNECTOR,trail.capsule-history.dy);
+  ctx.stroke();if(history.cached)ctx.restore();
  }
 }
 

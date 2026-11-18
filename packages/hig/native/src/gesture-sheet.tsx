@@ -1,7 +1,9 @@
+import {BackdropBlur} from './backdrop-blur.js';
+import {GestureSheetHeaderContext,SheetHeaderGlow,sheetGripStyle,sheetHandlePadding} from './sheet-header-glow.js';
 import {validateSnapPoints} from './gesture-sheet-model.js';
 import React,{useEffect,useRef,useCallback,useImperativeHandle,useMemo} from 'react';
-import {AccessibilityInfo,BackHandler,findNodeHandle,Platform,Text as RNText,TextInput,View} from 'react-native';
-import BottomSheet,{BottomSheetModal,BottomSheetScrollView,BottomSheetBackdrop,BottomSheetView,type BottomSheetBackdropProps,type BottomSheetModalProps} from '@gorhom/bottom-sheet';
+import {AccessibilityInfo,BackHandler,findNodeHandle,Platform,StyleSheet,Text as RNText,TextInput,View} from 'react-native';
+import BottomSheet,{BottomSheetModal,BottomSheetScrollView,BottomSheetBackdrop,BottomSheetView,type BottomSheetBackgroundProps,type BottomSheetBackdropProps,type BottomSheetModalProps} from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {ReduceMotion} from 'react-native-reanimated';
 import {nativeMetrics as tokens} from '@bloxwap/hig/tokens';
@@ -9,6 +11,10 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {Raised,useColors,useHIG} from './provider.js';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';
+
+function SheetBackground({style,pointerEvents}:BottomSheetBackgroundProps){
+ return <View pointerEvents={pointerEvents} style={style}><View style={{flex:1,borderRadius:tokens.radius.xl,borderTopLeftRadius:48,borderTopRightRadius:48,overflow:'hidden'}}><SheetHeaderGlow height={96}/></View></View>;
+}
 
 interface GestureSheetCommonProps {
  open:boolean;
@@ -109,7 +115,8 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  },[open,detentKey,enableDynamicSizing,presentation]);
  useEffect(()=>{if(!open)return;const subscription=BackHandler.addEventListener('hardwareBackPress',()=>{if(latest.current.onHardwareBackPress)return latest.current.onHardwareBackPress();if(dismissible)requestClose();return true;});return()=>subscription.remove();},[open,dismissible,requestClose]);
  useEffect(()=>()=>{if(frame.current!==null)cancelAnimationFrame(frame.current);if(requestFrame.current!==null)cancelAnimationFrame(requestFrame.current);if(detentFrame.current!==null)cancelAnimationFrame(detentFrame.current);},[]);
- const backdrop=useCallback((props:BottomSheetBackdropProps)=><BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} pressBehavior={dismissible?'close':'none'}/>,[dismissible]);
+ const showBlur=presentation==='modal'||open;
+ const backdrop=useCallback((props:BottomSheetBackdropProps)=><BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} opacity={1} pressBehavior={dismissible?'close':'none'} style={{backgroundColor:'transparent'}}>{showBlur&&<BackdropBlur/>}<View pointerEvents='none' style={[StyleSheet.absoluteFill,{backgroundColor:'rgba(0,0,0,0.5)'}]}/></BottomSheetBackdrop>,[dismissible,showBlur]);
  // BottomSheetView reports intrinsic layout to Gorhom's dynamic sizing. Fixed custom content
  // keeps a plain View so it does not replace the caller's nested scrollable registration.
  const CustomContent=enableDynamicSizing?BottomSheetView:View;
@@ -122,15 +129,15 @@ export function GestureSheet({open,onOpenChange,title,description,children,conte
  },[focus,presentation,requestClose]);
  const inlineAccessibility=presentation==='inline'?{accessibilityElementsHidden:!open,importantForAccessibility:open?'auto' as const:'no-hide-descendants' as const,pointerEvents:open?'auto' as const:'none' as const}:{};
  const contentAccessibility={...inlineAccessibility,...(presentation==='modal'&&{accessibilityViewIsModal:true,onAccessibilityEscape:requestClose}),...(labelledBy?{accessibilityLabelledBy:labelledBy}:{})};
- const content=contentMode==='custom'?<CustomContent {...contentAccessibility} accessible={false} collapsable={false} style={{...(!enableDynamicSizing&&{flex:1,flexShrink:1,minHeight:0}),direction:env.direction}}>{!titleRef&&<Heading ref={heading} accessible accessibilityLabel={title} style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{title}</Heading>}{children}</CustomContent>:<BottomSheetScrollView {...contentAccessibility} accessible={false} keyboardShouldPersistTaps='handled' contentContainerStyle={{paddingVertical:tokens.space.xl,paddingHorizontal:8,paddingBottom:tokens.space.xl+(bottomInset??insets.bottom)}}><Stack><Heading ref={heading}>{title}</Heading>{description&&<Text>{description}</Text>}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></BottomSheetScrollView>;
+ const content=contentMode==='custom'?<CustomContent {...contentAccessibility} accessible={false} collapsable={false} style={{...(!enableDynamicSizing&&{flex:1,flexShrink:1,minHeight:0}),direction:env.direction}}>{!titleRef&&<Heading ref={heading} accessible accessibilityLabel={title} style={{position:'absolute',width:1,height:1,overflow:'hidden'}}>{title}</Heading>}{children}</CustomContent>:<BottomSheetScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} {...contentAccessibility} accessible={false} keyboardShouldPersistTaps='handled' contentContainerStyle={{paddingVertical:tokens.space.xl,paddingHorizontal:8,paddingBottom:tokens.space.xl+(bottomInset??insets.bottom)}}><Stack><Heading ref={heading}>{title}</Heading>{description&&<Text>{description}</Text>}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></BottomSheetScrollView>;
  // Expose individual children instead of grouping the sheet as one adjustable element. Gorhom forwards only
  // basic accessibility props, so modal escape and VoiceOver scope belong on its measured or scrolling content.
  // Inline content keeps its native state while closed, with all descendants hidden from accessibility.
  // No stroke: the sheet is the `overlay` fill, darker than a card, lifted by a soft shadow.
- const sheetFill=useMemo(()=>({backgroundColor:colors.overlay,borderRadius:tokens.radius.xl,boxShadow:'0 -8px 32px #0008'}),[colors.overlay]);
+ const sheetFill=useMemo(()=>({backgroundColor:colors.overlay,borderRadius:tokens.radius.xl,...(!backgroundStyle&&{borderTopLeftRadius:48,borderTopRightRadius:48}),boxShadow:'0 -8px 32px #0008'}),[colors.overlay,backgroundStyle]);
  const sheetBackground=useMemo(()=>backgroundStyle?[sheetFill,backgroundStyle]:sheetFill,[sheetFill,backgroundStyle]);
- const sheetIndicator=useMemo(()=>{const fill={backgroundColor:colors.action};return handleIndicatorStyle?[fill,handleIndicatorStyle]:fill;},[colors.action,handleIndicatorStyle]);
- const backendProps={style:{marginLeft:8+insets.left,marginRight:8+insets.right},accessible:false,accessibilityLabel:title,index:presentation==='inline'&&!open?-1:presented.current?Math.max(0,Math.min(activeIndex.current,detentCount-1)):startingIndex,snapPoints:enableDynamicSizing?undefined:backendSnapPoints,enableDynamicSizing,maxDynamicContentSize:enableDynamicSizing?maxDynamicContentSize:undefined,enableContentPanningGesture,enablePanDownToClose:dismissible,topInset:topInset??insets.top,bottomInset:bottomInset??insets.bottom,keyboardBehavior,keyboardBlurBehavior,android_keyboardInputMode,overrideReduceMotion:env.reducedMotion?ReduceMotion.Always:ReduceMotion.System,animateOnMount,animationConfigs,backdropComponent:backdropComponent===undefined?backdrop:backdropComponent,handleComponent,handleStyle,backgroundComponent,containerStyle,backgroundStyle:sheetBackground,handleIndicatorStyle:sheetIndicator,onChange:handleChange};
- const lifted=raised?<Raised>{content}</Raised>:content;
+ const sheetIndicator=useMemo(()=>{const fill=sheetGripStyle(colors.action);return handleIndicatorStyle?[fill,handleIndicatorStyle]:fill;},[colors.action,handleIndicatorStyle]);
+ const backendProps={style:{marginLeft:8+insets.left,marginRight:8+insets.right},accessible:false,accessibilityLabel:title,index:presentation==='inline'&&!open?-1:presented.current?Math.max(0,Math.min(activeIndex.current,detentCount-1)):startingIndex,snapPoints:enableDynamicSizing?undefined:backendSnapPoints,enableDynamicSizing,maxDynamicContentSize:enableDynamicSizing?maxDynamicContentSize:undefined,enableContentPanningGesture,enablePanDownToClose:dismissible,topInset:topInset??insets.top,bottomInset:bottomInset??insets.bottom,keyboardBehavior,keyboardBlurBehavior,android_keyboardInputMode,overrideReduceMotion:env.reducedMotion?ReduceMotion.Always:ReduceMotion.System,animateOnMount,animationConfigs,backdropComponent:backdropComponent===undefined?backdrop:backdropComponent,handleComponent,handleStyle:handleStyle??(handleComponent===undefined?sheetHandlePadding:undefined),backgroundComponent:backgroundComponent===undefined?SheetBackground:backgroundComponent,containerStyle,backgroundStyle:sheetBackground,handleIndicatorStyle:sheetIndicator,onChange:handleChange};
+ const lifted=<GestureSheetHeaderContext.Provider value={contentMode}>{raised?<Raised>{content}</Raised>:content}</GestureSheetHeaderContext.Provider>;
  return presentation==='inline'?<BottomSheet {...backendProps} ref={inline} accessibilityElementsHidden={!open} importantForAccessibility={open?'auto':'no-hide-descendants'} onClose={handleSettledClose}>{lifted}</BottomSheet>:<BottomSheetModal {...backendProps} ref={sheet} enableDismissOnClose stackBehavior='push' onDismiss={handleSettledClose}>{lifted}</BottomSheetModal>;
 }

@@ -404,7 +404,7 @@
       },
       "RewardPromo": {
         "entry": "blocks/reward-block",
-        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: RewardLink;\n    /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */\n    amount?: number | null | string;\n    /** Host content drawn in the headline figure's place and type, in place of `amount`, such as the host's own live figure. */\n    figure?: React.ReactNode;\n    /** Format of a number `amount` and of `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption (full only against a number `amount`). */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. Any other node is drawn as given, such as a live countdown. */\n    caption?: React.ReactNode | ((goal: string) => React.ReactNode);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host elements for an accented word. */\n    headline?: React.ReactNode;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A quiet row under a hairline at the foot of the card, with a chevron on its trailing edge: Draws and winners. The host opens its own destination. */\n    action?: RewardLink;\n}"
+        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** Viewer streak and its earned reward. The host supplies the current points or multiplier. */\n    streak?: {\n        label: string;\n        count: Figure;\n        rewardLabel: string;\n        reward: Figure;\n    };\n    /** Prize drawing deadline in epoch milliseconds, with host text for the running and finished states. */\n    drawing?: {\n        at: number;\n        label: string;\n        endedLabel: string;\n    };\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: RewardLink;\n    /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */\n    amount?: number | null | string;\n    /** Host content drawn in the headline figure's place and type, in place of `amount`, such as the host's own live figure. */\n    figure?: React.ReactNode;\n    /** Format of a number `amount` and of `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption (full only against a number `amount`). */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given: top prize. Any other node is drawn as given, such as a live countdown. */\n    caption?: React.ReactNode | ((goal: string) => React.ReactNode);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host elements for an accented word. */\n    headline?: React.ReactNode;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A quiet row under a hairline at the foot of the card, with a chevron on its trailing edge: Draws and winners. The host opens its own destination. */\n    action?: RewardLink;\n}"
       },
       "RewardEntry": {
         "entry": "blocks/reward-block",
@@ -1818,7 +1818,7 @@
       },
       "RewardPromo": {
         "entry": "reward-block",
-        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */\n    amount?: number | null | string;\n    /** Host content drawn in the headline figure's place (`<testID>-figure`), in place of `amount`, such as the host's own live figure. It is drawn as given and reads itself. */\n    figure?: React.ReactNode;\n    /** Format of a number `amount` and of `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption (full only against a number `amount`). */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given and read with the figure: top prize. Any other node, such as a live countdown, is drawn as given after the figure and reads itself. */\n    caption?: React.ReactNode | ((goal: string) => React.ReactNode);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host Text elements for an accented word. */\n    headline?: React.ReactNode;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A full-width action under the description: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
+        "signature": "export interface RewardPromo {\n    /** The small capitals line: Season 01. */\n    eyebrow: string;\n    /** Viewer streak and its earned reward. The host supplies the current points or multiplier. */\n    streak?: {\n        label: string;\n        count: Figure;\n        rewardLabel: string;\n        reward: Figure;\n    };\n    /** Prize drawing deadline in epoch milliseconds, with host text for the running and finished states. */\n    drawing?: {\n        at: number;\n        label: string;\n        endedLabel: string;\n    };\n    /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */\n    rules?: {\n        label: string;\n        onSelect: () => void;\n    };\n    /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */\n    amount?: number | null | string;\n    /** Host content drawn in the headline figure's place (`<testID>-figure`), in place of `amount`, such as the host's own live figure. It is drawn as given and reads itself. */\n    figure?: React.ReactNode;\n    /** Format of a number `amount` and of `goal`. Defaults to whole US dollars. */\n    amountOptions?: Intl.NumberFormatOptions;\n    /** The amount the pool is filling towards. Draws the progress bar under the caption (full only against a number `amount`). */\n    goal?: number;\n    /** The line under the figure. A function receives the formatted goal: `goal => 'of ' + goal + ' prize pool'`. A string is drawn as given and read with the figure: top prize. Any other node, such as a live countdown, is drawn as given after the figure and reads itself. */\n    caption?: React.ReactNode | ((goal: string) => React.ReactNode);\n    /** The lead of the explaining sentence, in the text colour: Top 100 traders split the pool. Host text, or host Text elements for an accented word. */\n    headline?: React.ReactNode;\n    /** Continues the sentence after the headline in the muted colour: Funded by builder fees on every trade. */\n    description?: string;\n    /** A full-width action under the description: Draws and winners. The host opens its own destination. */\n    action?: {\n        label: string;\n        onSelect: () => void;\n    };\n}"
       },
       "RewardEntry": {
         "entry": "reward-block",
@@ -2182,11 +2182,11 @@
       },
       "ListProps": {
         "entry": "data",
-        "signature": "export interface ListProps<T> {\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n    label?: string;\n    loading?: boolean;\n    error?: string;\n    onRetry?: () => void;\n    onLoadMore?: () => void;\n}"
+        "signature": "export interface ListProps<T> {\n    contentContainerStyle?: StyleProp<ViewStyle>;\n    items: readonly T[];\n    keyFor: (item: T) => string;\n    render: (item: T) => React.ReactNode;\n    empty?: string;\n    label?: string;\n    loading?: boolean;\n    error?: string;\n    onRetry?: () => void;\n    onLoadMore?: () => void;\n}"
       },
       "List": {
         "entry": "data",
-        "signature": "export declare function List<T>({ items, keyFor, render, empty, label, loading, error, onRetry, onLoadMore }: ListProps<T>): React.JSX.Element;"
+        "signature": "export declare function List<T>({ contentContainerStyle, items, keyFor, render, empty, label, loading, error, onRetry, onLoadMore }: ListProps<T>): React.JSX.Element;"
       },
       "AddressKind": {
         "entry": "data",
@@ -2318,7 +2318,7 @@
       },
       "DialogProps": {
         "entry": "overlay",
-        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    returnFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    /** Layout inside the modal safe area, or on the custom stage. */ stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Align the standard modal surface with its inset 44dp capsule controls. Defaults to true. */\n    concentric?: boolean;\n    /** Accent label above the standard title, with a matching radial glow across the panel. */ accentEyebrow?: string;\n    /** Size and placement of the standard scrollable dialog inside the safe area. */ frameStyle?: StyleProp<ViewStyle>;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
+        "signature": "export interface DialogProps {\n    open: boolean;\n    onOpenChange: (open: boolean) => void;\n    title: string;\n    description?: string;\n    children: React.ReactNode;\n    initialFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    returnFocusRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Close button text and accessible name; defaults to HIGProvider `messages.close`. */ closeLabel?: string;\n    /** Custom content owns its visible heading, actions, padding and scrolling. The native Modal remains HIG-owned. */ contentMode?: 'default' | 'custom';\n    /** Accessible caller heading used when custom content renders the title. Otherwise HIG keeps a visually hidden title. */ titleRef?: React.RefObject<React.ComponentRef<typeof View> | React.ComponentRef<typeof RNText> | React.ComponentRef<typeof TextInput> | null>;\n    /** Custom-mode stage inside the Modal, for example GestureHandlerRootView on Android. */ stageComponent?: React.ComponentType<ViewProps>;\n    /** Layout inside the modal safe area, or on the custom stage. */ stageStyle?: StyleProp<ViewStyle>;\n    stageTestID?: string;\n    /** Custom-mode backdrop, including the host's dismissal policy and decoration. */ backdrop?: React.ReactNode;\n    /** Align the standard modal surface with its inset 44dp capsule controls. Defaults to true. */\n    concentric?: boolean;\n    /** Accent label above the standard title. */ accentEyebrow?: string;\n    /** Size and placement of the standard scrollable dialog inside the safe area. */ frameStyle?: StyleProp<ViewStyle>;\n    /** Custom-mode surface layout; no implicit padding or scroll view is added. */ contentStyle?: StyleProp<ViewStyle>;\n    /** Identifies the actual modal content surface in either mode. */ testID?: string;\n    /** Native Modal animation. Reduced motion always selects `none`; the default stays `none`. */ animationType?: ModalProps['animationType'];\n}"
       },
       "Dialog": {
         "entry": "overlay",
@@ -2816,6 +2816,10 @@
         "entry": "avatar-frame",
         "signature": "export declare function AvatarFrame({ name, source, size, square, decorative, face }: AvatarFrameProps & {\n    face?: React.ReactNode;\n}): React.JSX.Element;"
       },
+      "BackdropBlur": {
+        "entry": "backdrop-blur",
+        "signature": "export declare function BackdropBlur(): React.JSX.Element | null;"
+      },
       "Figure": {
         "entry": "figure",
         "signature": "export interface Figure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n    formattedValue?: string;\n}"
@@ -2940,17 +2944,37 @@
         "entry": "setting-switch",
         "signature": "export declare function SettingCard({ children, joined, testID }: React.PropsWithChildren<{\n    joined?: boolean;\n    testID?: string;\n}>): React.JSX.Element;"
       },
+      "GestureSheetHeaderContext": {
+        "entry": "sheet-header-glow",
+        "signature": "export declare const GestureSheetHeaderContext: React.Context<\"custom\" | \"default\" | false>;"
+      },
+      "useBlockHorizontalInset": {
+        "entry": "sheet-header-glow",
+        "signature": "export declare function useBlockHorizontalInset(): 0 | 8;"
+      },
+      "sheetHandlePadding": {
+        "entry": "sheet-header-glow",
+        "signature": "export declare const sheetHandlePadding: {\n    paddingTop: number;\n    paddingBottom: number;\n};"
+      },
+      "sheetGripStyle": {
+        "entry": "sheet-header-glow",
+        "signature": "export declare function sheetGripStyle(accent: string): {\n    width: number;\n    height: number;\n    borderRadius: number;\n    backgroundColor: string;\n    boxShadow: {\n        offsetX: number;\n        offsetY: number;\n        blurRadius: number;\n        color: string;\n    }[];\n};"
+      },
+      "SheetHeaderGlow": {
+        "entry": "sheet-header-glow",
+        "signature": "export declare function SheetHeaderGlow({ height, backdrop }: {\n    height?: number;\n    backdrop?: string;\n}): React.JSX.Element;"
+      },
       "stickyHeaderFill": {
         "entry": "sticky-header",
         "signature": "export declare function stickyHeaderFill(scrolled: boolean, background: string): ViewStyle;"
       },
       "StickyHeaderLayoutProps": {
         "entry": "sticky-header",
-        "signature": "export interface StickyHeaderLayoutProps {\n    /** The header, pinned as the scroll view's first child. */\n    header: React.ReactNode;\n    children: React.ReactNode;\n    /** Fill once content scrolls under the header. Defaults to the background role. */\n    background?: string;\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    testID?: string;\n    /** Test ID of the header's container. */\n    headerTestID?: string;\n    /** Layout of the content under the header, such as its gap. Side padding is 16dp. */\n    bodyStyle?: StyleProp<ViewStyle>;\n}"
+        "signature": "export interface StickyHeaderLayoutProps {\n    /** The header, pinned as the scroll view's first child. */\n    header: React.ReactNode;\n    children: React.ReactNode;\n    /** Fill once content scrolls under the header. Defaults to the background role. */\n    background?: string;\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    testID?: string;\n    /** Test ID of the header's container. */\n    headerTestID?: string;\n    /** Layout of the content under the header, such as its gap. Side padding follows horizontalInset. */\n    horizontalInset?: number;\n    bodyStyle?: StyleProp<ViewStyle>;\n}"
       },
       "StickyHeaderLayout": {
         "entry": "sticky-header",
-        "signature": "export declare function StickyHeaderLayout({ header, children, background, scrollComponent: Scroll, testID, headerTestID, bodyStyle }: StickyHeaderLayoutProps): React.JSX.Element;"
+        "signature": "export declare function StickyHeaderLayout({ header, children, background, scrollComponent: Scroll, testID, headerTestID, horizontalInset, bodyStyle }: StickyHeaderLayoutProps): React.JSX.Element;"
       },
       "swapParentView": {
         "entry": "swap-block",
@@ -3264,11 +3288,23 @@
       },
       "trailFade": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function trailFade(ctx: CanvasRenderingContext2D, ticks: readonly AltimeterTick[], start: number, end: number, color: string): CanvasGradient;"
+        "signature": "export declare function trailFade(ctx: CanvasRenderingContext2D, ticks: readonly AltimeterTick[], start: number, end: number, color: string, scroll?: number): CanvasGradient;"
       },
       "historyPath": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function historyPath(ctx: CanvasRenderingContext2D, ticks: readonly AltimeterTick[], now: number, start: number, end: number, yFor: (p: number) => number, origin: number, scale: number, low?: number, high?: number): {\n    sink: CanvasRenderingContext2D;\n    last: import(\"./altimeter-model.js\").AltimeterPoint;\n    first: number;\n    path?: undefined;\n} | {\n    path: Path2D;\n    sink: Path2D;\n    last: number[];\n    first: number;\n} | undefined;"
+        "signature": "export declare function historyPath(ctx: CanvasRenderingContext2D, ticks: readonly AltimeterTick[], now: number, start: number, end: number, yFor: (p: number) => number, origin: number, scale: number, low?: number, high?: number): TrailFrame | undefined;"
+      },
+      "beginTrail": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function beginTrail(ctx: CanvasRenderingContext2D, history: TrailFrame, ticks: readonly AltimeterTick[], start: number, end: number, color: string): void;"
+      },
+      "appendLiveTail": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function appendLiveTail(ctx: CanvasRenderingContext2D, last: AltimeterPoint, end: number, tip: number): void;"
+      },
+      "fillTrail": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function fillTrail(ctx: CanvasRenderingContext2D, history: TrailFrame, end: number, tip: number, baseline: number, price: number, height: number): void;"
       },
       "visibleFrames": {
         "entry": "@bloxwap/hig/chart",

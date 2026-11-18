@@ -9,7 +9,8 @@ const filesUnder=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(d=>d.isDirec
 /** Every entry directory under packages/hig (has src/ or tsconfig.json, or is named by `exports`). */
 export function higEntries(root='.'){
   const base=join(root,'packages/hig');
-  const dirs=readdirSync(base,{withFileTypes:true}).filter(d=>d.isDirectory()&&(existsSync(join(base,d.name,'src'))||existsSync(join(base,d.name,'tsconfig.json')))).map(d=>d.name);
+  // The autolinked Android Gradle project also has a src/ directory. Only TS entries are compiled here.
+  const dirs=readdirSync(base,{withFileTypes:true}).filter(d=>d.isDirectory()&&d.name!=='android'&&(existsSync(join(base,d.name,'src'))||existsSync(join(base,d.name,'tsconfig.json')))).map(d=>d.name);
   const exported=Object.keys(JSON.parse(readFileSync(join(base,'package.json'),'utf8')).exports??{}).map(k=>k.split('/')[1]).filter(e=>e&&e!=='package.json');
   const entries=[...new Set([...dirs,...exported])].sort();
   const missing=entries.filter(e=>!existsSync(join(base,e,'tsconfig.json'))||!existsSync(join(base,e,'src')));

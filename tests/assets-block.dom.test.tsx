@@ -186,8 +186,8 @@ describe('AssetsBlock empty action, selected disc and keyboard',()=>{
   // The heading and badge sit 8 in, as the row's padding (`.hig-assets-row { ...padding:8px }`), so they align with the icon and the disc.
   expect(css).toContain('.hig-assets-section-header { display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:32px;padding-inline:8px; }');
   expect(css).toContain('.hig-assets-row { position:relative;min-height:64px;padding:8px; }');
-  // The capsule row bleeds by --hig-filter-bleed (16 in AssetsBlock, the sheet content gutter) and insets its first and last capsule by as much.
-  expect(css).toContain('.hig-assets-block { --hig-filter-bleed:16px; }');
+  // The capsule row bleeds by --hig-filter-bleed (8 in AssetsBlock, the sheet content gutter) and insets its first and last capsule by as much.
+  expect(css).toContain('.hig-assets-block { --hig-filter-bleed:8px; }');
   expect(css).toContain('margin:-4px calc(-4px - var(--hig-filter-bleed,0px));padding:4px calc(4px + var(--hig-filter-bleed,0px));scroll-padding-inline:var(--hig-filter-bleed,0px);');
   // The block leaves the inline variable to the stylesheet, so a host can set it on the block.
   mount({style:{'--hig-filter-bleed':'0px'} as React.CSSProperties});

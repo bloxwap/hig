@@ -1,4 +1,5 @@
 import React from 'react';
+import {formatCountdown,watchCountdown} from '@bloxwap/hig/contracts';
 import {Image,Pressable,View,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
@@ -7,7 +8,7 @@ import {Surface,Text} from './surface.js';
 import {Button} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {AnimatedNumberReadout,NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
@@ -17,6 +18,10 @@ import {figureProps,type Figure} from './figure.js';
 export interface RewardPromo {
  /** The small capitals line: Season 01. */
  eyebrow:string;
+ /** Viewer streak and its earned reward. The host supplies the current points or multiplier. */
+ streak?:{label:string;count:Figure;rewardLabel:string;reward:Figure};
+ /** Prize drawing deadline in epoch milliseconds, with host text for the running and finished states. */
+ drawing?:{at:number;label:string;endedLabel:string};
  /** A text link with a chevron on the trailing edge of the eyebrow: Rules. */
  rules?:{label:string;onSelect:()=>void};
  /** The headline figure: the pool so far, or the top prize. A number updates place by place, formatted with `amountOptions`; `null` reads as unknown; a string is host text drawn as given in the same style, such as `$500` already formatted. Leave it out (with no `figure`) for a promotion with no figure. */
@@ -107,6 +112,19 @@ export interface RewardBlockProps {
  /** Prefixes every test ID inside the block: `<testID>-header`, `<testID>-back`, `<testID>-title`, `<testID>-row-<id>` and so on. Omitted, they start with `reward`. */
  testID?:string;
 }
+const rewardStatStyle:ViewStyle={flex:1,minWidth:0,gap:4,justifyContent:'space-between'};
+function DrawingCountdown({drawing}:{drawing:NonNullable<RewardPromo['drawing']>}){
+ const locale=useNumberLocale();
+ const [seconds,setSeconds]=React.useState<number|null>(null);
+ React.useEffect(()=>watchCountdown(drawing.at,setSeconds),[drawing.at]);
+ const clock=formatCountdown(seconds==null?NaN:seconds*1000,locale);
+ const colors=useColors();
+ if(seconds===0)return <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{drawing.label}</Text><Text>{drawing.endedLabel}</Text></View>;
+ return <View accessible accessibilityLabel={drawing.label+' '+clock.spoken} style={rewardStatStyle}>
+  <Text accessible={false} style={{color:colors.muted,fontSize:14}}>{drawing.label}</Text>
+  <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><NumberFlow value={seconds} formattedValue={clock.visible} animateFormatted trend={-1}/></View>
+ </View>;
+}
 const wholeDollars:Intl.NumberFormatOptions={style:'currency',currency:'USD',maximumFractionDigits:0};
 const whole:Intl.NumberFormatOptions={maximumFractionDigits:0};
 const noEntries:readonly RewardEntry[]=[];
@@ -186,6 +204,13 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
    {captionNode?<View testID={tid('caption')} style={{marginTop:-8}}>{captionNode}</View>:null}
    {promo.goal!==undefined?<View {...hidden} testID={tid('track')} style={{direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'}}><View testID={tid('fill')} style={{width:`${(reached??0)*100}%`,minWidth:8,borderRadius:2,backgroundColor:colors.action}}/></View>:null}
    {promo.headline||promo.description?<Text testID={tid('summary')} style={{fontSize:16,lineHeight:24,color:colors.muted}}>{promo.headline?<Text style={{fontWeight:'600',color:colors.text}}>{promo.headline}</Text>:null}{promo.headline&&promo.description?space:null}{promo.description}</Text>:null}
+   {promo.streak||promo.drawing?<View style={{direction,flexDirection:'row',gap:8}}>
+    {promo.streak?<>
+    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.label}</Text><AnimatedNumberReadout {...figureProps(promo.streak.count)}/></View>
+    <View style={rewardStatStyle}><Text style={{color:colors.muted,fontSize:14}}>{promo.streak.rewardLabel}</Text><AnimatedNumberReadout tone="positive" {...figureProps(promo.streak.reward)}/></View>
+    </>:null}
+    {promo.drawing&&<DrawingCountdown key={promo.drawing.at} drawing={promo.drawing}/>}
+   </View>:null}
    {promo.action?<Pressable testID={tid('action')} accessibilityRole='button' accessibilityLabel={promo.action.label} onPress={promo.action.onSelect} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:44,marginTop:4,marginBottom:-8,paddingTop:12,borderTopWidth:1,borderTopColor:fills.raised}}>
     <Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:colors.muted}}>{promo.action.label}</Text>
     <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>

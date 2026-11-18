@@ -28,12 +28,14 @@ it('runs the tickers and then the interrupted figure by itself, and logs its sta
  const lines=[],done=jest.fn();jest.spyOn(console,'log').mockImplementation(line=>{if(String(line).startsWith('[perf]'))lines.push(String(line));});
  await act(async()=>{root=create(React.createElement(NumberFlowPerf,{onDone:done}));});
  const measure=()=>act(()=>{for(const probe of root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function'))probe.props.onLayout({nativeEvent:{layout:{x:0,y:0,width:12,height:24}}});});
- // Forty figures, each drawn as reels once its ten digits are measured. Nothing is logged before the run starts.
- expect(root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function')).toHaveLength(400);measure();
+ // Forty figures share one set of ten measured digits. Nothing is logged before the run starts.
+ expect(root.root.findAllByType(RNText).filter(node=>typeof node.props.onLayout==='function')).toHaveLength(10);measure();
  expect(lines).toEqual([]);
  for(let step=0;step<600&&!done.mock.calls.length;step++)await act(async()=>{await jest.advanceTimersByTimeAsync(50);});
- expect(done).toHaveBeenCalledTimes(1);expect(lines).toHaveLength(4);
- expect(lines[0]).toBe('[perf] number-flow start');expect(lines[3]).toBe('[perf] number-flow done');
+ expect(done).toHaveBeenCalledTimes(1);expect(lines).toHaveLength(6);
+ expect(lines[0]).toBe('[perf] number-flow start');expect(lines[3]).toMatch(/number-flow first-tick figures=40 ticks=1 /);
+ expect(lines[4]).toMatch(/number-flow steady figures=40 ticks=10 /);
+ expect(lines[5]).toBe('[perf] number-flow done');
  // Fifty ticks of forty figures are fifty commits. (React Native's jest frame is a zero timeout, so the interrupted figure gets
  // a value every millisecond here and React batches them by the 50 ms this test advances at a time; on a device it is one a frame.)
  expect(lines[1]).toMatch(/^\[perf\] number-flow tickers figures=40 ticks=50 updates=2000 commits=50 jsFrames=\d+ jsSlow=\d+ jsWorstMs=[\d.]+ uiFrames=\d+ uiSlow=\d+ uiWorstMs=[\d.]+$/);
