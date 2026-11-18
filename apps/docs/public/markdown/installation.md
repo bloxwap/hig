@@ -3,7 +3,7 @@
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig@0.9.0
+npm install @bloxwap/hig@0.9.1
 ```
 
 | Entry | Use |
@@ -13,6 +13,7 @@ npm install @bloxwap/hig@0.9.0
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/native/chart` | React Native SVG altimeter with live prices, open positions and target crossings |
 | `@bloxwap/hig/feedback`, `@bloxwap/hig/feedback/<adapter>` | Optional sound and haptic feedback |
 | `@bloxwap/hig/native-fonts` | Static native TTFs and their manifest |
 | `@bloxwap/hig/og-fonts`, `@bloxwap/hig/og-fonts/node` | Satori / `next/og` card faces |
@@ -173,7 +174,7 @@ Tailwind may reference these values through host configuration; HIG does not req
 
 `npm run smoke:packed-compat` checks the packed package with the minimum versions computed from its web peer ranges: chart 0.3.0, haptic 0.2.0, and sfx 0.2.0. CI runs this alongside the current-version tests. It checks consumer types and adapter source against those installed peers, renders chart and haptic entries on the server, and invokes the sound adapter without browser globals.
 
-Chart is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](https://bloxwap.github.io/hig/docs/guides/components/chart/). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+The web candle adapter is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](https://bloxwap.github.io/hig/docs/guides/components/chart/). Import the SVG altimeter from `@bloxwap/hig/native/chart` on React Native. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
 ## Stable citations and upgrades
 

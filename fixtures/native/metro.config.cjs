@@ -1,6 +1,10 @@
 const {getDefaultConfig}=require('expo/metro-config');
-const {dirname,resolve}=require('node:path');
+const {dirname,resolve,isAbsolute,relative}=require('node:path');
 const config=getDefaultConfig(__dirname);
+// Metro must watch the symlink target when the gallery consumes the local HIG workspace.
+const higRoot=dirname(require.resolve('@bloxwap/hig/package.json'));
+const relativeRoot=relative(__dirname,higRoot);
+if(relativeRoot.startsWith('..')||isAbsolute(relativeRoot))config.watchFolders.push(higRoot);
 // The RN renderer requires its exact React (RN 0.81.5/Expo 54: 19.1.0; RN 0.83.10/Expo 55: 19.2.0).
 // Resolve every workspace package through this consumer's React, never the web hosts' copy.
 const roots=Object.fromEntries(['react','react-dom'].map(name=>[name,dirname(require.resolve(`${name}/package.json`,{paths:[__dirname]}))]));

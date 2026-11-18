@@ -230,3 +230,7 @@ button[data-search-full] kbd {
   .example-note { padding-inline: 1rem; }
 }
 
+
+.modal-canvas { padding-inline: 0; }
+.modal-canvas > .hig-stack { width: 100%; align-items: center; }
+.modal-canvas .hig-app-modal { position: relative; }

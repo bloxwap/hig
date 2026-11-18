@@ -53,18 +53,29 @@ export function outcomeY(chance:number,height:number,inset:number,scale:OutcomeS
  const share=Math.min(1,Math.max(0,(scale.high-chance)/(scale.high-scale.low)));
  return inset+share*(height-2*inset);
 }
+/** Clearance between the plot edges and the outer edges of target labels, in layout units. */
+export interface TargetLabelInsets {top?:number;bottom?:number}
+
+/** Reduce excessive clearance proportionally so at least one label can fit. */
+export function labelBounds(height:number,size:number,insets?:TargetLabelInsets,defaultInset=0){
+ const available=Math.max(0,height-size);
+ const edge=(value:number|undefined)=>Math.min(available,value!==undefined&&Number.isFinite(value)?Math.max(0,value):defaultInset);
+ const top=edge(insets?.top),bottom=edge(insets?.bottom);
+ const factor=top+bottom>available?available/(top+bottom):1;
+ return {top:top*factor,bottom:Math.max(size,height)-bottom*factor};
+}
 /**
  * Centers for capsules of `size` that want to sit at `wanted` but may not overlap: neighbors keep `gap` between
  * them and all stay inside `height`; when they cannot all fit with the gap, the gap shrinks. Returned in the order given.
  * `preserveOrder` keeps the input sequence instead of sorting by desired position, for stable target-label stacks.
  */
-export function capsuleCenters(wanted:readonly number[],height:number,size=36,gap=6,preserveOrder=false):number[]{
+export function capsuleCenters(wanted:readonly number[],height:number,size=36,gap=6,preserveOrder=false,bounds={top:0,bottom:height}):number[]{
  const order=wanted.map((_,index)=>index),placed:number[]=[];
  if(!preserveOrder)order.sort((a,b)=>wanted[a]-wanted[b]);
  // A crowded chart gives up the gap before any capsule leaves it.
- const step=order.length>1?Math.min(size+gap,(height-size)/(order.length-1)):size+gap;
- for(const [rank,index] of order.entries())placed[rank]=Math.max(wanted[index],rank?placed[rank-1]+step:size/2);
- for(let rank=order.length-1;rank>=0;rank--)placed[rank]=Math.min(placed[rank],rank===order.length-1?height-size/2:placed[rank+1]-step);
+ const step=order.length>1?Math.min(size+gap,(bounds.bottom-bounds.top-size)/(order.length-1)):size+gap;
+ for(const [rank,index] of order.entries())placed[rank]=Math.max(wanted[index],rank?placed[rank-1]+step:bounds.top+size/2);
+ for(let rank=order.length-1;rank>=0;rank--)placed[rank]=Math.min(placed[rank],rank===order.length-1?bounds.bottom-size/2:placed[rank+1]-step);
  const centers:number[]=[];for(const [rank,index] of order.entries())centers[index]=placed[rank];
  return centers;
 }

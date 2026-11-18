@@ -15,7 +15,6 @@
     "AssetsBlock": "blocks",
     "ConfirmBlock": "blocks",
     "PresetPickerBlock": "blocks",
-    "ExplainerBlock": "blocks",
     "ProfileBlock": "blocks",
     "SoundHapticsBlock": "blocks",
     "SignalsBlock": "blocks",
@@ -101,7 +100,9 @@
     "ListRow": "list-group",
     "LoginBlock": "blocks",
     "DepositBlock": "blocks",
-    "LanguageBlock": "blocks"
+    "LanguageBlock": "blocks",
+    "PositionsBlock": "blocks",
+    "ClaimRewardBlock": "blocks"
   },
   "native": {
     "ScreenHeader": "screen-header",
@@ -117,7 +118,6 @@
     "AssetsBlock": "blocks",
     "ConfirmBlock": "blocks",
     "PresetPickerBlock": "blocks",
-    "ExplainerBlock": "blocks",
     "ProfileBlock": "blocks",
     "SoundHapticsBlock": "blocks",
     "SignalsBlock": "blocks",
@@ -201,6 +201,9 @@
     "ListRow": "list-group",
     "LoginBlock": "blocks",
     "DepositBlock": "blocks",
-    "LanguageBlock": "blocks"
+    "LanguageBlock": "blocks",
+    "AltimeterChart": "chart",
+    "PositionsBlock": "blocks",
+    "ClaimRewardBlock": "blocks"
   }
 }

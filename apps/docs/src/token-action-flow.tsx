@@ -48,6 +48,7 @@ function ReceiveWallet({verb, wallets, onBack, headerAction}: {verb: 'Deposit' |
 }
 
 const depositMethods: DepositMethod[] = [
+  {id: 'qr', label: 'QR code', description: 'Scan or copy your wallet address'},
   {id: 'apple-pay', label: 'Apple Pay', description: 'Instant card deposit'},
   {id: 'cash-app', label: 'Cash App', description: 'Scan to send Bitcoin'},
   {id: 'exchange', label: 'Exchange', description: 'Coinbase, Binance, and more'},
@@ -145,7 +146,7 @@ export default function TokenActionFlow() {
             setMethod(selected);
             setView('deposit-method');
           }}/>}
-        {view === 'deposit-method' && (method.id === 'crypto' || method.id === 'exchange'
+        {view === 'deposit-method' && (method.id === 'qr' || method.id === 'crypto' || method.id === 'exchange'
           ? <ReceiveWallet verb="Deposit" wallets={usdc.wallets} onBack={back} headerAction={closeButton}/>
           : <Stack>
               <ScreenHeader title={method.label} onBack={back} action={closeButton}/>

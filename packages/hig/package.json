@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -418,16 +418,6 @@
       "import": "./native/dist/preset-picker-block.js",
       "default": "./native/dist/preset-picker-block.js"
     },
-    "./react/blocks/explainer-block": {
-      "types": "./react/dist/blocks/explainer-block.d.ts",
-      "import": "./react/dist/blocks/explainer-block.js",
-      "default": "./react/dist/blocks/explainer-block.js"
-    },
-    "./native/explainer-block": {
-      "types": "./native/dist/explainer-block.d.ts",
-      "import": "./native/dist/explainer-block.js",
-      "default": "./native/dist/explainer-block.js"
-    },
     "./react/confetti": {
       "types": "./react/dist/confetti.d.ts",
       "import": "./react/dist/confetti.js",
@@ -713,7 +703,37 @@
       "import": "./native/dist/toast.js",
       "default": "./native/dist/toast.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./native/chart": {
+      "types": "./native/dist/chart.d.ts",
+      "import": "./native/dist/chart.js",
+      "default": "./native/dist/chart.js"
+    },
+    "./chart/altimeter-core": {
+      "types": "./chart/dist/altimeter-core.d.ts",
+      "import": "./chart/dist/altimeter-core.js",
+      "default": "./chart/dist/altimeter-core.js"
+    },
+    "./native/positions-block": {
+      "types": "./native/dist/positions-block.d.ts",
+      "import": "./native/dist/positions-block.js",
+      "default": "./native/dist/positions-block.js"
+    },
+    "./react/blocks/positions-block": {
+      "types": "./react/dist/blocks/positions-block.d.ts",
+      "import": "./react/dist/blocks/positions-block.js",
+      "default": "./react/dist/blocks/positions-block.js"
+    },
+    "./react/blocks/claim-reward-block": {
+      "types": "./react/dist/blocks/claim-reward-block.d.ts",
+      "import": "./react/dist/blocks/claim-reward-block.js",
+      "default": "./react/dist/blocks/claim-reward-block.js"
+    },
+    "./native/claim-reward-block": {
+      "types": "./native/dist/claim-reward-block.d.ts",
+      "import": "./native/dist/claim-reward-block.js",
+      "default": "./native/dist/claim-reward-block.js"
+    }
   },
   "files": [
     "README.md",

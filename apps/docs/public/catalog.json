@@ -1,5 +1,5 @@
 {
-  "version": "0.9.0",
+  "version": "0.9.1",
   "components": [
     {
       "name": "Button",
@@ -784,17 +784,6 @@
       ]
     },
     {
-      "name": "ExplainerBlock",
-      "route": "components/explainer-block",
-      "entry": "blocks",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "sections",
-        "task"
-      ]
-    },
-    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "entry": "blocks",
@@ -839,6 +828,22 @@
         "default",
         "interactive",
         "devices"
+      ]
+    },
+    {
+      "name": "ModalBlock",
+      "route": "components/modal-block",
+      "entry": "overlay",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "agent-wallet",
+        "builder-fee",
+        "referral-discount",
+        "tournament-invite",
+        "trend",
+        "swing",
+        "live-activity"
       ]
     },
     {
@@ -1014,11 +1019,12 @@
       "name": "AltimeterChart",
       "route": "components/altimeter-chart",
       "entry": "@bloxwap/hig/chart",
-      "nativeSupport": "alternative",
+      "nativeSupport": "renderer",
       "states": [
         "default",
         "empty",
-        "targets"
+        "targets",
+        "open-position"
       ]
     },
     {
@@ -1029,6 +1035,26 @@
       "states": [
         "default",
         "empty"
+      ]
+    },
+    {
+      "name": "PositionsBlock",
+      "route": "components/positions-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty",
+        "mixed"
+      ]
+    },
+    {
+      "name": "ClaimRewardBlock",
+      "route": "components/claim-reward-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
       ]
     }
   ]

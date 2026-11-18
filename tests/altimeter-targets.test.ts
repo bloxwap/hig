@@ -102,3 +102,12 @@ it('resolves animated side changes and edge stacks before rendering, without ove
   for(let i=1;i<tops.length;i++)expect(tops[i]-tops[i-1]).toBeGreaterThanOrEqual(24-1e-9);
  }
 });
+
+it('insets target text while a visible line can enter either reserved area',()=>{
+ const levels=[{id:'top',label:'High',price:101.5},{id:'bottom',label:'Low',price:98.5}];
+ const baseline=placeTargets(levels,100,1,200);
+ const inset=targetLayout().update(levels,100,1,200,0,true,{top:70,bottom:60});
+ for(const level of levels)expect(inset.get(level.id)).toMatchObject({y:baseline.get(level.id)!.y,anchor:baseline.get(level.id)!.anchor,pinned:null});
+ expect(inset.get('top')!.labelTop).toBe(70);
+ expect(inset.get('bottom')!.labelTop).toBe(122);
+});

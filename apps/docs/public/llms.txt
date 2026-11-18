@@ -1,4 +1,4 @@
-# Bloxwap HIG 0.9.0
+# Bloxwap HIG 0.9.1
 
 ## ADR 001: platform renderers, shared contracts
 Source: docs/architecture/001-packages.md
@@ -178,7 +178,7 @@ Give `Button` an `href` when the action goes somewhere instead of doing somethin
 - **Web** renders `<a class="hig-button" href>` with the same `data-intent`, `data-full`, density, `glow`, busy spinner and busy text, and the same `onClick` and accepted feedback (a host `preventDefault()` cancels both the navigation and the feedback). `target` and `rel` pass through as given (browsers already treat `target="_blank"` as `noopener`; pass `rel` for `noreferrer`). Disabled or busy, the anchor drops its `href`, so it leaves the tab order like a disabled button, and keeps `role="link"` with `aria-disabled="true"` (and `aria-busy` while busy); a click does nothing. The forwarded ref then holds the `HTMLAnchorElement` (the ref type stays `HTMLButtonElement` so existing refs keep compiling). `IconButton` takes no `href`.
 - **Native** sets `accessibilityRole="link"`. Without `onPress`, a press opens `href` through `Linking.openURL` and a failure goes to `onError`, as `Link` does; a host `onPress` (an Expo Router push or an in-app browser) replaces that navigation, so one press never opens both. Disabled or busy blocks both. On React Native Web the root renders the `href` and the press stops the anchor navigating on its own.
 
-Label wrapping (web): a label breaks between words first. `.hig-button` uses `overflow-wrap: break-word`, so a word that is a little wider than the space beside a trailing icon in a narrow two-button row (`ExplainerBlock`, `ConfirmBlock` and `TargetBlock` action rows at 320px) runs into the button's own padding instead of splitting mid-word (“Get my disco/unt” before). A single word wider than the whole button still overflows it, so keep action labels, and their translations, short.
+Label wrapping (web): a label breaks between words first. `.hig-button` uses `overflow-wrap: break-word`, so a word that is a little wider than the space beside a trailing icon in a narrow two-button row (`ConfirmBlock` and `TargetBlock` action rows at 320px) runs into the button's own padding instead of splitting mid-word (“Get my disco/unt” before). A single word wider than the whole button still overflows it, so keep action labels, and their translations, short.
 
 ## States, interaction and accessibility
 
@@ -208,7 +208,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `LoginBlock`, `DepositBlock`, `SwapBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `ExplainerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `ClaimRewardBlock`, `LoginBlock`, `DepositBlock`, `SwapBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -229,10 +229,10 @@ All data and actions are supplied by the host application.
 | `TradeHistoryListBlock` | A history of closed trades: a header, then one row per trade with the asset, its side and leverage, and the net result over its age. Details below. |
 | `TradeHistoryDetailBlock` | The full record of one closed trade: the asset, the net result as the headline figure, the trade's figures as rows, and the host's actions. Details below. |
 | `LanguageBlock` | Choose the app's language: a header, a search field, and each language as a row with its flag and a check on the one in use. Details below. |
+| `PositionsBlock` | Open positions filtered by All, Wins or Losses. Each row shows direction, leverage, size and stacked P&L. Close All always counts the full list and delegates confirmation to the host. |
 | `ManagePositionBlock` | One open position: margin against notional as a `BarMark`, the liquidation, mark and entry prices as a `BarPnl`, the host's actions as rows, and the position underneath. Details below. |
 | `TargetBlock` | A take profit or a stop loss on one position: the target as the headline figure, an info button for how the order fills, the entry and trigger prices on one bar, the unit, quick choices and the confirming action. Details below. |
 | `PresetPickerBlock` | Choose one value from quick choices, such as an order size or leverage: an optional header, the value as the headline figure, an optional row that opens the host's own entry, the choices as chips, then Cancel and the confirming action. Details below. |
-| `ExplainerBlock` | How something works, or how to finish a task: an optional header, a lead paragraph, titled sections with an optional icon and tone, numbered steps, a closing note, then one or two actions. Details below. |
 | `PositionBlock` | The position being opened or edited: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows. Details below. |
 | `AssetsBlock` | Choose a market: a search field, category capsules, All / Positions / Trend views, then the markets in sections by category, each with its signal disc. Details below. |
 | `ProfileBlock` | A person's profile as one screen: the avatar with a status dot, the name, then grouped rows for accounts, history, rewards and settings. Details below. |
@@ -247,11 +247,15 @@ Presentation mode uses a grid with logical numeric alignment and no block paddin
 
 ### LoginBlock
 
-Present LoginBlock in a gesture sheet to offer X, Apple, and Google sign-in. The host supplies the last-used provider, handles `onLogin` and `onClose`, and controls optional product analytics through `analyticsEnabled` and `onAnalyticsChange`. Start consent off for a new user. The info button beside Product analytics explains the optional data sharing in a web popover or native dialog. Pass `disabled` while authentication is starting. The footer links to Bloxwap’s Terms of Use and Privacy Policy. Hosts can override the links and localize the labels.
+Present LoginBlock in a gesture sheet to offer X, Apple, and Google sign-in. The host supplies the last-used provider, handles `onLogin` and `onClose`, and controls optional product analytics through `analyticsEnabled` and `onAnalyticsChange`. Start consent off for a new user. The info button beside Product analytics explains the optional data sharing in a web popover or native dialog. Pass `disabled` while authentication is starting. The footer links to Bloxwap’s Terms of Use and Privacy Policy. Hosts can override the links and localize the labels. On web, pass `onMoreLogin` to enable Email and Wallet under More options. Set `lastUsed` to the provider used most recently to highlight its button and pin the badge to the trailing edge. The disclosure starts expanded when Email or Wallet was last used.
+
+### ClaimRewardBlock
+
+Show the prize amount, currency, full destination wallet address and chain with Claim and Cancel. Pass labeled rows in `details` for the drawing name, prize placement, or other award details. Use `onClaim` to open a separate `ConfirmBlock` showing the current wallet, and `onCancel` to dismiss the prize. The host submits the payout on confirmation and announces the receipt after the wallet is credited.
 
 ### DepositBlock
 
-A deposit method picker with a centered header, an optional description, and a grouped list of available methods. Pass the methods in display order. Each row shows its icon, label, description, and disclosure chevron. The method IDs `apple-pay`, `cash-app`, `exchange`, `crypto`, `bank`, and `blink` use the corresponding funding icons from the Bloxwap app. A host can supply `icon` for custom artwork. Selecting a row calls `onSelect(method)` so the host can open a wallet address, exchange transfer, or payment provider. Use `onBack` and `headerAction` for sheet navigation.
+A deposit method picker with a centered header, an optional description, and a grouped list of available methods. Include the method ID `qr` to pin QR code first in the list. Selecting it calls `onSelect` with that method. Use `headerAction` for the close button. Other methods keep their supplied order. Each row shows its icon, label, description, and disclosure chevron. The method IDs `apple-pay`, `cash-app`, `exchange`, `crypto`, `bank`, and `blink` use the corresponding funding icons from the Bloxwap app. A host can supply `icon` for custom artwork. Selecting a row calls `onSelect(method)` so the host can open a wallet address, exchange transfer, or payment provider. Use `onBack` and `headerAction` for sheet navigation.
 
 ### SwapBlock
 
@@ -555,31 +559,6 @@ import {FromPickerBlock, ToPickerBlock} from '@bloxwap/hig/react/blocks/pickers'
 - **Test IDs.** Web: `submitTestID`, `cancelTestID`, `custom.testID` and each preset's `testID` become `data-testid`s, and other attributes, such as a `data-testid` for the block, pass to its `<section>`. Native: `testID` (default `preset-picker`) prefixes `-header`, `-back`, `-title`, `-headline`, `-custom`, `-custom-value`, `-presets`, `-preset-<value>` (a preset without its own `testID`), `-adjustable`, `-actions`, `-cancel` and `-confirm`; `custom.testID` and `adjustable.testID` replace theirs.
 - **Ownership.** The block holds no value of its own: the host keeps the value, restores it on Cancel and commits it on the confirming action.
 
-### ExplainerBlock
-
-`ExplainerBlock` explains how something works, or how to finish a task: an optional header, a lead paragraph, titled sections, numbered steps, a closing note, then one or two actions. It draws the “How Swing works” and “How Trend works” sheets and short task dialogs such as inviting a friend, setting up an agent or a builder code. It is available from `@bloxwap/hig/react/blocks/explainer-block`, `@bloxwap/hig/native/explainer-block` and the `blocks` aggregates.
-
-```tsx
-<ExplainerBlock title="How Trend works" description={trendDescription}
-  sections={[
-    {id: 'up', tone: 'up', icon: <TrendingUp/>, title: 'Up', meaning: '→ Momentum is rising', body: upText},
-    {id: 'watch', tone: 'warning', icon: <Eye/>, title: 'Watch', meaning: '→ A move may be coming', body: watchText},
-  ]}
-  caveat={notAdvice} primaryAction={{label: 'Got it', onSelect: close}}/>
-```
-
-- **Header.** `title` draws the shared `ScreenHeader`, with `onBack`, `backProps`, `headerAction` (such as Close), `headingId` and `stickyHeader` as in the other blocks. Leave `title` out inside a host `Sheet` or `Dialog` that draws its own title. Native `stickyHeader` needs `title`, and takes `stickyHeaderBackground` and `scrollComponent`. `badge` passes to `ScreenHeader` `badge` (short host text beside the title, read with the heading), and native `titleRef` to `ScreenHeader` `titleRef`, so the host can move accessibility focus to the title when the sheet opens; both need `title`.
-- **Eyebrow.** `eyebrow` is a kicker above the title in small muted capitals (12/16, tracked): with `title` it is `ScreenHeader` `eyebrow`, centred over the heading (web `p.hig-screen-eyebrow` in a `div.hig-screen-heading` stack, outside the `h2`; native `<testID>-eyebrow`), and the header grows to fit it; without `title` it is the block's first line on the leading edge (web `p.hig-explainer-eyebrow`; native `<testID>-eyebrow`).
-- **Hero.** `hero` is a large figure or host media centred under the header and before the lead, such as a 68px “4% off” or a donut (web `div.hig-explainer-hero`; native `<testID>-hero`). It is drawn as given: the host sets its size and colour, and hides decorative media from assistive technology.
-- **Lead.** `description` is a muted paragraph under the header (and the hero).
-- **Sections.** `sections` are `{id, title?, meaning?, icon?, tone?, media?, body?, caveat?, testID?}`, each a rounded card (16 radius, 12 padding) with its parts stacked 4 apart. `title` is the section's heading (web `h3` in a plain container, so a sheet of small cards adds headings to move by, not one landmark per card; native `header`), and `meaning` follows it on the same line, muted. `icon` sits on the leading edge in a 40 disc and is decorative; on web it is drawn in `currentColor`, so an SVG icon takes the tone's colour, and on native the host draws it in `useColors()[tone]`. `tone` (`up`, `down`, `positive`, `negative` or `warning`) tints the card at 10%, the disc at 15% and the heading in the tone; without it the card sits on the neutral fill and the heading in the text colour. `up` and `down` follow the provider's market colours. `media` is host content centred between the heading and the body, such as an example card and its caption. `body` and `caveat` are muted text (native draws a string as `Text` and any other node as given).
-- **Steps.** `steps` are drawn after the sections as a numbered list (web `ol`; native rows of a string or number read as one, `1.` then the step, and a row drawn from a node stays open so a link or button inside it can be focused).
-- **Closing note.** `caveat` is a muted note after the sections and steps.
-- **Between.** `children` are drawn as given after the closing note and before the actions, such as a field, a link or a share card.
-- **Actions.** `primaryAction` and `secondaryAction` are `{label, onSelect, intent?, disabled?, busy?, testID?, pressProps?, icon?}`; `pressProps` (native) are Pressable props for the Button, such as `{android_disableSound: true}` for a host that plays its own sound. `icon` is a glyph after the label (web `span.hig-explainer-action-icon`, native `<button test ID>-icon`), decorative and hidden from assistive technology, so the label alone names the button. The secondary action sits on the leading side of the primary one, the two sharing the row equally as in `ConfirmBlock`; either alone takes the full width. Intents default to `primary` and `secondary`. `suppressFeedback` keeps the provider's feedback off both for a host that plays its own cue.
-- **Test IDs.** Web: `section.testID` and each action's `testID` become `data-testid`s, and other attributes pass to the block's `<section>`. Native: `testID` (default `explainer`) prefixes `-header`, `-back`, `-title`, `-description`, `-sections`, `-section-<id>` (and `-section-<id>-icon`, `-title`, `-media`, `-body`, `-caveat`), `-steps`, `-step-<index>`, `-caveat`, `-actions`, `-secondary` and `-primary` (and `-eyebrow`, `-badge`, `-hero` and `-primary-icon` / `-secondary-icon` when drawn); `section.testID` and an action's `testID` replace theirs.
-- **Ownership.** All text is host text; the block holds no state and runs no flow. The host copies a link, opens a sheet or closes the dialog on each action.
-
 ### PositionBlock
 
 `PositionBlock` is the sheet for the position being opened or edited. Under the shared header, with Close on its trailing edge, it shows a summary, an optional paper trading switch, and the settings as grouped rows. It is available from `@bloxwap/hig/react/blocks/position-block`, `@bloxwap/hig/native/position-block` and the `blocks` aggregates.
@@ -878,11 +857,11 @@ Source: docs/components/chart.md
 
 # Charts
 
-Live price and outcome charts for the web, with text summaries and native readout alternatives.
+Live price charts for web and React Native, with web outcome charts and accessible text summaries.
 
-Includes web-only `AltimeterChart` and `OutcomeChart`, with their default `bitcoinPrice` and `championsLeagueWinner` feeds. The entry also exports the `PriceChart` candle adapter and `chartTheme`, which are no longer in the catalog. Native uses readouts, lists, and text summaries.
+Includes cross-platform `AltimeterChart` and web-only `OutcomeChart`, with their default `bitcoinPrice` and `championsLeagueWinner` feeds. The entry also exports the `PriceChart` candle adapter and `chartTheme`, which are no longer in the catalog. Native renders the altimeter with SVG and offers text alternatives for the other charts.
 
-Issues #20 and #96. Entry: `@bloxwap/hig/chart`. Import `AltimeterChart` and `OutcomeChart` from `@bloxwap/hig/chart` for the DOM canvas only. Native consumers use `@bloxwap/hig/native/data` for summary/readout/list alternatives. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
+Issues #20 and #96. Entry: `@bloxwap/hig/chart`. Import `AltimeterChart` and `OutcomeChart` from `@bloxwap/hig/chart` for the DOM canvas only. On React Native, import `AltimeterChart` from `@bloxwap/hig/native/chart` and install the Expo-compatible version of `react-native-svg`. The native chart accepts the same price, feed, position, targets and DEGEN props and exposes the reading and target prices to accessibility services. It pauses rendering and disconnects its live feed while the app is in the background. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
 ```sh
 npm install @bloxwap/hig @bloxwap/chart@^0.5.0
@@ -890,16 +869,18 @@ npm install @bloxwap/hig @bloxwap/chart@^0.5.0
 
 `@bloxwap/hig/chart` needs `react` and `@bloxwap/chart` `^0.3.0 || ^0.4.0 || ^0.5.0` (0.5.0 is the tested baseline), and uses `HIGProvider` from `@bloxwap/hig/react/provider` for the localized fallback. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`; no other entry imports it, and there is no `./react/chart` entry.
 
+Pass `position={{side:'long', breakEvenPrice:100, pnl:24.68, capsule:'pnl'}}` for an open position. The trail shades to the supplied break-even price. Above break-even is profitable for a long and below it is profitable for a short. The capsule uses the sign of the host’s actual net P&L independently. Zero is neutral. Omit `capsule` to show the mark price, use `'pnl'` for the signed amount, or supply `{returnRatio:0.02468}` for a signed percentage. The ladder always shows prices.
+
 Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds without a valid update and display the localized stale marker until the next update. Built-in feeds reconnect after 30 seconds of silence and report connection loss through the optional second callback, onStale. Cleanup invalidates late callbacks from replaced feeds. Controlled data freshness remains the host's responsibility. Outcome IDs are deduplicated in first-seen order.
 
 ## API and anatomy
 
 | Component | Key props and behavior |
 | --- | --- |
-| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`; optional `targets` and `dgen` (default false). |
+| `AltimeterChart` | Required `summary`; `price` (host-owned, `null` while unknown) or `feed`; `height` (default 320); `priceOptions`; optional `position`, `targets`, `targetLabelInsets` and `degen` (default false). |
 | `AltimeterTarget` | `{id, price, label?, color?}`. A horizontal dotted level with an optional right-aligned text label and CSS color. |
 | `bitcoinPrice` | The default `feed`: the Bitcoin mid price from Hyperliquid's public best-bid/offer WebSocket. |
-| `OutcomeChart` | Required `summary`; `outcomes` (host-owned, `null` while unknown) or `feed`; `height` (default 360). |
+| `OutcomeChart` | Required `summary`; `outcomes` (host-owned, `null` while unknown) or `feed`; `height` (default 360) and optional `targetLabelInsets`. |
 | `championsLeagueWinner` | The default `feed`: the UEFA Champions League winner market on Hyperliquid's outcome markets. |
 | `outcomeColors` | The ten default trail and capsule colors, in order. |
 | `PriceChart` | `data`, required `summary`, `height`, and chart SDK props. Not in the catalog. |
@@ -913,7 +894,7 @@ Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds withou
 - **Current price.** A pill at the trail's tip. Each new price eases in over 300ms, and its changed digits roll through `AnimatedNumberReadout`. Updates arriving during a move continue from the current position and forward velocity, constrained to avoid overshooting the new price. Canvas fonts and ladder text widths are reused between frames; font loading and formatting changes invalidate the width cache.
 
 - **Targets (optional).** Horizontal dotted lines at host-supplied prices, spanning the full chart width from leading to trailing edge, with optional colored text labels aligned at the chart's trailing edge. The current-price pill covers labels where they overlap. Labels have no capsule: a line below the current price has its label just above it, and a line above the current price has its label just below it. Labels follow their lines on the same frame, without a second position tween. Only the above/below offset animates over 260ms, reversing from its current offset when needed. Collision and edge constraints apply after that offset, so labels move aside only to make room for another label or stay inside the chart. Reduced motion switches sides instantly. When a target leaves the visible price range, its line disappears and its price/title label pins to the top or bottom edge. Labels stack in price order, making room for nearby visible labels; they return to their lines as those targets re-enter the chart. Target values also remain available to assistive technology.
-- **DGEN (optional).** A brief shake of the current-price pill and colored particles radiating outward from the pill when the displayed price reaches or crosses a target in either direction. It defaults to off.
+- **DEGEN (optional).** A brief shake of the current-price pill and bright, glowing particles fanning mostly in the direction of travel, with a smaller spray in the opposite direction when the displayed price reaches or crosses a target in either direction. It defaults to off.
 
 ```tsx
 import {AltimeterChart} from '@bloxwap/hig/chart';
@@ -932,7 +913,7 @@ import {AltimeterChart} from '@bloxwap/hig/chart';
   {id:'sl',price:stopLoss,label:'Stop Loss',color:'var(--hig-sell)'},
   {id:'liq',price:liquidation,label:'Liquidation',color:'#ed63b3'},
  ]}
- dgen
+ degen
 />
 ```
 
@@ -940,7 +921,9 @@ A `feed` is `(onPrice) => stop`: call `onPrice` with each new price and return a
 
 Targets use stable, unique IDs and finite positive prices. Pass a new array when a target changes. Invalid targets and duplicate IDs after the first valid occurrence are ignored. Each label shows its title on the left and the formatted target price on the right, for example `Take Profit $100.02`. Titles capitalize each word; prices use the provider's locale and `priceOptions`. Omit `label` for just a dotted line; omit `color` to use the primary accent. Colors accept CSS variables and must remain legible against the chart background. The chart does not place or execute orders.
 
-`dgen` responds to the eased, visible price crossing a target, including an exact touch, once per arrival. Initial prices, new or edited target prices, missing data, feed replacement and resuming after a frame gap longer than two seconds re-arm detection without replaying old crossings. Targets crossed in the same frame share one burst using the last crossed target's color. Bursts have a 600ms cooldown with no queue, a 260ms pill shake and a 520ms particle fade. They use the Web Animations API, with no added dependency; unsupported browsers retain the chart and targets. Turning DGEN off or enabling reduced motion cancels an active effect. The catalog's **targets** state includes a DGEN switch and price controls to preview crossings.
+Use `targetLabelInsets={{top:48, bottom:72}}` on either chart to reserve room for controls over the plot. Each value measures from the plot edge to the outer edge of the label, in CSS pixels on web or layout points on native. Altimeter target text defaults to 8 on each edge. Outcome capsules default to 0. Lines, ticks, and price scaling keep their original coordinates. Outcome connectors follow the displaced capsules.
+
+`degen` responds to the eased, visible price crossing a target, including an exact touch, once per arrival. Initial prices, new or edited target prices, missing data, feed replacement and resuming after a frame gap longer than two seconds re-arm detection without replaying old crossings. Targets crossed in the same frame share one burst using the last crossed target's color. Bursts have a 600ms cooldown with no queue, a 260ms pill shake and a 520ms particle fade. Web bursts use the Web Animations API; unsupported browsers retain the chart and targets. Turning DEGEN off or enabling reduced motion cancels an active effect. The catalog's **targets** state includes a DEGEN switch and price controls to preview crossings.
 
 The shake and dispersing particles take their visual cue from [Liveline](https://github.com/benjitaylor/liveline); here the trigger is a target crossing rather than momentum.
 
@@ -1002,11 +985,11 @@ Consumers: an org-wide GitHub code search (default branches) on 2026-10-16 found
 
 ## Platform mapping and limits
 
-RN canvas is unsupported in this candidate. Use NumberReadout/List plus host summaries. A native chart engine/WebView bridge needs a separate supported target and device lifecycle review, rather than an invented integration.
+The React Native altimeter uses `react-native-svg` on iOS and Android. Its renderer limits SVG updates to 30 Hz, keeps a bounded sample history, caches ladder labels, and uses the price sample cadence under reduced motion. Physical-device frame times are unmeasured. For outcome and candle charts, native consumers use labeled readouts or lists.
 
 ## Validation and citation
 
-See `tests/altimeter-chart.dom.test.tsx`, `tests/altimeter-model.test.ts`, `tests/outcome-chart.dom.test.tsx`, `tests/outcome-model.test.ts`, `tests/chart.dom.test.tsx`, `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+See `tests/native/altimeter-chart.test.cjs`, `tests/altimeter-chart.dom.test.tsx`, `tests/altimeter-model.test.ts`, `tests/outcome-chart.dom.test.tsx`, `tests/outcome-model.test.ts`, `tests/chart.dom.test.tsx`, `tests/components.dom.test.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
 
 
 ## Fields & inputs
@@ -3276,7 +3259,7 @@ Source: docs/installation.md
 HIG ships as one npm package, `@bloxwap/hig`. Every surface is a subpath export of it: tokens, contracts, React and React Native components, the chart adapter, feedback, native fonts and OG fonts. Local dry-run tarballs and CI artifacts remain available for testing unreleased changes. Registry releases verify the exact package hash and independent web, Next and native consumers.
 
 ```sh
-npm install @bloxwap/hig@0.9.0
+npm install @bloxwap/hig@0.9.1
 ```
 
 | Entry | Use |
@@ -3286,6 +3269,7 @@ npm install @bloxwap/hig@0.9.0
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/native/chart` | React Native SVG altimeter with live prices, open positions and target crossings |
 | `@bloxwap/hig/feedback`, `@bloxwap/hig/feedback/<adapter>` | Optional sound and haptic feedback |
 | `@bloxwap/hig/native-fonts` | Static native TTFs and their manifest |
 | `@bloxwap/hig/og-fonts`, `@bloxwap/hig/og-fonts/node` | Satori / `next/og` card faces |
@@ -3446,7 +3430,7 @@ Tailwind may reference these values through host configuration; HIG does not req
 
 `npm run smoke:packed-compat` checks the packed package with the minimum versions computed from its web peer ranges: chart 0.3.0, haptic 0.2.0, and sfx 0.2.0. CI runs this alongside the current-version tests. It checks consumer types and adapter source against those installed peers, renders chart and haptic entries on the server, and invokes the sound adapter without browser globals.
 
-Chart is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](https://bloxwap.github.io/hig/docs/guides/components/chart/). Native uses labeled readouts/lists. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
+The web candle adapter is DOM-only and lazy. The adapter is the `@bloxwap/hig/chart` entry (#96): install `@bloxwap/chart` `^0.3.0` and supply a textual summary. `@bloxwap/chart` is the only required peer of `@bloxwap/hig`, and no other entry imports it. It is never optional, so a host with a workspace `@bloxwap/chart` (like bloxwap/chart) can regenerate its lockfile from scratch with strict peers and keep the workspace link. See the [charts chapter](https://bloxwap.github.io/hig/docs/guides/components/chart/). Import the SVG altimeter from `@bloxwap/hig/native/chart` on React Native. Feedback install paths, preferences, iOS physical-tap limitations and Expo backends are in the feedback chapters. Keep essential outcome text available with both channels off.
 
 ## Stable citations and upgrades
 

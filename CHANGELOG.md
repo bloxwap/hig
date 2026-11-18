@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.1
+
+- Add PositionsBlock and ClaimRewardBlock on React and React Native. The reward flow shows the prize and destination, then opens ConfirmBlock before crediting the wallet.
+- Add a native altimeter chart, open-position P&L presentation and directional DEGEN effects. Update chart target and outcome rendering.
+- Add QR deposits and a header shortcut, refine login and language selection, and update modal and gesture-sheet presentation.
+- Remove the public ExplainerBlock exports on both platforms. Consumers using them must migrate to compositions of the existing surface, text and action components.
+
 ## 0.9.0
 
 - Add DepositBlock and LoginBlock for React and React Native, with deposit method artwork, provider selection and optional analytics consent.

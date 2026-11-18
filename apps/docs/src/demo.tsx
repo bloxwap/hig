@@ -9,6 +9,7 @@ import {Select,SegmentedControl,Switch,Slider} from '@bloxwap/hig/react/selectio
 import {TradeEntry,MarketRow,InstallCommand} from '@bloxwap/hig/react/blocks';
 import {Surface,Text} from '@bloxwap/hig/react/surface';
 import {Usd} from '@bloxwap/hig/react/data';
+import {Dialog} from '@bloxwap/hig/react/overlay';
 import {Tabs} from '@bloxwap/hig/react/navigation';
 import {Alert,Badge} from '@bloxwap/hig/react/status';
 import {FeedbackProvider,useFeedback} from '@bloxwap/hig/feedback/react';
@@ -20,6 +21,7 @@ import generated from './demo-content.json';
 import {basePath} from '../lib/site';
 const ToastAlternatives=lazy(()=>import('./toast-alternatives/gallery'));
 const FeedbackBlock=lazy(()=>import('./feedback-block'));
+const NativeLoginPreview=lazy(()=>import('./native-login-preview'));
 const TokenActionFlow=lazy(()=>import('./token-action-flow'));
 const Example=lazy(()=>import('./examples').then(m=>({default:m.Example})));
 interface Entry {name:string;route:string;family:string;nativeSupport:string;states:string[]}
@@ -38,8 +40,34 @@ function StateLinks({entry,state,onStateChange}:{entry:Entry;state:string;onStat
  const current=entry.states.includes(state)?state:'default';
  return <nav className='example-links' aria-label={`${entry.name} examples`}>{entry.states.map(value=><a key={value} href={value==='default'?'?':`?state=${value}`} aria-current={current===value?'true':undefined} onClick={event=>{if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();onStateChange(value);}}>{stateLabel(value)}</a>)}</nav>;
 }
+function ModalPreview({open,onOpenChange,title,children,trigger,contentProps,closeButton,titleHidden}:React.ComponentProps<typeof Dialog>){
+ const [popup,setPopup]=useState(false);
+ const toggleDialog=(next:boolean)=>{setPopup(next);onOpenChange(true);};
+ const inlineClose=React.isValidElement<{onClick?:()=>void}>(closeButton)?React.cloneElement(closeButton,{onClick:()=>onOpenChange(false)}):null;
+ return <>
+  {open&&!popup&&<div className={contentProps?.className} style={contentProps?.style}>{!titleHidden&&<h2 className='hig-dialog-title'>{title}</h2>}{children}{inlineClose}</div>}
+  <Dialog open={popup&&open} onOpenChange={toggleDialog} trigger={trigger} title={title} titleHidden={titleHidden} contentProps={contentProps} closeButton={closeButton}>{children}</Dialog>
+ </>;
+}
+function LoginPlatformPreview(){
+ const [platform,setPlatform]=useState('web');
+ return <section className='block-demo not-prose'><Tabs label='LoginBlock platform' value={platform} onValueChange={setPlatform}
+  items={[{value:'web',label:'Web'},{value:'native',label:'React Native'}].map(item=>({...item,
+   content:platform===item.value?<div className='example-frame block-canvas'><div className='example-canvas block-card' data-component='LoginBlock'>
+    <Suspense fallback={<p role='status'>Loading preview…</p>}>{item.value==='web'?<Example name="LoginBlock"/>:<NativeLoginPreview/>}</Suspense>
+   </div></div>:null,
+  }))}/></section>;
+}
 /** A block on a clean canvas: the composed block alone, in the card it would occupy in a product. */
 function BlockPreview({entry,state,onStateChange}:{entry:Entry;state:string;onStateChange:(state:string)=>void}){
+ if(entry.name==='LoginBlock')return <LoginPlatformPreview/>;
+ if(entry.name==='ModalBlock'){
+  const selected=entry.states.includes(state)?state:'default';
+  return <section className='block-demo not-prose'><Tabs label='App modals' value={selected} onValueChange={onStateChange} items={entry.states.map(value=>({
+   value,label:value==='default'?'Welcome':stateLabel(value.replaceAll('-',' ')),
+   content:value===selected?<div className='example-frame block-canvas modal-canvas'><Suspense fallback={<p role='status'>Loading preview…</p>}><Example key={value} name={entry.name} state={value} previewDialog={ModalPreview}/></Suspense></div>:null,
+  }))}/></section>;
+ }
  return <section className='block-demo not-prose' aria-label={`${entry.name} examples`}>
   {entry.states.length>1&&<StateLinks entry={entry} state={state} onStateChange={onStateChange}/>}
   <div className='example-frame block-canvas'><div className='example-canvas block-card' data-component={entry.name}><Suspense fallback={<p role='status'>Loading preview…</p>}>{entry.name==='FeedbackBlock'?<FeedbackBlock key={state} state={state}/>:<Example key={`${entry.name}:${state}`} name={entry.name} state={state}/>}</Suspense></div></div>
@@ -74,11 +102,12 @@ function App({initialRoute}:{initialRoute:string}){
  const [state,setState]=useState(parameters.get('state')??'default');const [amount,setAmount]=useState('0.01');const [outcome,setOutcome]=useState('Demo data. No order is submitted.');
  const {preferences,update,sink,controller}=useFeedback();const density=preset==='pro'?'compact':'comfortable';
  const entry=content.catalog.find(e=>e.name===component)??content.catalog[0];const selectedState=entry.states.includes(state)?state:'default';
- const page=content.pages.find(p=>p.route===route);const catalogEntry=content.catalog.find(e=>e.route===route);
+ const catalogEntry=content.catalog.find(e=>e.route===route);
+ const pageTitle=content.pages.find(p=>p.route===route)?.title??catalogEntry?.name;
  const [pageState,setPageState]=useState('default');
  useEffect(()=>{if(catalogEntry)loadCodes();},[catalogEntry,loadCodes]);
  // A component page opens on the example named in ?state=…, and keeps the address in step as the example changes.
- useEffect(()=>{document.title=route?`${page?.title??'Component catalog'} · Bloxwap HIG 0.1.0`:'Bloxwap HIG · clear decisions';const linked=parameters.get('state');setPageState(linked&&catalogEntry?.states.includes(linked)?linked:'default');},[route,page?.title]);
+ useEffect(()=>{document.title=route?`${pageTitle??'Component catalog'} · Bloxwap HIG 0.1.0`:'Bloxwap HIG · clear decisions';const linked=parameters.get('state');setPageState(linked&&catalogEntry?.states.includes(linked)?linked:'default');},[route,pageTitle]);
  const showExample=(next:string)=>{setPageState(next);history.replaceState(null,'',next==='default'?location.pathname:`${location.pathname}?state=${next}`);};
  useEffect(()=>{const background=()=>controller()?.setBackground(document.hidden);background();document.addEventListener('visibilitychange',background);return()=>document.removeEventListener('visibilitychange',background);},[controller]);
  function navigate(next:string){location.assign(url(next));}

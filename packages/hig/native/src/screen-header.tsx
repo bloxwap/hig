@@ -43,6 +43,8 @@ export interface ScreenHeaderProps {
  stickyHeaderBackground?:string;
  /** With `stickyHeader`: space kept inside the fill above the row and to each side of it, such as the blocks' 16, so the inset fills with the header once content scrolls under it. Pass the inset here, not as `style` padding: React Native moves a sticky child's `style` onto its own wrapper, outside the fill. */
  inset?:number;
+ /** Equal leading and trailing space when a header has multiple actions. */
+ sideWidth?:number;
  /** Style of the header's container. With `stickyHeader` it sits outside the fill (React Native moves it onto the sticky slot's wrapper once pinned); put an inset in `inset`. */
  style?:StyleProp<ViewStyle>;
 }
@@ -58,7 +60,7 @@ export function HeaderClose({onClose,label,testID,closeProps}:{onClose:()=>void;
  * edge. The settings blocks (Notifications, Signals, Sound & Haptics) draw it; the other native blocks draw a header that matches
  * it. Import it from `@bloxwap/hig/native/screen-header` for a host pane that has no block.
  */
-export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,eyebrow,hideTitle,description,stickyHeader,scrolled,stickyHeaderBackground,inset,style}:ScreenHeaderProps){
+export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,headingId,titleRef,badge,eyebrow,hideTitle,description,stickyHeader,scrolled,stickyHeaderBackground,inset,style,sideWidth=44}:ScreenHeaderProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>testID===undefined?undefined:`${testID}-${part}`;
  // Clear white stays in the accessibility tree where opacity 0 might not; the title keeps its line so the header keeps its height.
@@ -73,9 +75,9 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,
    {hideTitle?null:<View testID={id('badge')} style={{flexShrink:0}}><Badge><Text style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.text}}>{badge}</Text></Badge></View>}
   </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' accessibilityHint={description} numberOfLines={1} style={{...grow,...heading}}>{title}</Text>;
  const row=<View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:height},pad?{paddingTop:pad,paddingHorizontal:pad}:undefined,fill,stickyHeader?undefined:style]}>
-  <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
+  <View style={{minWidth:sideWidth,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
   {eyebrow?<View style={{flex:1,minWidth:0,gap:2}}><Text testID={id('eyebrow')} numberOfLines={1} style={{textAlign:'center',fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase',color:colors.muted}}>{eyebrow}</Text>{titleNode}</View>:titleNode}
-  <View style={{minWidth:44,alignItems:'flex-end'}}>{action}</View>
+  <View style={{minWidth:sideWidth,alignItems:'flex-end'}}>{action}</View>
  </View>;
  // A pinned header is the host scroller's sticky child: React Native moves its `style` prop onto the slot's own wrapper and passes flex:1 in its
  // place, which in that column measures the child at its minimum height alone (0 plus padding). So the outer view carries only what may move

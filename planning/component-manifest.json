@@ -146,7 +146,7 @@
       "issue": 20,
       "module": "@bloxwap/hig/chart",
       "components": [
-        "AltimeterChart (DOM only)",
+        "AltimeterChart (web and React Native)",
         "bitcoinPrice (default live feed)",
         "OutcomeChart (DOM only)",
         "championsLeagueWinner (default live feed); outcomeColors",
@@ -155,8 +155,8 @@
       ],
       "docs": "docs/components/chart.md",
       "web": "implemented",
-      "native": "unsupported canvas; use readout/list",
-      "remaining": "RN canvas is unsupported in this candidate. Use NumberReadout/List plus host summaries. A native chart engine/WebView bridge needs a separate supported target and device lifecycle review, rather than an invented integration."
+      "native": "AltimeterChart SVG renderer; outcome and candle charts use readout/list alternatives",
+      "remaining": "Physical-device chart frame times and screen-reader acceptance are unverified."
     },
     {
       "slug": "blocks",
@@ -169,6 +169,7 @@
         "DepositBlock",
         "LanguageBlock",
         "ManagePositionBlock",
+        "PositionsBlock",
         "TradeHistoryListBlock",
         "TradeHistoryDetailBlock",
         "TargetBlock",
@@ -177,7 +178,6 @@
         "AssetsBlock",
         "ConfirmBlock",
         "PresetPickerBlock",
-        "ExplainerBlock",
         "ProfileBlock",
         "ScreenHeader",
         "SoundHapticsBlock",
@@ -185,7 +185,8 @@
         "NotificationsBlock",
         "SwapBlock",
         "FromPickerBlock",
-        "ToPickerBlock"
+        "ToPickerBlock",
+        "ClaimRewardBlock"
       ],
       "docs": "docs/components/blocks.md",
       "web": "implemented",

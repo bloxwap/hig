@@ -24,6 +24,7 @@ import {Button} from '@bloxwap/hig/react/button';
 | `@bloxwap/hig/react/*` | Web components, blocks, `./react/css` and `./react/css/base` ([README](react/README.md)) |
 | `@bloxwap/hig/native/*` | React Native components ([README](native/README.md)) |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` ([README](chart/README.md)) |
+| `@bloxwap/hig/native/chart` | React Native SVG altimeter with live prices, open positions and target crossings |
 | `@bloxwap/hig/feedback/*` | Opt-in web and native sound/haptic adapters ([README](feedback/README.md)) |
 | `@bloxwap/hig/native-fonts` | Static TTFs for React Native and Expo ([README](native-fonts/README.md)) |
 | `@bloxwap/hig/og-fonts` | Satori / `next/og` faces and the Node loader ([README](og-fonts/README.md)) |

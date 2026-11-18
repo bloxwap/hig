@@ -5,7 +5,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
 import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
 import {ALTIMETER_EASE_MS,ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,easeInOut,gridPhase,smoothTrail,trailPoints,type AltimeterTick} from './altimeter-model.js';
-import {OUTCOME_LIMIT,capsuleCenters,outcomeChance,outcomeColors,outcomeScale,outcomeTicks,outcomeY,type Outcome,type OutcomeFeed,type OutcomeScale} from './outcome-model.js';
+import {OUTCOME_LIMIT,capsuleCenters,labelBounds,type TargetLabelInsets,outcomeChance,outcomeColors,outcomeScale,outcomeTicks,outcomeY,type Outcome,type OutcomeFeed,type OutcomeScale} from './outcome-model.js';
 import {championsLeagueWinner} from './champions-league.js';
 import {drawPlusGrid,monoFont} from './plus-grid.js';
 
@@ -18,6 +18,8 @@ export interface OutcomeChartProps extends Omit<React.HTMLAttributes<HTMLElement
  feed?:OutcomeFeed;
  /** Chart height in pixels. Default 360. */
  height?:number;
+ /** Clearance for outcome capsules in pixels. Defaults to zero on both edges. */
+ targetLabelInsets?:TargetLabelInsets;
 }
 
 /** How long a capsule takes to glide from the waiting stack to its place once its first price arrives. */
@@ -72,7 +74,7 @@ export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;he
  * second, on a ladder zoomed to the range the chances occupy. Each outcome's trail ends in a stroked capsule
  * with its label and its chance. It draws no positions or controls. Web canvas only.
  */
-export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height=360,style,...props}:OutcomeChartProps){
+export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height=360,targetLabelInsets,style,...props}:OutcomeChartProps){
  const {locale,messages,reducedMotion}=useHIG();const colors=useColors();
  const box=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null),list=useRef<HTMLUListElement>(null);
  const [stale,setStale]=useState(false);
@@ -96,7 +98,8 @@ export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height
  // Only a ladder fitted to real chances is worth holding; the whole ladder shown while waiting is not.
  held.current=chances.some(chance=>chance!=null)?scale:null;
  const ticks=outcomeTicks(scale);
- const rest=capsuleCenters(shown.map(outcome=>outcomeY(outcomeChance(outcome.price)??scale.low,height,INSET,scale)),height,CAPSULE);
+ const bounds=labelBounds(height,CAPSULE,targetLabelInsets);
+ const rest=capsuleCenters(shown.map(outcome=>outcomeY(outcomeChance(outcome.price)??scale.low,height,INSET,scale)),height,CAPSULE,6,false,bounds);
  // The frame loop reads the newest props without restarting, so a re-render never clears the trails.
  const settings=useRef({shown,rest,scale,colors,reducedMotion});
  const eased=useRef(new Map<string,{from:number;to:number;start:number;value:number;ticks:AltimeterTick[]}>());
@@ -108,14 +111,14 @@ export function OutcomeChart({summary,outcomes,feed=championsLeagueWinner,height
   const {shown,rest,scale,reducedMotion}=settings.current,state=arrival.current;
   if(frameTime!==undefined)state.clock=frameTime;
   const now=state.clock,tips=shown.map(outcome=>{const value=eased.current.get(outcome.id)?.value;return outcomeY(value!=null&&Number.isFinite(value)?value:outcomeChance(outcome.price)??scale.low,height,INSET,scale);});
-  const centers=capsuleCenters(tips,height,CAPSULE),items=list.current?.children;
+  const centers=capsuleCenters(tips,height,CAPSULE,6,false,bounds),items=list.current?.children;
   for(const id of state.priced.keys())if(!shown.some(outcome=>outcome.id===id)){state.priced.delete(id);state.at.delete(id);state.moving.delete(id);}
   for(const [index,outcome] of shown.entries()){
    const priced=outcomeChance(outcome.price)!=null,from=state.at.get(outcome.id);
    if(priced&&state.priced.get(outcome.id)===false&&from!==undefined&&!reducedMotion&&Number.isFinite(now))state.moving.set(outcome.id,{from,start:now});
    state.priced.set(outcome.id,priced);
    const move=state.moving.get(outcome.id);
-   if(move){const progress=(now-move.start)/ARRIVE_MS;if(progress>=1||reducedMotion)state.moving.delete(outcome.id);else centers[index]=move.from+(centers[index]-move.from)*easeInOut(progress);}
+   if(move){const progress=(now-move.start)/ARRIVE_MS;if(progress>=1||reducedMotion)state.moving.delete(outcome.id);else {const start=Math.max(bounds.top+CAPSULE/2,Math.min(bounds.bottom-CAPSULE/2,move.from));centers[index]=start+(centers[index]-start)*easeInOut(progress);}}
    state.at.set(outcome.id,centers[index]);
    const item=items?.[index] as HTMLElement|undefined;if(item)item.style.transform=`translateY(${+(centers[index]-rest[index]).toFixed(2)}px)`;
   }

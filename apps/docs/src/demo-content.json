@@ -135,402 +135,6 @@
     {
       "route": "guides/website",
       "title": "Documentation website and migration shell"
-    },
-    {
-      "route": "components/button",
-      "title": "Button"
-    },
-    {
-      "route": "components/icon-button",
-      "title": "IconButton"
-    },
-    {
-      "route": "components/link",
-      "title": "Link"
-    },
-    {
-      "route": "components/text",
-      "title": "Text"
-    },
-    {
-      "route": "components/heading",
-      "title": "Heading"
-    },
-    {
-      "route": "components/stack",
-      "title": "Stack"
-    },
-    {
-      "route": "components/inline",
-      "title": "Inline"
-    },
-    {
-      "route": "components/surface",
-      "title": "Surface"
-    },
-    {
-      "route": "components/card",
-      "title": "Card"
-    },
-    {
-      "route": "components/separator",
-      "title": "Separator"
-    },
-    {
-      "route": "components/field",
-      "title": "Field"
-    },
-    {
-      "route": "components/label",
-      "title": "Label"
-    },
-    {
-      "route": "components/input",
-      "title": "Input"
-    },
-    {
-      "route": "components/text-area",
-      "title": "TextArea"
-    },
-    {
-      "route": "components/search-input",
-      "title": "SearchInput"
-    },
-    {
-      "route": "components/checkbox",
-      "title": "Checkbox"
-    },
-    {
-      "route": "components/switch",
-      "title": "Switch"
-    },
-    {
-      "route": "components/radio-group",
-      "title": "RadioGroup"
-    },
-    {
-      "route": "components/segmented-control",
-      "title": "SegmentedControl"
-    },
-    {
-      "route": "components/filter",
-      "title": "Filter"
-    },
-    {
-      "route": "components/preset-group",
-      "title": "PresetGroup"
-    },
-    {
-      "route": "components/select",
-      "title": "Select"
-    },
-    {
-      "route": "components/slider",
-      "title": "Slider"
-    },
-    {
-      "route": "components/dialog",
-      "title": "Dialog"
-    },
-    {
-      "route": "components/alert-dialog",
-      "title": "AlertDialog"
-    },
-    {
-      "route": "components/sheet",
-      "title": "Sheet"
-    },
-    {
-      "route": "components/gesture-sheet",
-      "title": "GestureSheet"
-    },
-    {
-      "route": "components/menu",
-      "title": "Menu"
-    },
-    {
-      "route": "components/popover",
-      "title": "Popover"
-    },
-    {
-      "route": "components/tooltip",
-      "title": "Tooltip"
-    },
-    {
-      "route": "components/tabs",
-      "title": "Tabs"
-    },
-    {
-      "route": "components/accordion",
-      "title": "Accordion"
-    },
-    {
-      "route": "components/breadcrumb",
-      "title": "Breadcrumb"
-    },
-    {
-      "route": "components/navigation",
-      "title": "Navigation"
-    },
-    {
-      "route": "components/pagination",
-      "title": "Pagination"
-    },
-    {
-      "route": "components/search",
-      "title": "Search"
-    },
-    {
-      "route": "components/list-group",
-      "title": "ListGroup"
-    },
-    {
-      "route": "components/list-row",
-      "title": "ListRow"
-    },
-    {
-      "route": "components/badge",
-      "title": "Badge"
-    },
-    {
-      "route": "components/alert",
-      "title": "Alert"
-    },
-    {
-      "route": "components/callout",
-      "title": "Callout"
-    },
-    {
-      "route": "components/toast",
-      "title": "Toast"
-    },
-    {
-      "route": "components/toaster",
-      "title": "Toaster"
-    },
-    {
-      "route": "components/progress",
-      "title": "Progress"
-    },
-    {
-      "route": "components/spinner",
-      "title": "Spinner"
-    },
-    {
-      "route": "components/skeleton",
-      "title": "Skeleton"
-    },
-    {
-      "route": "components/empty-state",
-      "title": "EmptyState"
-    },
-    {
-      "route": "components/avatar",
-      "title": "Avatar"
-    },
-    {
-      "route": "components/status-indicator",
-      "title": "StatusIndicator"
-    },
-    {
-      "route": "components/confetti",
-      "title": "Confetti"
-    },
-    {
-      "route": "components/number-readout",
-      "title": "NumberReadout"
-    },
-    {
-      "route": "components/animated-number-readout",
-      "title": "AnimatedNumberReadout"
-    },
-    {
-      "route": "components/number-flow",
-      "title": "NumberFlow"
-    },
-    {
-      "route": "components/usd",
-      "title": "Usd"
-    },
-    {
-      "route": "components/percent",
-      "title": "Percent"
-    },
-    {
-      "route": "components/metric",
-      "title": "Metric"
-    },
-    {
-      "route": "components/stat",
-      "title": "Stat"
-    },
-    {
-      "route": "components/list",
-      "title": "List"
-    },
-    {
-      "route": "components/row",
-      "title": "Row"
-    },
-    {
-      "route": "components/table",
-      "title": "Table"
-    },
-    {
-      "route": "components/wallet-address",
-      "title": "WalletAddress"
-    },
-    {
-      "route": "components/qr-code",
-      "title": "QRCode"
-    },
-    {
-      "route": "components/bar-mark",
-      "title": "BarMark"
-    },
-    {
-      "route": "components/bar-pnl",
-      "title": "BarPnl"
-    },
-    {
-      "route": "components/asset-balance-row",
-      "title": "AssetBalanceRow"
-    },
-    {
-      "route": "components/vertical-address",
-      "title": "VerticalAddress"
-    },
-    {
-      "route": "components/brand-mark",
-      "title": "BrandMark"
-    },
-    {
-      "route": "components/check-icon",
-      "title": "CheckIcon"
-    },
-    {
-      "route": "components/h-i-g-provider",
-      "title": "HIGProvider"
-    },
-    {
-      "route": "components/market-row",
-      "title": "MarketRow"
-    },
-    {
-      "route": "components/account-block",
-      "title": "AccountBlock"
-    },
-    {
-      "route": "components/manage-position-block",
-      "title": "ManagePositionBlock"
-    },
-    {
-      "route": "components/target-block",
-      "title": "TargetBlock"
-    },
-    {
-      "route": "components/position-block",
-      "title": "PositionBlock"
-    },
-    {
-      "route": "components/assets-block",
-      "title": "AssetsBlock"
-    },
-    {
-      "route": "components/confirm-block",
-      "title": "ConfirmBlock"
-    },
-    {
-      "route": "components/preset-picker-block",
-      "title": "PresetPickerBlock"
-    },
-    {
-      "route": "components/explainer-block",
-      "title": "ExplainerBlock"
-    },
-    {
-      "route": "components/profile-block",
-      "title": "ProfileBlock"
-    },
-    {
-      "route": "components/screen-header",
-      "title": "ScreenHeader"
-    },
-    {
-      "route": "components/reward-block",
-      "title": "RewardBlock"
-    },
-    {
-      "route": "components/sound-haptics-block",
-      "title": "SoundHapticsBlock"
-    },
-    {
-      "route": "components/feedback-block",
-      "title": "FeedbackBlock"
-    },
-    {
-      "route": "components/signals-block",
-      "title": "SignalsBlock"
-    },
-    {
-      "route": "components/notifications-block",
-      "title": "NotificationsBlock"
-    },
-    {
-      "route": "components/trade-history-list-block",
-      "title": "TradeHistoryListBlock"
-    },
-    {
-      "route": "components/trade-history-detail-block",
-      "title": "TradeHistoryDetailBlock"
-    },
-    {
-      "route": "components/token-action-block",
-      "title": "TokenActionBlock"
-    },
-    {
-      "route": "components/login-block",
-      "title": "LoginBlock"
-    },
-    {
-      "route": "components/deposit-block",
-      "title": "DepositBlock"
-    },
-    {
-      "route": "components/language-block",
-      "title": "LanguageBlock"
-    },
-    {
-      "route": "components/trade-entry",
-      "title": "TradeEntry"
-    },
-    {
-      "route": "components/swap-block",
-      "title": "SwapBlock"
-    },
-    {
-      "route": "components/from-picker-block",
-      "title": "FromPickerBlock"
-    },
-    {
-      "route": "components/to-picker-block",
-      "title": "ToPickerBlock"
-    },
-    {
-      "route": "components/install-command",
-      "title": "InstallCommand"
-    },
-    {
-      "route": "components/marketing-hero",
-      "title": "MarketingHero"
-    },
-    {
-      "route": "components/altimeter-chart",
-      "title": "AltimeterChart"
-    },
-    {
-      "route": "components/outcome-chart",
-      "title": "OutcomeChart"
     }
   ],
   "catalog": [
@@ -1317,17 +921,6 @@
       ]
     },
     {
-      "name": "ExplainerBlock",
-      "route": "components/explainer-block",
-      "family": "blocks",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "sections",
-        "task"
-      ]
-    },
-    {
       "name": "ProfileBlock",
       "route": "components/profile-block",
       "family": "blocks",
@@ -1372,6 +965,22 @@
         "default",
         "interactive",
         "devices"
+      ]
+    },
+    {
+      "name": "ModalBlock",
+      "route": "components/modal-block",
+      "family": "blocks",
+      "nativeSupport": "alternative",
+      "states": [
+        "default",
+        "agent-wallet",
+        "builder-fee",
+        "referral-discount",
+        "tournament-invite",
+        "trend",
+        "swing",
+        "live-activity"
       ]
     },
     {
@@ -1547,11 +1156,12 @@
       "name": "AltimeterChart",
       "route": "components/altimeter-chart",
       "family": "chart",
-      "nativeSupport": "alternative",
+      "nativeSupport": "renderer",
       "states": [
         "default",
         "empty",
-        "targets"
+        "targets",
+        "open-position"
       ]
     },
     {
@@ -1562,6 +1172,26 @@
       "states": [
         "default",
         "empty"
+      ]
+    },
+    {
+      "name": "PositionsBlock",
+      "route": "components/positions-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "empty",
+        "mixed"
+      ]
+    },
+    {
+      "name": "ClaimRewardBlock",
+      "route": "components/claim-reward-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
       ]
     }
   ]

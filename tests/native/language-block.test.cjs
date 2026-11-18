@@ -23,6 +23,7 @@ it('shows the heading, Back, and each language as a radio that reads both names,
  act(()=>{all(tree,'lang-back').find(node=>node.props.onPress).props.onPress({});});expect(back).toHaveBeenCalledTimes(1);
  expect(radios(tree).map(radio=>[radio.props.accessibilityLabel,radio.props.accessibilityState.checked])).toEqual([['English, English',false],['Español, Spanish',true],['Français, French',false]]);
  expect(all(tree,'lang-check').filter(node=>typeof node.type==='string')).toHaveLength(1);
+ expect(tree.findByType(require('@bloxwap/icons/native/check').Check).props.color).toBe(require('@bloxwap/hig/tokens').nativeSrgb.positive);
  act(()=>{radios(tree)[2].props.onPress({});});expect(select).toHaveBeenCalledWith(languages[2]);
 });
 it('filters from the search field, shows no results, and leaves the field out with search={false}',()=>{

@@ -72,3 +72,35 @@ it('default mode retains its heading, supporting text, scroll and translated Clo
  expect(JSON.stringify(root.toJSON())).toContain('Verify this account');expect(JSON.stringify(root.toJSON())).toContain('Done');
  expect(root.root.findByType(RN.Modal).props.animationType).toBe('none');
 });
+it('sizes the standard dialog frame inside the safe-area gutters',()=>{
+ const {SafeAreaView}=require('react-native-safe-area-context');
+ const frameStyle={alignSelf:'center',width:'100%',maxWidth:388};
+ mount({contentMode:'default',stageStyle:{paddingHorizontal:16},frameStyle});
+ expect(RN.StyleSheet.flatten(root.root.findByType(SafeAreaView).props.style)).toMatchObject({paddingHorizontal:16});
+ expect(RN.StyleSheet.flatten(root.root.findByType(RN.KeyboardAvoidingView).props.style)).toMatchObject({...frameStyle,maxHeight:'90%'});
+ expect(root.root.findAllByType(RN.ScrollView)).toHaveLength(1);
+});
+
+it('includes the content inset in the concentric dialog radius',()=>{
+ mount({contentMode:'default',concentric:true});
+ const shell=root.root.findByType(RN.ScrollView).props.contentContainerStyle;
+ expect(shell.borderRadius).toBe(shell.padding+22);
+});
+
+it('insets the inline alert action by the difference between the surface and capsule radii',()=>{
+ const {Alert}=require('../../packages/hig/native/src/status');
+ const {Button}=require('../../packages/hig/native/src/button');
+ const action=React.createElement(Button,{onPress:jest.fn()},'Retry');
+ act(()=>{root=create(React.createElement(HIGProvider,null,React.createElement(Alert,{title:'Connection lost',action},'Try again.')));});
+ const surface=root.root.findAllByType(RN.View).map(n=>RN.StyleSheet.flatten(n.props.style)).find(style=>style?.padding&&style?.borderRadius);
+ expect(surface.borderRadius).toBe(surface.padding+22);
+});
+it('renders the Signals label above the heading with a radial gradient on the panel',()=>{
+ mount({contentMode:'default',accentEyebrow:'Signals'});
+ const labels=root.root.findAllByType(RN.Text).map(node=>node.props.children);
+ expect(labels.indexOf('Signals')).toBeGreaterThanOrEqual(0);
+ expect(labels.indexOf('Signals')).toBeLessThan(labels.indexOf('Approve account'));
+ const style=root.root.findByType(RN.ScrollView).props.contentContainerStyle;
+ const parse=require('react-native/Libraries/StyleSheet/processBackgroundImage').default;
+ expect(parse(style.experimental_backgroundImage)[0]?.type).toBe('radial-gradient');
+});

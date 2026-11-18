@@ -78,7 +78,7 @@ export function LanguageBlock({title,onBack,headerAction,languages,value=null,on
       <Text style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{language.name}</Text>
       {language.description?<Text style={{fontSize:14,lineHeight:20,color:colors.muted}}>{language.description}</Text>:null}
      </View>
-     {selected?<Check size={20} color={colors.text} testID={testID?`${testID}-check`:undefined}/>:null}
+     {selected?<Check size={20} color={colors.positive} testID={testID?`${testID}-check`:undefined}/>:null}
     </Pressable>;})}
   </View>}
  </>;

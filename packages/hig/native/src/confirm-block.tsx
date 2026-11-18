@@ -1,5 +1,6 @@
+import {AddressReadout} from './address-readout.js';
 import React from 'react';
-import {Platform,View,type ScrollViewProps} from 'react-native';
+import {View,type ScrollViewProps} from 'react-native';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
@@ -87,20 +88,14 @@ export interface ConfirmBlockProps {
  /** Prefix of the test IDs: `<testID>-header`, `-amount`, `-symbol`, `-to`, `-network`, `-detail-<index>`, `-body`, `-point-<index>`, `-warning`, `-confirm`, `-cancel` and `-tertiary`. Defaults to `confirm`. `confirmTestID`, `cancelTestID` and `tertiaryAction.testID` replace the last three one by one. */
  testID?:string;
 }
+export {confirmAddressRows} from './address-readout.js';
 const amountFormat:Intl.NumberFormatOptions={maximumFractionDigits:6};
-/** The address as the two rows the block draws: split at the middle, with `anchor` on the characters people compare, the first 4 (6 when it starts with `0x`) and the last 4. An address too short to have a middle is all anchor. */
-export function confirmAddressRows(address:string):{text:string;anchor:boolean}[][]{
- const characters=Array.from(address),head=address.startsWith('0x')?6:4,tail=characters.length-4,split=Math.ceil(characters.length/2);
- return [characters.slice(0,split),characters.slice(split)].map((row,rowIndex)=>{const parts:{text:string;anchor:boolean}[]=[];
-  row.forEach((character,index)=>{const position=rowIndex*split+index,anchor=position<head||position>=tail,last=parts[parts.length-1];if(last&&last.anchor===anchor)last.text+=character;else parts.push({text:character,anchor});});
-  return parts;});
-}
 /** The last look before a send: the amount as the headline, where it goes and on which network, a warning that it cannot be taken back, then Cancel and Confirm side by side. Without an amount, address or network it confirms anything else, such as signing out or deleting an account: the header, `children`, then the actions. */
 export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLabel,address,network,details,oneLineDetails,children,points,confirmIntent='primary',tertiaryAction,title,warningTitle,warning,notice,onConfirm,confirmLabel,busy,confirmDisabled,cancelWhileBusy,backWhileBusy,onCancel,cancelLabel,cancelDisabled,confirmTestID,cancelTestID,onBack,backProps,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID='confirm'}:ConfirmBlockProps){
  // What busy holds besides the confirming action: Back, Cancel and the tertiary action, unless the host lets them leave the wait (Back alone with backWhileBusy).
  const held=!!busy&&!cancelWhileBusy;
  const backHeld=held&&!backWhileBusy;
- const colors=useColors(),t=useMessages(),{direction,monoFontFamily}=useHIG();
+ const colors=useColors(),t=useMessages(),{direction}=useHIG();
  const id=(part:string)=>`${testID}-${part}`;
  const note=warning===undefined?(address!==undefined?t.sendWarning(symbol??'',network??''):null):warning;
  // Read-only lines, each read as one: "To, 0x…".
@@ -110,8 +105,8 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
   <Text numberOfLines={lines} style={{...(one?{flexShrink:0}:null),fontSize:16,lineHeight:24,color:colors.muted}}>{label}</Text>
   {one||typeof value==='string'||typeof value==='number'?<Text testID={id(part)} numberOfLines={lines} ellipsizeMode={one?'tail':undefined} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',textAlign:'right',color:colors.text}}>{value}</Text>:<View testID={id(part)} style={{flexShrink:1}}>{value}</View>}
  </View>;};
- const toPart='to',networkPart='network',mono=monoFontFamily??Platform.select({ios:'Menlo',default:'monospace'}),type={fontFamily:mono,fontSize:15,lineHeight:22},
-  shown=address===undefined?null:<Text accessible={false} maxFontSizeMultiplier={1.2} style={{...type,writingDirection:'ltr',textAlign:'left'}}>{confirmAddressRows(address).map((row,index)=><React.Fragment key={index}>{index>0?'\n':null}{row.map((part,offset)=><Text key={offset} maxFontSizeMultiplier={1.2} style={{...type,color:part.anchor?colors.text:colors.muted,fontWeight:part.anchor?'700':'500'}}>{part.text}</Text>)}</React.Fragment>)}</Text>,
+ const toPart='to',networkPart='network',
+  shown=address===undefined?null:<AddressReadout address={address}/>,
   lines=[...(address!==undefined?[line(toPart,t.sendTo,shown,address)]:[]),...(network!==undefined?[line(networkPart,t.sendNetwork,network)]:[]),...(details??[]).map((detail,index)=>line(`detail-${index}`,detail.label,detail.value,detail.valueLabel))];
  const header=<ScreenHeader title={title??t.confirmSend} onBack={onBack} backDisabled={backHeld} backProps={backProps} action={headerAction} headingId={headingId} testID={testID}/>;
  const hasBody=(children!=null&&children!==false)||!!points?.length;

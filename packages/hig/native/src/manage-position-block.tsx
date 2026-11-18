@@ -112,52 +112,56 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
   {parts[1]?<Text accessible={false} style={words}>{parts[1]}</Text>:null}
  </View>;
 }
-/** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
-export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,pnlOptions,onBack,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:ManagePositionBlockProps){
- const colors=useColors(),fills=useFills(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
+export function PositionSummaryRow({position,side,labels,pnlOptions,disclosure=false}:{position:ManagePositionBlockSummary;side:'long'|'short';labels:Pick<ManagePositionBlockLabels,'long'|'short'>;pnlOptions?:Intl.NumberFormatOptions;disclosure?:boolean}){
+ const colors=useColors(),fills=useFills(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
+ const long=side==='long';
  // The artwork that failed to draw (its URL, or the position for a host element); it then shows the fallback or the initials until the artwork changes.
  const [broken,setBroken]=useState<string|null>(null);
  const pnlUsd=pnlOptions?{...pnlUsdDefault,...pnlOptions}:pnlUsdDefault;
  const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,present(options)).text:unknown;
- const corridor=positionCorridor({side,entry,mark,liquidation}),long=side==='long';
+ const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
+ const {name,icon,iconFallback,symbol,leverage,size,pnl,pnlPercent,badge,caption,onSelect}=position;
+ const initials=<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol??name.slice(0,3)}</Text>;
+ const key=typeof icon==='string'?icon:`${symbol??''}|${name}`,failed=broken===key,fail=()=>setBroken(key);
+ const art=failed?<View testID='manage-position-initials' style={shape}>{iconFallback??initials}</View>
+  :typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} onError={fail} style={shape as object}/>
+  :<View style={shape}>{typeof icon==='function'?icon(fail):icon??initials}</View>;
+ const gearing=known(leverage)?formatNumberReadout(leverage,locale,units).text+times:null,held=size!==undefined?read(size,units):null;
+ const label=[name,long?labels.long:labels.short,gearing,held,pnl!==undefined?read(pnl,pnlUsd):null,pnlPercent!==undefined?read(pnlPercent,pnlShare):null].filter(Boolean).join(', ');
+ const meta={fontSize:14,lineHeight:20} as const;
+ const title=<Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text,...(badge?{flexShrink:1}:null)}}>{name}</Text>;
+ const surface=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well,marginTop:disclosure?0:16,...(disclosure?{paddingVertical:16,paddingStart:16,borderRadius:0}:{})});
+ const parts=<>
+  <View {...hidden}>{art}</View>
+  <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
+   {badge?<View style={{direction,flexDirection:'row',alignItems:'center',gap:8,minWidth:0}}>{title}<View testID='manage-position-badge' style={{flexShrink:0,borderRadius:9999,paddingHorizontal:8,backgroundColor:fills.raised}}><Text numberOfLines={1} style={{fontSize:12,lineHeight:18,fontWeight:'500',color:colors.muted}}>{badge}</Text></View></View>:title}
+   <View style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>
+    <Text testID='manage-position-side' style={{...meta,fontWeight:'600',color:long?colors.up:colors.down}}>{long?up:down}</Text>
+    {gearing?<Text testID='manage-position-leverage' style={{...meta,fontWeight:'600',color:long?colors.up:colors.down}}>{gearing}</Text>:null}
+    {gearing&&held?<Text style={{...meta,color:colors.muted}}>{dot.trim()}</Text>:null}
+    {size!==undefined?<AnimatedNumberReadout value={size} options={units} tone='muted' testID='manage-position-size' style={meta}/>:null}
+   </View>
+  </View>
+  <View {...hidden} style={{alignItems:'flex-end',justifyContent:'center'}}>
+   {pnl!==undefined?<AnimatedNumberReadout value={pnl} options={pnlUsd} tone={known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text'} testID='manage-position-pnl' style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
+   {pnlPercent!==undefined?<AnimatedNumberReadout value={pnlPercent} options={pnlShare} tone='muted' testID='manage-position-pnl-percent' style={meta}/>:null}
+  </View>
+  {disclosure&&onSelect&&<View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>}
+ </>;
+ const note=caption?<Text testID='manage-position-caption' style={{marginTop:8,paddingHorizontal:16,color:colors.muted,fontSize:13,lineHeight:20}}>{caption}</Text>:null;
+ if(onSelect){
+  // A pressable row is named by the host's label and then what it shows, so the figures are read even with hints off; the caption is its hint.
+  return <><Pressable testID='manage-position-row' accessibilityRole='button' accessibilityLabel={position.label?`${position.label}, ${label}`:label} accessibilityHint={caption} onPress={onSelect} style={({pressed})=>surface(pressed)}>{parts}</Pressable>{note}</>;
+ }
+ return <><View testID='manage-position-row' accessible accessibilityLabel={label} style={surface(false)}>{parts}</View>{note}</>;
+}
+/** One open position as a screen: margin and notional under the share left before liquidation, then the liquidation, mark and entry prices as a `BarPnl`, what can be done, and the position itself. Both bars are drawn without a card, because nothing in them can be pressed. */
+export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,pnlOptions,onBack,headerAction,headingId,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:ManagePositionBlockProps){
+ const colors=useColors(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale(),present=usePresentNumber();
+ const read=(value:number|null|undefined,options:Intl.NumberFormatOptions)=>known(value)?formatNumberReadout(value,locale,present(options)).text:unknown;
+ const corridor=positionCorridor({side,entry,mark,liquidation});
  const marginBar:BarMarkElement[]=[{id:'margin',label:labels.margin,value:margin,detail:read(margin,usd),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:read(notional,usd),tone:'positive'}];
  const left=corridor.share===null?null:corridor.share*100;
- const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
- const row=()=>{
-  if(!position)return null;const {name,icon,iconFallback,symbol,leverage,size,pnl,pnlPercent,badge,caption,onSelect}=position;
-  const initials=<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol??name.slice(0,3)}</Text>;
-  const key=typeof icon==='string'?icon:`${symbol??''}|${name}`,failed=broken===key,fail=()=>setBroken(key);
-  const art=failed?<View testID='manage-position-initials' style={shape}>{iconFallback??initials}</View>
-   :typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} onError={fail} style={shape as object}/>
-   :<View style={shape}>{typeof icon==='function'?icon(fail):icon??initials}</View>;
-  const gearing=known(leverage)?formatNumberReadout(leverage,locale,units).text+times:null,held=size!==undefined?read(size,units):null;
-  const label=[name,long?labels.long:labels.short,gearing,held,pnl!==undefined?read(pnl,pnlUsd):null,pnlPercent!==undefined?read(pnlPercent,pnlShare):null].filter(Boolean).join(', ');
-  const meta={fontSize:14,lineHeight:20} as const;
-  const title=<Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text,...(badge?{flexShrink:1}:null)}}>{name}</Text>;
-  const surface=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well,marginTop:16});
-  const parts=<>
-   <View {...hidden}>{art}</View>
-   <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>
-    {badge?<View style={{direction,flexDirection:'row',alignItems:'center',gap:8,minWidth:0}}>{title}<View testID='manage-position-badge' style={{flexShrink:0,borderRadius:9999,paddingHorizontal:8,backgroundColor:fills.raised}}><Text numberOfLines={1} style={{fontSize:12,lineHeight:18,fontWeight:'500',color:colors.muted}}>{badge}</Text></View></View>:title}
-    <View style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>
-     <Text testID='manage-position-side' style={{...meta,fontWeight:'600',color:long?colors.up:colors.down}}>{long?up:down}</Text>
-     {gearing?<Text testID='manage-position-leverage' style={{...meta,fontWeight:'600',color:long?colors.up:colors.down}}>{gearing}</Text>:null}
-     {gearing&&held?<Text style={{...meta,color:colors.muted}}>{dot.trim()}</Text>:null}
-     {size!==undefined?<AnimatedNumberReadout value={size} options={units} tone='muted' testID='manage-position-size' style={meta}/>:null}
-    </View>
-   </View>
-   <View {...hidden} style={{alignItems:'flex-end',justifyContent:'center'}}>
-    {pnl!==undefined?<AnimatedNumberReadout value={pnl} options={pnlUsd} tone={known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text'} testID='manage-position-pnl' style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
-    {pnlPercent!==undefined?<AnimatedNumberReadout value={pnlPercent} options={pnlShare} tone='muted' testID='manage-position-pnl-percent' style={meta}/>:null}
-   </View>
-  </>;
-  const note=caption?<Text testID='manage-position-caption' style={{marginTop:8,paddingHorizontal:16,color:colors.muted,fontSize:13,lineHeight:20}}>{caption}</Text>:null;
-  if(onSelect){
-   // A pressable row is named by the host's label and then what it shows, so the figures are read even with hints off; the caption is its hint.
-   return <><Pressable testID='manage-position-row' accessibilityRole='button' accessibilityLabel={position.label?`${position.label}, ${label}`:label} accessibilityHint={caption} onPress={onSelect} style={({pressed})=>surface(pressed)}>{parts}</Pressable>{note}</>;
-  }
-  return <><View testID='manage-position-row' accessible accessibilityLabel={label} style={surface(false)}>{parts}</View>{note}</>;
- };
  const actionValue=(action:ManagePositionBlockAction):{value?:React.ReactNode;valueLabel?:string;valueTone?:ManagePositionBlockAction['tone']}=>{
   const figure=action.value;if(figure==null)return {};
   if(typeof figure==='string')return {value:figure,valueTone:action.tone};
@@ -176,7 +180,7 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
   {actions.length>0?<View testID='manage-actions' style={{marginTop:16}}>
    <ListGroup>{actions.map(action=><ListRow key={action.id} testID={`manage-action-${action.id}`} label={action.label} disabled={action.disabled} onSelect={action.onSelect} {...actionValue(action)}/>)}</ListGroup>
   </View>:null}
-  {row()}
+  {position&&<PositionSummaryRow position={position} side={side} labels={labels} pnlOptions={pnlOptions}/>}
  </>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='manage-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
  return <View testID={testID} style={{padding:16}}>

@@ -10,6 +10,7 @@ import {BarPnl} from '../bar-pnl.js';
 import {ListGroup,ListRow} from '../list-group.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
+import {ChevronRight} from '@bloxwap/icons/react/chevron-right';
 import {SwapNumber} from './swap/shared.js';
 /** The words of the block. They are trading terms, so the host supplies them in its own vocabulary and language; HIG ships none. */
 export interface ManagePositionBlockLabels {
@@ -97,13 +98,6 @@ function PositionArt({position}:{position:ManagePositionBlockSummary}){
 /** Manage one open position: margin against notional (with the share left before liquidation) as a `BarMark` and the liquidation, mark and entry prices as a `BarPnl`, both drawn without a card because they are read-only, the host's actions as one `ListGroup` of rows, and the position itself underneath. */
 export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,margin,notional,priceOptions,actions,position,pnlOptions,onBack,headerAction,headingId,stickyHeader,className,...rest}:ManagePositionBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();const corridor=positionCorridor({side,entry,mark,liquidation});
- const pnlTone=!known(position?.pnl)||position.pnl===0?undefined:position.pnl>0?'up':'down';
- const pnlFormat:Intl.NumberFormatOptions={...usd,signDisplay:'exceptZero',maximumFractionDigits:4,...pnlOptions};
- const content=(position:ManagePositionBlockSummary,ids?:{identity:string;amounts:string})=><>
-  <PositionArt position={position}/>
-  <span id={ids?.identity} className='hig-asset-row-identity'>{position.badge?<span className='hig-position-name'><strong>{position.name}</strong><Badge className='hig-position-badge'>{position.badge}</Badge></span>:<strong>{position.name}</strong>}<span><span className='hig-position-side' data-side={side} aria-hidden='true'>{side==='long'?'↑':'↓'}</span><span className='hig-sr-only'>{side==='long'?labels.long:labels.short}</span>{position.leverage!=null&&<span className='hig-position-side hig-position-leverage' data-side={side}> {formatNumber(position.leverage,locale)}×</span>}{known(position.size)&&<> · <AnimatedNumberReadout value={position.size} options={{maximumFractionDigits:6}}/></>}</span></span>
-  <span id={ids?.amounts} className='hig-asset-row-amounts'><strong data-tone={pnlTone}><AnimatedNumberReadout value={position.pnl} options={pnlFormat}/></strong><span><AnimatedNumberReadout value={position.pnlPercent} options={{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'}}/></span></span>
- </>;
  return <section {...rest} className={`hig-manage-position-block${className?` ${className}`:''}`}>
   <ScreenHeader title={labels.title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   <div className='hig-token-bars'>
@@ -111,15 +105,26 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
    <BarPnl surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
   </div>
   {actions.length>0&&<ListGroup className='hig-manage-actions'>{actions.map(action=><ListRow key={action.id} label={action.label} disabled={action.disabled} onSelect={action.onSelect} value={action.value==null?undefined:<span className='hig-manage-action-value' data-tone={action.tone}>{typeof action.value==='string'?action.value:<AnimatedNumberReadout {...figureProps(action.value)}/>}</span>}/>)}</ListGroup>}
-  {position&&(position.onSelect?<PositionButton position={position} content={content}/>:<div className='hig-asset-row hig-position-row'>{content(position)}</div>)}
-  {position?.caption&&!position.onSelect&&<p className='hig-position-caption'>{position.caption}</p>}
+  {position&&<PositionSummaryRow position={position} labels={labels} side={side} pnlOptions={pnlOptions}/>}
  </section>;
 }
+export function PositionSummaryRow({position,side,labels,pnlOptions,disclosure=false}:{position:ManagePositionBlockSummary;side:'long'|'short';labels:Pick<ManagePositionBlockLabels,'long'|'short'>;pnlOptions?:Intl.NumberFormatOptions;disclosure?:boolean}){
+ const locale=useNumberLocale();
+ const pnlTone=!known(position?.pnl)||position.pnl===0?undefined:position.pnl>0?'up':'down';
+ const pnlFormat:Intl.NumberFormatOptions={...usd,signDisplay:'exceptZero',maximumFractionDigits:4,...pnlOptions};
+ const content=(position:ManagePositionBlockSummary,ids?:{identity:string;amounts:string})=><>
+  <PositionArt position={position}/>
+  <span id={ids?.identity} className='hig-asset-row-identity'>{position.badge?<span className='hig-position-name'><strong>{position.name}</strong><Badge className='hig-position-badge'>{position.badge}</Badge></span>:<strong>{position.name}</strong>}<span><span className='hig-position-side' data-side={side} aria-hidden='true'>{side==='long'?'↑':'↓'}</span><span className='hig-sr-only'>{side==='long'?labels.long:labels.short}</span>{position.leverage!=null&&<span className='hig-position-side hig-position-leverage' data-side={side}> {formatNumber(position.leverage,locale)}×</span>}{known(position.size)&&<> · <AnimatedNumberReadout value={position.size} options={{maximumFractionDigits:6}}/></>}</span></span>
+  <span id={ids?.amounts} className='hig-asset-row-amounts'><strong data-tone={pnlTone}><AnimatedNumberReadout value={position.pnl} options={pnlFormat}/></strong><span><AnimatedNumberReadout value={position.pnlPercent} options={{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'}}/></span></span>
+  {disclosure&&position.onSelect&&<ChevronRight size={18} aria-hidden/>}
+ </>;
+ return position.onSelect?<PositionButton position={position} content={content} disclosure={disclosure}/>:<><div className='hig-asset-row hig-position-row'>{content(position)}</div>{position.caption&&<p className='hig-position-caption'>{position.caption}</p>}</>;
+}
 /** The position row as a button: named by the host's label followed by what it shows, so the figures are part of the name, and described by the caption. Without a label it is named by what it shows alone. Its own component, so the ids it needs exist only when it is drawn. */
-function PositionButton({position,content}:{position:ManagePositionBlockSummary;content:(position:ManagePositionBlockSummary,ids:{identity:string;amounts:string})=>React.ReactNode}){
+function PositionButton({position,content,disclosure}:{disclosure:boolean;position:ManagePositionBlockSummary;content:(position:ManagePositionBlockSummary,ids:{identity:string;amounts:string})=>React.ReactNode}){
  const name=useId(),identity=useId(),amounts=useId(),about=useId();
  return <>
-  <button type='button' className='hig-asset-row hig-position-row' aria-labelledby={position.label?`${name} ${identity} ${amounts}`:undefined} aria-describedby={position.caption?about:undefined} onClick={position.onSelect}>{position.label&&<span id={name} className='hig-sr-only'>{position.label},</span>}{content(position,{identity,amounts})}<PressDecoration kind='row'/></button>
+  <button type='button' className='hig-asset-row hig-position-row' style={disclosure?{borderRadius:0,padding:16}:undefined} aria-labelledby={position.label?`${name} ${identity} ${amounts}`:undefined} aria-describedby={position.caption?about:undefined} onClick={position.onSelect}>{position.label&&<span id={name} className='hig-sr-only'>{position.label},</span>}{content(position,{identity,amounts})}<PressDecoration kind='row'/></button>
   {position.caption&&<p id={about} className='hig-position-caption'>{position.caption}</p>}
  </>;
 }

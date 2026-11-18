@@ -33,7 +33,9 @@ const codes=Object.fromEntries(catalog.map(e=>[e.name,e.code]));writeFileSync('a
 const data={version,status:'pre-1.0 release · acceptance exceptions documented',pages:pages.map(({markdown,...page})=>page),catalog};mkdirSync('apps/docs/src',{recursive:true});mkdirSync('apps/docs/public/markdown',{recursive:true});writeFileSync('apps/docs/src/content.json',JSON.stringify(data,null,2)+'\n');writeFileSync('planning/api-manifest.json',JSON.stringify({version,api},null,2)+'\n');
 // Interactive previews need routing labels and choices. Full chapters and API signatures
 // already render on the server; shipping them again to every preview wastes the docs budget.
-writeFileSync('apps/docs/src/demo-content.json',JSON.stringify({pages:pages.map(({route,title})=>({route,title})),catalog:catalog.map(({name,route,family,nativeSupport,states})=>({name,route,family,nativeSupport,states}))},null,2)+'\n');
+// Component names already supply their page titles in the client catalog.
+const catalogTitles=new Map(catalog.map(entry=>[entry.route,entry.name]));
+writeFileSync('apps/docs/src/demo-content.json',JSON.stringify({pages:pages.filter(page=>catalogTitles.get(page.route)!==page.title).map(({route,title})=>({route,title})),catalog:catalog.map(({name,route,family,nativeSupport,states})=>({name,route,family,nativeSupport,states}))},null,2)+'\n');
 for(const p of pages.filter(p=>!p.component)){const target=`apps/docs/public/markdown/${p.source.slice(5)}`;mkdirSync(target.slice(0,target.lastIndexOf('/')),{recursive:true});writeFileSync(target,p.markdown);}
 writeFileSync('apps/docs/public/llms.txt',`# Bloxwap HIG ${version}\n\n${pages.filter(p=>!p.component).map(p=>`## ${p.title}\nSource: ${p.source}\n\n${p.markdown}`).join('\n\n')}`);
 writeFileSync('apps/docs/public/catalog.json',JSON.stringify({version,components:catalog.map(({name,route,entry,nativeSupport,states})=>({name,route,entry,nativeSupport,states}))},null,2)+'\n');

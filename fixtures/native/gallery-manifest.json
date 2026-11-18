@@ -630,15 +630,6 @@
       "support": "renderer"
     },
     {
-      "name": "ExplainerBlock",
-      "states": [
-        "default",
-        "sections",
-        "task"
-      ],
-      "support": "renderer"
-    },
-    {
       "name": "ProfileBlock",
       "states": [
         "default",
@@ -676,6 +667,20 @@
         "devices"
       ],
       "support": "renderer"
+    },
+    {
+      "name": "ModalBlock",
+      "states": [
+        "default",
+        "agent-wallet",
+        "builder-fee",
+        "referral-discount",
+        "tournament-invite",
+        "trend",
+        "swing",
+        "live-activity"
+      ],
+      "support": "alternative"
     },
     {
       "name": "FeedbackBlock",
@@ -821,9 +826,10 @@
       "states": [
         "default",
         "empty",
-        "targets"
+        "targets",
+        "open-position"
       ],
-      "support": "alternative"
+      "support": "renderer"
     },
     {
       "name": "OutcomeChart",
@@ -832,6 +838,22 @@
         "empty"
       ],
       "support": "alternative"
+    },
+    {
+      "name": "PositionsBlock",
+      "states": [
+        "default",
+        "empty",
+        "mixed"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "ClaimRewardBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
     }
   ]
 }

@@ -1,6 +1,6 @@
 import {tokens} from '@bloxwap/hig/tokens';
 import {ALTIMETER_TICK_PX,easeInOut} from './altimeter-model.js';
-import {capsuleCenters} from './outcome-model.js';
+import {capsuleCenters,labelBounds,type TargetLabelInsets} from './outcome-model.js';
 
 /** A host-owned price level. Plain labels align right; colors accept any CSS color, including variables. */
 export interface AltimeterTarget {
@@ -35,7 +35,7 @@ export interface AltimeterTargetPosition {
 }
 
 /** Labels stay inside the chart and share the chart capsule layout's collision avoidance. */
-export function placeTargets(targets:readonly AltimeterTarget[],display:number,spacing:number,height:number,sideOffsets?:ReadonlyMap<string,number>):Map<string,AltimeterTargetPosition>{
+export function placeTargets(targets:readonly AltimeterTarget[],display:number,spacing:number,height:number,sideOffsets?:ReadonlyMap<string,number>,insets?:TargetLabelInsets):Map<string,AltimeterTargetPosition>{
  const positions=new Map<string,AltimeterTargetPosition>();
  if(!Number.isFinite(display)||display<=0||!Number.isFinite(spacing)||spacing<=0||!Number.isFinite(height)||height<=0)return positions;
  for(const target of targets){
@@ -47,10 +47,10 @@ export function placeTargets(targets:readonly AltimeterTarget[],display:number,s
  const wanted=labelled.map(target=>{
   const {y}=positions.get(target.id)!;
   const top=y+(sideOffsets?.get(target.id)??sideOffset(target.price,display));
-  return top+LABEL_HEIGHT/2-EDGE_INSET;
+  return top+LABEL_HEIGHT/2;
  });
- const centers=capsuleCenters(wanted,Math.max(LABEL_HEIGHT,height-EDGE_INSET*2),LABEL_HEIGHT,LABEL_GAP,true);
- for(const [index,target] of labelled.entries())positions.get(target.id)!.labelTop=centers[index]-LABEL_HEIGHT/2+EDGE_INSET;
+ const centers=capsuleCenters(wanted,height,LABEL_HEIGHT,LABEL_GAP,true,labelBounds(height,LABEL_HEIGHT,insets,EDGE_INSET));
+ for(const [index,target] of labelled.entries())positions.get(target.id)!.labelTop=centers[index]-LABEL_HEIGHT/2;
  return positions;
 }
 
@@ -59,7 +59,7 @@ export function targetLayout(){
  const sides=new Map<string,{from:number;to:number;start:number}>();
  return {
   reset(){sides.clear();},
-  update(targets:readonly AltimeterTarget[],display:number,spacing:number,height:number,now:number,snap=false){
+  update(targets:readonly AltimeterTarget[],display:number,spacing:number,height:number,now:number,snap=false,insets?:TargetLabelInsets){
    const offsets=new Map<string,number>();
    for(const target of targets){
     if(!target.label)continue;
@@ -71,7 +71,7 @@ export function targetLayout(){
     offsets.set(target.id,value);
    }
    for(const id of sides.keys())if(!offsets.has(id))sides.delete(id);
-   const positions=placeTargets(targets,display,spacing,height,offsets);
+   const positions=placeTargets(targets,display,spacing,height,offsets,insets);
    if(!positions.size)sides.clear();
    return positions;
   },

@@ -24,4 +24,5 @@ export {FromPickerBlock,ToPickerBlock,FromPicker,ToPicker,type FromPickerBlockPr
 export {SwapBlock,SwapPanelBlock,SwapPanel,swapAction,type SwapBlockProps,type SwapPanelBlockProps,type SwapPanelProps,type SwapToken,type SwapChain,type SwapAction,type SwapDenomination,type SwapWallet,type SwapFee,type SwapReceive,type SwapDestination,type SwapDetail} from './blocks/swap-block.js';
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './blocks/confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom} from './blocks/preset-picker-block.js';
-export {ExplainerBlock,type ExplainerBlockProps,type ExplainerSection,type ExplainerAction,type ExplainerTone} from './blocks/explainer-block.js';
+export {PositionsBlock,type PositionsBlockProps,type OpenPosition} from './blocks/positions-block.js';
+export {ClaimRewardBlock,type ClaimRewardBlockProps} from './blocks/claim-reward-block.js';

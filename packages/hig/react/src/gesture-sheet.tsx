@@ -104,8 +104,12 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
   }
   onOpenChange(next);
  };
+ const detent=handle&&<Drawer.Handle {...grip} ref={handleRef} className={['hig-gesture-handle',handleClass].filter(Boolean).join(' ')}/>;
+ const pinned=!!detent&&contentMode==='default'&&(backend.direction??'bottom')==='bottom';
  const body=<>
-  {handle&&<Drawer.Handle {...grip} ref={handleRef} className={['hig-gesture-handle',handleClass].filter(Boolean).join(' ')}/>}
+  {pinned
+   ?<div className='hig-detent-bar'>{detent}</div>
+   :detent}
   <Drawer.Title className={titleHidden||labelledBy?'hig-sr-only':undefined} aria-hidden={labelledBy?true:undefined}>{title}</Drawer.Title>
   {description&&<Drawer.Description className={descriptionHidden?'hig-sr-only':undefined}>{description}</Drawer.Description>}
   {children}
@@ -117,7 +121,7 @@ export function GestureSheet({open,onOpenChange,title,description,trigger,childr
   <Drawer.Portal>
    <Drawer.Overlay {...overlay} ref={backdrop} className={['hig-backdrop','hig-gesture-backdrop',overlayClass].filter(Boolean).join(' ')} data-hig-motion={reducedMotion?'reduced':'full'}/>
    <Drawer.Content {...content} {...(!description?{'aria-describedby':undefined}:{})} {...(labelledBy?{'aria-labelledby':labelledBy}:{})} ref={setPanel}
-    className={['hig-gesture-sheet',className].filter(Boolean).join(' ')} role='dialog' dir={direction} lang={locale} style={{...themeStyle,...style,...(dynamic&&maxDynamicContentSize!==undefined&&{maxHeight:maxDynamicContentSize})}}
+    className={['hig-gesture-sheet',pinned&&'hig-pin',className].filter(Boolean).join(' ')} role='dialog' dir={direction} lang={locale} style={{...themeStyle,...style,...(dynamic&&maxDynamicContentSize!==undefined&&{maxHeight:maxDynamicContentSize})}}
     onPointerDownCapture={event=>{const restorePanel=snapshotStyles(panel.current,MOTION_PROPERTIES),restoreOverlay=snapshotStyles(backdrop.current,['opacity','transition']),restoreBackground=backend.shouldScaleBackground?snapshotStyles(document.querySelector<HTMLElement>('[data-vaul-drawer-wrapper]'),BACKGROUND_PROPERTIES):()=>{};motion.current=()=>{restorePanel();restoreOverlay();restoreBackground();};onPointerDownCapture?.(event);}}
     onInteractOutside={event=>{if(event.detail.originalEvent.type==='focusin')onFocusOutside?.(event as Parameters<NonNullable<GestureSheetContentProps['onFocusOutside']>>[0]);onInteractOutside?.(event);}}
     data-hig-content-mode={contentMode} data-hig-motion={reducedMotion?'reduced':'full'} data-hig-dynamic={dynamic?'true':undefined}>

@@ -25,6 +25,7 @@
   "/docs/guides/components/blocks/": [
     "api-and-anatomy",
     "loginblock",
+    "claimrewardblock",
     "depositblock",
     "swapblock",
     "frompickerblock-and-topickerblock",
@@ -35,7 +36,6 @@
     "managepositionblock",
     "targetblock",
     "presetpickerblock",
-    "explainerblock",
     "positionblock",
     "tradehistorylistblock",
     "tradehistorydetailblock",

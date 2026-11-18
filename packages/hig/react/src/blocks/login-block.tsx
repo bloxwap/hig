@@ -1,25 +1,60 @@
 'use client';
-import React from 'react';
+import React, {useId, useState} from 'react';
+import {ChevronDown} from '@bloxwap/icons/react/chevron-down';
+import {Mail} from '@bloxwap/icons/react/mail';
+import {Wallet} from '@bloxwap/icons/react/wallet';
 import {HeaderClose, ScreenHeader} from './screen-header.js';
 import {Info} from '@bloxwap/icons/react/info';
-import {IconButton} from '../button.js';
+import {Button, IconButton} from '../button.js';
 import {Switch} from '../selection.js';
 import {Popover} from '../popover.js';
-import {ListRow} from '../list-group.js';
 import {Badge} from '../status.js';
-import {loginProviders, loginArtwork, loginCopy, loginTermsUrl, loginPrivacyUrl, type LoginBlockProps} from '@bloxwap/hig/contracts/login';
-export type {LoginBlockProps, LoginProvider} from '@bloxwap/hig/contracts/login';
+import {loginArtwork, loginCopy, loginTermsUrl, loginPrivacyUrl, type LoginBlockProps as SocialLoginProps, type LoginProvider} from '@bloxwap/hig/contracts/login';
+export type {LoginProvider} from '@bloxwap/hig/contracts/login';
+type WebLoginProvider = LoginProvider | 'email' | 'wallet';
+const socialProviders = ['google', 'apple', 'twitter'] as const;
+const additionalProviders = ['email', 'wallet'] as const;
+const moreLabels = {moreOptions: 'More options', email: 'Continue with Email', wallet: 'Connect a wallet'};
 
-export function LoginBlock({onLogin, onClose, lastUsed, disabled, analyticsEnabled, onAnalyticsChange, labels, termsUrl = loginTermsUrl, privacyUrl = loginPrivacyUrl}: LoginBlockProps) {
-  const copy = {...loginCopy, ...labels};
+export interface LoginBlockProps extends Omit<SocialLoginProps, 'lastUsed' | 'labels'> {
+  lastUsed?: WebLoginProvider | null;
+  labels?: SocialLoginProps['labels'] & Partial<typeof moreLabels>;
+  /** Enables the web disclosure and handles its two authentication methods. */
+  onMoreLogin?: (provider: 'email' | 'wallet') => void;
+}
+
+export function LoginBlock({onLogin, onMoreLogin, onClose, lastUsed, disabled, analyticsEnabled, onAnalyticsChange, labels, termsUrl = loginTermsUrl, privacyUrl = loginPrivacyUrl}: LoginBlockProps) {
+  const copy = {...loginCopy, ...moreLabels, ...labels};
+  const [expanded, setExpanded] = useState(lastUsed === 'email' || lastUsed === 'wallet');
+  const optionsId = useId();
+  const primary = lastUsed ?? 'google';
+
+  function providerButton(provider: WebLoginProvider) {
+    const extra = provider === 'email' || provider === 'wallet';
+    const icon = provider === 'email' ? <Mail size={20}/> : provider === 'wallet' ? <Wallet size={20}/> :
+      <svg width="20" height="20" viewBox="0 0 24 24">{loginArtwork[provider].map(path =>
+        <path key={path.d} d={path.d} fill={path.fill ?? 'currentColor'}/>)}</svg>;
+    return <Button key={provider} className="hig-login-provider" fullWidth disabled={disabled}
+      intent={primary === provider ? 'primary' : 'secondary'}
+      onClick={() => extra ? onMoreLogin?.(provider) : onLogin(provider)}>
+      <span className="hig-login-provider-label"><span aria-hidden="true">{icon}</span>{copy[provider]}</span>
+      {lastUsed === provider && <Badge>{copy.lastUsed}</Badge>}
+    </Button>;
+  }
+
   return <section className="hig-login-block">
     <ScreenHeader title={copy.title} action={<HeaderClose label={copy.close} onClose={onClose}/>}/>
-    <div className="hig-login-providers">{loginProviders.map(provider =>
-      <ListRow key={provider} label={copy[provider]} disabled={disabled} disclosure="none" onSelect={() => onLogin(provider)}
-        leading={<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">{loginArtwork[provider].map(path =>
-          <path key={path.d} d={path.d} fill={path.fill ?? 'currentColor'}/>)}</svg>}
-        trailing={lastUsed === provider ? <Badge tone="positive">{copy.lastUsed}</Badge> : undefined}/>
-    )}</div>
+    <div className="hig-login-providers">
+      {socialProviders.map(providerButton)}
+      {onMoreLogin && <>
+        <Button intent="ghost" aria-expanded={expanded} aria-controls={optionsId} onClick={() => setExpanded(!expanded)}>
+          {copy.moreOptions}<ChevronDown size={16} aria-hidden="true" style={{transform: expanded ? 'rotate(180deg)' : undefined}}/>
+        </Button>
+        <div id={optionsId} hidden={!expanded} className="hig-login-extra">
+          {additionalProviders.map(providerButton)}
+        </div>
+      </>}
+    </div>
     <div className="hig-login-analytics">
       <span>{copy.analytics}</span>
       <Popover label={copy.analyticsInfo} closeLabel={copy.close}

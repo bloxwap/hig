@@ -1,8 +1,8 @@
 # Bloxwap Human Interface Guidelines
 
-HIG **0.9.0** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
+HIG **0.9.1** (`@bloxwap/hig`): a mobile-first, Bloxwap-owned contract for product, Pro, marketing and SDK docs. It ships as one npm package, with a subpath export for each surface (`@bloxwap/hig/tokens`, `@bloxwap/hig/react/button`, `@bloxwap/hig/native/provider`, `@bloxwap/hig/chart` and so on). Product acceptance and physical-device limitations remain documented in the release gates.
 
-The current release is [v0.9.0](https://github.com/bloxwap/hig/releases/tag/v0.9.0), published to npm as `@bloxwap/hig@0.9.0`. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
+The previously published release is [v0.9.0](https://github.com/bloxwap/hig/releases/tag/v0.9.0), published to npm as `@bloxwap/hig@0.9.0`. Published docs: [bloxwap.github.io/hig](https://bloxwap.github.io/hig/).
 
 ## Install
 
@@ -40,6 +40,7 @@ export function Save() {
 | `@bloxwap/hig/react/<component>`, `@bloxwap/hig/react/css` | Web components and their scoped CSS |
 | `@bloxwap/hig/native/<component>` | React Native components |
 | `@bloxwap/hig/chart` | `AltimeterChart` live price chart and `OutcomeChart`; `PriceChart` and `chartTheme` for `@bloxwap/chart` |
+| `@bloxwap/hig/native/chart` | React Native SVG altimeter with live prices, open positions and target crossings |
 | `@bloxwap/hig/feedback` | Optional sound and haptic feedback |
 | `@bloxwap/hig/native-fonts` | Static TTFs for React Native and Expo |
 | `@bloxwap/hig/og-fonts` | Satori and `next/og` faces |

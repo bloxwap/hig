@@ -1,15 +1,17 @@
 import React from 'react';
 import {afterEach,beforeEach,it,expect,vi} from 'vitest';
 import {render,screen,cleanup,act} from '@testing-library/react';
+import {nativeSrgb} from '@bloxwap/hig/tokens';
 import {HIGProvider} from '@bloxwap/hig/react/provider';
 import {AltimeterChart,bitcoinPrice,type AltimeterFeed,type AltimeterTarget} from '../packages/hig/chart/src/index';
+import {burstAtPill} from '../packages/hig/chart/src/altimeter-burst';
 import {drawAltimeter} from '../packages/hig/chart/src/altimeter-chart';
 
 // jsdom has no canvas. A recording context stands in, and frames are stepped by hand.
 type Call=[string,...unknown[]];
 function recordingContext(){
  const calls:Call[]=[];const record=(name:string)=>(...values:unknown[])=>{calls.push([name,...values]);};
- const context={calls,clearRect:record('clearRect'),beginPath:record('beginPath'),moveTo:record('moveTo'),lineTo:record('lineTo'),bezierCurveTo:record('bezierCurveTo'),stroke:record('stroke'),fillText:record('fillText'),setTransform:record('setTransform'),measureText:(text:string)=>({width:text.length*7.8}),createLinearGradient:(...values:number[])=>{calls.push(['createLinearGradient',...values]);return {addColorStop:record('addColorStop')};}};
+ const context={calls,fill:record('fill'),closePath:record('closePath'),clearRect:record('clearRect'),beginPath:record('beginPath'),moveTo:record('moveTo'),lineTo:record('lineTo'),bezierCurveTo:record('bezierCurveTo'),stroke:record('stroke'),fillText:record('fillText'),setTransform:record('setTransform'),measureText:(text:string)=>({width:text.length*7.8}),createLinearGradient:(...values:number[])=>{calls.push(['createLinearGradient',...values]);return {addColorStop:record('addColorStop')};}};
  return context as typeof context&CanvasRenderingContext2D;
 }
 let frames:FrameRequestCallback[]=[];let context:ReturnType<typeof recordingContext>;
@@ -164,9 +166,9 @@ function recordAnimations(){
  return {animate,animations,restore:()=>{HTMLElement.prototype.animate=original;}};
 }
 
-it('DGEN is opt-in, fires at the visual crossing, coalesces nearby crossings, and can be stopped immediately',()=>{
+it('DEGEN is opt-in, fires at the visual crossing, coalesces nearby crossings, and can be stopped immediately',()=>{
  const motion=recordAnimations(),targets=[{id:'tp',price:100.01,label:'Take profit',color:'#00ff00'}];
- const view=(price:number,dgen=false,reducedMotion=false)=><HIGProvider reducedMotion={reducedMotion}><AltimeterChart summary='DGEN' price={price} targets={targets} dgen={dgen}/></HIGProvider>;
+ const view=(price:number,degen=false,reducedMotion=false)=><HIGProvider reducedMotion={reducedMotion}><AltimeterChart summary='DEGEN' price={price} targets={targets} degen={degen}/></HIGProvider>;
  try{
   const {rerender,unmount}=render(view(100));frame(1000);
   rerender(view(100.02));frame(1400);frame(1700);expect(motion.animate).not.toHaveBeenCalled();
@@ -188,10 +190,10 @@ it('DGEN is opt-in, fires at the visual crossing, coalesces nearby crossings, an
  }finally{motion.restore();}
 });
 
-it('DGEN does not replay after missing data, a hidden-tab gap, edited levels, or a feed replacement',()=>{
+it('DEGEN does not replay after missing data, a hidden-tab gap, edited levels, or a feed replacement',()=>{
  const motion=recordAnimations();let push:(price:number)=>void=()=>{};
  const feed:AltimeterFeed=listener=>{push=listener;listener(100);return ()=>{};};
- const view=(price:number|null|undefined,target=100.01,source=feed)=><HIGProvider><AltimeterChart summary='DGEN' price={price} feed={source} targets={[{id:'tp',price:target}]} dgen/></HIGProvider>;
+ const view=(price:number|null|undefined,target=100.01,source=feed)=><HIGProvider><AltimeterChart summary='DEGEN' price={price} feed={source} targets={[{id:'tp',price:target}]} degen/></HIGProvider>;
  try{
   const {rerender}=render(view(100));frame(1000);
   rerender(view(100.02));frame(5000);frame(5400);
@@ -209,9 +211,9 @@ it('DGEN does not replay after missing data, a hidden-tab gap, edited levels, or
  }finally{motion.restore();}
 });
 
-it('DGEN animations release their particles when finished and cancel on unmount',async()=>{
+it('DEGEN animations release their particles when finished and cancel on unmount',async()=>{
  const motion=recordAnimations();
- const view=(price:number)=><HIGProvider><AltimeterChart summary='DGEN' price={price} targets={[{id:'entry',price:100.01}]} dgen/></HIGProvider>;
+ const view=(price:number)=><HIGProvider><AltimeterChart summary='DEGEN' price={price} targets={[{id:'entry',price:100.01}]} degen/></HIGProvider>;
  try{
   const {rerender,unmount}=render(view(100));frame(1000);
   rerender(view(100.02));frame(1400);frame(1700);
@@ -252,4 +254,41 @@ it('bitcoinPrice subscribes to the Hyperliquid BTC best bid and offer, reports t
  sockets[0].onmessage?.({data:'{"channel":"bbo","data":{"coin":"BTC","bbo":[null,{"px":"65270.0"}]}}'});
  expect(prices).toEqual([65262.5,65270]);
  stop();expect(sockets[0].closed).toBe(true);sockets[0].onclose?.();expect(sockets).toHaveLength(1);
+});
+
+it('separates directional trail profit from net P&L across live position updates',()=>{
+ const view=(side:'long'|'short',pnl:number,capsule:'price'|'pnl'|{returnRatio:number})=>
+  <HIGProvider reducedMotion><AltimeterChart summary='Position' price={101} position={{side,breakEvenPrice:100,pnl,capsule}}/></HIGProvider>;
+ const {rerender}=render(view('long',-2,'price'));
+ const pill=()=>document.querySelector<HTMLElement>('[data-hig-altimeter-price]')!;
+ const text=()=>pill().querySelector('.hig-sr-only')?.textContent;
+ frame(1000);
+ const longColor=context.calls.find(call=>call[0]==='addColorStop'&&call[1]===1)?.[2];
+ const lossColor=pill().style.color;
+ expect(longColor).toBe(nativeSrgb.positive);
+ expect(context.calls.some(call=>call[0]==='fill')).toBe(true);
+ expect(text()).toBe('$101.00');
+ context.calls.length=0;rerender(view('short',2,{returnRatio:.025}));frame(1016);
+ expect(context.calls.find(call=>call[0]==='addColorStop'&&call[1]===1)?.[2]).toBe(nativeSrgb.negative);
+ expect(pill().style.color).not.toBe(lossColor);expect(text()).toBe('+2.50%');
+ const gainColor=pill().style.color;
+ rerender(view('short',0,'pnl'));frame(1032);
+ expect([gainColor,lossColor]).not.toContain(pill().style.color);expect(text()).toBe('$0.00');
+});
+
+it.each(['up','down'] as const)('biases the visible spark trajectories on a %s crossing',direction=>{
+ const pill=document.createElement('span'),layer=document.createElement('div');
+ const paths:Keyframe[][]=[];
+ const original=HTMLElement.prototype.animate;
+ HTMLElement.prototype.animate=function(frames){
+  if(this.parentElement?.hasAttribute('data-hig-altimeter-burst')&&this.style.borderRadius==='50%')paths.push(frames as Keyframe[]);
+  return {cancel:()=>{},finished:new Promise(()=>{})} as unknown as Animation;
+ };
+ try{
+  const clear=burstAtPill(pill,layer,'lime',direction);
+  const y=(frame:Keyframe)=>Number(/, ([-\d.]+)px\)/.exec(String(frame.transform))?.[1]);
+  const upward=paths.filter(path=>y(path[path.length-1])<y(path[0])).length;
+  expect(paths).toHaveLength(24);expect(upward).toBe(direction==='up'?18:6);
+  clear();expect(layer.childElementCount).toBe(0);
+ }finally{HTMLElement.prototype.animate=original;}
 });

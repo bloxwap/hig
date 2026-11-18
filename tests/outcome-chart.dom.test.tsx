@@ -145,3 +145,22 @@ it('expires silent feeds and ignores late data after replacing the feed',()=>{
   act(()=>send(sample));expect(capsules()).toHaveLength(0);
  }finally{vi.useRealTimers();}
 });
+
+it('moves the capsules inside updated insets while the trails stay at their chances',()=>{
+ const outcomes=[{id:'high',label:'High',price:1},{id:'low',label:'Low',price:0}];
+ const view=(top:number,bottom:number)=><OutcomeChart summary="Chances" outcomes={outcomes} targetLabelInsets={{top,bottom}}/>;
+ const chart=render(view(64,80));frame(0);
+ expect(capsules().map(center)).toEqual([79,265]);
+ expect(tips()).toEqual([24,336]);
+ chart.rerender(view(32,40));frame(16);
+ expect(capsules().map(center)).toEqual([47,305]);
+ expect(tips()).toEqual([24,336]);
+});
+
+it('keeps a capsule inside the new bounds during its first-price animation',()=>{
+ const view=(price:number|null,bottom:number)=><OutcomeChart summary="Arrival" outcomes={[{id:'new',label:'New',price}]} targetLabelInsets={{bottom}}/>;
+ const chart=render(view(null,0));frame(0);
+ chart.rerender(view(1,100));
+ expect(center(capsules()[0])).toBe(245);
+ frame(300);expect(center(capsules()[0])).toBeLessThan(245);
+});
