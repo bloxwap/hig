@@ -18,6 +18,12 @@ export default createMDX()({
    };
   }
   config.resolve.alias['react-native$']='react-native-web';
+  // LoginBlock draws Svg and Path. Resolve those imports directly to the SVG
+  // library's browser shapes so its XML, URI loader and Buffer stay out.
+  config.module.rules.push({
+   test:/[\\/]native[\\/]dist[\\/]login-block\.js$/,
+   resolve:{alias:{'react-native-svg$':createRequire(import.meta.url).resolve('react-native-svg/lib/module/elements.web.js')}},
+  });
   // Native previews use the shared icons' browser renderer.
   config.resolve.alias['@bloxwap/icons/native']=dirname(createRequire(import.meta.url).resolve('@bloxwap/icons/react/info'));
   config.resolve.extensions.unshift('.web.js');
