@@ -9,7 +9,8 @@ beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventLis
 afterEach(()=>{cleanup();restoreAnimation?.();restoreAnimation=undefined;motion.remove();vi.unstubAllGlobals();vi.restoreAllMocks();});
 type MockAnimation={frames:Keyframe[];cancel:ReturnType<typeof vi.fn>;onfinish:(()=>void)|null;oncancel:(()=>void)|null};
 function dynamicEnvironment({waapi=true,observer=true}={}){
- let height=100,panelHeight=100,progress=0,notify:((height?:number)=>void)=()=>{};
+ const panelHeight=100;
+ let height=100,progress=0,notify:((height?:number)=>void)=()=>{};
  const observe=vi.fn(),disconnect=vi.fn();
  if(observer)vi.stubGlobal('ResizeObserver',class{constructor(callback:ResizeObserverCallback){notify=height=>callback(height===undefined?[]:[{borderBoxSize:[{blockSize:height,inlineSize:390}]} as unknown as ResizeObserverEntry],{} as ResizeObserver);}observe(...args:unknown[]){observe(...args);}disconnect(){disconnect();}});
  vi.spyOn(HTMLElement.prototype,'getBoundingClientRect').mockImplementation(function(this:HTMLElement){const value=this.classList.contains('hig-gesture-sheet')?panelHeight:height;return{width:390,height:value,x:0,y:0,top:0,left:0,right:390,bottom:value,toJSON:()=>({})} as DOMRect;});

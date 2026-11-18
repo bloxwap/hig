@@ -1,6 +1,6 @@
 import React,{useState,createRef,useLayoutEffect} from 'react';
 import {afterEach,describe,it,expect,vi} from 'vitest';
-import {render,screen,cleanup,fireEvent} from '@testing-library/react';
+import {render,screen,cleanup,fireEvent,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {Button} from '../packages/hig/react/src/button';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -106,4 +106,4 @@ it('preserves required Field semantics even when a child tries to opt out',()=>{
 it('preserves every undismissed notification through a burst and retry',async()=>{const retry=vi.fn(),dismiss=vi.fn();const notices=Array.from({length:5},(_,i)=>({id:String(i),message:`Outcome ${i}`,severity:'error' as const,action:i===0?<Button onClick={retry}>Retry</Button>:undefined}));render(<Toast notices={notices} onDismiss={dismiss}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);for(const n of notices)expect(screen.getAllByText(n.message).length).toBeGreaterThan(0);await userEvent.click(screen.getByRole('button',{name:'Retry'}));expect(retry).toHaveBeenCalledOnce();expect(screen.getAllByText('Outcome 0').length).toBeGreaterThan(0);});
 
 it('disabled fields cannot be re-enabled by a child and the input keeps host keyboard mode',()=>{render(<Field label='Amount' disabled><Input disabled={false} inputMode='text'/></Field>);const input=screen.getByRole('textbox') as HTMLInputElement;expect(input.disabled).toBe(true);expect(input.inputMode).toBe('text');});
-it('announces a burst once and preserves pending critical text through rapid dismissal',async()=>{const notices=[{id:'critical',message:'Failed operation',severity:'error' as const},{id:'info',message:'Copied',severity:'info' as const}];const {rerender}=render(<Toast notices={notices} onDismiss={()=>{}}/>);rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);await new Promise(resolve=>setTimeout(resolve,40));expect(screen.getByRole('alert').textContent).toBe('Failed operation');rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);});
+it('announces a burst once and preserves pending critical text through rapid dismissal',async()=>{const notices=[{id:'critical',message:'Failed operation',severity:'error' as const},{id:'info',message:'Copied',severity:'info' as const}];const {rerender}=render(<Toast notices={notices} onDismiss={()=>{}}/>);rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);await waitFor(()=>expect(screen.getByRole('alert').textContent).toBe('Failed operation'));rerender(<Toast notices={notices.slice(0,1)} onDismiss={()=>{}}/>);expect(screen.getAllByRole('alert')).toHaveLength(1);});

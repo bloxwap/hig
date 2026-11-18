@@ -7,6 +7,8 @@ function resolveBlurView():typeof NativeBlurView|null {
  const name=Platform.OS==='ios'?'BlurView':'AndroidBlurView';
  if(!UIManager.hasViewManagerConfig(name))return null;
  try {
+  // Load the optional native peer only when its view manager is installed.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('@react-native-community/blur').BlurView;
  } catch {
   return null;
