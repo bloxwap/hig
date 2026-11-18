@@ -772,11 +772,11 @@
       },
       "GestureSheetBackendProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetBackendProps = HostBackendProps<BackendProps>;"
+        "signature": "export type GestureSheetBackendProps = EngineOptions & SnapOptions & FadeOptions;"
       },
       "GestureSheetDynamicBackendProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetDynamicBackendProps = Omit<GestureSheetBackendProps, SnapPointBackendProp> & {\n    [Key in SnapPointBackendProp]?: never;\n};"
+        "signature": "export type GestureSheetDynamicBackendProps = EngineOptions & {\n    [Key in SnapPointBackendProp]?: never;\n};"
       },
       "GestureSheetContentProps": {
         "entry": "gesture-sheet",
@@ -784,15 +784,15 @@
       },
       "GestureSheetHandleProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetHandleProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Handle>, 'children' | 'aria-hidden' | 'dangerouslySetInnerHTML' | 'onClick' | 'onPointerDown' | 'onPointerMove' | 'onPointerCancel'>;"
+        "signature": "export type GestureSheetHandleProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'aria-hidden' | 'dangerouslySetInnerHTML' | 'onClick' | 'onPointerDown' | 'onPointerMove' | 'onPointerCancel'> & {\n    preventCycle?: boolean;\n};"
       },
       "GestureSheetOverlayProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetOverlayProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Overlay>, 'children' | 'asChild' | 'forceMount' | 'dangerouslySetInnerHTML'>;"
+        "signature": "export type GestureSheetOverlayProps = Omit<React.ComponentPropsWithoutRef<typeof Modal.Overlay>, 'children' | 'asChild' | 'forceMount' | 'dangerouslySetInnerHTML'>;"
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */\n{\n    enableDynamicSizing?: false;\n    backendProps?: GestureSheetBackendProps;\n    maxDynamicContentSize?: never;\n}\n/** Vertical content sizing is intrinsic and cannot be combined with Vaul detents. */\n | {\n    enableDynamicSizing: true;\n    backendProps?: GestureSheetDynamicBackendProps; /** A finite positive content-height ceiling in CSS pixels; the viewport ceiling still applies. */\n    maxDynamicContentSize?: number;\n});"
+        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Engine defaults apply, including autoFocus=false and repositionInputs=true. */\n{\n    enableDynamicSizing?: false;\n    backendProps?: GestureSheetBackendProps;\n    maxDynamicContentSize?: never;\n}\n/** Vertical content sizing is intrinsic and cannot be combined with detents. */\n | {\n    enableDynamicSizing: true;\n    backendProps?: GestureSheetDynamicBackendProps; /** A finite positive content-height ceiling in CSS pixels; the viewport ceiling still applies. */\n    maxDynamicContentSize?: number;\n});"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
@@ -1361,6 +1361,34 @@
       "figureReading": {
         "entry": "figure",
         "signature": "export declare function figureReading(figure: Figure, locale: string, options?: Intl.NumberFormatOptions): string;"
+      },
+      "SheetDirection": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export type SheetDirection = 'bottom' | 'top' | 'left' | 'right';"
+      },
+      "SheetPoint": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export type SheetPoint = number | string;"
+      },
+      "SheetEngineOptions": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export interface SheetEngineOptions {\n    open: boolean;\n    direction: SheetDirection;\n    snapPoints?: readonly SheetPoint[];\n    activeSnapPoint?: SheetPoint | null;\n    fadeFromIndex?: number;\n    snapToSequentialPoint: boolean;\n    handleOnly: boolean;\n    dismissible: boolean;\n    closeThreshold: number;\n    scrollLockTimeout: number;\n    container?: HTMLElement | null;\n    reducedMotion: boolean;\n    shouldScaleBackground: boolean;\n    setBackgroundColorOnScale: boolean;\n    noBodyStyles: boolean;\n    repositionInputs: boolean;\n    fixed: boolean;\n    preventScroll: boolean;\n    preventScrollRestoration: boolean;\n    onDrag?: (event: SheetPointer, percentageDragged: number) => void;\n    onRelease?: (event: SheetPointer, open: boolean) => void;\n    /** Ask the host to close. The sheet waits where it is until `open` answers. */\n    requestClose: () => void;\n    /** A release settled on this detent. */\n    selectSnapPoint: (point: SheetPoint) => void;\n    /** The sheet came to rest open, or finished closing. */\n    onSettled: (open: boolean) => void;\n}"
+      },
+      "cssNumber": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare const cssNumber: typeof digits;"
+      },
+      "cssCurve": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare const cssCurve: (curve: readonly number[]) => string;"
+      },
+      "sharedPoint": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare function sharedPoint(point: SheetPoint): SheetSnapPoint;"
+      },
+      "SheetEngine": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare class SheetEngine {\n    /** The latest props, replaced on every render. */\n    options: SheetEngineOptions;\n    /** The last press moved the sheet, so the click that ends it is not a tap. */\n    dragged: boolean;\n    private sheet;\n    private overlay;\n    private wrapper;\n    private phase;\n    private position;\n    private index;\n    private closed;\n    private room;\n    private flush;\n    private detents;\n    private stops;\n    private travel;\n    private settled;\n    private press;\n    private drag;\n    private scrolledAt;\n    private overshoot;\n    private lift;\n    private early;\n    private undo;\n    private get vertical();\n    private get sign();\n    private offset;\n    /** The overlay's strength: full from the fade detent up, none at the detent below it, or at closed when it is the lowest. */\n    private fade;\n    /** The page behind recedes while the sheet is at any detent and comes back as the sheet leaves its lowest one. */\n    private recede;\n    private activeIndex;\n    /** Where the sheet is drawn now: where it rests, or the point a travel has reached. */\n    private visual;\n    /** One layout read, taken when the sheet opens, closes, is picked up or the viewport changes: never while it moves. */\n    private measure;\n    private draw;\n    private hint;\n    private halt;\n    /** Travel to a position from wherever the sheet is drawn. A travel under way is retargeted, not restarted. */\n    private glide;\n    /** The sheet has arrived: drop the transition and the compositing hints, and report a finished open or close. */\n    private rest;\n    attach(sheet: HTMLElement | null): void;\n    attachOverlay(overlay: HTMLElement): void;\n    /** Forget the sheet: its elements are gone. */\n    release(): void;\n    /** Follow `open`: present a sheet that should be open, dismiss one that should not, and keep an open one on its detent. */\n    sync(): void;\n    /**\n     * Travel to the detent the host names when the sheet is anywhere else: a controlled detent change, a close the host\n     * declined, or a detent it declined.\n     */\n    settle(): void;\n    /** What an open sheet holds on the page until its close starts: Safari's body pin and the iOS focus guard. */\n    private hold;\n    /** What the sheet's element holds until it has closed: its listeners and the page it scales. */\n    private arm;\n    private resize;\n    /** `repositionInputs`: keep a bottom sheet above the software keyboard while a field in it is focused. */\n    private keyboard;\n    private touch;\n    down(event: SheetPointer): void;\n    move(event: SheetPointer): void;\n    up(event: SheetPointer): void;\n    /** The browser took the pointer away, for a scroll or a system gesture: the sheet goes back to its detent. */\n    cancel(event?: SheetPointer): void;\n    /** Whether the press has become a drag of the sheet, deciding it once the pointer has left `slop`. */\n    private begin;\n    /**\n     * Scroll handoff, as in Vaul. The handle always drags, and so does a sheet below its tallest detent or caught on the way.\n     * At the tallest detent the content comes first: a move toward open, selected text, content scrolled away from the edge\n     * the sheet closes toward, and the moments after any of those leave the sheet where it is.\n     */\n    private allows;\n    private follow;\n    /** Pixels per second toward closed over the last of the drag, or none when the pointer rested before letting go. */\n    private velocity;\n}"
       },
       "NotifyOptions": {
         "entry": "notify",
@@ -2252,13 +2280,13 @@
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<SearchInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
-      "gestureSheetAnimationConfigs": {
+      "gestureSheetResize": {
         "entry": "gesture-sheet",
-        "signature": "export declare const gestureSheetAnimationConfigs: {\n    duration: 270;\n    easing: import(\"react-native-reanimated\").EasingFunctionFactory;\n};"
+        "signature": "export declare const gestureSheetResize: {\n    duration: 270;\n    easing: import(\"react-native-reanimated\").EasingFunctionFactory;\n};"
       },
-      "SheetSnapPoint": {
+      "gestureSheetTravel": {
         "entry": "gesture-sheet",
-        "signature": "export type SheetSnapPoint = number | `${number}%`;"
+        "signature": "export declare const gestureSheetTravel: {\n    duration: 500;\n    easing: import(\"react-native-reanimated\").EasingFunctionFactory;\n};"
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
@@ -2975,54 +3003,6 @@
       "memoizedRenderer": {
         "entry": "flat-list-options",
         "signature": "export declare const memoizedRenderer: {\n    readonly strictMode: true;\n};"
-      },
-      "detentHeight": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function detentHeight(point: SheetSnapPoint, room: number): number;"
-      },
-      "detentHeights": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function detentHeights(points: readonly SheetSnapPoint[], room: number): number[];"
-      },
-      "rubberBand": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function rubberBand(overshoot: number, limit: number): number;"
-      },
-      "dragPosition": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function dragPosition(raw: number, top: number, lowest: number, closed: number, dismissible: boolean): number;"
-      },
-      "SHEET_PROJECTION": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_PROJECTION = 0.18;"
-      },
-      "SHEET_FLICK": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_FLICK = 500;"
-      },
-      "SHEET_FLICK_TRAVEL": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_FLICK_TRAVEL = 24;"
-      },
-      "SHEET_FLICK_CLOSE": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_FLICK_CLOSE = 0.25;"
-      },
-      "releaseTarget": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function releaseTarget(position: number, velocity: number, positions: readonly number[], closed: number, dismissible: boolean, start: number, scrolled?: boolean): number;"
-      },
-      "backdropProgress": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function backdropProgress(position: number, lowest: number, closed: number): number;"
-      },
-      "SHEET_TRANSITION": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_TRANSITION: {\n    readonly duration: 270;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
-      },
-      "validateSnapPoints": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function validateSnapPoints(points: readonly SheetSnapPoint[], initialIndex?: number): void;"
       },
       "HeaderInfoProps": {
         "entry": "header-info",

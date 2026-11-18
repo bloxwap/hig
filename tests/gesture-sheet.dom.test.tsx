@@ -1,12 +1,12 @@
 import React,{createRef,useState} from 'react';
-import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {afterEach,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {GestureSheet,type GestureSheetProps} from '../packages/hig/react/src/gesture-sheet';
 import {HIGProvider} from '../packages/hig/react/src/provider';
-let motion:HTMLStyleElement,restoreAnimation:(()=>void)|undefined;
-beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventListener:vi.fn(),removeEventListener:vi.fn()})));motion=document.createElement('style');motion.textContent='[data-vaul-drawer],[data-vaul-overlay]{animation-name:none!important}';document.head.append(motion);});
-afterEach(()=>{cleanup();restoreAnimation?.();restoreAnimation=undefined;motion.remove();vi.unstubAllGlobals();vi.restoreAllMocks();});
+// jsdom runs no transitions, so the sheet opens and closes at once; tests/gesture-sheet-engine.dom.test.tsx covers its motion.
+let restoreAnimation:(()=>void)|undefined;
+afterEach(()=>{cleanup();restoreAnimation?.();restoreAnimation=undefined;vi.unstubAllGlobals();vi.restoreAllMocks();});
 type MockAnimation={frames:Keyframe[];cancel:ReturnType<typeof vi.fn>;onfinish:(()=>void)|null;oncancel:(()=>void)|null};
 function dynamicEnvironment({waapi=true,observer=true}={}){
  const panelHeight=100;
@@ -22,7 +22,7 @@ function dynamicEnvironment({waapi=true,observer=true}={}){
 describe('optional web gesture sheet',()=>{
  it('keeps backend content refs, translated close, naming and frozen JavaScript prop ownership',async()=>{
   const ref=createRef<HTMLDivElement>(),grip=createRef<HTMLDivElement>();
-  const unsafe=Object.freeze({id:'foreign',role:'status',dir:'ltr',lang:'en','aria-labelledby':'foreign','aria-describedby':'foreign',children:'foreign',forceMount:true,asChild:true,dangerouslySetInnerHTML:{__html:'foreign'},className:'host-sheet',style:{bottom:22,maxHeight:360},'data-host-card':'login','data-vaul-drawer-direction':'top','data-vaul-no-drag':''});
+  const unsafe=Object.freeze({id:'foreign',role:'status',dir:'ltr',lang:'en','aria-labelledby':'foreign','aria-describedby':'foreign',children:'foreign',forceMount:true,asChild:true,dangerouslySetInnerHTML:{__html:'foreign'},className:'host-sheet',style:{bottom:22,maxHeight:360},'data-host-card':'login','data-hig-sheet-direction':'top','data-hig-sheet-no-drag':''});
   const root=Object.freeze({modal:false,open:false,defaultOpen:false,onOpenChange:()=>{},children:'foreign',autoFocus:true,repositionInputs:false,handleOnly:true,shouldScaleBackground:false});
   const unsafeGrip=Object.freeze({'aria-hidden':false,onPointerDown:vi.fn(),children:'foreign',style:{width:77}});
   const before={...unsafe};
@@ -31,11 +31,11 @@ describe('optional web gesture sheet',()=>{
   const trigger=screen.getByRole('button',{name:'Open login'});await userEvent.click(trigger);
   const sheet=screen.getByRole('dialog',{name:'Login'});
   expect(sheet.id).toBe(trigger.getAttribute('aria-controls'));
-  expect(ref.current).toBe(sheet);expect(grip.current?.hasAttribute('data-vaul-handle')).toBe(true);
+  expect(ref.current).toBe(sheet);expect(grip.current?.hasAttribute('data-hig-sheet-handle')).toBe(true);
   expect(grip.current?.getAttribute('aria-hidden')).toBe('true');expect(grip.current?.style.width).toBe('77px');
   expect(sheet.getAttribute('dir')).toBe('rtl');expect(sheet.getAttribute('lang')).toBe('ar-EG');
   expect(sheet.getAttribute('aria-describedby')).toBeNull();expect(sheet.getAttribute('data-host-card')).toBe('login');
-  expect(sheet.getAttribute('data-vaul-drawer-direction')).toBe('bottom');expect(sheet.hasAttribute('data-vaul-no-drag')).toBe(true);
+  expect(sheet.getAttribute('data-hig-sheet-direction')).toBe('bottom');expect(sheet.hasAttribute('data-hig-sheet-no-drag')).toBe(true);
   expect(sheet.getAttribute('data-hig-motion')).toBe('reduced');expect(sheet.style.bottom).toBe('22px');expect(sheet.style.maxHeight).toBe('360px');
   expect(screen.queryByText('foreign')).toBeNull();expect(screen.getByRole('heading',{name:'Visible login heading'})).toBeTruthy();
   fireEvent.click(screen.getByRole('button',{name:'إغلاق'}));
@@ -59,7 +59,7 @@ describe('optional web gesture sheet',()=>{
  it('retains nondismissible backend policy and only reports accepted settled states',async()=>{
   const attempts=vi.fn(),settled=vi.fn();
   const view=render(<GestureSheet open onOpenChange={attempts} title='Signing' handle={false} closeButton={null} backendProps={{dismissible:false,onAnimationEnd:settled}}><p>Wait for signature</p></GestureSheet>);
-  expect(document.querySelector('[data-vaul-handle]')).toBeNull();expect(screen.queryByRole('button',{name:'Close'})).toBeNull();
+  expect(document.querySelector('[data-hig-sheet-handle]')).toBeNull();expect(screen.queryByRole('button',{name:'Close'})).toBeNull();
   await userEvent.keyboard('{Escape}');expect(attempts).not.toHaveBeenCalled();
   view.rerender(<GestureSheet open onOpenChange={attempts} title='Signing' backendProps={{onAnimationEnd:settled}}><p>Wait for signature</p></GestureSheet>);
   await userEvent.keyboard('{Escape}');expect(attempts).toHaveBeenCalledWith(false);
@@ -108,7 +108,7 @@ describe('optional web gesture sheet',()=>{
  it('does not compete with an inline height owned by the backend',async()=>{
   const env=dynamicEnvironment();
   const view=render(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing backendProps={{direction:'top'}}><p>Short</p></GestureSheet>);
-  const panel=screen.getByRole('dialog');expect(panel.getAttribute('data-vaul-drawer-direction')).toBe('top');
+  const panel=screen.getByRole('dialog');expect(panel.getAttribute('data-hig-sheet-direction')).toBe('top');
   env.setHeight(180);view.rerender(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing backendProps={{direction:'top'}}><p>Expanded market details</p></GestureSheet>);env.resize();expect(env.animations).toHaveLength(1);
   panel.style.height='260px';await waitFor(()=>expect(env.animations[0].cancel).toHaveBeenCalled());
   env.setHeight(220);view.rerender(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing backendProps={{direction:'top'}}><p>Further expanded market details</p></GestureSheet>);env.resize();
@@ -130,7 +130,7 @@ describe('optional web gesture sheet',()=>{
  it('rejects snap-point props and non-finite or non-positive dynamic ceilings at runtime',()=>{
   vi.spyOn(console,'error').mockImplementation(()=>{});
   const incompatible={snapPoints:[.4],snapPoint:.4,activeSnapPoint:.4,setActiveSnapPoint:()=>{},fadeFromIndex:0,snapToSequentialPoint:true};
-  for(const[key,value]of Object.entries(incompatible)){expect(()=>render(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing backendProps={{[key]:value} as never}><p>Details</p></GestureSheet>)).toThrow('Dynamic GestureSheet does not accept Vaul snap-point props.');cleanup();}
+  for(const[key,value]of Object.entries(incompatible)){expect(()=>render(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing backendProps={{[key]:value} as never}><p>Details</p></GestureSheet>)).toThrow('Dynamic GestureSheet does not accept snap-point props.');cleanup();}
   for(const maxDynamicContentSize of[0,-1,Number.NaN,Number.POSITIVE_INFINITY,Number.NEGATIVE_INFINITY]){expect(()=>render(<GestureSheet open onOpenChange={()=>{}} title='Markets' enableDynamicSizing maxDynamicContentSize={maxDynamicContentSize}><p>Details</p></GestureSheet>)).toThrow('GestureSheet maxDynamicContentSize must be finite and greater than zero.');cleanup();}
  });
 });

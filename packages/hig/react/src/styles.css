@@ -137,12 +137,22 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-dialog-title { margin:0;font-size:1.25rem;font-weight:600;line-height:1.3; }
 .hig-dialog-description { margin:0;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-gesture-sheet { --hig-blur-inline:-16px;position:fixed;z-index:41;display:flex;flex-direction:column;max-height:95dvh;background:var(--hig-overlay,#111);color:var(--hig-text);box-shadow:0 0 64px #000a;outline:none; }
-.hig-gesture-sheet:is([data-vaul-drawer-direction='left'],[data-vaul-drawer-direction='right'])::after { display:none; }
+/* The sheet engine moves the sheet with transform and the overlay with opacity, timed from the shared sheet model; nothing here animates them. */
+/* A mouse drag moves the sheet instead of selecting its text. */
+@media (hover:hover) and (pointer:fine) {
+  .hig-gesture-sheet { -webkit-user-select:none;user-select:none; }
+}
+/* A sheet the host lays out carries its fill on past the edge it rests on, so a sheet raised above that edge leaves no gap under it. */
+.hig-gesture-sheet:is([data-hig-sheet-direction='bottom'],[data-hig-sheet-direction='top'])[data-hig-content-mode='custom']:not([data-hig-dynamic])::after { content:"";position:absolute;right:0;left:0;height:200%;background:inherit; }
+.hig-gesture-sheet[data-hig-sheet-direction='bottom'][data-hig-content-mode='custom']:not([data-hig-dynamic])::after { top:100%; }
+.hig-gesture-sheet[data-hig-sheet-direction='top'][data-hig-content-mode='custom']:not([data-hig-dynamic])::after { bottom:100%; }
+/* A sheet that clips or scrolls its own box cannot: pulled past its full height, a flush one trails a strip of its fill instead. */
+.hig-gesture-sheet[data-hig-sheet-overshoot] { box-shadow:0 0 64px #000a,var(--hig-sheet-tail) 0 var(--hig-overlay,#111); }
 /* Match the card curve at the sheet edge: 24px card radius plus the 24px content inset. */
-.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] { inset:auto var(--hig-panel-right) 0 var(--hig-panel-left);border-radius:48px 48px 0 0; }
-.hig-gesture-sheet[data-vaul-drawer-direction='top'] { inset:0 var(--hig-panel-right) auto var(--hig-panel-left);border-radius:0 0 14px 14px; }
-.hig-gesture-sheet[data-vaul-drawer-direction='left'] { inset:0 auto 0 var(--hig-panel-left);width:min(420px,95vw,calc(100% - var(--hig-panel-left) - var(--hig-panel-right)));max-height:none;border-radius:0 14px 14px 0; }
-.hig-gesture-sheet[data-vaul-drawer-direction='right'] { inset:0 var(--hig-panel-right) 0 auto;width:min(420px,95vw,calc(100% - var(--hig-panel-left) - var(--hig-panel-right)));max-height:none;border-radius:14px 0 0 14px; }
+.hig-gesture-sheet[data-hig-sheet-direction='bottom'] { --hig-sheet-tail:0 64px;inset:auto var(--hig-panel-right) 0 var(--hig-panel-left);border-radius:48px 48px 0 0; }
+.hig-gesture-sheet[data-hig-sheet-direction='top'] { --hig-sheet-tail:0 -64px;inset:0 var(--hig-panel-right) auto var(--hig-panel-left);border-radius:0 0 14px 14px; }
+.hig-gesture-sheet[data-hig-sheet-direction='left'] { --hig-sheet-tail:-64px 0;inset:0 auto 0 var(--hig-panel-left);width:min(420px,95vw,calc(100% - var(--hig-panel-left) - var(--hig-panel-right)));max-height:none;border-radius:0 14px 14px 0; }
+.hig-gesture-sheet[data-hig-sheet-direction='right'] { --hig-sheet-tail:64px 0;inset:0 var(--hig-panel-right) 0 auto;width:min(420px,95vw,calc(100% - var(--hig-panel-left) - var(--hig-panel-right)));max-height:none;border-radius:14px 0 0 14px; }
 :is(.hig-gesture-sheet,.hig-gesture-dynamic)[data-hig-content-mode='default'] { --hig-block-horizontal-inset:0px;overflow:auto;overscroll-behavior:contain;gap:12px;padding:24px 16px; }
 :is(.hig-gesture-sheet,.hig-gesture-dynamic)[data-hig-content-mode='custom'] { --hig-block-horizontal-inset:0px;padding:0 16px; }
 .hig-gesture-sheet[data-hig-dynamic='true'] { overflow:hidden;gap:0;padding:0; }
@@ -154,21 +164,21 @@ textarea.hig-input { border-radius:var(--hig-radius-xl,14px);resize:vertical; }
 .hig-gesture-sheet,.hig-gesture-sheet * { scrollbar-width:none; }
 .hig-gesture-sheet::-webkit-scrollbar,.hig-gesture-sheet *::-webkit-scrollbar { display:none; }
 /* Edge sheets pad default content past the notch and home indicator; dynamic sheets pad the inner wrapper instead.
-   Vaul directions are physical, so side insets are too. env() is 0px unless the host sets viewport-fit=cover. */
-.hig-gesture-sheet[data-vaul-drawer-direction='bottom'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-vaul-drawer-direction='bottom'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
-.hig-gesture-sheet[data-vaul-drawer-direction='top'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-vaul-drawer-direction='top'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-top:calc(24px + env(safe-area-inset-top,0px)); }
-.hig-gesture-sheet:is([data-vaul-drawer-direction='left'],[data-vaul-drawer-direction='right'])[data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
-.hig-gesture-sheet[data-vaul-drawer-direction='left'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-left:calc(16px + env(safe-area-inset-left,0px)); }
-.hig-gesture-sheet[data-vaul-drawer-direction='right'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-right:calc(16px + env(safe-area-inset-right,0px)); }
+   Sheet directions are physical, so side insets are too. env() is 0px unless the host sets viewport-fit=cover. */
+.hig-gesture-sheet[data-hig-sheet-direction='bottom'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-hig-sheet-direction='bottom'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
+.hig-gesture-sheet[data-hig-sheet-direction='top'][data-hig-content-mode='default']:not([data-hig-dynamic]),.hig-gesture-sheet[data-hig-sheet-direction='top'] > .hig-gesture-dynamic[data-hig-content-mode='default'] { padding-top:calc(24px + env(safe-area-inset-top,0px)); }
+.hig-gesture-sheet:is([data-hig-sheet-direction='left'],[data-hig-sheet-direction='right'])[data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-top:calc(24px + env(safe-area-inset-top,0px));padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
+.hig-gesture-sheet[data-hig-sheet-direction='left'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-left:calc(16px + env(safe-area-inset-left,0px)); }
+.hig-gesture-sheet[data-hig-sheet-direction='right'][data-hig-content-mode='default']:not([data-hig-dynamic]) { padding-right:calc(16px + env(safe-area-inset-right,0px)); }
 .hig-detent-bar { position:sticky;top:0;z-index:3;display:flex;flex:none;justify-content:center;pointer-events:none; }
 .hig-pin :is(.hig-screen-header,.hig-swap-view-header) { position:sticky;top:22px;z-index:2;--hig-blur-top:-46px; }
 .hig-detent-bar::after,.hig-pin :is(.hig-screen-header,.hig-swap-view-header)::after,.hig-app-modal-live-activity .hig-dialog-title::after { content:"";position:absolute;inset:var(--hig-blur-top,-24px) var(--hig-blur-inline,-24px) -12px;z-index:-1;pointer-events:none;background:#111b;backdrop-filter:blur(12px);mask-image:linear-gradient(#000 calc(100% - 16px),transparent); }
 .hig-pin:has(.hig-screen-header,.hig-swap-view-header) .hig-detent-bar::after { content:none; }
-.hig-gesture-handle[data-vaul-handle] { flex:none;align-self:center;width:100px;height:6px;border-radius:9999px;opacity:1;background:var(--hig-action);box-shadow:0 0 12px color-mix(in srgb,var(--hig-action) 60%,transparent);margin-block:4px 12px; }
-.hig-detent-bar > [data-vaul-handle] { pointer-events:auto;margin-block-end:0; }
-/* Vaul owns drag and snap timing. These keyframes present and dismiss the modal. */
-.hig-gesture-sheet[data-vaul-snap-points='false'][data-hig-motion='full'],.hig-gesture-backdrop[data-vaul-overlay][data-state][data-hig-motion='full'] { animation-duration:var(--hig-motion-duration-base,250ms); }
-.hig-gesture-sheet[data-hig-dynamic='true'][data-vaul-drawer-direction='top'] { justify-content:flex-end; }
+.hig-gesture-handle[data-hig-sheet-handle] { position:relative;display:block;flex:none;align-self:center;width:100px;height:6px;margin-inline:auto;border-radius:9999px;opacity:1;touch-action:none;background:var(--hig-action);box-shadow:0 0 12px color-mix(in srgb,var(--hig-action) 60%,transparent);margin-block:4px 12px; }
+/* The handle is thin; its press target is not. */
+.hig-gesture-handle > [data-hig-sheet-handle-hitarea] { position:absolute;top:50%;left:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%); }
+.hig-detent-bar > [data-hig-sheet-handle] { pointer-events:auto;margin-block-end:0; }
+.hig-gesture-sheet[data-hig-dynamic='true'][data-hig-sheet-direction='top'] { justify-content:flex-end; }
 .hig-gesture-sheet[data-hig-motion='reduced'],.hig-gesture-backdrop[data-hig-motion='reduced'] { animation:none!important;transition:none!important; }
 .hig-popover { max-width:min(360px,calc(100vw - 32px));max-height:var(--radix-popover-content-available-height,calc(100dvh - 32px));overflow-y:auto;overscroll-behavior:contain;background:var(--hig-nested);color:var(--hig-text);padding:12px;border:1px solid transparent;border-radius:var(--hig-radius-xl,14px);box-shadow:0 8px 24px #0006;line-height:1.5;overflow-wrap:anywhere;z-index:50; }
 .hig-menu { min-width:min(12rem,calc(100vw - 32px));max-height:var(--radix-dropdown-menu-content-available-height,calc(100dvh - 32px));padding:4px; }
@@ -1156,10 +1166,10 @@ span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
 [data-hig-motion='reduced'] .hig-button,[data-hig-motion='reduced'] .hig-accordion > .hig-accordion-summary,[data-hig-motion='reduced'] .hig-accordion-chevron,[data-hig-motion='reduced'] .hig-switch input,[data-hig-motion='reduced'] .hig-switch input::before,[data-hig-motion='reduced'] .hig-switch input::after,[data-hig-motion='reduced'] .hig-segment-indicator,[data-hig-motion='reduced'] .hig-filter-mark > img,[data-hig-motion='reduced'] .hig-filter-mark > svg,[data-hig-motion='reduced'] .hig-swap-flip > *,[data-hig-motion='reduced'] .hig-screen-header[data-sticky],[data-hig-motion='reduced'] .hig-profile-bar[data-sticky],[data-hig-motion='reduced'] .hig-setting-meter > span,[data-hig-motion='reduced'] .hig-reward-track > span,[data-hig-motion='reduced'] .hig-target-rest,[data-hig-motion='reduced'] .hig-target-move,[data-hig-motion='reduced'] .hig-bar-mark-segment,[data-hig-motion='reduced'] .hig-bar-mark-rest,[data-hig-motion='reduced'] .hig-bar-pnl-rest,[data-hig-motion='reduced'] .hig-bar-pnl-move,[data-hig-motion='reduced'] .hig-bar-pnl-liquidation { transition:none; }
 [data-hig-motion='reduced'] .hig-button-spinner,[data-hig-motion='reduced'] .hig-skeleton,[data-hig-motion='reduced'] .hig-select-list,[data-hig-motion='reduced'] .hig-popover,[data-hig-motion='reduced'].hig-popover,[data-hig-motion='reduced'] .hig-progress-track[data-indeterminate]::after,[data-hig-motion='reduced'] .hig-spinner-indicator,[data-hig-motion='reduced'] .hig-status-indicator:is([data-state='online'],[data-state='stale'])::before,[data-hig-motion='reduced'] .hig-swap-view,[data-hig-motion='reduced'] .hig-screen-header[data-sticky] { animation:none; }
 @media(prefers-reduced-motion:reduce) {
-:is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"],.hig-gesture-sheet[data-vaul-snap-points='false'][data-hig-motion='full'],.hig-gesture-backdrop[data-vaul-overlay][data-state][data-hig-motion='full'] { animation:none; }
+:is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"] { animation:none; }
 :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"],.hig-app-modal[data-modal-motion="full"] { transition:none; }
 }
-[data-hig-motion='reduced'] :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"],[data-hig-motion='reduced'] .hig-gesture-sheet[data-vaul-snap-points='false'][data-hig-motion='full'],[data-hig-motion='reduced'] .hig-gesture-backdrop[data-vaul-overlay][data-state][data-hig-motion='full'] { animation:none; }
+[data-hig-motion='reduced'] :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"][data-state="closed"] { animation:none; }
 [data-hig-motion='reduced'] :is(.hig-dialog,.hig-backdrop)[data-modal-motion="full"],[data-hig-motion='reduced'] .hig-app-modal[data-modal-motion="full"] { transition:none; }
 /* Sonner honours the OS preference itself; this covers a provider that asks for reduced motion on its own. */
 [data-hig-motion='reduced'] [data-sonner-toast],[data-hig-motion='reduced'] [data-sonner-toast] > * { transition:none!important;animation:none!important; }

@@ -1,5 +1,5 @@
 "use client";
-/** Aggregate entry. TradeEntry needs @radix-ui/react-dialog; import single blocks from `@bloxwap/hig/react/blocks/<name>` to avoid overlay peers. SwapSheet (Vaul) is only at `blocks/swap-sheet`. */
+/** Aggregate entry. TradeEntry needs @radix-ui/react-dialog; import single blocks from `@bloxwap/hig/react/blocks/<name>` to avoid overlay peers. SwapSheet, a gesture sheet, is only at `blocks/swap-sheet`. */
 export {MarketRow,type MarketRowProps} from './blocks/market-row.js';
 export {TradeEntry} from './blocks/trade-entry.js';
 export {InstallCommand} from './blocks/install-command.js';

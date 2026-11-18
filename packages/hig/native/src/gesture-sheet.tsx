@@ -1,7 +1,7 @@
 import {BackdropBlur} from './backdrop-blur.js';
 import {GestureSheetHeaderContext,GestureSheetSurfaceContext,sheetGripStyle,sheetHandlePadding} from './sheet-header-glow.js';
-import {gestureSheetAnimationConfigs} from './gesture-sheet-motion.js';
-export {gestureSheetAnimationConfigs} from './gesture-sheet-motion.js';
+import {gestureSheetResize,gestureSheetTravel} from './gesture-sheet-motion.js';
+export {gestureSheetResize,gestureSheetTravel} from './gesture-sheet-motion.js';
 import {validateSnapPoints} from './gesture-sheet-model.js';
 import React,{createContext,useCallback,useContext,useEffect,useId,useMemo,useRef,useState} from 'react';
 import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
@@ -187,7 +187,9 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   if(position.value>space)position.value=space;
   const closes=target>=space;
   if(closes&&closing.value)return;
-  const motion={...gestureSheetAnimationConfigs,reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
+  // The same detent at a new offset is the content or the room changing size: the sheet follows on the resize curve. Opening, closing and a change of detent travel.
+  const resizes=previous!==null&&!closes&&previous.target>=0&&previous.target<space&&next.index===previous.index&&next.kick===previous.kick;
+  const motion={...(resizes?gestureSheetResize:gestureSheetTravel),reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
   if(closes){closing.value=true;position.value=withTiming(target,motion,finished=>{'worklet';if(finished)runOnJS(finishClose)();});return;}
   const index=next.index;active.value=index;
   position.value=withTiming(target,motion,finished=>{'worklet';if(finished)runOnJS(settled)(index);});
@@ -206,8 +208,8 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
    'worklet';
    dragging.value=false;
    const list=positions.value;if(list.length===0)return;
-   const space=roomValue.value,target=releaseTarget(position.value,event.velocityY,list,space,canDismiss.value,dragStart.value,scrolled.value);
-   const motion={...gestureSheetAnimationConfigs,reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
+   const space=roomValue.value,target=releaseTarget(position.value,event.velocityY,list,space,canDismiss.value,dragStart.value,scrolled.value,space);
+   const motion={...gestureSheetTravel,reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
    if(target<0){closing.value=true;runOnJS(requestClose)();position.value=withTiming(space,motion,finished=>{'worklet';if(finished)runOnJS(finishClose)();});return;}
    const index=list.length-1-target;active.value=index;
    position.value=withTiming(list[target],motion,finished=>{'worklet';if(finished)runOnJS(settled)(index);});

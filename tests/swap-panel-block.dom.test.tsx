@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import React,{useState} from 'react';
-import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -326,10 +326,7 @@ describe('SwapBlock live numbers',()=>{
  });
 });
 describe('SwapSheet',()=>{
- // Vaul reads matchMedia and animates with CSS; jsdom has neither. Clicks inside the sheet use fireEvent because Vaul's drag handlers need pointer capture.
- let motion:HTMLStyleElement;
- beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventListener:vi.fn(),removeEventListener:vi.fn()})));motion=document.createElement('style');motion.textContent='[data-vaul-drawer],[data-vaul-overlay]{animation-name:none!important}';document.head.append(motion);});
- afterEach(()=>{motion.remove();vi.unstubAllGlobals();});
+ // jsdom runs no transitions, so the sheet opens and closes at once.
  function Sheet(props:Partial<SwapBlockProps>){const [open,setOpen]=useState(false);return <SwapSheet title='Swap' open={open} onOpenChange={setOpen} trigger={<button>Open swap</button>} tokens={tokens} onSubmit={()=>{}} keypad='never' {...props}/>;}
  it('presents the panel in a gesture sheet and pushes views inside that one sheet',async()=>{
   render(<Sheet/>);expect(screen.queryByRole('dialog')).toBeNull();

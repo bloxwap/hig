@@ -92,6 +92,10 @@
   "/docs/guides/components/overlays/": [
     "api-and-anatomy",
     "optional-web-gesture-backend",
+    "motion",
+    "engine-options-backendprops",
+    "attributes",
+    "where-it-differs-from-vaul",
     "views-that-swap-gesturesheetview",
     "native-sheet-engine",
     "when-to-use-and-examples",

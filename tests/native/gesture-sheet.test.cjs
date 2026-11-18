@@ -152,3 +152,15 @@ it('tells its content the colour it paints, and keeps content mounted when the e
  act(()=>root.update(tree(props)));
  expect(seen.at(-1)).toMatchObject({stepped:true});expect(mounts).toBe(1);
 });
+
+it('travels on the drawer curve and follows a new height on the resize curve',()=>{
+ const {gestureSheetTravel,gestureSheetResize}=require('../../packages/hig/native/src/gesture-sheet');
+ // The stand-in Easing.bezier returns its control points.
+ expect(gestureSheetTravel).toEqual({duration:500,easing:[0.32,0.72,0,1]});
+ expect(gestureSheetResize).toEqual({duration:270,easing:[0.26,0.08,0.25,1]});
+ const source=require('fs').readFileSync(require.resolve('../../packages/hig/native/src/gesture-sheet.tsx'),'utf8');
+ // Opening, closing, a change of detent and a release travel; only the same detent at a new offset resizes.
+ expect(source).toContain('resizes?gestureSheetResize:gestureSheetTravel');
+ expect(source.match(/\.\.\.gestureSheetTravel,reduceMotion/g)).toHaveLength(1);
+ expect(source).not.toContain('gestureSheetAnimationConfigs');
+});
