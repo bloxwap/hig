@@ -3,6 +3,7 @@ import {afterEach,beforeEach,it,expect,vi} from 'vitest';
 import {render,screen,cleanup,act} from '@testing-library/react';
 import {HIGProvider} from '@bloxwap/hig/react/provider';
 import {OutcomeChart,outcomeColors,type Outcome,type OutcomeFeed} from '../packages/hig/chart/src/index';
+import * as geometry from '../packages/hig/chart/src/outcome-model';
 import {drawOutcomes} from '../packages/hig/chart/src/outcome-chart';
 
 // jsdom has no canvas. A recording context stands in, and frames are stepped by hand.
@@ -70,6 +71,17 @@ it('trails flow left at 50px a second from the ladder to the capsules, over the 
  expect(firstMark()).toBe(22);frame(500);expect(firstMark()).toBe(-3);
  // The sample taken at t=0 has moved 50px left of the tip after one second.
  frame(1000);expect(context.calls).toContainEqual(['bezierCurveTo',expect.any(Number),expect.any(Number),expect.any(Number),expect.any(Number),302,high]);
+});
+
+it('scrolls settled trails without rebuilding their capsule layout or grid rows',()=>{
+ const placement=vi.spyOn(geometry,'capsuleCenters'),ticks=vi.spyOn(geometry,'outcomeTicks');
+ render(<HIGProvider><OutcomeChart summary='Steady' outcomes={sample}/></HIGProvider>);
+ frame(0);
+ placement.mockClear();ticks.mockClear();
+ for(let i=1;i<=60;i++)frame(i*1000/60);
+ expect(placement).not.toHaveBeenCalled();
+ expect(ticks).not.toHaveBeenCalled();
+ expect(tips()).toHaveLength(sample.length);
 });
 
 it('a new chance eases over 300ms and carries its capsule along; reduced motion snaps and holds the grid',()=>{

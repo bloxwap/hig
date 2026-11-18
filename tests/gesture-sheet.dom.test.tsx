@@ -9,13 +9,13 @@ beforeEach(()=>{vi.stubGlobal('matchMedia',vi.fn(()=>({matches:false,addEventLis
 afterEach(()=>{cleanup();restoreAnimation?.();restoreAnimation=undefined;motion.remove();vi.unstubAllGlobals();vi.restoreAllMocks();});
 type MockAnimation={frames:Keyframe[];cancel:ReturnType<typeof vi.fn>;onfinish:(()=>void)|null;oncancel:(()=>void)|null};
 function dynamicEnvironment({waapi=true,observer=true}={}){
- let height=100,panelHeight=100,notify:((height?:number)=>void)=()=>{};
+ let height=100,panelHeight=100,progress=0,notify:((height?:number)=>void)=()=>{};
  const observe=vi.fn(),disconnect=vi.fn();
  if(observer)vi.stubGlobal('ResizeObserver',class{constructor(callback:ResizeObserverCallback){notify=height=>callback(height===undefined?[]:[{borderBoxSize:[{blockSize:height,inlineSize:390}]} as unknown as ResizeObserverEntry],{} as ResizeObserver);}observe(...args:unknown[]){observe(...args);}disconnect(){disconnect();}});
  vi.spyOn(HTMLElement.prototype,'getBoundingClientRect').mockImplementation(function(this:HTMLElement){const value=this.classList.contains('hig-gesture-sheet')?panelHeight:height;return{width:390,height:value,x:0,y:0,top:0,left:0,right:390,bottom:value,toJSON:()=>({})} as DOMRect;});
- const animations:MockAnimation[]=[],animate=vi.fn((frames:Keyframe[])=>{const animation:MockAnimation={frames,cancel:vi.fn(()=>animation.oncancel?.()),onfinish:null,oncancel:null};animations.push(animation);return animation as unknown as Animation;});
+ const animations:MockAnimation[]=[],animate=vi.fn((frames:Keyframe[])=>{const animation={frames,effect:{getComputedTiming:()=>({progress})},cancel:vi.fn(()=>animation.oncancel?.()),onfinish:null,oncancel:null} as MockAnimation;animations.push(animation);return animation as unknown as Animation;});
  if(waapi){const original=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'animate');Object.defineProperty(HTMLElement.prototype,'animate',{configurable:true,writable:true,value:animate});restoreAnimation=()=>{if(original)Object.defineProperty(HTMLElement.prototype,'animate',original);else Reflect.deleteProperty(HTMLElement.prototype,'animate');};}
- return{animations,animate,observe,disconnect,setHeight:(value:number)=>{height=value;},setPanelHeight:(value:number)=>{panelHeight=value;},resize:(height?:number)=>act(()=>notify(height))};
+ return{animations,animate,observe,disconnect,setHeight:(value:number)=>{height=value;},setProgress:(value:number)=>{progress=value;},resize:(height?:number)=>act(()=>notify(height))};
 }
 
 describe('optional web gesture sheet',()=>{
@@ -78,12 +78,12 @@ describe('optional web gesture sheet',()=>{
   const read=vi.mocked(HTMLElement.prototype.getBoundingClientRect);read.mockClear();
   env.resize(220);
   expect(read).not.toHaveBeenCalled();
-  expect(env.animations[0].frames).toEqual([{height:'100px'},{height:'220px'}]);
+  expect(env.animations[0].frames).toEqual([{translate:'0 120px'},{translate:'0 0px'}]);
   env.resize(220);
   expect(read).not.toHaveBeenCalled();expect(env.animations).toHaveLength(1);
-  env.setPanelHeight(160);env.resize(300);
+  env.setProgress(.5);env.resize(300);
   expect(env.animations[0].cancel).toHaveBeenCalledOnce();
-  expect(env.animations[1].frames).toEqual([{height:'160px'},{height:'300px'}]);
+  expect(env.animations[1].frames).toEqual([{translate:'0 140px'},{translate:'0 0px'}]);
  });
  it('animates intrinsic grow and shrink with rapid retargeting while retaining input, focus and refs',async()=>{
   const env=dynamicEnvironment(),ref=createRef<HTMLDivElement>();
@@ -91,9 +91,9 @@ describe('optional web gesture sheet',()=>{
   render(<Example/>);const panel=screen.getByRole('dialog'),body=panel.querySelector('.hig-gesture-dynamic'),input=screen.getByLabelText('Search markets');
   expect(ref.current).toBe(panel);expect(body).not.toBeNull();input.focus();fireEvent.input(input,{target:{value:'BTC'}});
   expect(panel.style.height).toBe('');await waitFor(()=>expect(env.observe).toHaveBeenCalled());env.setHeight(180);fireEvent.click(screen.getByRole('button',{name:'Toggle details'}));env.resize();
-  expect(env.animations[0].frames).toEqual([{height:'100px'},{height:'180px'}]);expect(panel.style.height).toBe('');
-  env.setHeight(140);env.setPanelHeight(125);fireEvent.click(screen.getByRole('button',{name:'Toggle details'}));env.resize();
-  expect(env.animations[0].cancel).toHaveBeenCalledOnce();expect(env.animations[1].frames).toEqual([{height:'125px'},{height:'140px'}]);
+  expect(env.animations[0].frames).toEqual([{translate:'0 80px'},{translate:'0 0px'}]);expect(panel.style.height).toBe('');
+  env.setHeight(140);env.setProgress(.3125);fireEvent.click(screen.getByRole('button',{name:'Toggle details'}));env.resize();
+  expect(env.animations[0].cancel).toHaveBeenCalledOnce();expect(env.animations[1].frames).toEqual([{translate:'0 15px'},{translate:'0 0px'}]);
   act(()=>env.animations[1].onfinish?.());expect(panel.style.height).toBe('');expect(ref.current).toBe(panel);expect(panel.querySelector('.hig-gesture-dynamic')).toBe(body);
   expect(screen.getByLabelText('Search markets')).toBe(input);expect((input as HTMLInputElement).value).toBe('BTC');expect(document.activeElement).toBe(input);
  });

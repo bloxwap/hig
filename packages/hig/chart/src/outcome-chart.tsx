@@ -50,12 +50,12 @@ export interface OutcomeTrail {color:string;ticks:readonly AltimeterTick[];
  /** Vertical center of the capsule the trail ends in. */
  capsule:number}
 /** Paints one frame: the grid, then each trail from the leading edge to its capsule. */
-export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;height:number;now:number;phase:number;grid:string;scale?:OutcomeScale;trails:readonly OutcomeTrail[]}):void{
+export function drawOutcomes(ctx:CanvasRenderingContext2D,frame:{width:number;height:number;now:number;phase:number;grid:string;scale?:OutcomeScale;gridRows?:readonly number[];trails:readonly OutcomeTrail[]}):void{
  const {width,height}=frame,trailEnd=Math.max(PAD+40,width-EDGE-capsuleWidth(width)-CONNECTOR),yFor=(chance:number)=>outcomeY(chance,height,INSET,frame.scale);
  ctx.clearRect(0,0,width,height);
  ctx.lineJoin='round';
  // One row of marks per ladder tick, so each row is a ten percent line.
- drawPlusGrid(ctx,width,height,frame.phase,frame.grid,outcomeTicks(frame.scale).map(yFor));
+ drawPlusGrid(ctx,width,height,frame.phase,frame.grid,frame.gridRows??outcomeTicks(frame.scale).map(yFor));
  ctx.lineWidth=2.5;
  for(const trail of frame.trails){
   const history=historyPath(ctx,trail.ticks,frame.now,PAD,trailEnd,yFor,0,height,frame.scale?.low,frame.scale?.high);
@@ -101,19 +101,28 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
  const scale=outcomeScale(chances,held.current??undefined);
  // Only a ladder fitted to real chances is worth holding; the whole ladder shown while waiting is not.
  held.current=chances.some(chance=>chance!=null)?scale:null;
- const ticks=outcomeTicks(scale);
+ const ticks=useMemo(()=>outcomeTicks(scale),[scale]);
+ const gridRows=useMemo(()=>ticks.map(chance=>outcomeY(chance,height,INSET,scale)),[ticks,height,scale]);
  const bounds=labelBounds(height,CAPSULE,targetLabelInsets);
  const rest=capsuleCenters(shown.map(outcome=>outcomeY(outcomeChance(outcome.price)??scale.low,height,INSET,scale)),height,CAPSULE,6,false,bounds);
  // The frame loop reads the newest props without restarting, so a re-render never clears the trails.
- const settings=useRef({shown,rest,scale,colors,reducedMotion});
+ const settings=useRef({shown,rest,scale,gridRows,colors,reducedMotion});
  const eased=useRef(new Map<string,{from:number;to:number;start:number;value:number;ticks:AltimeterTick[]}>());
  // Capsules render at rest; while a chance eases, an offset carries each one along its trail's tip.
  // Outcomes wait for their first price stacked at the bottom; when it arrives, the capsule glides from the stack to its place.
  const arrival=useRef({clock:NaN,priced:new Map<string,boolean>(),at:new Map<string,number>(),moving:new Map<string,{from:number;start:number}>()});
+ const settledRest=useRef<number[]|null>(null);
  const place=useRef((_now?:number): number[]=>[]);
  place.current=frameTime=>{
   const {shown,rest,scale,reducedMotion}=settings.current,state=arrival.current;
   if(frameTime!==undefined)state.clock=frameTime;
+  const settled=shown.every(outcome=>{
+   const track=eased.current.get(outcome.id);
+   return !track||track.value===outcomeChance(outcome.price);
+  });
+  // The canvas keeps scrolling after the capsules have reached their DOM positions.
+  if(settled&&settledRest.current===rest&&state.moving.size===0)return rest;
+  settledRest.current=settled?rest:null;
   const now=state.clock,tips=shown.map(outcome=>{const value=eased.current.get(outcome.id)?.value;return outcomeY(value!=null&&Number.isFinite(value)?value:outcomeChance(outcome.price)??scale.low,height,INSET,scale);});
   const centers=capsuleCenters(tips,height,CAPSULE,6,false,bounds),items=list.current?.children;
   for(const id of state.priced.keys())if(!shown.some(outcome=>outcome.id===id)){state.priced.delete(id);state.at.delete(id);state.moving.delete(id);}
@@ -128,7 +137,7 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
   }
   return centers;
  };
- useLayoutEffect(()=>{settings.current={shown,rest,scale,colors,reducedMotion};place.current();});
+ useLayoutEffect(()=>{settings.current={shown,rest,scale,gridRows,colors,reducedMotion};place.current();});
  useEffect(()=>{
   const surface=canvas.current,container=box.current;if(!surface||!container)return;
   let context:CanvasRenderingContext2D|null=null;
@@ -138,7 +147,7 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
   observer?.observe(container);
   const tracks=eased.current;
   const step=(now:number)=>{
-   const {shown,scale,colors,reducedMotion}=settings.current,sample=now-sampled>=ALTIMETER_SAMPLE_MS,keep=(Math.max(width,0)/ALTIMETER_FLOW_PX)*1000+2000;
+   const {shown,scale,gridRows,colors,reducedMotion}=settings.current,sample=now-sampled>=ALTIMETER_SAMPLE_MS,keep=(Math.max(width,0)/ALTIMETER_FLOW_PX)*1000+2000;
    // After a pause (a hidden tab stops the frames) the trails start flat again, so no line bridges the gap.
    if(sample&&now-sampled>2000)for(const track of tracks.values())track.ticks=[];
    for(const id of tracks.keys())if(!shown.some(outcome=>outcome.id===id))tracks.delete(id);
@@ -148,7 +157,7 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
     let track=tracks.get(outcome.id);
     if(!track||reducedMotion){track={from:target,to:target,start:now,value:target,ticks:track?.ticks??[]};tracks.set(outcome.id,track);}
     else if(target!==track.to){if(now-track.start>=ALTIMETER_EASE_MS){track.from=track.value;track.start=now;}track.to=target;}
-    track.value=track.from+(track.to-track.from)*easeInOut((now-track.start)/ALTIMETER_EASE_MS);
+    track.value=now-track.start>=ALTIMETER_EASE_MS?track.to:track.from+(track.to-track.from)*easeInOut((now-track.start)/ALTIMETER_EASE_MS);
     if(sample){
      if(track.ticks.length===0)track.ticks.push({t:now-keep,p:track.value});
      track.ticks.push({t:now,p:track.value});
@@ -162,7 +171,7 @@ export function OutcomeChart({summary,paused=false,outcomes,feed=championsLeague
    if(surface.width!==w)surface.width=w;
    if(surface.height!==h)surface.height=h;
    context.setTransform(ratio,0,0,ratio,0,0);
-   drawOutcomes(context,{width,height,now,phase:reducedMotion?0:gridPhase(now),grid:colors.nested,scale,trails:shown.flatMap((outcome,index)=>{const track=tracks.get(outcome.id);return track?[{color:outcome.color??outcomeColors[index%outcomeColors.length],ticks:track.ticks,value:track.value,capsule:centers[index]}]:[];})});
+   drawOutcomes(context,{width,height,now,phase:reducedMotion?0:gridPhase(now),grid:colors.nested,scale,gridRows,trails:shown.flatMap((outcome,index)=>{const track=tracks.get(outcome.id);return track?[{color:outcome.color??outcomeColors[index%outcomeColors.length],ticks:track.ticks,value:track.value,capsule:centers[index]}]:[];})});
   };
   const frames=visibleFrames(container,step,initiallyPaused.current);
   pauseFrames.current=frames.setPaused;

@@ -1,7 +1,7 @@
 /** HIG's own native sheet: what it renders and when, with the animation and gesture libraries replaced by inert stand-ins. Motion itself is covered by tests/gesture-sheet-model.test.ts and by device runs. */
 const React=require('react');
 const {create,act}=require('react-test-renderer');
-const {BackHandler,Text:RNText}=require('react-native');
+const {BackHandler,StyleSheet,Text:RNText}=require('react-native');
 const mockSprings=[];
 jest.mock('react-native-reanimated',()=>{
  const React=require('react'),RN=require('react-native');
@@ -33,6 +33,14 @@ it('rejects sizing props that contradict each other',()=>{
  quiet.mockRestore();
 });
 
+it('uses the measured host to lay out modal content on its first render',()=>{
+ const view=mount({open:false});
+ const host=view.findAll(node=>typeof node.type==='string'&&node.props.onLayout)[0];
+ act(()=>host.props.onLayout({nativeEvent:{layout:{height:800}}}));
+ act(()=>root.update(tree({open:true})));
+ expect(all(root.root,'sheet-content')).toHaveLength(1);
+});
+
 it('a modal sheet draws in the host layer only while open, with default anatomy once it knows its room',()=>{
  let view=mount({open:false});expect(all(view,'sheet')).toHaveLength(0);
  act(()=>root.update(tree({open:true})));view=root.root;
@@ -41,6 +49,7 @@ it('a modal sheet draws in the host layer only while open, with default anatomy 
  expect(all(view,'sheet-handle')).toHaveLength(0);layout(view);expect(all(view,'sheet-handle')).toHaveLength(1);
  const texts=view.findAllByType(RNText).map(text);expect(texts).toEqual(expect.arrayContaining(['Review','Verify amount','Close']));
  expect(all(view,'sheet-content')[0].props.accessibilityViewIsModal).toBe(true);
+ expect(StyleSheet.flatten(view.findByType(GestureSheetScrollView).props.contentContainerStyle).paddingHorizontal).toBe(8);
  // The surface is rasterised on Android so moving it costs no redraw of its content.
  expect(all(view,'sheet-surface')[0].props.renderToHardwareTextureAndroid).toBe(true);
 });

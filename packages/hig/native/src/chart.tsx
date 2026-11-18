@@ -143,10 +143,14 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  // Labels and Intl formatting change only when the visible tick range or its format changes.
  const low=Math.floor((display-reach-anchor)/spacing),high=Math.ceil((display+reach-anchor)/spacing);
  const ladder=useMemo(()=>Number.isFinite(low)&&Number.isFinite(high)
-  ?ladderPrices(anchor,spacing,anchor+low*spacing,anchor+high*spacing).map(price=>({price,label:format.format(price)}))
-  :[],[anchor,spacing,low,high,format]);
+  ?ladderPrices(anchor,spacing,anchor+low*spacing,anchor+high*spacing).map(price=>{
+    const y=center-(price-anchor)/spacing*ALTIMETER_TICK_PX;
+    return {price,y,label:format.format(price),ticks:`M10 ${y}h8M${width-18} ${y}h8`};
+   })
+  :[],[anchor,spacing,low,high,format,center,width]);
  const targetTexts=useMemo(()=>new Map(levels.map(level=>[level.id,[level.label,format.format(level.price)].filter(Boolean).join(' ')])),[levels,format]);
  const bounds=Array.from(frame.levels.values());
+ const ladderShift=validPrice(display)?(display-anchor)/spacing*ALTIMETER_TICK_PX:0;
  const id=useId().replace(/[^a-zA-Z0-9_-]/g,''),fade='trail'+id,shade='basis'+id,clip='trailClip'+id;
  const status=stale?messages.stale:messages.loadingChart;
  const label=[summary,mark==null?status:reading,...targetTexts.values()].join('. ');
@@ -162,9 +166,11 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
      {validPrice(display)&&validPrice(basis)&&basisY!==center&&<LinearGradient id={shade} gradientUnits="userSpaceOnUse" x1={0} x2={0} y1={tipY} y2={Math.min(height,Math.max(0,basisY))-shift}><Stop offset={0} stopColor={lineColor} stopOpacity={.5}/><Stop offset={1} stopColor={lineColor} stopOpacity={0}/></LinearGradient>}
     </Defs>
     <Path d={grid} translateX={reducedMotion?0:gridPhase(now)} stroke={colors.nested} fill="none"/>
-    {ladder.map(({price:p,label})=>{const y=yFor(p),covered=bounds.some(l=>l.labelTop!=null&&y+7>l.labelTop-2&&y-7<l.labelTop+20);
-     return <G key={p} opacity={.75}><Path d={`M10 ${y}h8M${width-18} ${y}h8`} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fill={colors.muted}>{label}</SvgText>}</G>;
-    })}
+    <G translateY={ladderShift}>{ladder.map(({price:p,label,y,ticks})=>{
+     const screenY=y+ladderShift;
+     const covered=bounds.some(l=>l.labelTop!=null&&screenY+7>l.labelTop-2&&screenY-7<l.labelTop+20);
+     return <G key={p} opacity={.75}><Path d={ticks} stroke={colors.muted}/>{!covered&&<SvgText x={width-32} y={y+4} textAnchor="end" fontFamily={monoFontFamily} fontSize={13} fill={colors.muted}>{label}</SvgText>}</G>;
+    })}</G>
     <G clipPath={`url(#${clip})`}><G translateX={scroll} translateY={shift}>
     {history&&validPrice(basis)&&basisY!==center?<Path d={`${trail}L${tipX} ${basisY-shift}L${history.first} ${basisY-shift}Z`} fill={`url(#${shade})`}/>:null}
     {trail?<Path d={trail} stroke={`url(#${fade})`} strokeWidth={2.5} fill="none"/>:null}

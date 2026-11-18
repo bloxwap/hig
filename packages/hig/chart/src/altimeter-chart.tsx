@@ -78,7 +78,7 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  const right=width-PAD;
  if(!(display>0)||!(spacing>0))return right-100;
  const center=height/2,yFor=(price:number)=>center-((price-display)/spacing)*ALTIMETER_TICK_PX;
- const reach=(center/ALTIMETER_TICK_PX+1)*spacing,labels=ladderPrices(frame.anchor,spacing,display-reach,display+reach).map(price=>({y:yFor(price),text:frame.label(price)}));
+ const reach=(center/ALTIMETER_TICK_PX+1)*spacing,prices=ladderPrices(frame.anchor,spacing,display-reach,display+reach);
  const font=`13px ${frame.font??monoFallback}`;
  // Reassigning the canvas font can synchronously resolve document styles, even if the font is unchanged.
  if(ctx.font!==font)ctx.font=font;
@@ -86,7 +86,8 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  ctx.globalAlpha=.75;ctx.strokeStyle=frame.colors.ladder;ctx.fillStyle=frame.colors.ladder;
  let widest=0;
  ctx.beginPath();
- for(const {y,text} of labels){
+ for(const price of prices){
+  const y=yFor(price),text=frame.label(price);
   ctx.moveTo(PAD-EDGE,y);ctx.lineTo(PAD,y);ctx.moveTo(right,y);ctx.lineTo(right+EDGE,y);
   if(!frame.targetLabelBounds?.some(([top,bottom])=>y+7>top-2&&y-7<bottom+2))ctx.fillText(text,right-14,y);
   widest=Math.max(widest,frame.labelWidth?.(text)??ctx.measureText(text).width);

@@ -60,6 +60,7 @@ export function targetLayout(){
  return {
   reset(){sides.clear();},
   update(targets:readonly AltimeterTarget[],display:number,spacing:number,height:number,now:number,snap=false,insets?:TargetLabelInsets){
+   if(targets.length===0){sides.clear();return new Map<string,AltimeterTargetPosition>();}
    const offsets=new Map<string,number>();
    for(const target of targets){
     if(!target.label)continue;

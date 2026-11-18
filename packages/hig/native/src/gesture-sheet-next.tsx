@@ -61,7 +61,7 @@ export type GestureSheetProps=SheetCommonProps&(
  |{enableDynamicSizing:true;snapPoints?:never;initialIndex?:never;maxDynamicContentSize?:number}
 );
 
-interface HostValue {show:(id:string,node:React.ReactNode)=>void;hide:(id:string)=>void}
+interface HostValue {height:React.RefObject<number>;show:(id:string,node:React.ReactNode)=>void;hide:(id:string)=>void}
 const HostContext=createContext<HostValue|null>(null);
 /**
  * Where modal sheets draw: wrap the screen (inside GestureHandlerRootView and SafeAreaProvider) once. Sheets render in a
@@ -69,12 +69,14 @@ const HostContext=createContext<HostValue|null>(null);
  */
 export function GestureSheetHost({children,style}:{children:React.ReactNode;style?:StyleProp<ViewStyle>}){
  const [layers,setLayers]=useState<readonly {id:string;node:React.ReactNode}[]>([]);
- const value=useMemo<HostValue>(()=>({
+ const height=useRef(0);
+ const measureHost=useCallback((event:LayoutChangeEvent)=>{height.current=event.nativeEvent.layout.height;},[]);
+ const value=useMemo<HostValue>(()=>({height,
   show:(id,node)=>setLayers(current=>{const index=current.findIndex(layer=>layer.id===id);if(index<0)return [...current,{id,node}];if(current[index].node===node)return current;const next=current.slice();next[index]={id,node};return next;}),
   hide:id=>setLayers(current=>current.some(layer=>layer.id===id)?current.filter(layer=>layer.id!==id):current),
  }),[]);
  return <HostContext.Provider value={value}>
-  <View style={[styles.fill,style]}>
+  <View onLayout={measureHost} style={[styles.fill,style]}>
    {children}
    {layers.map(layer=><View key={layer.id} pointerEvents='box-none' style={StyleSheet.absoluteFill}>{layer.node}</View>)}
   </View>
@@ -104,15 +106,15 @@ const focusOn=(node:FocusTarget)=>{if(!node)return;try{const handle=findNodeHand
 const OFFSCREEN=100000;
 
 /** The sheet itself. It lives in the host's layer (modal) or in place (inline), so a parent re-render reaches it only through the props below. */
-function Surface({open,onOpenChange,title,description,children,contentMode='default',titleRef,returnFocusRef,labelledBy,closeLabel,dismissible=true,presentation='modal',onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,handle=true,backgroundStyle,raised=true,backdropOpacity=1,testID,snapPoints,initialIndex=0,enableDynamicSizing=false,maxDynamicContentSize,onClosed}:GestureSheetProps&{onClosed:()=>void}){
+function Surface({open,onOpenChange,title,description,children,contentMode='default',titleRef,returnFocusRef,labelledBy,closeLabel,dismissible=true,presentation='modal',onDismiss,onChange,onHardwareBackPress,topInset,bottomInset,handle=true,backgroundStyle,raised=true,backdropOpacity=1,testID,snapPoints,initialIndex=0,enableDynamicSizing=false,maxDynamicContentSize,onClosed,hostHeight}:GestureSheetProps&{onClosed:()=>void;hostHeight?:number}){
  const env=useHIG(),colors=useColors(),insets=useSafeAreaInsets();
  const top=topInset??insets.top,bottom=bottomInset??insets.bottom;
  const id=(part:string)=>testID===undefined?undefined:part?`${testID}-${part}`:testID;
  const heading=useRef<React.ComponentRef<typeof RNText>>(null);
  const latest=useRef({open,onOpenChange,onDismiss,onChange,onHardwareBackPress,onClosed,returnFocusRef,titleRef,contentMode});latest.current={open,onOpenChange,onDismiss,onChange,onHardwareBackPress,onClosed,returnFocusRef,titleRef,contentMode};
  // Layout the JS side needs: the room under the top inset sizes the content box. It changes on rotation and when Android resizes the window for the keyboard, not while the sheet moves.
- const [room,setRoom]=useState(0);
- const roomValue=useSharedValue(0),contentHeight=useSharedValue(0),position=useSharedValue(OFFSCREEN),dragStart=useSharedValue(0),rebase=useSharedValue(0),dragging=useSharedValue(false),closing=useSharedValue(false),shown=useSharedValue(open),keyboard=useSharedValue(0),kick=useSharedValue(0);
+ const [room,setRoom]=useState(()=>Math.max(0,(hostHeight??0)-top));
+ const roomValue=useSharedValue(room),contentHeight=useSharedValue(0),position=useSharedValue(OFFSCREEN),dragStart=useSharedValue(0),rebase=useSharedValue(0),dragging=useSharedValue(false),closing=useSharedValue(false),shown=useSharedValue(open),keyboard=useSharedValue(0),kick=useSharedValue(0);
  const points=useSharedValue<readonly SheetSnapPoint[]>(snapPoints??[]),dynamic=useSharedValue(enableDynamicSizing),ceiling=useSharedValue(maxDynamicContentSize??0),canDismiss=useSharedValue(dismissible),reduce=useSharedValue(env.reducedMotion);
  const detentCount=enableDynamicSizing?1:(snapPoints??[]).length;
  const active=useSharedValue(Math.max(0,Math.min(initialIndex,detentCount-1)));
@@ -213,7 +215,7 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  const hiddenTitle=!titleRef?<Heading ref={heading} accessible accessibilityLabel={title} style={styles.hidden}>{title}</Heading>:null;
  const content=contentMode==='custom'
   ?<View {...accessibility} testID={id('content')} collapsable={false} style={[enableDynamicSizing?styles.shrink:styles.grow,{direction:env.direction}]}>{hiddenTitle}{children}</View>
-  :<GestureSheetScrollView {...accessibility} testID={id('content')} style={enableDynamicSizing?styles.shrink:styles.grow} contentContainerStyle={{padding:tokens.space.xl,paddingBottom:tokens.space.xl+bottom,direction:env.direction}}><Stack><Heading ref={heading}>{title}</Heading>{description?<Text>{description}</Text>:null}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></GestureSheetScrollView>;
+  :<GestureSheetScrollView {...accessibility} testID={id('content')} style={enableDynamicSizing?styles.shrink:styles.grow} contentContainerStyle={{paddingVertical:tokens.space.xl,paddingHorizontal:8,paddingBottom:tokens.space.xl+bottom,direction:env.direction}}><Stack><Heading ref={heading}>{title}</Heading>{description?<Text>{description}</Text>:null}{children}<Button intent='secondary' onPress={requestClose}>{closeLabel??env.messages.close??en.close}</Button></Stack></GestureSheetScrollView>;
  const lifted=raised?<Raised>{content}</Raised>:content;
  return <View testID={id('')} pointerEvents={open?'box-none':'none'} style={StyleSheet.absoluteFill} onLayout={onRoom}>
   {backdropOpacity>0?<Reanimated.View testID={id('backdrop')} pointerEvents={open?'auto':'none'} style={[StyleSheet.absoluteFill,styles.backdrop,backdropStyle]}><Pressable accessible={false} importantForAccessibility='no' style={styles.fill} onPress={dismissible?requestClose:undefined}/></Reanimated.View>:null}
@@ -245,7 +247,7 @@ export const GestureSheet=React.memo(function GestureSheet(props:GestureSheetPro
  const [mounted,setMounted]=useState(props.open);
  if(props.open&&!mounted)setMounted(true);
  const onClosed=useCallback(()=>setMounted(false),[]);
- const surface=<Surface {...props} onClosed={onClosed}/>;
+ const surface=<Surface {...props} hostHeight={inline?undefined:host.height.current} onClosed={onClosed}/>;
  useEffect(()=>{if(inline||!host)return;if(mounted)host.show(key,surface);else host.hide(key);});
  useEffect(()=>()=>{if(host)host.hide(key);},[host,key]);
  if(!inline)return null;
