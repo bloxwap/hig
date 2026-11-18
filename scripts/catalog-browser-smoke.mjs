@@ -13,8 +13,19 @@ const {catalog}=JSON.parse(readFileSync('apps/docs/src/content.json','utf8'));
 const browser=await chromium.launch({...(process.env.HIG_CHROME?{executablePath:process.env.HIG_CHROME}:{}),headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const results=[];const visualFailures=[];const targetFailures=[];mkdirSync('artifacts/visual',{recursive:true});
 function checkBaseline(slug,file){const baseline=visualBaselinePath(slug);mkdirSync(dirname(baseline),{recursive:true});if(process.env.HIG_UPDATE_VISUALS==='1'){writeFileSync(baseline,readFileSync(file));return {updated:true,baseline};}if(!existsSync(baseline)){const message=`missing visual baseline ${baseline} for ${process.platform}; review the CI capture ${file} before committing it (HIG_UPDATE_VISUALS=1). Do not reuse another OS baseline or loosen the 2%/24-channel thresholds`;visualFailures.push(`${slug}: ${message}`);return {failed:true,message};}try{return compareVisual(readFileSync(file),readFileSync(baseline));}catch(error){mkdirSync('evidence/visual-actuals',{recursive:true});writeFileSync(`evidence/visual-actuals/${slug}.png`,readFileSync(file));writeFileSync(`evidence/visual-actuals/${slug}.txt`,String(error?.message??error));visualFailures.push(`${slug}: ${error?.message??error}`);return {failed:true,message:String(error?.message??error)};}}
-// Block pages have no state select: their examples are the links above the canvas.
-async function chooseState(page,entry,state){const label=state[0].toUpperCase()+state.slice(1);if(await page.locator('.block-demo').count()){if(entry.states.length>1)await page.locator('.block-demo .example-links').getByRole('link',{name:label,exact:true}).click();return;}await selectHIGOption(page,'Example state',label);}
+async function chooseState(page,entry,state){
+ const label=state[0].toUpperCase()+state.slice(1);
+ if(await page.locator('.block-demo').count()){
+  if(entry.states.length===1)return;
+  if(entry.name==='ModalBlock'){
+   await page.getByRole('tablist',{name:'App modals'}).getByRole('tab',{name:state==='default'?'Welcome':label.replaceAll('-',' '),exact:true}).click();
+  }else{
+   await page.locator('.block-demo .example-links').getByRole('link',{name:label,exact:true}).click();
+  }
+  return;
+ }
+ await selectHIGOption(page,'Example state',label);
+}
 try{
  const context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const page=await context.newPage();page.setDefaultTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const entries=process.env.HIG_VISUAL_ONLY==='1'?catalog.filter(e=>baselineNames.has(e.name)||focusBaselineNames.has(e.name)):catalog;
