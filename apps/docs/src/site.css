@@ -67,7 +67,7 @@
 .home-preview { min-width:0;padding:clamp(.875rem,1.1vw,1.25rem);overflow-wrap:anywhere; }
 .home-preview-placeholder { min-height:10rem;border-radius:1rem;background:var(--hig-nested); }
 #blocks { scroll-margin-top:4.5rem; }
-.home-preview:has(.hig-qr-code) > .hig-stack { align-items:center; }
+.home-preview > .hig-stack:has(> .hig-qr-code) { align-items:center; }
 .home-preview { container-type:inline-size; }
 @container (max-width: 18rem) {
   .home-preview .hig-reward-row { display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:2px 8px;padding-inline:8px; }
@@ -120,7 +120,10 @@
   .footer-col a { padding: var(--hig-space-md, .75rem) 0; }
 }
 @media (max-width: 480px) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-/* Five 20rem cards, four gaps and space for the side rails fit at 113rem. */
+/* Scale the live content inside the five-column gallery so each card can lay out at a wider logical width. */
+@media (min-width:113rem) {
+  .home-preview > * { zoom:.75; }
+}
 @media (width < 113rem) {
   .home-gallery { display:block;columns:var(--home-card-min) 4;column-gap:var(--home-gallery-gap);padding-bottom:5rem; }
   .home-gallery-column { display:contents; }
