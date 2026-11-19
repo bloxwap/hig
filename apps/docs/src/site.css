@@ -55,3 +55,79 @@
 .portfolio-placeholder { min-block-size:501px; padding:32px; }
 @media (max-width:1100px) { .portfolio-placeholder { min-block-size:628px; } }
 @media (max-width:760px) { .portfolio-placeholder { min-block-size:598px; padding:24px; } }
+
+.home-intro { max-width:46rem;margin-inline:auto;padding:clamp(3rem,6vw,6rem) 1.5rem clamp(2.5rem,5vw,5rem);text-align:center; }
+.home-intro h1 { margin:0;font-size:clamp(2.8rem,5vw,5rem);font-weight:650;line-height:1;letter-spacing:-.055em; }
+.home-intro p { max-width:38rem;margin:1.25rem auto 0;color:var(--hig-muted);font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.55; }
+.home-intro-actions { display:flex;justify-content:center;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem; }
+.home-intro-actions > a:first-child { background:var(--hig-text);color:var(--hig-background); }
+.home-gallery { --home-card-min:20rem;--home-gallery-gap:clamp(.875rem,1.1vw,1.5rem);display:grid;grid-template-columns:repeat(5,minmax(var(--home-card-min),1fr));align-items:start;gap:var(--home-gallery-gap);position:relative;width:calc(100% - clamp(3rem,7vw,12rem));max-width:118rem;margin:0 auto; }
+.home-gallery-column { min-width:0;display:grid;gap:var(--home-gallery-gap); }
+.home-block-card { min-width:0;border-radius:1.5rem;background:color-mix(in srgb,var(--hig-surface) 55%,var(--hig-background)); }
+.home-preview { min-width:0;padding:clamp(.875rem,1.1vw,1.25rem);overflow-wrap:anywhere; }
+.home-preview-placeholder { min-height:10rem;border-radius:1rem;background:var(--hig-nested); }
+#blocks { scroll-margin-top:4.5rem; }
+.home-preview:has(.hig-qr-code) > .hig-stack { align-items:center; }
+.home-preview { container-type:inline-size; }
+@container (max-width: 18rem) {
+  .home-preview .hig-reward-row { display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:2px 8px;padding-inline:8px; }
+  .home-preview .hig-reward-score { grid-column:3; }
+  .home-preview .hig-swap-wallet, .home-preview .hig-confirm-details > div { flex-wrap:wrap; }
+}
+
+.home-gallery-frame { position:relative;overflow:clip; }
+.home-gallery-frame::after {
+  content:"";position:absolute;inset:auto 0 0;height:9rem;pointer-events:none;
+  background:linear-gradient(transparent,var(--hig-background));
+}
+.home-skeleton-rail {
+  position:absolute;inset-block:0;width:calc((100% - 4 * var(--home-gallery-gap)) / 5);
+  display:flex;flex-direction:column;gap:var(--home-gallery-gap);overflow:hidden;
+  pointer-events:none;opacity:.52;mask-image:linear-gradient(to bottom,black calc(100% - 9rem),transparent);
+}
+.home-skeleton-left { right:calc(100% + var(--home-gallery-gap));padding-top:1.5rem; }
+.home-skeleton-left i { justify-self:end; }
+.home-skeleton-right { left:calc(100% + var(--home-gallery-gap));padding-top:3rem; }
+.home-skeleton-card {
+  display:grid;align-content:space-between;flex:none;height:13rem;padding:1.25rem;
+  border-radius:1.5rem;background:var(--hig-surface);
+}
+.home-skeleton-card i { display:block;width:60%;height:.65rem;border-radius:1rem;background:var(--hig-nested); }
+.home-skeleton-card i:nth-child(2) { width:36%; }
+.home-skeleton-card i:nth-child(3) { width:94%;height:2.5rem; }
+.home-skeleton-card i:nth-child(4) { width:77%; }
+.home-skeleton-rail > :nth-child(3n + 1) { height:19rem; }
+.home-skeleton-rail > :nth-child(3n + 2) { height:10rem; }
+.home-gallery-tail { opacity:.55;mask-image:linear-gradient(black,transparent); }
+.home-gallery-tail .home-skeleton-card { height:9rem; }
+.site-footer { margin-top: auto; padding: var(--hig-space-section, 4rem) max(var(--hig-space-lg, 1rem), calc((100% - var(--fd-layout-width, 1400px)) / 2 + var(--hig-space-lg, 1rem))) var(--docs-space-wide, 2rem); }
+.footer-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--hig-space-xxl, 2rem); row-gap: var(--docs-space-wide, 2rem); }
+.footer-brand { display: flex; flex-direction: column; align-items: flex-start; gap: var(--hig-space-md, .75rem); }
+.footer-brand p { margin: 0; color: var(--color-fd-muted-foreground); font-size: var(--text-sm); }
+.footer-lockup { display: flex; align-items: center; gap: var(--hig-space-sm, .5rem); }
+.footer-icon { width: 36px; height: 36px; border-radius: 10px; }
+/* The wordmark's box reserves descender room for the "p"; shift it so the cap height (not the box) centers on the icon: (143/2 - (149-74.6)/2) / 223.6 of the viewBox. */
+.footer-wordmark { width: auto; height: 32px; transform: translateY(15.3%); }
+.footer-col h2 { margin: 0 0 var(--hig-space-md, .75rem); color: var(--color-fd-muted-foreground); font: 700 var(--text-2xs, .625rem) / 1.5 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; }
+.footer-col a, .footer-base a { transition: color var(--duration-fast) var(--ease-spring), opacity var(--duration-fast) var(--ease-spring); }
+.footer-col a { display: block; width: fit-content; padding: var(--hig-space-xs, .25rem) 0; color: var(--color-fd-foreground); font-size: var(--text-sm); opacity: .8; }
+.footer-col a:hover, .footer-base a:hover { color: var(--color-fd-primary); opacity: 1; }
+.footer-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--hig-space-sm, .5rem); margin-top: var(--docs-space-wide, 2rem); color: var(--color-fd-muted-foreground); font-size: var(--text-xs); }
+.footer-legal { display: inline-flex; align-items: center; gap: var(--hig-space-sm, .5rem); }
+@media (max-width: 860px) {
+  .footer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--hig-space-xl, 1.5rem); }
+  .footer-brand { grid-column: 1 / -1; }
+  .footer-col a { padding: var(--hig-space-md, .75rem) 0; }
+}
+@media (max-width: 480px) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Five 20rem cards, four gaps and space for the side rails fit at 113rem. */
+@media (width < 113rem) {
+  .home-gallery { display:block;columns:var(--home-card-min) 4;column-gap:var(--home-gallery-gap);padding-bottom:5rem; }
+  .home-gallery-column { display:contents; }
+  .home-block-card { break-inside:avoid-column;margin-bottom:var(--home-gallery-gap); }
+  .home-gallery-tail { display:none; }
+}
+@media (max-width:1320px) {
+  .home-gallery { width:calc(100% - 2rem); }
+  .home-skeleton-rail { display:none; }
+}

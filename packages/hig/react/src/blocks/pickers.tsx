@@ -99,7 +99,12 @@ const TokenList=React.memo(function TokenList({tokens,chains,chainFilter=true,ho
  }),[rows,hotCount]);
  // Without a search field there is no arrow-key cursor, so no row is highlighted until the pointer moves over one.
  useEffect(()=>{setActive(searchable?0:-1);},[query,chainId,searchable]);
- useEffect(()=>{list.current?.querySelector('[data-active="true"]')?.scrollIntoView?.({block:'nearest'});},[active]);
+ useEffect(()=>{
+  // A picker embedded in a gallery should only scroll when someone is using it.
+  if(document.activeElement===search.current||list.current?.contains(document.activeElement)){
+   list.current?.querySelector('[data-active="true"]')?.scrollIntoView?.({block:'nearest'});
+  }
+ },[active]);
  const onKeyDown=(event:React.KeyboardEvent)=>{
   if(!['ArrowDown','ArrowUp','Enter'].includes(event.key))return;
   const currentRows=waiting?rowsFor(query).rows:rows;
