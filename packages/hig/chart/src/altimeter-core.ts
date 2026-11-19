@@ -1,6 +1,7 @@
 // Platform-independent chart geometry and feed. This entry loads neither renderer.
 export * from './altimeter-model.js';
 export * from './altimeter-targets.js';
+export * from './altimeter-trail.js';
 export type {TargetLabelInsets} from './outcome-model.js';
 export {bitcoinPrice,type AltimeterFeed} from './bitcoin-price.js';
 

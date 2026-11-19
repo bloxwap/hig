@@ -32,7 +32,7 @@ Uncontrolled AltimeterChart and OutcomeChart expire data after 30 seconds withou
 `AltimeterChart` is the Bloxwap app's live chart on its own:
 
 - **Grid.** Plus marks on 50px tiles that flow left one tile (50px) per second.
-- **Trail.** The price line. It flows left at the same 50px per second, fades toward the leading edge, and is sampled five times a second so it keeps moving on a quiet market.
+- **Trail.** The price line. It flows left at the same 50px per second and fades toward the leading edge. On web it is sampled five times a second so it keeps moving on a quiet market; on React Native it is the exact path the pill followed (see the React Native notes below).
 - **Ladder.** Price ticks 44px apart, about one basis point of price each. The current price stays at the vertical center, so the ladder moves down as the price rises and up as it falls.
 - **Current price.** A pill at the trail's tip. Each new price eases in over 300ms, and its changed digits roll through `NumberFlow`. Updates arriving during a move continue from the current position and forward velocity, constrained to avoid overshooting the new price. Canvas fonts and ladder text widths are reused between frames; font loading and formatting changes invalidate the width cache.
 
@@ -130,7 +130,16 @@ Consumers: an org-wide GitHub code search (default branches) on 2026-10-16 found
 
 The altimeter defaults to Bloxwap green for gains and pink-red for losses. Web requests a Display P3 canvas and uses the sRGB palette when P3 colours are unsupported. React Native uses the Display P3 palette on iOS when the host renders in P3 and sets `HIGProvider colorSpace="display-p3"`. Android uses the sRGB equivalents.
 
-The React Native altimeter uses `react-native-svg` on iOS and Android. Its renderer limits SVG updates to 30 Hz, keeps a bounded sample history, caches ladder labels, and uses the price sample cadence under reduced motion. Physical-device frame times are unmeasured. For outcome and candle charts, native consumers use labeled readouts or lists.
+The React Native altimeter draws with `react-native-svg` on iOS and Android, where every vector canvas is rasterised on the CPU, so it draws each piece once and then only moves it:
+
+- **Trail.** The path the pill has followed. The price tween is a cubic in time and the trail is linear in time, so the path is a run of exact cubics and its past never changes. It is cut into tiles of history and one patch beside the pill. The patch also holds the course the tween is on, drawn ahead of the pill and uncovered as the pill reaches it, so nothing is drawn while the price glides. The trail fades under a veil in the background colour that stays put while the tiles move beneath it.
+- **Grid and ladder.** One thin canvas for each row of grid marks and one row for each ladder price. A row keeps what it drew for as long as it is on the chart. On Android the prices are native text: `react-native-svg` there builds the typeface from its font file for every text that names a family.
+- **Motion.** The UI thread reads the clock each display frame, works out the price the tween shows and moves the trail, the ladder, the target lines and the grid by transform, on whole device pixels. No prop but a transform changes per frame.
+- **Drawing.** React draws when the price changes course, when the ladder needs a row it has not drawn, when a target label changes place, and every second or two on a quiet price to top up the patch. `paused` keeps the ladder: a chart that resumes near the price it paused at starts only the trail again.
+- **DEGEN.** The ring, the sparks and the pill's shake are native views moved on the UI thread from one progress value. A burst costs React one draw.
+- **Reduced motion.** The driver steps the chart five times a second and nothing moves between steps.
+
+Measured on release builds of the Bloxwap app's trade screen, 30 seconds of the chart running. On an iPhone 17 Pro the screen went from 39 animation hitches (11 ms of hitch time a second) to between none and three (under 1.5 ms a second); the three are render-side, five seconds apart, and were in the traces of the earlier renderer too. On a Seeker (120 Hz) frames were presented one refresh apart 99.5% of the time or better (at most 4 of about 3,600 intervals were longer), the slowest 1% of UI frames fell from 48 ms to 20 ms, and the app's graphics memory fell from 229 MB to about 80 MB. For outcome and candle charts, native consumers use labeled readouts or lists.
 
 ## Validation and citation
 

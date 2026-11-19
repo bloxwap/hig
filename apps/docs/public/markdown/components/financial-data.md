@@ -228,7 +228,7 @@ Updates are latest-value-wins: a newer value supersedes pending motion and settl
 
 Reduced motion and unknown/non-finite values use the static final reading. A platform that cannot safely measure or lay out individual places also uses the static result. Opaque `formattedValue` remains static unless `animateFormatted` is set. Unsafe mixed-bidi tokenization and unsupported native text layouts may likewise fall back to the intact static reading; this is not a claim of physical-device or RTL certification.
 
-The native animated entry uses the optional Reanimated and Worklets peers. Install SDK-compatible versions when using that entry; the ordinary native `data` entry and static readouts import no animation engine. Example: `import {NumberFlow} from '@bloxwap/hig/react/animated-number'` (or `hig-native/animated-number`), then `<NumberFlow motion="slide" value={price} label="Price" trend={1} prefix="≈ " options={{style:'currency',currency:'USD'}} />`. The gallery manifest contains runnable examples for both renderers.
+The native animated entry uses the optional Reanimated and Worklets peers. Install SDK-compatible versions when using that entry; the ordinary native `data` entry and static readouts import no animation engine. Example: `import {NumberFlow} from '@bloxwap/hig/react/animated-number'` (or `hig-native/animated-number`), then `<NumberFlow value={price} label="Price" trend={1} prefix="≈ " options={{style:'currency',currency:'USD'}} />`. The gallery manifest contains runnable examples for both renderers.
 
 ## NumberFlow
 

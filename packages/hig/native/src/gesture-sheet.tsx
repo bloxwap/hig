@@ -4,7 +4,7 @@ import {gestureSheetResize,gestureSheetTravel} from './gesture-sheet-motion.js';
 export {gestureSheetResize,gestureSheetTravel} from './gesture-sheet-motion.js';
 import {validateSnapPoints} from './gesture-sheet-model.js';
 import React,{createContext,useCallback,useContext,useEffect,useId,useMemo,useRef,useState} from 'react';
-import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
+import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,PixelRatio,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
 import Reanimated,{cancelAnimation,ReduceMotion,runOnJS,useAnimatedProps,useAnimatedReaction,useAnimatedScrollHandler,useAnimatedStyle,useDerivedValue,useSharedValue,withTiming,type SharedValue} from 'react-native-reanimated';
 import {Gesture,GestureDetector,type GestureType} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -128,6 +128,9 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
  const detentCount=enableDynamicSizing?1:(snapPoints??[]).length;
  const active=useSharedValue(Math.max(0,Math.min(initialIndex,detentCount-1)));
  const scrollY=useSharedValue(0),scrollers=useSharedValue(0);
+ // The wait before a travel the host asked for: 0 none, 1 waiting to open, 2 clear to open, 3 waiting to close, 4 clear to close. `launch` is a ticket that cancels a wait.
+ const primed=useSharedValue(0),launch=useSharedValue(0);
+ const pixel=PixelRatio.get();
  const pointsKey=JSON.stringify(snapPoints??[]);
  useEffect(()=>{points.value=snapPoints??[];dynamic.value=enableDynamicSizing;ceiling.value=maxDynamicContentSize??0;canDismiss.value=dismissible;reduce.value=env.reducedMotion;},[pointsKey,enableDynamicSizing,maxDynamicContentSize,dismissible,env.reducedMotion]);
  // translateY of each detent, tallest first. Empty until the sheet knows its room (and, sized by content, its content).
@@ -190,12 +193,31 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   // The same detent at a new offset is the content or the room changing size: the sheet follows on the resize curve. Opening, closing and a change of detent travel.
   const resizes=previous!==null&&!closes&&previous.target>=0&&previous.target<space&&next.index===previous.index&&next.kick===previous.kick;
   const motion={...(resizes?gestureSheetResize:gestureSheetTravel),reduceMotion:reduce.value?ReduceMotion.Always:ReduceMotion.System};
+  // A travel the host asks for arrives with a render: opening, the content has only just been mounted; closing, the screen
+  // behind is often drawn again. The frame that render is drawn in is the costly one (text is laid out, images are
+  // decoded, vector canvases are rasterised), so the sheet holds still for two display frames and only then moves. The
+  // travel never starts with a stall, and the wait is counted in frames, not time: a slow frame holds the second
+  // callback back for as long as it takes. A release from a drag is not held; it carries on from the finger.
+  const opens=!closes&&position.value>=space;
+  if(opens||closes){
+   const waiting=closes?3:1;
+   if(primed.value!==waiting+1){
+    if(primed.value!==waiting){
+     primed.value=waiting;
+     const ticket=launch.value+1;launch.value=ticket;
+     requestAnimationFrame(()=>{requestAnimationFrame(()=>{if(launch.value===ticket){primed.value=waiting+1;kick.value+=1;}});});
+    }
+    return;
+   }
+  }
+  // Anything else supersedes a wait that was still running.
+  if(primed.value!==0){primed.value=0;launch.value+=1;}
   if(closes){closing.value=true;position.value=withTiming(target,motion,finished=>{'worklet';if(finished)runOnJS(finishClose)();});return;}
   const index=next.index;active.value=index;
   position.value=withTiming(target,motion,finished=>{'worklet';if(finished)runOnJS(settled)(index);});
  });
  const pan=useMemo(()=>Gesture.Pan().activeOffsetY([-6,6]).failOffsetX([-28,28])
-  .onStart(()=>{'worklet';cancelAnimation(position);dragStart.value=position.value;rebase.value=0;scrolled.value=false;dragging.value=true;closing.value=false;})
+  .onStart(()=>{'worklet';cancelAnimation(position);dragStart.value=position.value;rebase.value=0;scrolled.value=false;dragging.value=true;closing.value=false;primed.value=0;launch.value+=1;})
   .onChange(event=>{
    'worklet';
    const list=positions.value;if(list.length===0)return;
@@ -216,8 +238,9 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
   })
   .onFinalize(()=>{'worklet';dragging.value=false;}),[]);
  const scroll=useMemo<ScrollValue>(()=>({pan,scrollY,scrollers,atTop}),[pan,scrollY,scrollers,atTop]);
- // Only transforms and opacity change while the sheet moves, so no frame lays anything out.
- const surfaceStyle=useAnimatedStyle(()=>{'worklet';return {transform:[{translateY:Math.max(0,position.value-keyboard.value)}]};});
+ // Only transforms and opacity change while the sheet moves, so no frame lays anything out. The sheet sits on whole device
+ // pixels, in flight and at rest: its content is one texture on Android, and a texture held between pixels is drawn soft.
+ const surfaceStyle=useAnimatedStyle(()=>{'worklet';return {transform:[{translateY:Math.round(Math.max(0,position.value-keyboard.value)*pixel)/pixel}]};});
  const backdropStyle=useAnimatedStyle(()=>{'worklet';const list=positions.value,space=roomValue.value;return {opacity:list.length===0?0:backdropProgress(position.value,list[list.length-1],space)*backdropOpacity};});
  const onRoom=useCallback((event:LayoutChangeEvent)=>{const next=Math.max(0,event.nativeEvent.layout.height-top);roomValue.value=next;setRoom(current=>current===next?current:next);},[top,roomValue]);
  const onContent=useCallback((event:LayoutChangeEvent)=>{contentHeight.value=event.nativeEvent.layout.height;},[contentHeight]);

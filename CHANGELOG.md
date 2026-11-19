@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Draw the native altimeter chart once and move it. Native vector canvases are rasterised on the CPU, so the chart no longer redraws canvases the size of the plot up to 30 times a second: the trail is tiles of history and one patch beside the pill, the grid is a strip for each row of marks and the ladder a row for each price, and the UI thread moves them by transform at the display's rate from the price tween. React draws only when the price changes course, when the ladder needs a row it has not drawn, and every second or two on a quiet price. On release builds of the Bloxwap app's trade screen an iPhone 17 Pro went from 39 animation hitches in 30 seconds to between none and three, and on a Seeker (120 Hz) the slowest 1% of UI frames fell from 48 ms to 20 ms and the app's graphics memory from 229 MB to about 80 MB.
+- Draw the native chart's trail as the path the pill followed. The price tween is a cubic in time, so the trail is exact, its history is never reshaped, and the line the pill will follow is drawn ahead of it and uncovered as it gets there. The web chart still draws a curve through five samples a second.
+- Keep the native chart's ladder across `paused`: a chart that resumes near the price it paused at keeps its scale and every row it drew, and starts only the trail again.
+- Draw the native chart's ladder prices as native text on Android, where `react-native-svg` builds the typeface from its font file for every text that names a family.
+- Play the native chart's DEGEN burst on the UI thread: the ring, the sparks and the pill's shake are native views moved from one progress value, mounted while `degen` is on. A burst costs React one draw and no canvas.
+- Hold a native sheet still for two display frames before a travel its host asks for, opening or closing, so the frame that draws the host's render is over before the sheet moves. A release from a drag is not held. The sheet rests and travels on whole device pixels.
+- Add the native chart's trail geometry to `@bloxwap/hig/chart/altimeter-core`: `trailTiles`, `trailScroll`, `trailX`, `trailY`, `liveSegments`, `tweenValue`, `tweenVelocity`, `stepPriceTween` and `ALTIMETER_TWEEN_IDLE`, with their types.
 - Remove the React and React Native `AnimatedNumberReadout` export. Import `NumberFlow` from the same `animated-number` entry and pass `motion="slide"` to retain the previous transition.
 - Roll every figure HIG draws itself with `NumberFlow`'s default `flow` motion on React and React Native: the `AltimeterChart` price capsule, the `OutcomeChart` capsules, and the figures in every block, `BarMark`, `BarPnL` and `AssetBalanceRow`. They used the short `slide` settle. `motion="slide"` remains available on `NumberFlow` for a host's own figures.
 

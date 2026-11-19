@@ -3346,6 +3346,18 @@
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function easeInOut(t: number): number;"
       },
+      "AltimeterTweenState": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type AltimeterTweenState = {\n    from: number;\n    to: number;\n    start: number;\n    tangent: number;\n};"
+      },
+      "ALTIMETER_TWEEN_IDLE": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_TWEEN_IDLE: AltimeterTweenState;"
+      },
+      "stepPriceTween": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function stepPriceTween(state: AltimeterTweenState, target: number, now: number, snap?: boolean): {\n    value: number;\n    state: AltimeterTweenState;\n};"
+      },
       "priceTween": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function priceTween(): {\n    reset(): void;\n    update(target: number, now: number, snap?: boolean): number;\n};"
@@ -3389,6 +3401,70 @@
       "targetCrossings": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function targetCrossings({ immutableTargets }?: {\n    immutableTargets?: boolean | undefined;\n}): {\n    reset(): void;\n    update(price: number, targets: readonly AltimeterTarget[], enabled?: boolean): AltimeterTarget[];\n};"
+      },
+      "TrailSpace": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailSpace {\n    t0: number;\n    p0: number;\n    spacing: number;\n}"
+      },
+      "trailX": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailX(space: TrailSpace, t: number): number;"
+      },
+      "trailY": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailY(space: TrailSpace, price: number): number;"
+      },
+      "trailScroll": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailScroll(space: TrailSpace, now: number, price: number, pixel: number): {\n    x: number;\n    y: number;\n};"
+      },
+      "tweenValue": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function tweenValue(state: AltimeterTweenState, now: number): number;"
+      },
+      "tweenVelocity": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function tweenVelocity(state: AltimeterTweenState, now: number): number;"
+      },
+      "TrailSegment": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type TrailSegment = readonly [number, number, number, number, number, number, number, number];"
+      },
+      "TweenChange": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TweenChange {\n    at: number;\n    state: AltimeterTweenState;\n}"
+      },
+      "liveSegments": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function liveSegments(log: readonly TweenChange[], from: number, until: number): TrailSegment[];"
+      },
+      "TrailPatch": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailPatch {\n    space: number;\n    left: number;\n    top: number;\n    width: number;\n    height: number;\n    d: string;\n}"
+      },
+      "TrailTile": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailTile extends TrailPatch {\n    key: number; /** Chart time at the tile's right edge. */\n    until: number; /** The tile holds one level line. */\n    level?: boolean;\n}"
+      },
+      "TrailArea": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailArea extends TrailPatch {\n    from: number;\n    to: number;\n}"
+      },
+      "TrailView": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailView {\n    /** Settled history, oldest first. The array is replaced only when a tile is added or dropped. */\n    tiles: readonly TrailTile[];\n    /** The part that still changes: the newest samples, the tween in flight and the line it will follow, drawn past the pill. */\n    live: TrailPatch | null;\n    area: TrailArea | null;\n}"
+      },
+      "TrailViewport": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailViewport {\n    /** Visible length of the trail in pixels, from the chart's left inset to the pill. */\n    span: number;\n    /** Chart height in pixels. */\n    height: number;\n    /** The price at the pill now. */\n    display: number;\n    /** Break-even price; the area is drawn only for a valid one. */\n    basis?: number;\n}"
+      },
+      "TrailOptions": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailOptions {\n    /** Tile width in layout pixels. A whole number of device pixels, so neighbouring tiles meet without a seam. */\n    tile: number;\n    /** Device pixels per layout pixel. */\n    pixel: number;\n    /** How far ahead of the pill the patch is drawn, in ms. Default 2000. */\n    lookahead?: number;\n    /** The patch is drawn again when the pill comes within this many ms of its end. Default 500. */\n    reserve?: number;\n}"
+      },
+      "trailTiles": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailTiles({ tile, pixel, lookahead, reserve }: TrailOptions): {\n    reset(): void;\n    /** Whether a first price has been given since the last reset. */\n    readonly seeded: boolean;\n    /** The space new pieces are drawn in: 0 or 1. */\n    readonly current: number;\n    /** Chart time at the left edge of the next tile, where a new space takes over from the one before. */\n    readonly edge: number;\n    /** Draw in `space`, as the first (default) or second of the two. Call after `reset`, before `seed`. */\n    start(space: TrailSpace, index?: 0 | 1): void;\n    /** Draw every later piece in the other space, and return its index. Tiles already drawn stay in theirs until they leave the chart. */\n    flip(space: TrailSpace): number;\n    /** A level trail `keep` ms long ending at `now`, as the chart shows before it has any history. */\n    seed(now: number, price: number, keep: number): void;\n    /** The tween changed course at `at`: the line ahead of the pill is drawn again. */\n    retarget(state: AltimeterTweenState, at: number): void;\n    view(now: number, viewport: TrailViewport): TrailView;\n};"
       },
       "nextChampionsLeagueQuestion": {
         "entry": "@bloxwap/hig/chart",
