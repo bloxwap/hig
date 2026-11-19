@@ -284,7 +284,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
    </Svg>
    {/* The figure sits over the pill drawn above, as native text so its digits can roll. */}
    {mark!=null&&<View pointerEvents="none" style={{position:'absolute',left:end,top:center-18,width:pillWidth,height:36,alignItems:'center',justifyContent:'center',transform:[{translateX:shake}]}}>
-    <NumberFlow motion="slide" value={value} options={pillOptions} tone={pillTone} maxFontSizeMultiplier={1} style={{fontFamily:monoFontFamily,fontSize:16,fontWeight:'600'}}/>
+    <NumberFlow value={value} options={pillOptions} tone={pillTone} maxFontSizeMultiplier={1} style={{fontFamily:monoFontFamily,fontSize:16,fontWeight:'600'}}/>
    </View>}</>}
   </View>
  </View>;

@@ -75,7 +75,7 @@ export function SwapNumberText({template,text,value,options,formattedValue,suffi
  if(value==null||!Number.isFinite(value)||parts.length!==2)return <Text testID={testID} style={small}>{reading}</Text>;
  return <View accessible accessibilityLabel={reading} testID={testID} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:align==='right'?'flex-end':'flex-start'}}>
   {parts[0]?<Text accessible={false} style={small}>{parts[0]}</Text>:null}
-  <NumberFlow motion="slide" value={value} options={options} formattedValue={formattedValue} suffix={suffix} tone='muted' style={type}/>
+  <NumberFlow value={value} options={options} formattedValue={formattedValue} suffix={suffix} tone='muted' style={type}/>
   {parts[1]?<Text accessible={false} style={small}>{parts[1]}</Text>:null}
  </View>;
 }

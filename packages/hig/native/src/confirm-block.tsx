@@ -113,7 +113,7 @@ export function ConfirmBlock({amount,symbol,amountOptions=amountFormat,amountLab
  const tertiaryInert=held||!!tertiaryAction?.disabled;
  const body=<>
   {amount!==undefined?<View style={{direction,flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',columnGap:8}}>
-   <NumberFlow motion="slide" testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+   <NumberFlow testID={id('amount')} value={amount} options={amountOptions} label={amountLabel} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
    {symbol?<Text testID={id('symbol')} style={{fontSize:24,lineHeight:32,fontWeight:'600',color:colors.muted}}>{symbol}</Text>:null}
   </View>:null}
   {lines.length?<View testID={id('details')} style={{gap:12,paddingHorizontal:4}}>

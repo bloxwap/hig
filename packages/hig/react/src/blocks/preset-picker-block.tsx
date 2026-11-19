@@ -96,7 +96,7 @@ export function PresetPickerBlock<T extends string|number=number>({title,value,v
  const customSelected=custom?(custom.selected??custom.value!==undefined):false;
  return <section {...rest} className={`hig-preset-picker${className?` ${className}`:''}`} data-intent={intent==='destructive'?intent:undefined}>
   {title!==undefined&&<PickerHeader title={title} onBack={onBack} backProps={backProps} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
-  <p className='hig-target-amount'><NumberFlow motion="slide" value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
+  <p className='hig-target-amount'><NumberFlow value={value} options={valueOptions} formattedValue={formattedValue} animateFormatted={animateFormatted} prefix={valuePrefix} suffix={valueSuffix} label={valueLabel}/></p>
   {custom&&<button type='button' className='hig-swap-setting' aria-pressed={customSelected} aria-label={custom.accessibilityLabel} data-testid={custom.testID} onClick={custom.onSelect}><span>{custom.label}</span>{custom.value!==undefined?<span className='hig-swap-setting-value'>{custom.value}<SwapIcon name='chevron' size={16}/></span>:<SwapIcon name='chevron' size={16}/>}<PressDecoration kind='row'/></button>}
   {presets.length>0&&<PresetGroup<T> label={presetsLabel??title} options={presets} value={selected} onValueChange={onPresetChange} columns={columns} selectedIntent={intent} suppressFeedback={suppressFeedback}/>}
   {children}

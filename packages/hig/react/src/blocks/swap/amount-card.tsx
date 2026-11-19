@@ -53,7 +53,7 @@ export function SwapAmountCard({name,symbol,icon,chainIcon,context,actions,meta,
   </div>
   <div className='hig-swap-amount-area'><div className='hig-swap-amount-content'>
    <div className='hig-swap-amount' role='textbox' tabIndex={0} aria-readonly='true' aria-label={amountLabel}>
-    <NumberFlow motion="slide" value={value} prefix={prefix} suffix={(trailingDot?'.':'')+suffix} options={{minimumFractionDigits:Math.min(fractionDigits,maximumFractionDigits),maximumFractionDigits,useGrouping:false}}/>
+    <NumberFlow value={value} prefix={prefix} suffix={(trailingDot?'.':'')+suffix} options={{minimumFractionDigits:Math.min(fractionDigits,maximumFractionDigits),maximumFractionDigits,useGrouping:false}}/>
    </div>
    {conversion}
   </div></div>

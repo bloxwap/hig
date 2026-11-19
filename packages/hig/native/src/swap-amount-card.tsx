@@ -99,7 +99,7 @@ export function SwapAmountCard({name,symbol,icon,chainIcon,context,actions,meta,
   </View>
   <View pointerEvents='box-none' style={{alignItems:'center',gap:8,paddingTop:4,paddingHorizontal:16,paddingBottom:20}}>
    <View accessible accessibilityLabel={amountLabel} accessibilityValue={{text:`${prefix}${formatNumber(value,locale,options)}${after}`}} testID={id('amount')}>
-    <NumberFlow motion="slide" value={value} prefix={prefix} suffix={after} options={options} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+    <NumberFlow value={value} prefix={prefix} suffix={after} options={options} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
    </View>
    {shown(conversion)?<View testID={id('conversion')}>{conversion}</View>:null}
   </View>

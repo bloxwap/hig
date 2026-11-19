@@ -62,8 +62,8 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
   <View {...hidden} style={disabled?{opacity:0.5}:undefined}>{art}</View>
   <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:strong}}>{name}</Text><Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{symbol}</Text></View>
   {amounts||tag?<View {...hidden} style={{alignItems:'flex-end',justifyContent:'center'}}>
-   {amounts?unitsFirst?<NumberFlow motion="slide" value={balance} options={balanceOptions} suffix={unitsSuffix} tone={disabled?'muted':undefined} testID={testID?`${testID}-balance`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:<NumberFlow motion="slide" value={value} options={usd} tone={disabled?'muted':undefined} testID={testID?`${testID}-value`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
-   {hasUnits?<NumberFlow motion="slide" value={balance} options={balanceOptions} suffix={unitsSuffix} tone='muted' testID={testID?`${testID}-balance`:undefined} style={{fontSize:14,lineHeight:20}}/>:null}
+   {amounts?unitsFirst?<NumberFlow value={balance} options={balanceOptions} suffix={unitsSuffix} tone={disabled?'muted':undefined} testID={testID?`${testID}-balance`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:<NumberFlow value={value} options={usd} tone={disabled?'muted':undefined} testID={testID?`${testID}-value`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
+   {hasUnits?<NumberFlow value={balance} options={balanceOptions} suffix={unitsSuffix} tone='muted' testID={testID?`${testID}-balance`:undefined} style={{fontSize:14,lineHeight:20}}/>:null}
    {tag?<Text testID={testID?`${testID}-tag`:undefined} numberOfLines={1} style={{fontSize:12,lineHeight:18,color:colors.muted}}>{tag}</Text>:null}
   </View>:null}
   {trailing!=null&&trailing!==false&&!split?<View {...hidden} testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>:null}

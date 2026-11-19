@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Remove the React and React Native `AnimatedNumberReadout` export. Import `NumberFlow` from the same `animated-number` entry and pass `motion="slide"` to retain the previous transition.
+- Roll every figure HIG draws itself with `NumberFlow`'s default `flow` motion on React and React Native: the `AltimeterChart` price capsule, the `OutcomeChart` capsules, and the figures in every block, `BarMark`, `BarPnL` and `AssetBalanceRow`. They used the short `slide` settle. `motion="slide"` remains available on `NumberFlow` for a host's own figures.
 
 ## 0.10.0
 

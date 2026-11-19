@@ -81,7 +81,7 @@ const editIcon=<PenLine size={20}/>;
 const isProfileFigure=(value:unknown):value is ProfileFigure=>value!=null&&typeof value==='object'&&!React.isValidElement(value)&&!Array.isArray(value)&&!(Symbol.iterator in value)&&'value' in value;
 function rowValue(row:ProfileRow):React.ReactNode{
  const {value,tone}=row;if(value==null)return value;
- if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><NumberFlow motion="slide" {...figureProps(value)}/></span>;
+ if(isProfileFigure(value))return <span className='hig-profile-value' data-tone={tone}><NumberFlow {...figureProps(value)}/></span>;
  return tone?<span className='hig-profile-value' data-tone={tone}>{value}</span>:value;
 }
 /**

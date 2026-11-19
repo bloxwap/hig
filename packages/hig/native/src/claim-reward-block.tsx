@@ -30,7 +30,7 @@ export function ClaimRewardBlock({amount, symbol, walletAddress, chain, details,
   return <Stack style={{paddingHorizontal:horizontalInset}}>
     <ScreenHeader title={labels.title}/>
     <View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'center',flexWrap:'wrap',gap:8}}>
-      <NumberFlow motion="slide" value={amount} options={{maximumFractionDigits:6}} style={{fontSize:44,lineHeight:50,fontWeight:'700'}}/>
+      <NumberFlow value={amount} options={{maximumFractionDigits:6}} style={{fontSize:44,lineHeight:50,fontWeight:'700'}}/>
       <Text tone="muted" style={{fontSize:24,fontWeight:'600'}}>{symbol}</Text>
     </View>
     <View style={{gap:12,paddingHorizontal:4}}>

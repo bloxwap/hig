@@ -31,7 +31,7 @@ function NumberChecks(){
  return <HIGProvider locale={locale} direction={direction}><ScrollView testID='adoption-number-scroll' contentContainerStyle={{gap:12,paddingBottom:24}}>
   <View style={{flexDirection:'row',flexWrap:'wrap',gap:8}}>{numberLocales.map(item=><Button key={item} testID={`adoption-locale-${item}`} intent={locale===item?'primary':'secondary'} maxFontSizeMultiplier={1.3} onPress={()=>selectLocale(item)}>{`Locale ${item}`}</Button>)}<Button testID='adoption-number-direction' intent='secondary' maxFontSizeMultiplier={1.3} onPress={()=>setDirection(current=>current==='ltr'?'rtl':'ltr')}>{direction==='ltr'?'Use RTL':'Use LTR'}</Button></View>
   <Text testID='adoption-number-environment' maxFontSizeMultiplier={1.3}>{`Number locale ${locale} · direction ${direction} · scale ${fontScale.toFixed(2)} · motion ${reducedMotion?'reduced':'normal'}`}</Text>
-  <NumberFlow motion="slide" value={value} tone='positive' label='Number flow' testID='adoption-number' duration={240} maxFontSizeMultiplier={2} style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2,maximumFractionDigits:2}}/>
+  <NumberFlow value={value} tone='positive' label='Number flow' testID='adoption-number' duration={240} maxFontSizeMultiplier={2} style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2,maximumFractionDigits:2}}/>
   <View style={{flexDirection:'row',flexWrap:'wrap',gap:8}}>
    <Button testID='adoption-number-reset' intent='secondary' maxFontSizeMultiplier={1.3} onPress={()=>show(999.99)}>Reset 999.99</Button>
    <Button testID='adoption-number-carry' intent='secondary' maxFontSizeMultiplier={1.3} onPress={()=>show(1000)}>Carry 1,000.00</Button>
@@ -70,7 +70,7 @@ function Checks(){
    <Text testID='adoption-zh-regular'>中文 中文</Text><Heading testID='adoption-zh-semibold'>中文</Heading>
    <NumberReadout value={1250.25} tone='positive' label='Positive balance' testID='adoption-positive' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
    <NumberReadout value={-250.5} tone='negative' label='Negative change' testID='adoption-negative' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
-   <NumberFlow motion="slide" value={value} tone='positive' label='Animated balance' testID='adoption-animated' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
+   <NumberFlow value={value} tone='positive' label='Animated balance' testID='adoption-animated' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
    <Button onPress={()=>setValue(current=>current+1)}>Update number</Button>
    <Button busy testID='adoption-busy'>Log out</Button>
   </ScrollView>:section==='number'?<NumberChecks/>:section==='toast'?<Toast testID='adoption-toast' notices={notices} onDismiss={id=>{setDismissed(current=>[...current,id]);setResult(`Dismissed request ${id}`);}}/>:<Stack>

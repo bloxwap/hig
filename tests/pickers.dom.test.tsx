@@ -74,7 +74,7 @@ describe('FromPickerBlock',()=>{
   // A balance that changes while the list is open rolls its changed places.
   Object.defineProperty(HTMLElement.prototype,'animate',{value:()=>({cancel(){}}),configurable:true});
   view.rerender(<FromPickerBlock wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} onDisconnect={disconnect} onConnect={()=>{}} onGenerateAddressChange={()=>{}} tokens={[{...tokens[0],balance:3},...tokens.slice(1)]} onSelect={()=>{}}/>);
-  expect(drawn(screen.getAllByRole('listitem')[0])).toBe('ETHEtherEthereum3$6,000.00');expect(screen.getAllByRole('listitem')[0].querySelectorAll('.hig-animated-number-old').length).toBeGreaterThan(1);delete (HTMLElement.prototype as {animate?:unknown}).animate;
+  expect(drawn(screen.getAllByRole('listitem')[0])).toBe('ETHEtherEthereum3$6,000.00');expect(screen.getAllByRole('listitem')[0].querySelectorAll('.hig-number-flow-strip').length).toBeGreaterThan(1);delete (HTMLElement.prototype as {animate?:unknown}).animate;
   view.rerender(<FromPickerBlock wallet={{connected:true,address:'DMzeeNq7UYBu4tYbJdc3bVzBhXb32'}} tokens={tokens} onSelect={()=>{}}/>);
   expect(screen.queryByRole('button',{name:'Disconnect wallet'})).toBeNull();expect(document.querySelector('.hig-swap-wallet-id')).toBeTruthy();
  });

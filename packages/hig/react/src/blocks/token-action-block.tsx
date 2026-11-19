@@ -59,7 +59,7 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const showChains=chains!==undefined&&chains.length>1;
- const headline=units!==undefined&&value==null?<NumberFlow motion="slide" key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<NumberFlow motion="slide" key='value' value={total} options={usd}/>;
+ const headline=units!==undefined&&value==null?<NumberFlow key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<NumberFlow key='value' value={total} options={usd}/>;
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>
   <ScreenHeader title={symbol} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {(assets||showChains)&&<div className='hig-token-bars'>

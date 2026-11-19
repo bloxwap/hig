@@ -241,11 +241,11 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
      {!locked&&<button type='button' disabled={submitting} className='hig-swap-hit' tabIndex={-1} aria-hidden='true' onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
      <div className='hig-swap-amount-content'>
       <div className='hig-swap-amount' data-muted={side==='to'||undefined} {...(side==='from'?{role:'textbox',tabIndex:0,'aria-label':(messages.swapAmount??en.swapAmount)(label)}:{})}>
-       <NumberFlow motion="slide" value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&mode==='usd'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
+       <NumberFlow value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&mode==='usd'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
       </div>
       {denominationSwitch&&<SwapPill disabled={submitting} aria-label={(messages.swapSwitchDenomination??en.swapSwitchDenomination)} onClick={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
        <span aria-hidden='true' className='hig-swap-equals'>=</span>
-       {mode==='token'?<NumberFlow motion="slide" value={cardUsd} options={{style:'currency',currency:'USD'}}/>:<NumberFlow motion="slide" value={cardUnits} suffix={token?` ${token.symbol}`:''} options={{maximumFractionDigits:8,useGrouping:false}}/>}
+       {mode==='token'?<NumberFlow value={cardUsd} options={{style:'currency',currency:'USD'}}/>:<NumberFlow value={cardUnits} suffix={token?` ${token.symbol}`:''} options={{maximumFractionDigits:8,useGrouping:false}}/>}
        <SwapIcon name='flip' size={14}/>
       </SwapPill>}
      </div>

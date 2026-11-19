@@ -13,6 +13,8 @@ jest.mock('react-native-reanimated',()=>{
   default:{View:RN.View,Text:RN.Text,ScrollView:RN.ScrollView,createAnimatedComponent:component=>component},
   cancelAnimation:mockNumberReanimated.cancel,
   withTiming:mockNumberReanimated.timing,
+  // A flowing digit's roll. It is recorded with the timings, so a test counts either kind of motion the same way.
+  defineAnimation:(toValue,factory)=>({__numberTiming:true,toValue,roll:factory}),
   useSharedValue(initial){
    const ref=React.useRef(null);
    if(ref.current===null){

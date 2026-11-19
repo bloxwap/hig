@@ -58,7 +58,7 @@ export interface PositionBlockProps extends Omit<React.HTMLAttributes<HTMLElemen
  /** Attributes for the header's Close `<button>`; `disabled` draws Close unavailable. */
  closeProps?:HeaderCloseProps;
 }
-const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<NumberFlow motion="slide" {...figureProps(value)}/>;
+const figure=(value:string|PositionBlockFigure)=>typeof value==='string'?value:<NumberFlow {...figureProps(value)}/>;
 /** A press anywhere on a switch row that is not on a control toggles the row's switch, through the switch itself so its change and feedback run once. */
 function toggleRow(event:React.MouseEvent<HTMLElement>){
  if((event.target as Element).closest('a,button,input,label,select,textarea'))return;

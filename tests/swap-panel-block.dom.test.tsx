@@ -28,7 +28,7 @@ const type=(keys:string)=>{for(const key of keys.split(' '))fireEvent.keyDown(am
 const reading=(element:Element)=>element.querySelector('.hig-sr-only')?.textContent;
 /** What is read and what is drawn: the text without the decorative copy of each animated number. */
 const spoken=(element:Element)=>{const copy=element.cloneNode(true) as Element;for(const visual of copy.querySelectorAll('.hig-animated-number-visual'))visual.remove();return copy.textContent;};
-const flowing=(element:Element)=>element.querySelectorAll('.hig-animated-number-old').length;
+const flowing=(element:Element)=>element.querySelectorAll('.hig-number-flow-strip').length;
 describe('swap helpers',()=>{
  it('names the action from the pair',()=>{
   expect(swapAction(null,eth)).toBe('send');expect(swapAction(eth,eth)).toBe('send');expect(swapAction(usdc,baseUsdc)).toBe('bridge');

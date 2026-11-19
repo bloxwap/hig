@@ -81,7 +81,7 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
      <strong>{name}</strong>
      <span><span className='hig-position-side hig-trade-side' data-side={side}><span aria-hidden='true'>{side==='long'?'↑':'↓'} </span>{side==='long'?labels.long:labels.short}</span>{leverage!=null&&<> {formatNumber(leverage,locale)}×</>}{leverageNote&&<> <span className='hig-trade-leverage-note'>{leverageNote}</span></>}</span>
     </div>
-    <strong className='hig-trade-figure'><span className='hig-trade-caption hig-sr-only'>{labels.netPnl} </span><NumberFlow motion="slide" value={pnl} options={pnlOptions}/></strong>
+    <strong className='hig-trade-figure'><span className='hig-trade-caption hig-sr-only'>{labels.netPnl} </span><NumberFlow value={pnl} options={pnlOptions}/></strong>
     {pnlPercent!==undefined&&<span className='hig-trade-return'>{pnlPercent===null?labels.onMargin('—'):<SwapNumber template={labels.onMargin} value={pnlPercent} options={percentOptions}/>}</span>}
    </div>
    {entry!=null&&exit!=null&&<BarPnl className='hig-trade-bar' surface={false} fit side={side} entry={entry} mark={exit} labels={{entry:labels.entry??'',mark:labels.exit??'',liquidation:''}} priceOptions={priceOptions}/>}

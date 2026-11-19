@@ -75,7 +75,7 @@ describe('BarMark',()=>{
   const view=render(<BarMark title='HYPE' elements={live(320)}/>);
   const details=()=>[...document.querySelectorAll('.hig-bar-mark-detail')];
   expect(details()[0].querySelector('.hig-animated-number-visual')).toBeTruthy();expect(details()[0].querySelector('.hig-sr-only')!.textContent).toBe('$320.00');expect(details()[1].innerHTML).toBe('$239');
-  view.rerender(<BarMark title='HYPE' elements={live(321.5)}/>);expect(details()[0].querySelectorAll('.hig-animated-number-old').length).toBeGreaterThan(0);
+  view.rerender(<BarMark title='HYPE' elements={live(321.5)}/>);expect(details()[0].querySelectorAll('.hig-number-flow-strip').length).toBeGreaterThan(0);
   view.rerender(<HIGProvider locale='fr-FR' numberFormat={{currencyDisplay:'narrowSymbol'}}><BarMark title='HYPE' elements={[{label:'Staked',value:1,detail:{value:null}},{label:'Paper',value:1,detail:{value:12.5,options:{style:'currency',currency:'USD'},suffix:' net'}}]}/></HIGProvider>);
   expect(details().map(detail=>detail.querySelector('.hig-sr-only')!.textContent)).toEqual(['—','12,50 $ net']);
   delete (HTMLElement.prototype as {animate?:unknown}).animate;

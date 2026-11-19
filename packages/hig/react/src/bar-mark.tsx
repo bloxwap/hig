@@ -41,7 +41,7 @@ const BarContents=React.memo(function BarContents({elements,total,legend}:Pick<B
   :{'data-tone':tone??barMarkTones[index%barMarkTones.length]}),[elements]);
  return <>
   <div className='hig-bar-mark-bar' aria-hidden='true'>{elements.map((element,index)=>shares[index]>0&&<span key={element.id??index} className='hig-bar-mark-segment' {...paints[index]} style={{...paints[index].style,flexGrow:shares[index]}}/>)}{remainder>0&&<span className='hig-bar-mark-rest' style={{flexGrow:remainder}}/>}</div>
-  <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paints[index]}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{typeof element.detail==='string'?element.detail:<NumberFlow motion="slide" {...figureProps(element.detail)}/>}</span>}<span className='hig-sr-only'>{percentages[index]}</span></li>)}</ul>
+  <ul className={legend?'hig-bar-mark-legend':'hig-sr-only'}>{elements.map((element,index)=><li key={element.id??index}><span className='hig-bar-mark-dot' aria-hidden='true' {...paints[index]}/><span>{element.label}</span>{element.detail&&<span className='hig-bar-mark-detail'>{typeof element.detail==='string'?element.detail:<NumberFlow {...figureProps(element.detail)}/>}</span>}<span className='hig-sr-only'>{percentages[index]}</span></li>)}</ul>
  </>;
 });
 /** A one-dimensional stacked bar: a titled card whose single bar is divided among its elements, with a legend naming each part. */

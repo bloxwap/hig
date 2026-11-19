@@ -138,7 +138,7 @@ const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOption
   const leverage=React.useMemo(()=>formatLeverageText(trade.leverage,locale),[trade.leverage,locale]);
   const spokenPnl=React.useMemo(()=>formatNumber(pnl,locale,present(result)),[pnl,locale,present,result,formatKey]);
   const reading=[trade.name,sideText(trade.side==='long'?long:short,leverage,trade.leverageNote),spokenPnl,trade.tag,trade.time].filter(Boolean).join(', ');
-  const amount=React.useMemo(()=><NumberFlow motion="slide" value={pnl} options={result} tone={pnl==null||pnl===0?'text':pnl>0?'up':'down'} testID={amountId} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>,[pnl,result,formatKey,amountId]);
+  const amount=React.useMemo(()=><NumberFlow value={pnl} options={result} tone={pnl==null||pnl===0?'text':pnl>0?'up':'down'} testID={amountId} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>,[pnl,result,formatKey,amountId]);
   const content=<>
    <View {...hidden}>{typeof trade.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:trade.icon}} style={shape as object}/>:<View style={shape}>{trade.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{trade.symbol??trade.name.slice(0,3)}</Text>}</View>}</View>
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>

@@ -133,7 +133,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const intent=kind==='stop-loss'?'destructive':'primary';
  return <section {...rest} className={`hig-target-block${className?` ${className}`:''}`} data-kind={kind}>
   <ScreenHeader title={labels.title} onBack={onBack} headingId={headingId} stickyHeader={stickyHeader} action={info?headerAction?<span className='hig-target-header-actions'>{infoButton}{headerAction}</span>:infoButton:headerAction}/>
-  <p className='hig-target-amount'><NumberFlow motion="slide" value={value} options={targetFormat(unit,priceOptions)}/></p>
+  <p className='hig-target-amount'><NumberFlow value={value} options={targetFormat(unit,priceOptions)}/></p>
   {note&&!info&&<p className='hig-target-note'>{note}</p>}
   <section className={surface?'hig-surface hig-target-prices':'hig-target-prices'} data-surface={surface?undefined:'false'} aria-labelledby={position?id:undefined}>
    {(position||orderType)&&<div className='hig-bar-mark-header'>{position&&<strong id={id} className='hig-bar-mark-title'>{position}</strong>}{orderType&&<span className='hig-bar-mark-description'>{orderType}</span>}</div>}
@@ -142,7 +142,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
     {to>from&&<span className='hig-target-move' data-lead={(positions.trigger??0)<(positions.entry??0)?'trigger':'start'} style={{flexGrow:to-from}}/>}
     <span className='hig-target-rest' style={{flexGrow:1-to}}/>
    </div>
-   <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><NumberFlow motion="slide" value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
+   <dl className='hig-bar-pnl-readouts'>{order.map(price=><div key={price} data-price={price}><dt>{labels[price]}</dt><dd><NumberFlow value={prices[price]} options={priceOptions}/></dd></div>)}</dl>
   </section>
   {units.length>1&&<SegmentedControl label={labels.unit} options={targetUnits(units).map(option=>({value:option.unit,label:labels.units[option.unit],disabled:option.disabled}))} value={unit} onValueChange={next=>onUnitChange?.(next as TargetUnit)}/>}
   {onCustom&&(custom===null?<button type='button' className='hig-swap-setting' aria-pressed={customValue!==undefined?false:undefined} onClick={onCustom}><span>{labels.custom}</span><SwapIcon name='chevron' size={16}/><PressDecoration kind='row'/></button>:<button type='button' className='hig-swap-setting' aria-pressed='true' onClick={onCustom}><span>{labels.custom}</span><span className='hig-swap-setting-value'>{formatNumber(custom,locale,present(targetFormat(unit,priceOptions)))}<SwapIcon name='chevron' size={16}/></span><PressDecoration kind='row'/></button>)}

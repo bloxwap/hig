@@ -69,13 +69,13 @@ const held=(value:number)=>Number.isFinite(value)&&value>0;
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token as a screen: a header, where it is held, which chains it sits on, then what the user can do with it. */
 /** Legend figures inside the block move place by place, like its total. */
-const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><NumberFlow motion="slide" {...figureProps(figure)} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
+const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><NumberFlow {...figureProps(figure)} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
 export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',noteInfo,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:TokenActionBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const showChains=chains!==undefined&&chains.length>1;
- const headline=units!==undefined&&value==null?<NumberFlow motion="slide" key='units' value={units} options={unitsOptions} suffix={unitsSuffix} tone='muted' testID='token-units' style={{fontSize:14,lineHeight:21}}/>:<NumberFlow motion="slide" key='value' value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>;
+ const headline=units!==undefined&&value==null?<NumberFlow key='units' value={units} options={unitsOptions} suffix={unitsSuffix} tone='muted' testID='token-units' style={{fontSize:14,lineHeight:21}}/>:<NumberFlow key='value' value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>;
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
  const hasNote=note!=null&&note!==false,info=hasNote&&noteInfo?<HeaderInfo label={noteInfo} tone={noteTone} testID='token-info'>{note}</HeaderInfo>:null,inlineNote=hasNote&&!info;
  // With the info button beside a host control, both header sides widen together so the title stays centred.

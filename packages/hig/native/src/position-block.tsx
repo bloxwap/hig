@@ -128,11 +128,11 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
   if(item.onCheckedChange)return <SwitchRow key={item.id} testID={`position-row-${item.id}`} label={item.label} accessibilityHint={reading} checked={!!item.checked} disabled={item.disabled} onCheckedChange={item.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:colors.surface,opacity:item.disabled?0.5:1}}>
    <View style={{flex:1,flexDirection:'row',alignItems:'center',gap:12}}>
     <Text style={{flex:1,flexShrink:1,minWidth:0,fontSize:16,lineHeight:24,color:colors.text}}>{item.label}</Text>
-    {live?<NumberFlow motion="slide" {...figureProps(live)} tone='muted' style={{fontSize:16,lineHeight:24}}/>:reading?<Text numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',fontSize:16,lineHeight:24,color:colors.muted,textAlign:'right'}}>{reading}</Text>:null}
+    {live?<NumberFlow {...figureProps(live)} tone='muted' style={{fontSize:16,lineHeight:24}}/>:reading?<Text numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',fontSize:16,lineHeight:24,color:colors.muted,textAlign:'right'}}>{reading}</Text>:null}
     <Track checked={!!item.checked} testID={`position-row-${item.id}-track`}/>
    </View>
   </SwitchRow>;
-  return <ListRow key={item.id} testID={`position-row-${item.id}`} label={item.label} value={live?<NumberFlow motion="slide" {...figureProps(live)} tone='muted' testID={`position-row-${item.id}-value`} style={{fontSize:16,lineHeight:24}}/>:item.value as string|undefined} valueLabel={live?reading:undefined} onSelect={item.onSelect} disabled={item.disabled}/>;
+  return <ListRow key={item.id} testID={`position-row-${item.id}`} label={item.label} value={live?<NumberFlow {...figureProps(live)} tone='muted' testID={`position-row-${item.id}-value`} style={{fontSize:16,lineHeight:24}}/>:item.value as string|undefined} valueLabel={live?reading:undefined} onSelect={item.onSelect} disabled={item.disabled}/>;
  };
  const headerRow=<HeaderRow title={title} onClose={onClose} onBack={onBack} headerAction={headerAction} headingId={headingId} backProps={backProps} closeProps={closeProps}/>;
  const content=<>
@@ -140,7 +140,7 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
    {details.map((detail,index)=>{
     const key=detail.id??index,live=typeof detail.value==='string'?null:detail.value,reading=live?read(live):detail.value as string;
     const spoken=`${detail.label}, ${reading}${detail.struck?`, ${detail.struck}`:''}`;
-    const value=live?<NumberFlow motion="slide" {...figureProps(live)} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>;
+    const value=live?<NumberFlow {...figureProps(live)} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>;
     // The line is drawn over the figure, so it crosses animated digits as well as text.
     const drawn=detail.struck?<View testID={`position-detail-${key}-struck`} style={{position:'relative'}}>{value}<View pointerEvents='none' style={{position:'absolute',start:0,end:0,top:'50%',height:1,backgroundColor:detail.tone?colors[detail.tone]:colors.text}}/></View>:value;
     const label=<Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,color:colors.muted}}>{detail.label}</Text>;

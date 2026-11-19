@@ -197,7 +197,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><TokenArt uri={token.icon} symbol={token.symbol} size={40}/></View>
    <View style={{flex:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:4}}><Text style={{fontWeight:'600',lineHeight:21,flexShrink:1}}>{token.name}</Text>{locked?null:<View testID={`swap-account-chevron-${side}`}><SmallChevron color={colors.muted}/></View>}</View>
-    {typeof token.caption==='object'?<NumberFlow motion="slide" testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
+    {typeof token.caption==='object'?<NumberFlow testID='swap-caption' {...figureProps(token.caption)} tone='muted' style={smallType}/>:<Text style={small}>{token.caption}</Text>}
    </View>
   </View>
   {side==='from'&&(token.balance??0)>0?<SwapCapsule disabled={submitting} testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>:null}
@@ -214,7 +214,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
      <SwapCapsule disabled={submitting} testID='swap-test' onPress={()=>typed(unitsToEntry(testAmount(token),fromMode,fromPrice))}><Text style={small}>{t.swapTest}</Text></SwapCapsule>
      <SwapCapsule disabled={submitting} testID='swap-max' onPress={()=>typed(unitsToEntry(token.balance??0,fromMode,fromPrice))}><Text style={small}>{t.swapMax}</Text></SwapCapsule>
     </View>
-    <View pointerEvents='none'><NumberFlow motion="slide" testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
+    <View pointerEvents='none'><NumberFlow testID='swap-balance' value={token.balance} options={{maximumFractionDigits:6}} suffix={` ${token.symbol}`} tone='muted' style={smallType}/></View>
    </View>:null)
    :<View pointerEvents='box-none' style={{alignItems:'flex-end',gap:8,maxWidth:'60%'}}>
     <SwapCapsule disabled={submitting} testID='swap-slippage' label={t.swapSlippage(slippageText)} onPress={()=>!submitting&&show(onSlippageChange?'slippage':'settings')}><SwapNumberText template={t.swapSlippage} text={slippageText} value={slippage*100} formattedValue={slippageText.slice(0,-1)} suffix='%'/></SwapCapsule>
@@ -247,11 +247,11 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
     {locked?null:<Pressable accessible={false} importantForAccessibility='no' testID={`swap-area-${side}`} onPress={()=>!submitting&&show(side)} style={StyleSheet.absoluteFill}/>}
     <View pointerEvents='box-none' style={{alignItems:'center',gap:8,paddingTop:4,paddingHorizontal:16,paddingBottom:20}}>
      <View pointerEvents='none' accessible accessibilityLabel={t.swapAmount(label)} accessibilityValue={{text:formattedEntry??`${prefix}${formatNumber(shown,locale,options)}${suffix}`}} testID={`swap-amount-${side}`}>
-      <NumberFlow motion="slide" value={shown} formattedValue={formattedEntry} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
+      <NumberFlow value={shown} formattedValue={formattedEntry} prefix={prefix} suffix={side==='from'&&mode==='token'?'':suffix} options={options} tone={side==='to'?'muted':'text'} maxFontSizeMultiplier={1.5} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/>
      </View>
      {denominationSwitch&&<SwapCapsule disabled={submitting} label={t.swapSwitchDenomination} testID={`swap-mode-${side}`} onPress={()=>!submitting&&(side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd'))}>
       <Text accessible={false} style={[small,{opacity:0.5}]}>=</Text>
-      {mode==='token'?<NumberFlow motion="slide" testID={`swap-conversion-${side}`} value={cardUsd} options={usdOptions} tone='muted' style={smallType}/>:<NumberFlow motion="slide" testID={`swap-conversion-${side}`} value={cardUnits} options={{maximumFractionDigits:8,useGrouping:false}} suffix={token?` ${token.symbol}`:''} tone='muted' style={smallType}/>}
+      {mode==='token'?<NumberFlow testID={`swap-conversion-${side}`} value={cardUsd} options={usdOptions} tone='muted' style={smallType}/>:<NumberFlow testID={`swap-conversion-${side}`} value={cardUnits} options={{maximumFractionDigits:8,useGrouping:false}} suffix={token?` ${token.symbol}`:''} tone='muted' style={smallType}/>}
       <FlipIcon color={colors.muted} size={14}/>
      </SwapCapsule>}
     </View>
@@ -266,11 +266,11 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
    <View accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'>{art}</View>
    <View style={{flex:1,minWidth:0}}><Text testID='swap-destination-title' style={{fontWeight:destination.pending?'500':'600',lineHeight:21}}>{destination.title}</Text>{destination.subtitle?<Text style={small}>{destination.subtitle}</Text>:null}{destination.address?<Text style={small}>{shortAddress(destination.address)}</Text>:null}</View>
    {destination.detail||fee!==undefined||destination.onPress?<View style={{flexDirection:'row',alignItems:'center',gap:8,maxWidth:'60%'}}>
-    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<NumberFlow motion="slide" testID='swap-destination-detail' {...figureProps(destination.detail)} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
+    <View style={{alignItems:'flex-end',gap:8,flexShrink:1}}>{typeof destination.detail==='object'?<NumberFlow testID='swap-destination-detail' {...figureProps(destination.detail)} tone='muted' style={{...smallType,textAlign:'right'}}/>:destination.detail?<Text style={[small,{textAlign:'right'}]}>{destination.detail}</Text>:null}{fee!==undefined?<SwapNumberText testID='swap-destination-fee' align='right' template={t.swapFee} text={feeAmount} value={feeKnown?fee:null} options={usdOptions}/>:null}</View>
     {destination.onPress?<View testID='swap-destination-chevron'><SmallChevron color={colors.muted} trailing/></View>:null}
    </View>:null}
   </View>:null;
-  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<NumberFlow motion="slide" value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
+  const rows=details&&details.length>0?<View testID='swap-details' style={{gap:12,padding:16,paddingTop:destination?0:16}}>{details.map(detail=><View key={detail.label} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={{color:colors.muted,lineHeight:21}}>{detail.label}</Text>{typeof detail.value==='number'?<NumberFlow value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} style={{lineHeight:21,textAlign:'right'}}/>:<Text style={{lineHeight:21,textAlign:'right',flexShrink:1}}>{detail.value}</Text>}</View>)}</View>:null;
   const shape:ViewStyle={backgroundColor:colors.surface,borderRadius:24,overflow:'hidden'};
   // With a pressable destination the whole card is the button; the rows inside it are read as part of it.
   return destination?.onPress?<Pressable accessibilityRole='button' accessibilityLabel={destination.title} testID='swap-destination' disabled={submitting} onPress={()=>{if(!submitting)destination.onPress?.();}} style={({pressed})=>[shape,{opacity:pressed?0.85:1}]}><Raised>{row}{rows}</Raised></Pressable>:<View testID='swap-destination' style={shape}><Raised>{row}{rows}</Raised></View>;

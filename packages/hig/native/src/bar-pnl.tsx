@@ -84,7 +84,7 @@ export function BarPnl({entry,mark,liquidation,side,labels,title,description,pri
   <Bar from={from} to={to} markLeads={markLeads} tone={tone} liquidation={positions.liquidation} testID={testID}/>
   <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
    {order.map((kind,index)=><View key={kind} accessible accessibilityLabel={`${labels[kind]}, ${formatNumberReadout(values[kind],locale,present(format(kind))).text}`} testID={testID?`${testID}-${kind}`:undefined} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
-    <View {...hidden}><NumberFlow motion="slide" value={values[kind]} options={format(kind)} tone={kind==='liquidation'?'negative':kind==='mark'&&result!=='flat'?(result==='profit'?'up':'down'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
+    <View {...hidden}><NumberFlow value={values[kind]} options={format(kind)} tone={kind==='liquidation'?'negative':kind==='mark'&&result!=='flat'?(result==='profit'?'up':'down'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
     <Text {...hidden} numberOfLines={1} style={{color:colors.muted,fontSize:12,lineHeight:16}}>{labels[kind]}</Text>
    </View>)}
   </View>
