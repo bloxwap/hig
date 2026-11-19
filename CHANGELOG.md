@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.10.0
 
 - Record what the native `NumberFlow` holds on a device, which was unmeasured: an iPhone 17 Pro rolls forty figures at ten values a second each with no animation hitch, and a Seeker keeps 98% of frames on time with ten such figures, 92% with twenty and 80% with forty. Its reels are not the limit (two hundred moving at once hold 99.5% on the Seeker); the text each new value redraws for assistive technology is. No code changed.
 - Add `ReceiveBlock` on React and React Native (`@bloxwap/hig/react/blocks/receive-block`, `@bloxwap/hig/native/receive-block`, and the `blocks` aggregates): a `ScreenHeader`, one wallet address with its QR code, and a segmented control that switches the network. `mode="both"` (the default) takes both addresses and shows Ethereum first, with Solana as the second segment; `mode="ethereum"` or `mode="solana"` shows that network alone, under its name. `onCopy(network, address)` reports the copy action for the address on screen, and `onBack` gives the header its back control. The `DepositBlock` example opens it for the QR code method.
@@ -13,9 +13,6 @@
 - Add the native chart's trail geometry to `@bloxwap/hig/chart/altimeter-core`: `trailTiles`, `trailScroll`, `trailX`, `trailY`, `liveSegments`, `tweenValue`, `tweenVelocity`, `stepPriceTween` and `ALTIMETER_TWEEN_IDLE`, with their types.
 - Remove the React and React Native `AnimatedNumberReadout` export. Import `NumberFlow` from the same `animated-number` entry and pass `motion="slide"` to retain the previous transition.
 - Roll every figure HIG draws itself with `NumberFlow`'s default `flow` motion on React and React Native: the `AltimeterChart` price capsule, the `OutcomeChart` capsules, and the figures in every block, `BarMark`, `BarPnL` and `AssetBalanceRow`. They used the short `slide` settle. `motion="slide"` remains available on `NumberFlow` for a host's own figures.
-
-## 0.10.0
-
 - Add `AdvancedBlock` on React and React Native: the unified-exchange switch, setup tasks with their completion, a warning callout, wallet export rows and account deletion.
 - Add `InlineNotice`, an inline card with a decorative icon in its own leading column, for `info`, `success`, `warning` and `error`.
 - Draw primary and destructive buttons with their accent as the label and a 15% tint as the fill.
