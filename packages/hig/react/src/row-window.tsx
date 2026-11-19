@@ -58,10 +58,20 @@ function viewportScroll(event:Event){
  scrolledElements.add(target);
  scheduleFrame();
 }
+// A transform moves a list without a scroll or resize: a sheet sliding in from off-screen sampled an empty window as it
+// opened. Resample the windows inside an element whose transition or animation ends.
+function viewportMotionEnd(event:Event){
+ const target=event.target;
+ if(!(target instanceof Element))return;
+ scrolledElements.add(target);
+ scheduleFrame();
+}
+const motionEvents=['transitionend','animationend'] as const;
 function observeViewport(element:Element,sample:SampleViewport){
  if(!visibleWindows.size){
   window.addEventListener('scroll',viewportScroll,{capture:true,passive:true});
   window.addEventListener('resize',viewportChange);
+  for(const type of motionEvents)window.addEventListener(type,viewportMotionEnd,{capture:true,passive:true});
  }
  visibleWindows.set(sample,element);
  return {
@@ -72,12 +82,37 @@ function observeViewport(element:Element,sample:SampleViewport){
    if(visibleWindows.size)return;
    window.removeEventListener('scroll',viewportScroll,true);
    window.removeEventListener('resize',viewportChange);
+   for(const type of motionEvents)window.removeEventListener(type,viewportMotionEnd,true);
    if(pendingFrame!==null)cancelAnimationFrame(pendingFrame);
    pendingFrame=null;
    scrolledElements.clear();
    viewportChanged=false;
   },
  };
+}
+
+// Whether an ancestor is the containing block of a fixed descendant, and so clips it with its overflow.
+// An unset value reads as `none`, or as '' where an engine does not compute the property.
+const applied=(value:string|undefined)=>!!value&&value!=='none';
+function containsFixed(style:CSSStyleDeclaration){
+ return applied(style.transform)||applied(style.perspective)||applied(style.filter)||applied(style.backdropFilter)
+  ||/paint|layout|strict|content/.test(style.contain)||/transform|perspective|filter/.test(style.willChange);
+}
+/**
+ * The ancestors whose overflow clips `element`. Overflow clips a positioned descendant only from its containing block up:
+ * a fixed sheet escapes `body { overflow: hidden }`, which WebKit can lay out at zero height and so hid every row.
+ */
+function clipAncestors(element:Element){
+ const clips:Element[]=[];
+ let position=getComputedStyle(element).position;
+ for(let parent=element.parentElement;parent;parent=parent.parentElement){
+  const style=getComputedStyle(parent);
+  const contains=position==='fixed'?containsFixed(style):position==='absolute'?style.position!=='static'||containsFixed(style):true;
+  if(!contains)continue;
+  if(/auto|scroll|hidden|clip/.test(style.overflowY))clips.push(parent);
+  position=style.position;
+ }
+ return clips;
 }
 
 /** Preserve the host scroller and reserve the measured space of unmounted list items. */
@@ -118,10 +153,7 @@ export function RowWindow<K extends string,T extends Record<K,string>>({items,it
  useEffect(()=>{
   const element=list.current;
   if(!enabled||!element)return;
-  const clips:Element[]=[];
-  for(let parent=element.parentElement;parent;parent=parent.parentElement){
-   if(/auto|scroll|hidden|clip/.test(getComputedStyle(parent).overflowY))clips.push(parent);
-  }
+  const clips=clipAncestors(element);
   function sample(shared:ClipBounds){
    const bounds=element!.getBoundingClientRect();
    let top=0,bottom=window.innerHeight;
