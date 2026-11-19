@@ -4263,6 +4263,7 @@
     },
     {
       "name": "ReceiveBlock",
+      "added": "0.10.0",
       "slug": "receive-block",
       "entry": "blocks",
       "family": "blocks",

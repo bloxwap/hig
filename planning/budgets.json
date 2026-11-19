@@ -15,7 +15,7 @@
     "gzip": 788394
   },
   "docsCSS": {
-    "raw": 217017
+    "raw": 220140
   },
   "fonts": {
     "raw": 600000
@@ -35,8 +35,8 @@
     "@bloxwap/hig/react/blocks/swap-block": 261068,
     "@bloxwap/hig/native/provider": 41683,
     "@bloxwap/hig/native/button": 57522,
-    "@bloxwap/hig/native/switch": 53299,
-    "@bloxwap/hig/native/list-group": 66109,
+    "@bloxwap/hig/native/switch": 53368,
+    "@bloxwap/hig/native/list-group": 66406,
     "@bloxwap/hig/native/swap-block": 291996,
     "@bloxwap/hig/native/reward-block": 218392
   }
