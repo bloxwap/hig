@@ -32,9 +32,9 @@ test.each(['android','web'])('%s paints custom colours in sRGB even with display
 test('buttons, links and switches paint the accent while the approved Bloxwap mark stays green',()=>{
  act(()=>{root=create(h(HIGProvider,{primaryColor:'#f00'},h(Button,null,'Watch live'),h(Link,{href:'https://example.com'},'TV'),h(Switch,{label:'Live',checked:true}),h(BrandMark)));});
  const pressable=root.root.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.style==='function')[0];
- expect(RN.StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe('#ff0000');
+ expect(RN.StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe('#ff000026');
  const label=root.root.findAllByType(RN.Text).find(n=>n.props.children==='Watch live');
- expect(RN.StyleSheet.flatten(label.props.style).color).toBe('#000000');
+ expect(RN.StyleSheet.flatten(label.props.style).color).toBe('#ff0000');
  const link=root.root.findAllByType(RN.Text).find(n=>n.props.children==='TV');
  expect(RN.StyleSheet.flatten(link.props.style).color).toBe('#ff0000');
  expect(root.root.findByType(RN.Switch).props.trackColor.true).toBe('#ff0000');
@@ -64,9 +64,9 @@ test('market colours default to buy/sell, inherit, override per role and paint u
  expect(color('up')).toBe('#ff0000');expect(color('down')).toBe('#0000ff');
 });
 
-test('a dark primary colour uses white action labels while destructive labels retain contrast',()=>{
+test('a dark primary colour uses lightened accent labels while destructive labels retain contrast',()=>{
  act(()=>{root=create(h(HIGProvider,{primaryColor:'#123456'},h(Button,null,'Watch live'),h(Button,{intent:'destructive'},'Delete')));});
  const labels=root.root.findAllByType(RN.Text);
- expect(RN.StyleSheet.flatten(labels.find(n=>n.props.children==='Watch live').props.style).color).toBe('#ffffff');
- expect(RN.StyleSheet.flatten(labels.find(n=>n.props.children==='Delete').props.style).color).toBe(nativeSrgb.onAction);
+ expect(RN.StyleSheet.flatten(labels.find(n=>n.props.children==='Watch live').props.style).color).toBe('#899aab');
+ expect(RN.StyleSheet.flatten(labels.find(n=>n.props.children==='Delete').props.style).color).toBe(nativeSrgb.negative);
 });

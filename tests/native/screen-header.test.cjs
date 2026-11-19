@@ -1,4 +1,4 @@
-/** Native ScreenHeader: the block header on its own entry, the deprecated recipes path as a real file, and 48dp targets on block controls. */
+/** Native ScreenHeader: the block header on its own entry, and 48dp targets on block controls. */
 const React=require('react');
 const {existsSync,readFileSync}=require('node:fs');
 const {create:render,act}=require('react-test-renderer');
@@ -54,13 +54,6 @@ it('draws a host badge beside the title, read with it as one header (Unreleased)
  expect(heading).toHaveLength(1);expect(heading[0].props).toMatchObject({accessible:true,accessibilityLabel:'Trade, Demo',nativeID:'pane-title'});
  expect(text(all(view,'pane-badge').find(node=>typeof node.type==='string'))).toBe('Demo');
  const plain=mount(h(header.ScreenHeader,{title:'Trade',testID:'pane'}));expect(all(plain,'pane-badge')).toHaveLength(0);
-});
-it('keeps the deprecated recipes path as a real module, so a Jest moduleNameMapper to native/dist/<entry>.js resolves it',()=>{
- const recipes=require('../../packages/hig/native/src/recipes'),blocks=require('../../packages/hig/native/src/blocks');
- expect(Object.keys(recipes).sort()).toEqual(Object.keys(blocks).sort());for(const key of Object.keys(blocks))expect(recipes[key]).toBe(blocks[key]);
- expect(readFileSync('packages/hig/native/src/recipes.ts','utf8')).toContain('@deprecated');
- // After a build the file exists next to blocks.js.
- if(existsSync('packages/hig/native/dist/blocks.js'))expect(existsSync('packages/hig/native/dist/recipes.js')).toBe(true);
 });
 it('gives every block header and profile control a 48dp target without changing its drawn size',()=>{
  const slop={top:2,bottom:2,left:2,right:2};

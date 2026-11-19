@@ -11,7 +11,7 @@ const {formatSignedNumber}=require('../../packages/hig/contracts/dist/index.js')
 const {formatNumber}=require('../../packages/hig/native/src/number-format');
 const {createNumberReelModel,formatNumberReadout}=require('../../packages/hig/native/src/animated-number-model');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {TradeHistoryDetailBlock}=require('../../packages/hig/native/src/trade-history-detail-block');
 const {TradeHistoryListBlock}=require('../../packages/hig/native/src/trade-history-list-block');
 const {ManagePositionBlock}=require('../../packages/hig/native/src/manage-position-block');
@@ -161,9 +161,9 @@ describe('animated reels without formatToParts',()=>{
 describe('blocks and readouts on the iOS stub',()=>{
  const strings=view=>view.findAll(node=>typeof node.type==='string').flatMap(node=>[node.props.accessibilityLabel,...node.children.filter(child=>typeof child==='string')]).filter(Boolean).join('\n');
  function mount(element,provider={}){act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},element));});return root.root;}
- it('AnimatedNumberReadout reads and rolls the plus sign',()=>{
+ it('NumberFlow reads and rolls the plus sign',()=>{
   stubIntl();
-  const view=mount(h(AnimatedNumberReadout,{value:0.1234,options:pnlShare,label:'Return',testID:'share'}));
+  const view=mount(h(NumberFlow,{motion:'slide',value:0.1234,options:pnlShare,label:'Return',testID:'share'}));
   const reading=view.findAllByType(RNText).find(node=>node.props.testID==='share');
   expect(reading.props.accessibilityLabel).toBe('Return: +12.34%');expect(reading.props.children[0]).toBe('+12.34%');
   // The ten measuring glyphs mean the reel model exists; before, no formatToParts meant no model and no reels.

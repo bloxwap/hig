@@ -1,3 +1,5 @@
+import {SeverityIcon} from './icons.js';
+import {HeaderInfo} from './header-info.js';
 import React from 'react';
 import {View,type ScrollViewProps} from 'react-native';
 import {StickyHeaderLayout} from './sticky-header.js';
@@ -9,7 +11,7 @@ import {useColors,useHIG,useMessages,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {figureProps} from './figure.js';
 import {BarMark,BarMarkFigureContext,type BarMarkElement,type BarMarkFigureRenderer} from './bar-mark.js';
 export type {BarMarkElement,BarMarkFigure} from './bar-mark.js';
@@ -46,8 +48,10 @@ export interface TokenActionBlockProps {
  onBack?:()=>void;
  /** A control on the trailing edge of the header, usually an IconButton. */
  headerAction?:React.ReactNode;
- /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */
+ /** A line above the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
+ /** Accessible name of an info button on the trailing edge of the header that shows `note` in a popover instead of above the actions: About Papertrade. It sits before `headerAction` when both are given. */
+ noteInfo?:string;
  /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */
  stickyHeader?:boolean;
  /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */
@@ -65,28 +69,31 @@ const held=(value:number)=>Number.isFinite(value)&&value>0;
 export const tokenActionLabel=(action:TokenAction,messages:Partial<HIGMessages>):string=>action.label??(action.id==='send'?messages.swapActionSend??en.swapActionSend:action.id==='receive'?messages.receive??en.receive:action.id==='stake'?messages.stake??en.stake:action.id==='unstake'?messages.unstake??en.unstake:action.id);
 /** One token as a screen: a header, where it is held, which chains it sits on, then what the user can do with it. */
 /** Legend figures inside the block move place by place, like its total. */
-const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><AnimatedNumberReadout {...figureProps(figure)} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
-export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:TokenActionBlockProps){
+const animatedFigure:BarMarkFigureRenderer=(figure,{testID})=><NumberFlow {...figureProps(figure)} tone='faint' testID={testID} style={{fontSize:14,lineHeight:21}}/>;
+export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptions=unitsFormat,assets,chains,chainsTitle,actions,onBack,headerAction,note,noteTone='muted',noteInfo,stickyHeader,stickyHeaderBackground,scrollComponent,headingId,testID}:TokenActionBlockProps){
  const colors=useColors(),t=useMessages(),{direction}=useHIG(),locale=useNumberLocale();
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const showChains=chains!==undefined&&chains.length>1;
- const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix} tone='muted' testID='token-units' style={{fontSize:14,lineHeight:21}}/>:<AnimatedNumberReadout key='value' value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>;
+ const headline=units!==undefined&&value==null?<NumberFlow key='units' value={units} options={unitsOptions} suffix={unitsSuffix} tone='muted' testID='token-units' style={{fontSize:14,lineHeight:21}}/>:<NumberFlow key='value' value={total} options={usd} tone='muted' testID='token-value' style={{fontSize:14,lineHeight:21}}/>;
  const tone=noteTone==='warning'?colors.warning:noteTone==='negative'?colors.negative:null;
+ const hasNote=note!=null&&note!==false,info=hasNote&&noteInfo?<HeaderInfo label={noteInfo} tone={noteTone} testID='token-info'>{note}</HeaderInfo>:null,inlineNote=hasNote&&!info;
+ // With the info button beside a host control, both header sides widen together so the title stays centred.
+ const side=info&&headerAction!=null?88:44;
  const header=<View testID='token-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
-  <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='token-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
+  <View style={{minWidth:side,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='token-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>
   <Text testID='token-title' nativeID={headingId} accessibilityRole='header' numberOfLines={1} style={{flex:1,textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:colors.text}}>{symbol}</Text>
-  <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction}</View>
+  <View style={{minWidth:side,flexDirection:'row',justifyContent:'flex-end',alignItems:'center',zIndex:1}}>{info}{headerAction}</View>
  </View>;
  const body=<>
   {assets||showChains?<BarMarkFigureContext.Provider value={animatedFigure}><View testID='token-bars' style={{gap:20,marginTop:16,paddingHorizontal:4}}>
    {assets?<BarMark testID='token-assets' surface={false} title={name??symbol} elements={assets} description={headline}/>:null}
    {showChains?<BarMark testID='token-chains' surface={false} title={chainsTitle??t.swapChains} elements={chains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)}/>:null}
   </View></BarMarkFigureContext.Provider>:null}
-  {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:16}}>
+  {inlineNote?<View testID='token-note' style={[{marginTop:16},tone?{flexDirection:'row',alignItems:'flex-start',gap:8,paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{paddingHorizontal:4}]}>{tone&&<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><SeverityIcon kind={noteTone==='warning'?'warning':'error'} color={tone}/></View>}<Text style={{flexShrink:1,fontSize:14,lineHeight:21,color:tone?colors.text:colors.muted}}>{note}</Text></View>:null}
+  {actions.length>0?<View testID='token-actions' style={{gap:8,marginTop:inlineNote?8:16}}>
    {actions.map(action=><Button key={action.id} testID={`token-action-${action.id}`} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onPress={action.onSelect}>{tokenActionLabel(action,t)}</Button>)}
   </View>:null}
-  {note!=null&&note!==false?<View testID='token-note' style={[{marginTop:actions.length>0?8:16},tone?{paddingVertical:12,paddingHorizontal:16,borderRadius:16,backgroundColor:withAlpha(tone,0.1)}:{paddingHorizontal:4}]}><Text style={{fontSize:14,lineHeight:21,color:tone??colors.muted}}>{note}</Text></View>:null}
  </>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='token-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
  return <View testID={testID} style={{padding:16}}>

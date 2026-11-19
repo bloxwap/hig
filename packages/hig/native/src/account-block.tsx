@@ -6,7 +6,7 @@ import {useColors,useHIG,useMessages} from './provider.js';
 import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {ChevronIcon,QrIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {AssetBalanceRow,type AssetArtwork} from './asset-balance-row.js';
 export {AssetBalanceRow,type AssetArtwork,type AssetBalanceRowProps} from './asset-balance-row.js';
 /** One holding in the account. The host supplies every value; HIG sorts, formats and lays it out. */
@@ -145,7 +145,7 @@ const SectionHeader = React.memo(function SectionHeader({section,total}:{section
  const prefix=`account-section-${section.id}`;
  return <View testID={`${prefix}-header`} style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12,paddingHorizontal:4}}>
      <Text accessibilityRole='header' testID={`${prefix}-title`} style={{flexShrink:1,color:muted,fontSize:14,lineHeight:20,fontWeight:'500'}}>{section.title}</Text>
-     <AnimatedNumberReadout value={total} options={usd} tone='muted' testID={`${prefix}-total`} style={{fontSize:14,lineHeight:20,fontWeight:'500'}}/>
+     <NumberFlow value={total} options={usd} tone='muted' testID={`${prefix}-total`} style={{fontSize:14,lineHeight:20,fontWeight:'500'}}/>
     </View>;
 });
 
@@ -277,7 +277,7 @@ export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,as
   <View style={{minWidth:44,alignItems:'flex-end'}}>{headerAction??(onShowAddress?<IconButton intent='ghost' label={t.showAddress} testID='account-address' onPress={onShowAddress}><QrIcon color={colors.text}/></IconButton>:null)}</View>
  </View>;
  const summary=<View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,marginTop:8}}>
-   <View style={{flexShrink:1}}><AnimatedNumberReadout value={total} options={usd} label={t.accountBalance} testID='account-balance' style={{fontSize:32,lineHeight:40,fontWeight:'600'}}/></View>
+   <View style={{flexShrink:1}}><NumberFlow value={total} options={usd} label={t.accountBalance} testID='account-balance' style={{fontSize:32,lineHeight:40,fontWeight:'600'}}/></View>
    {onDeposit?<Button testID='account-deposit' onPress={onDeposit}>{depositLabel??t.deposit}</Button>:null}
   </View>;
  const listProps={testID,header,headerTestID:'account-sticky-header',sticky:true,scrollComponent,background:stickyHeaderBackground,direction,inset:16,rowHeight:68};

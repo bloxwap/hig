@@ -4,7 +4,7 @@ import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
 import {figureProps,type Figure} from '../figure.js';
 import {Badge} from '../status.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {BarMark} from '../bar-mark.js';
 import {BarPnl} from '../bar-pnl.js';
 import {ListGroup,ListRow} from '../list-group.js';
@@ -104,7 +104,7 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
    <BarMark surface={false} title={mode??labels.margin} description={corridor.share===null?labels.toLiquidation('—'):<SwapNumber template={labels.toLiquidation} value={Number((corridor.share*100).toFixed(1))} suffix='%' options={{maximumFractionDigits:1}}/>} elements={[{id:'margin',label:labels.margin,value:margin,detail:formatNumber(margin,locale,present(usd)),tone:'info'},{id:'notional',label:labels.notional,value:known(notional)?Math.max(notional-margin,0):0,detail:known(notional)?formatNumber(notional,locale,present(usd)):'—',tone:'positive'}]}/>
    <BarPnl surface={false} compact side={side} entry={entry} mark={mark} liquidation={liquidation} labels={{liquidation:labels.liquidation,mark:labels.mark,entry:labels.entry}} priceOptions={priceOptions}/>
   </div>
-  {actions.length>0&&<ListGroup className='hig-manage-actions'>{actions.map(action=><ListRow key={action.id} label={action.label} disabled={action.disabled} onSelect={action.onSelect} value={action.value==null?undefined:<span className='hig-manage-action-value' data-tone={action.tone}>{typeof action.value==='string'?action.value:<AnimatedNumberReadout {...figureProps(action.value)}/>}</span>}/>)}</ListGroup>}
+  {actions.length>0&&<ListGroup className='hig-manage-actions'>{actions.map(action=><ListRow key={action.id} label={action.label} disabled={action.disabled} onSelect={action.onSelect} value={action.value==null?undefined:<span className='hig-manage-action-value' data-tone={action.tone}>{typeof action.value==='string'?action.value:<NumberFlow {...figureProps(action.value)}/>}</span>}/>)}</ListGroup>}
   {position&&<PositionSummaryRow position={position} labels={labels} side={side} pnlOptions={pnlOptions}/>}
  </section>;
 }
@@ -114,8 +114,8 @@ export function PositionSummaryRow({position,side,labels,pnlOptions,disclosure=f
  const pnlFormat:Intl.NumberFormatOptions={...usd,signDisplay:'exceptZero',maximumFractionDigits:4,...pnlOptions};
  const content=(position:ManagePositionBlockSummary,ids?:{identity:string;amounts:string})=><>
   <PositionArt position={position}/>
-  <span id={ids?.identity} className='hig-asset-row-identity'>{position.badge?<span className='hig-position-name'><strong>{position.name}</strong><Badge className='hig-position-badge'>{position.badge}</Badge></span>:<strong>{position.name}</strong>}<span><span className='hig-position-side' data-side={side} aria-hidden='true'>{side==='long'?'↑':'↓'}</span><span className='hig-sr-only'>{side==='long'?labels.long:labels.short}</span>{position.leverage!=null&&<span className='hig-position-side hig-position-leverage' data-side={side}> {formatNumber(position.leverage,locale)}×</span>}{known(position.size)&&<> · <AnimatedNumberReadout value={position.size} options={{maximumFractionDigits:6}}/></>}</span></span>
-  <span id={ids?.amounts} className='hig-asset-row-amounts'><strong data-tone={pnlTone}><AnimatedNumberReadout value={position.pnl} options={pnlFormat}/></strong><span><AnimatedNumberReadout value={position.pnlPercent} options={{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'}}/></span></span>
+  <span id={ids?.identity} className='hig-asset-row-identity'>{position.badge?<span className='hig-position-name'><strong>{position.name}</strong><Badge className='hig-position-badge'>{position.badge}</Badge></span>:<strong>{position.name}</strong>}<span><span className='hig-position-side' data-side={side} aria-hidden='true'>{side==='long'?'↑':'↓'}</span><span className='hig-sr-only'>{side==='long'?labels.long:labels.short}</span>{position.leverage!=null&&<span className='hig-position-side hig-position-leverage' data-side={side}> {formatNumber(position.leverage,locale)}×</span>}{known(position.size)&&<> · <NumberFlow value={position.size} options={{maximumFractionDigits:6}}/></>}</span></span>
+  <span id={ids?.amounts} className='hig-asset-row-amounts'><strong data-tone={pnlTone}><NumberFlow value={position.pnl} options={pnlFormat}/></strong><span><NumberFlow value={position.pnlPercent} options={{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2,signDisplay:'exceptZero'}}/></span></span>
   {disclosure&&position.onSelect&&<ChevronRight size={18} aria-hidden/>}
  </>;
  return position.onSelect?<PositionButton position={position} content={content} disclosure={disclosure}/>:<><div className='hig-asset-row hig-position-row'>{content(position)}</div>{position.caption&&<p className='hig-position-caption'>{position.caption}</p>}</>;

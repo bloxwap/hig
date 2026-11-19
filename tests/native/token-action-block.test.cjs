@@ -7,7 +7,7 @@ const {TokenActionBlock,tokenActionLabel}=require('../../packages/hig/native/src
 const blocks=require('../../packages/hig/native/src/blocks');
 const {BarMark}=require('../../packages/hig/native/src/bar-mark');
 const {Button}=require('../../packages/hig/native/src/button');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 const assets=[{id:'staked',label:'Staked',value:300,tone:'negative'},{id:'core',label:'Core',value:259,tone:'positive'},{id:'paper',label:'Paper',value:200}];
@@ -19,7 +19,7 @@ const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const title=view=>text(all(view,'token-title').find(node=>typeof node.type==='string'));
 const bars=view=>view.findAllByType(BarMark);
-const total=view=>bars(view)[0].findAllByType(AnimatedNumberReadout)[0];
+const total=view=>bars(view)[0].findAllByType(NumberFlow)[0];
 const buttons=view=>view.findAllByType(Button).filter(button=>String(button.props.testID).startsWith('token-action-'));
 const label=button=>text(button.findAll(node=>typeof node.type==='string'&&node.props.testID===button.props.testID)[0]??button);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
@@ -74,14 +74,16 @@ it('draws both bars without a card, further apart than cards would be',()=>{
  const group=all(view,'token-bars').find(node=>typeof node.type==='string');expect(Object.assign({},...[].concat(group.props.style).flat(Infinity).filter(Boolean))).toMatchObject({gap:20,marginTop:16,paddingHorizontal:4});
 });
 const styleOf=node=>Object.assign({},...[].concat(node.props.style).flat(Infinity).filter(Boolean));
-it('draws a note under the actions, 8 below them, tinted by noteTone',()=>{
+it('draws a note above the actions, 8 units apart, tinted by noteTone',()=>{
  const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
  const actions=[{id:'send',onSelect(){}}];
  let view=mount({actions,note:'View-only account'});
  const note=()=>all(view,'token-note').find(node=>typeof node.type==='string');
- expect(text(note())).toBe('View-only account');expect(styleOf(note())).toMatchObject({marginTop:8,paddingHorizontal:4});
- const children=note().parent.children.map(child=>child.props?.testID);expect(children.indexOf('token-note')).toBe(children.indexOf('token-actions')+1);
- view=mount({note:'View-only account',noteTone:'warning'});expect(styleOf(note())).toMatchObject({marginTop:16,borderRadius:16});expect(styleOf(note().findAll(node=>node.type==='Text')[0]).color).toBe(colors.warning);
+ expect(text(note())).toBe('View-only account');expect(styleOf(note())).toMatchObject({marginTop:16,paddingHorizontal:4});
+ const order=view.findAll(node=>typeof node.type==='string'&&['token-note','token-actions'].includes(node.props.testID)).map(node=>node.props.testID);
+ expect(order).toEqual(['token-note','token-actions']);
+ expect(styleOf(all(view,'token-actions').find(node=>typeof node.type==='string')).marginTop).toBe(8);
+ view=mount({note:'View-only account',noteTone:'warning'});expect(styleOf(note())).toMatchObject({marginTop:16,borderRadius:16});expect(styleOf(note().findAll(node=>node.type==='Text')[0]).color).toBe(colors.text);
  view=mount({actions});expect(has(view,'token-note')).toBe(false);
 });
 it('draws actions only without bars, or one bar without the other',()=>{
@@ -92,6 +94,26 @@ it('draws actions only without bars, or one bar without the other',()=>{
 });
 it('moves live legend figures place by place inside the block',()=>{
  const view=mount({assets:[{id:'staked',label:'Staked',value:320,detail:{value:320,options:{style:'currency',currency:'USD'}}},{id:'core',label:'Core',value:239,detail:'$239'}]});
- const figure=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='token-assets-detail-staked');expect(figure.props).toMatchObject({value:320,tone:'faint'});
+ const figure=view.findAllByType(NumberFlow).find(node=>node.props.testID==='token-assets-detail-staked');expect(figure.props).toMatchObject({value:320,tone:'faint'});
  expect(all(view,'token-assets-legend-staked').find(node=>typeof node.type==='string').props.accessibilityLabel).toBe('Staked, $320.00, 57.2%');
+});
+
+it('moves the note into a popover behind a header info button with noteInfo, beside any headerAction',()=>{
+ const note='PAPER cannot be sent or received.';
+ let view=mount({note,noteInfo:'About Papertrade',actions:[{id:'stake',onSelect:()=>{}}]});
+ expect(has(view,'token-note')).toBe(false);
+ const button=view.findAll(node=>node.props.accessibilityLabel==='About Papertrade'&&typeof node.props.onPress==='function')[0];
+ expect(button).toBeTruthy();
+ expect(has(view,'token-info-popover')).toBe(false);
+ act(()=>button.props.onPress());
+ const popover=all(view,'token-info-popover').find(node=>typeof node.props.onPress==='function');
+ expect(text(popover)).toContain(note);
+ act(()=>popover.props.onPress());
+ expect(has(view,'token-info-popover')).toBe(false);
+ // Without noteInfo the note stays inline above the actions.
+ view=mount({note,actions:[{id:'stake',onSelect:()=>{}}]});
+ expect(has(view,'token-note')).toBe(true);expect(has(view,'token-info')).toBe(false);
+ // Beside a host control both stay in the header, the info button first.
+ view=mount({note,noteInfo:'About',headerAction:h(View,{testID:'host-action'})});
+ expect(has(view,'token-info')&&has(view,'host-action')).toBe(true);
 });

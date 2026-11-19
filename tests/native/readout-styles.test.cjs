@@ -4,7 +4,7 @@ const {Text:RNText,StyleSheet}=require('react-native');
 const {nativeColors,nativeSrgb}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {NumberReadout,Usd,Percent}=require('../../packages/hig/native/src/data');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.restoreAllMocks();});
@@ -72,7 +72,7 @@ it.each([[Usd,12.5,'$12.50'],[Percent,5,'5%']])('forwards typography, tone, and 
 });
 
 it('styles and identifies the final animated number through value and reduced-motion changes (#117)',()=>{
- const example=(value,tone='positive',reducedMotion=false)=>h(HIGProvider,{reducedMotion},h(AnimatedNumberReadout,{value,tone,label:'Price',testID:'price',duration:900,style:{fontFamily:'HostMonoSemiBold',fontSize:20,lineHeight:28},maxFontSizeMultiplier:2}));
+ const example=(value,tone='positive',reducedMotion=false)=>h(HIGProvider,{reducedMotion},h(NumberFlow,{motion:'slide',value,tone,label:'Price',testID:'price',duration:900,style:{fontFamily:'HostMonoSemiBold',fontSize:20,lineHeight:28},maxFontSizeMultiplier:2}));
  const animatedText=()=>root.root.findAllByType(RNText).find(node=>node.props.testID==='price');
  mount(example(1));act(()=>root.update(example(2)));
  expect(animatedText().props.accessibilityLabel).toBe('Price: 2');

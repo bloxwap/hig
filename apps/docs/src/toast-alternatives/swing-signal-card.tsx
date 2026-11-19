@@ -1,3 +1,4 @@
+import { singleRowLayout, toastWidth } from './toast-layout';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { SignalStrength } from './signal-strength';
 const cn = (...values: (string | false | undefined)[]) => values.filter(Boolean).join(' ');
@@ -30,8 +31,9 @@ export function SwingSignalCard({
       role="img"
       aria-label={label}
       className={cn(
-        'flex w-full max-w-sm items-center gap-3 rounded-full border-2 bg-background/95 py-2 pl-4 font-[family-name:var(--font-bloxwap-sans)] text-foreground',
-        closeInset ? 'pr-12' : 'pr-2',
+        toastWidth,
+        'flex items-center gap-3 rounded-full border-2 bg-background/95 pl-4 font-[family-name:var(--font-bloxwap-sans)] text-foreground',
+        closeInset ? `${singleRowLayout} pr-12` : 'py-2 pr-2',
         long
           ? 'border-(--hig-up) toast-glow-up-soft'
           : 'border-(--hig-down) toast-glow-down-soft',
@@ -44,7 +46,7 @@ export function SwingSignalCard({
         aria-hidden="true"
         className={cn(
           'ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-sm font-extrabold',
-          long ? 'bg-(--hig-up)/15 text-(--hig-up)' : 'bg-(--hig-down)/15 text-(--hig-down)',
+          long ? 'bg-(--hig-up)/15 text-foreground' : 'bg-(--hig-down)/15 text-foreground',
         )}
       >
         <DirectionIcon className="h-4 w-4" /> {direction}

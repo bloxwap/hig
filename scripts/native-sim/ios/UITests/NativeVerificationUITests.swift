@@ -138,7 +138,7 @@ final class NativeVerificationUITests: XCTestCase {
   }
 
   /// Gallery-level locale/RTL/fallback coverage. Exact labels do not certify visual bidi or glyph shaping.
-  func testAnimatedNumberReadout() throws {
+  func testNumberFlow() throws {
     let prefix = env["HIG_PREFIX"] ?? "normal"
     typealias Case = (catalog: String, locale: String, direction: String, initial: String, updated: String)
     let cases: [Case] = [
@@ -150,7 +150,7 @@ final class NativeVerificationUITests: XCTestCase {
     var results: [[String: Any]] = []
     for item in cases {
       open("component=Button&state=default")
-      open("component=AnimatedNumberReadout&state=default&messages=\(item.catalog)&dir=\(item.direction)&diag=1")
+      open("component=NumberFlow&state=slide&messages=\(item.catalog)&dir=\(item.direction)&diag=1")
       let initial = "Sample price: \(item.initial)", updated = "Sample price: \(item.updated)"
       let initialCount = finalLabelCount(initial, minimum: 2)
       XCTAssertGreaterThanOrEqual(initialCount, 2, "readout and slider both expose the canonical initial label: \(initial)")
@@ -168,11 +168,11 @@ final class NativeVerificationUITests: XCTestCase {
       XCTAssertTrue(action.hasPrefix("performed"), action)
       let updatedCount = finalLabelCount(updated, minimum: 2)
       XCTAssertGreaterThanOrEqual(updatedCount, 2, "readout and slider both expose the canonical incremented label: \(updated)")
-      open("component=AnimatedNumberReadout&state=empty&messages=\(item.catalog)&dir=\(item.direction)&diag=1")
-      XCTAssertGreaterThanOrEqual(finalLabelCount("Sample price: —"), 1, "null value keeps the static safe fallback")
+      open("component=NumberFlow&state=empty&messages=\(item.catalog)&dir=\(item.direction)&diag=1")
+      XCTAssertGreaterThanOrEqual(finalLabelCount("Mark price: —"), 1, "null value keeps the static safe fallback")
       try capture("ios-animated-number-\(prefix)-\(item.catalog)")
       try tree("ios-animated-number-\(prefix)-\(item.catalog)")
-      results.append(["locale": item.locale, "direction": item.direction, "initial": initial, "updated": updated, "fallback": "Sample price: —", "initialMatchingElements": initialCount, "updatedMatchingElements": updatedCount, "increment": action])
+      results.append(["locale": item.locale, "direction": item.direction, "initial": initial, "updated": updated, "fallback": "Mark price: —", "initialMatchingElements": initialCount, "updatedMatchingElements": updatedCount, "increment": action])
     }
     try write("ios-animated-number-\(prefix).json", ["cases": results, "limits": "Simulator final accessibility labels only; captures require visual/manual glyph, bidi and motion review. No VoiceOver speech or physical-device claim."])
   }

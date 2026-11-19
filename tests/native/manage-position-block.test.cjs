@@ -7,7 +7,7 @@ const {ManagePositionBlock,positionCorridor}=require('../../packages/hig/native/
 const blocks=require('../../packages/hig/native/src/blocks');
 const {BarMark}=require('../../packages/hig/native/src/bar-mark');
 const {BarPnl}=require('../../packages/hig/native/src/bar-pnl');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {nativeSrgb}=require('../../packages/hig/tokens/src/index');
 const h=React.createElement;
 let root;
@@ -21,7 +21,7 @@ const has=(view,id)=>all(view,id).length>0;
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const flat=node=>Object.assign({},...[].concat(node.props.style??[]).flat(Infinity).filter(Boolean));
 const bars=view=>view.findAllByType(BarMark);
-const flows=(view,id)=>all(view,id)[0].findAllByType(AnimatedNumberReadout);
+const flows=(view,id)=>all(view,id)[0].findAllByType(NumberFlow);
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
 it('measures the distance left before liquidation for long and short positions',()=>{
@@ -118,7 +118,7 @@ it('shows the position row: direction, leverage and size, with profit and loss t
  expect(row().props.accessibilityLabel).toBe('Bitcoin, Long, 40×, 0.006182, -$0.0247, -0.25%');
  expect(text(host(view,'manage-position-side'))).toBe('↑');expect(flat(host(view,'manage-position-side')).color).toBe(nativeSrgb.buy);expect(text(host(view,'manage-position-leverage'))).toBe('40×');
  expect(flows(view,'manage-position-size')[0]??all(view,'manage-position-size')[0]).toBeDefined();
- const pnl=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-position-pnl'),share=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-position-pnl-percent');
+ const pnl=view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='manage-position-pnl'),share=view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='manage-position-pnl-percent');
  expect(pnl.props).toMatchObject({value:-0.0247,tone:'down'});expect(share.props).toMatchObject({value:-0.0025,tone:'muted'});
  expect(flat(row())).toMatchObject({minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:nativeSrgb.surface,marginTop:16});
  // Without artwork the avatar shows the first letters of the name.
@@ -127,9 +127,9 @@ it('shows the position row: direction, leverage and size, with profit and loss t
  view=mount({side:'short',entry:100,mark:90,liquidation:120,position:{name:'Ether',icon:h(View,{testID:'eth-art'}),leverage:5,size:2,pnl:20,pnlPercent:0.1}});
  expect(row().props.accessibilityLabel).toBe('Ether, Short, 5×, 2, +$20.00, +10.00%');expect(has(view,'eth-art')).toBe(true);
  expect(text(host(view,'manage-position-side'))).toBe('↓');expect(flat(host(view,'manage-position-side')).color).toBe(nativeSrgb.sell);
- expect(view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-position-pnl').props.tone).toBe('up');
+ expect(view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='manage-position-pnl').props.tone).toBe('up');
  // A flat or unknown result is not toned, and optional figures can be left out.
- view=mount({position:{name:'Solana',pnl:0}});expect(view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-position-pnl').props.tone).toBe('text');
+ view=mount({position:{name:'Solana',pnl:0}});expect(view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='manage-position-pnl').props.tone).toBe('text');
  expect(row().props.accessibilityLabel).toBe('Solana, Long, $0.00');expect(has(view,'manage-position-leverage')).toBe(false);expect(has(view,'manage-position-pnl-percent')).toBe(false);
 });
 
@@ -138,7 +138,7 @@ it('puts a trailing value with an optional tone on an action row, read with its 
  const view=mount({actions:[{id:'tp',label:'Take Profit',value:{value:66000,options:{style:'currency',currency:'USD',maximumFractionDigits:0}},tone:'positive',onSelect:cancel},{id:'sl',label:'Stop Loss',value:'$63,500',tone:'negative',onSelect:()=>{}},{id:'plain',label:'Trailing',value:'Off',onSelect:()=>{}},{id:'close',label:'Close',onSelect:()=>{}}]});
  const press=id=>all(view,`manage-action-${id}`).find(node=>typeof node.type!=='string'&&'onPress' in node.props);
  expect(['tp','sl','plain','close'].map(id=>press(id).props.accessibilityLabel)).toEqual(['Take Profit, $66,000','Stop Loss, $63,500','Trailing, Off','Close']);
- const figure=view.findAllByType(AnimatedNumberReadout).find(flow=>flow.props.testID==='manage-action-tp-value');expect([figure.props.value,figure.props.tone]).toEqual([66000,'positive']);
+ const figure=view.findAllByType(NumberFlow).find(flow=>flow.props.testID==='manage-action-tp-value');expect([figure.props.value,figure.props.tone]).toEqual([66000,'positive']);
  expect(flat(host(view,'manage-action-sl-value')).color).toBe(nativeSrgb.negative);expect(text(host(view,'manage-action-sl-value'))).toBe('$63,500');
  // Host text is the row's own value, toned through ListRow valueTone; without a tone it is muted.
  expect(flat(host(view,'manage-action-plain-value')).color).toBe(nativeSrgb.muted);expect(text(host(view,'manage-action-plain-value'))).toBe('Off');

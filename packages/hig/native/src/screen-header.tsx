@@ -1,4 +1,4 @@
-import {GestureSheetHeaderContext,SheetHeaderGlow} from './sheet-header-glow.js';
+import {GestureSheetHeaderContext,GestureSheetSurfaceContext,SheetHeaderScrim} from './sheet-header-glow.js';
 import React from 'react';
 import {View,type PressableProps,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors,useHIG,useMessages} from './provider.js';
@@ -67,7 +67,7 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,
  // Clear white stays in the accessibility tree where opacity 0 might not; the title keeps its line so the header keeps its height.
  const ink=hideTitle?'#ffffff00':colors.text;
  const heading={textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600',color:ink} as const;
- const inSheet=React.useContext(GestureSheetHeaderContext);
+ const inSheet=React.useContext(GestureSheetHeaderContext),sheetSurface=React.useContext(GestureSheetSurfaceContext);
  const fill=stickyHeader?stickyHeaderFill(!!scrolled&&!inSheet,stickyHeaderBackground??colors.background):undefined;
  const pad=stickyHeader&&inset?inset:0,height=44+pad;
  // Beside the sides the title fills the middle; under an eyebrow it sits in a column at its own height.
@@ -77,7 +77,7 @@ export function ScreenHeader({title,onBack,backDisabled,backProps,action,testID,
    {hideTitle?null:<View testID={id('badge')} style={{flexShrink:0}}><Badge><Text style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.text}}>{badge}</Text></Badge></View>}
   </View>:<Text ref={titleRef as unknown as React.Ref<React.ComponentRef<typeof Text>>} testID={id('title')} nativeID={headingId} accessibilityRole='header' accessibilityHint={description} numberOfLines={1} style={{...grow,...heading}}>{title}</Text>;
  const row=<View testID={id('header')} style={[{flexDirection:'row',alignItems:'center',minHeight:height},pad?{paddingTop:pad,paddingHorizontal:pad}:undefined,fill,stickyHeader?undefined:style]}>
-  {inSheet&&stickyHeader&&scrolled?<SheetHeaderGlow backdrop={stickyHeaderBackground??colors.background}/>:null}
+  {inSheet&&stickyHeader&&scrolled?<SheetHeaderScrim backdrop={sheetSurface??stickyHeaderBackground??colors.background}/>:null}
   <View style={{minWidth:sideWidth,alignItems:'flex-start'}}>{onBack?<IconButton {...backProps} intent='ghost' label={t.back} disabled={backDisabled} suppressFeedback testID={id('back')} onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={backDisabled?colors.faint:colors.text}/></View></IconButton>:null}</View>
   {eyebrow?<View style={{flex:1,minWidth:0,gap:2}}><Text testID={id('eyebrow')} numberOfLines={1} style={{textAlign:'center',fontSize:12,lineHeight:16,letterSpacing:1.5,textTransform:'uppercase',color:colors.muted}}>{eyebrow}</Text>{titleNode}</View>:titleNode}
   <View style={{minWidth:sideWidth,alignItems:'flex-end'}}>{action}</View>

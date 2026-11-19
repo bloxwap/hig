@@ -48,7 +48,7 @@ describe('AssetBalanceRow',()=>{
   const view=render(<AssetBalanceRow name='Solana' symbol='SOL' value={203} balance={1.42} onSelect={select}/>);
   await userEvent.click(screen.getByRole('button',{name:/Solana/}));expect(select).toHaveBeenCalledTimes(1);
   view.rerender(<AssetBalanceRow name='Solana' symbol='SOL' value={215.5} balance={1.5} onSelect={select}/>);
-  expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('$215.501.5');expect(document.querySelectorAll('.hig-asset-row .hig-animated-number-old').length).toBeGreaterThan(1);
+  expect(spoken(document.querySelector('.hig-asset-row-amounts')!)).toBe('$215.501.5');expect(document.querySelectorAll('.hig-asset-row .hig-number-flow-strip').length).toBeGreaterThan(1);
   delete (HTMLElement.prototype as {animate?:unknown}).animate;
  });
 });

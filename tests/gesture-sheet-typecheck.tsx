@@ -3,6 +3,8 @@ import {GestureSheet,type GestureSheetBackendProps,type GestureSheetDynamicBacke
 const change=(open:boolean)=>{void open;};
 const backend:GestureSheetBackendProps={snapPoints:[0.4,0.9],fadeFromIndex:1,activeSnapPoint:0.4,setActiveSnapPoint:()=>{},snapToSequentialPoint:true,handleOnly:false,repositionInputs:false,shouldScaleBackground:true,dismissible:false,autoFocus:false};
 const dynamicBackend:GestureSheetDynamicBackendProps={direction:'bottom',handleOnly:false,repositionInputs:true,shouldScaleBackground:true,dismissible:false,autoFocus:false};
+// Every engine option, with the detent forms and the React pointer events the callbacks receive.
+const engine:GestureSheetBackendProps={direction:'top',snapPoints:['320px',1],fadeFromIndex:0,activeSnapPoint:null,closeThreshold:.4,scrollLockTimeout:200,fixed:true,noBodyStyles:true,setBackgroundColorOnScale:false,disablePreventScroll:false,preventScrollRestoration:true,container:null,onDrag:(event,share)=>{void [event.currentTarget.dataset,event.clientY,share.toFixed(2)];},onRelease:(event,open)=>{void [event.pointerId,open===true];},onAnimationEnd:open=>{void (open===true);}};
 const content:GestureSheetContentProps={'data-host-card':'markets',className:'host-card',style:{bottom:12,maxHeight:'80dvh'},onOpenAutoFocus:event=>event.preventDefault(),onEscapeKeyDown:event=>event.preventDefault()};
 <GestureSheet open onOpenChange={change} title='Markets' backendProps={backend} contentProps={content} contentRef={React.createRef<HTMLDivElement>()} contentMode='custom' handleProps={{style:{width:100},preventCycle:true}}><h2>Markets</h2></GestureSheet>;
 <GestureSheet open onOpenChange={change} title='Markets' enableDynamicSizing maxDynamicContentSize={480} backendProps={dynamicBackend}><p>Content-sized markets</p></GestureSheet>;
@@ -13,7 +15,7 @@ const unsafeRoot:GestureSheetBackendProps={modal:false};
 const unsafeContent:GestureSheetContentProps={id:'foreign'};
 // @ts-expect-error A fade index requires explicit snap points in the backend union.
 const missingPoints:GestureSheetBackendProps={fadeFromIndex:1};
-// @ts-expect-error Dynamic content sizing excludes Vaul snap points.
+// @ts-expect-error Dynamic content sizing excludes snap points.
 <GestureSheet open onOpenChange={change} title='Markets' enableDynamicSizing backendProps={{snapPoints:[0.4,0.9]}}><p>Details</p></GestureSheet>;
 // @ts-expect-error Dynamic content sizing excludes the active detent.
 <GestureSheet open onOpenChange={change} title='Markets' enableDynamicSizing backendProps={{activeSnapPoint:0.4}}><p>Details</p></GestureSheet>;
@@ -29,4 +31,4 @@ const missingPoints:GestureSheetBackendProps={fadeFromIndex:1};
 <GestureSheet open onOpenChange={change} title='Markets' enableDynamicSizing maxDynamicContentSize='80dvh'><p>Details</p></GestureSheet>;
 // @ts-expect-error Fixed snap sizing does not accept a dynamic-only ceiling.
 <GestureSheet open onOpenChange={change} title='Markets' backendProps={backend} maxDynamicContentSize={480}><p>Details</p></GestureSheet>;
-void [unsafeRoot,unsafeContent,missingPoints];
+void [unsafeRoot,unsafeContent,missingPoints,engine];

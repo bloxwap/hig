@@ -17,3 +17,4 @@ export {filterLanguages} from './language-search.js';
 export {rankPickerTokens} from './rank-picker-tokens.js';
 
 export {createPickerSearch,fuzzyMatch} from './picker-search.js';
+export type {AdvancedBlockProps,AdvancedTask,AdvancedWallet} from './advanced-block.js';

@@ -8,7 +8,7 @@ import {Button} from './button.js';
 import {CloseIcon,EditIcon,QrIcon} from './icons.js';
 import {ListGroup,ListRow} from './list-group.js';
 import {SwitchRow} from './switch-row.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {figureProps,figureReading,type Figure} from './figure.js';
 import {addressColor} from './swap-shared.js';
 import type {AssetArtwork} from './asset-balance-row.js';
@@ -85,7 +85,7 @@ function RoundButton({label,testID,onPress,children}:{label:string;testID:string
 function ProfileSwitchRow({row}:{row:ProfileRow}){
  const colors=useColors(),fills=useFills();const on=!!row.checked;
  const first:ViewStyle={minHeight:40,justifyContent:'center'};
- return <SwitchRow testID={`profile-row-${row.id}`} label={row.label} checked={on} disabled={row.disabled} onCheckedChange={row.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,opacity:row.disabled?0.5:1}}>
+ return <SwitchRow testID={`profile-row-${row.id}`} label={row.label} checked={on} disabled={row.disabled} onCheckedChange={row.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:colors.surface,opacity:row.disabled?0.5:1}}>
   <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',gap:12}}>
    {row.leading==null?null:<View style={first}>{row.leading}</View>}
    <Text style={{flex:1,flexShrink:1,minWidth:0,paddingVertical:8,fontSize:16,lineHeight:24,color:colors.text}}>{row.label}</Text>
@@ -100,7 +100,7 @@ function ProfileListRow({row}:{row:ProfileRow}){
  const style={fontSize:16,lineHeight:24,textAlign:'right' as const};
  if(isProfileFigure(value)){
   const reading=figureReading(value,locale,present(value.options));
-  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<AnimatedNumberReadout {...figureProps(value)} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
+  return <ListRow testID={testID} label={row.label} leading={row.leading} valueLabel={reading} value={<NumberFlow {...figureProps(value)} tone={tone??'muted'} testID={`${testID}-value`} style={style}/>} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
  }
  return <ListRow testID={testID} label={row.label} leading={row.leading} value={value as React.ReactNode} valueTone={tone} trailing={row.trailing} onSelect={row.onSelect} disabled={row.disabled}/>;
 }

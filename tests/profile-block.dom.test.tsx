@@ -102,7 +102,7 @@ describe('ProfileBlock host slots',()=>{
   expect(values[3].innerHTML).toBe('1.0');
   Object.defineProperty(HTMLElement.prototype,'animate',{value:()=>({cancel(){}}),configurable:true});
   view.rerender(<ProfileBlock name='Joe' sections={[{id:'money',rows:[{id:'accounts',label:'Accounts',value:{value:1043.5,options:{style:'currency',currency:'USD'}},onSelect:()=>{}}]}]}/>);
-  expect(document.querySelectorAll('.hig-profile-value .hig-animated-number-old').length).toBeGreaterThan(0);
+  expect(document.querySelectorAll('.hig-profile-value .hig-number-flow-strip').length).toBeGreaterThan(0);
   delete (HTMLElement.prototype as {animate?:unknown}).animate;
   const css=readFileSync('packages/hig/react/src/styles.css','utf8');for(const tone of ['positive','warning','negative','muted'])expect(css).toContain(`.hig-profile-value[data-tone='${tone}'] { color:var(--hig-${tone}); }`);
  });

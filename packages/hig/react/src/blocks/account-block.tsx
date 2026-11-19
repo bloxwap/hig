@@ -4,7 +4,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useHIG} from '../provider.js';
 import {initialWindowRows,RowWindow} from '../row-window.js';
 import {Button} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {AssetBalanceRow,type AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader,qrIcon} from './screen-header.js';
 export {AssetBalanceRow,type AssetArtwork,type AssetBalanceRowProps} from '../asset-balance-row.js';
@@ -157,7 +157,7 @@ const WalletHoldings=React.memo(function WalletHoldings({section,total,heading,p
   <LargeWalletHoldings assets={assets} pinnedSymbol={pinnedSymbol} pinnedId={pinId} order={order} onAssetSelect={onAssetSelect} sectionId={sectionId} first={first}/>,
   [ordered,assets,pinnedSymbol,pinId,order,onAssetSelect,first,sectionId]);
  return <section className='hig-account-section' aria-labelledby={heading}>
-  <div className='hig-account-section-header'><h3 id={heading}>{section.title}</h3><span className='hig-account-section-total'><AnimatedNumberReadout value={total} options={usd}/></span></div>
+  <div className='hig-account-section-header'><h3 id={heading}>{section.title}</h3><span className='hig-account-section-total'><NumberFlow value={total} options={usd}/></span></div>
   {holdings}
  </section>;
 });
@@ -239,7 +239,7 @@ export function AccountBlock({title,onBack,onShowAddress,headerAction,balance,as
  return <section {...rest} className={`hig-account-block${className?` ${className}`:''}`}>
   <ScreenHeader title={title??messages.account??en.account} onBack={onBack} headingId={headingId} stickyHeader={stickyHeader} action={headerAction??(onShowAddress&&<button type='button' className='hig-swap-back hig-account-address' aria-label={messages.showAddress??en.showAddress} onClick={onShowAddress}>{qrIcon}<PressDecoration kind='back'/></button>)}/>
   <div className='hig-account-summary'>
-   <div className='hig-account-balance'><AnimatedNumberReadout value={total} label={messages.accountBalance??en.accountBalance} options={usd}/></div>
+   <div className='hig-account-balance'><NumberFlow value={total} label={messages.accountBalance??en.accountBalance} options={usd}/></div>
    {onDeposit&&<Button onClick={onDeposit}>{depositLabel??messages.deposit??en.deposit}</Button>}
   </div>
   {list}

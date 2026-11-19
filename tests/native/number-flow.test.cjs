@@ -27,7 +27,7 @@ jest.mock('react-native-reanimated',()=>{
   useSharedValue:shared,useAnimatedStyle:updater=>updater(),Easing:{bezier:(...points)=>({bezier:points})},ReduceMotion:{Never:'never',System:'system',Always:'always'}};
 });
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {AnimatedNumberReadout,NumberFlow,NumberFlowGroup}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow,NumberFlowGroup}=require('../../packages/hig/native/src/animated-number');
 const {createNumberFlowRoll,createNumberReelModel,numberFlowReelOffset,numberReelPlaces,sampleReelEasing}=require('../../packages/hig/native/src/animated-number-model');
 const {numberFlowCurve,numberFlowEasingSamples,sampleNumberFlowEasing}=require('../../packages/hig/contracts/dist/number-flow.js');
 const h=React.createElement;
@@ -113,7 +113,7 @@ describe('NumberFlow on native',()=>{
   expect(cells().map(rows)).toEqual(['1','2','3','4','5']);expect(mockClock.values).toHaveLength(0);
   expect(reading().props.accessibilityLabel).toBe('Price: $1,234.5');expect(reading().props.accessibilityLiveRegion).toBeUndefined();
   // Sliding places also stay as one glyph until their first animated change.
-  act(()=>root.unmount());mount(h(HIGProvider,null,h(AnimatedNumberReadout,{value:1234.5,testID:'price'})));measure();expect(cells().map(rows)).toEqual(['1','2','3','4','5']);expect(mockClock.values).toHaveLength(0);
+  act(()=>root.unmount());mount(h(HIGProvider,null,h(NumberFlow,{motion:'slide',value:1234.5,testID:'price'})));measure();expect(cells().map(rows)).toEqual(['1','2','3','4','5']);expect(mockClock.values).toHaveLength(0);
  });
  it('rolls only the places that changed, through the digits between, on NumberFlow’s timing',()=>{
   mount(flow({value:1234}));measure();update(flow({value:1237}));
@@ -221,12 +221,12 @@ describe('NumberFlow on native',()=>{
  });
 });
 
-describe('one component under two names',()=>{
- it('NumberFlow flows and AnimatedNumberReadout slides by default, and `motion` chooses either way',()=>{
+describe('NumberFlow motion modes',()=>{
+ it('NumberFlow defaults to flow and supports explicit slide motion',()=>{
   const turned=(Component,props)=>{mount(h(HIGProvider,null,h(Component,{value:1,testID:'price',...props})));measure();update(h(HIGProvider,null,h(Component,{value:2,testID:'price',...props})));const result={rolls:positions().some(value=>value.animating),fades:mockClock.fades.length};act(()=>root.unmount());root=null;mockClock.values.length=0;mockClock.fades.length=0;return result;};
   // The stand-in records a slide as a timing and a flow as a roll.
-  expect(turned(NumberFlow,{})).toEqual({rolls:true,fades:0});expect(turned(AnimatedNumberReadout,{})).toEqual({rolls:false,fades:1});
-  expect(turned(AnimatedNumberReadout,{motion:'flow'})).toEqual({rolls:true,fades:0});expect(turned(NumberFlow,{motion:'slide'})).toEqual({rolls:false,fades:1});
+  expect(turned(NumberFlow,{})).toEqual({rolls:true,fades:0});expect(turned(NumberFlow,{motion:'slide'})).toEqual({rolls:false,fades:1});
+  expect(turned(NumberFlow,{motion:'flow'})).toEqual({rolls:true,fades:0});
  });
  it('NumberFlowGroup draws its children and nothing else',()=>{
   mount(h(HIGProvider,null,h(NumberFlowGroup,null,h(NumberFlow,{value:1,testID:'price'}),h(NumberFlow,{value:2,testID:'other'}))));

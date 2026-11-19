@@ -35,6 +35,10 @@
     "/docs/guides/components/blocks/#explainerblock": {
       "to": "/docs/guides/components/overlays/#api-and-anatomy",
       "note": "ExplainerBlock was removed in 0.9.1. Compose its replacement with Dialog, Text and Button."
+    },
+    "/docs/guides/components/overlays/#native-sheet-engine-preview": {
+      "to": "/docs/guides/components/overlays/#native-sheet-engine",
+      "note": "HIG's own sheet became the one native gesture sheet, so the section is no longer a preview."
     }
   }
 }

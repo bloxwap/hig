@@ -73,14 +73,14 @@ describe('DOM behavior contracts',()=>{
   const tone=(severity:string)=>css.match(new RegExp(`\\[data-severity='${severity}'\\][^{]*\\{ --hig-alert-tone:var\\(--hig-([a-z]+)\\)`))?.[1];
   for(const [severity,role] of [['tip','positive'],['success','positive'],['warning','warning'],['error','negative'],['default','text']])expect(tone(severity)).toBe(role);
   expect(css).toMatch(/:where\(\.hig-surface\)\[data-severity\] \{ --hig-alert-tone:var\(--hig-info\);background:color-mix\(in srgb,var\(--hig-alert-tone\) 10%,var\(--hig-surface\)\); \}/);
-  expect(css).toContain(':where(.hig-surface)[data-severity] > strong { color:var(--hig-alert-tone); }');
+  expect(css).toContain(':where(.hig-surface)[data-severity] > strong { color:var(--hig-text); }');
   expect(css).toMatch(/\[data-severity='default'\][^{]*\{[^}]*background:color-mix\(in srgb,var\(--hig-text\) 6%,var\(--hig-surface\)\)/);
   expect(css).not.toMatch(/\[data-severity[^{]*\{[^}]*(border:|box-shadow|border-radius)/);
-  // A toast notice is its own strokeless capsule row, not an Alert: symbol, message, close.
-  expect(css).toMatch(/\.hig-toast-item\s*\{[^}]*border:1px solid transparent;border-radius:9999px;background:var\(--hig-nested\)/);
+  // A toast notice is its own pill, not an Alert: an accent border with a glow; tile, message, close.
+  expect(css).toMatch(/\.hig-toast-item\s*\{[^}]*border:2px solid var\(--hig-toast-accent\);border-radius:9999px;/);
   render(<Toast notices={[{id:'n',message:'Copied',severity:'success'}]} onDismiss={()=>{}}/>);
   const capsule=document.querySelector('aside.hig-toast > .hig-toast-item[data-severity=success]')!;
-  expect([...capsule.children].map(node=>[...node.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-toast-icon','hig-toast-message','hig-toast-close']);
+  expect([...capsule.children].map(node=>[...node.classList].find(name=>name.startsWith('hig-')))).toEqual(['hig-toast-tile','hig-toast-message','hig-toast-close']);
   expect(document.querySelector('aside.hig-toast .hig-surface')).toBeNull();
  });
  it('scopes component CSS to HIG classes and keeps every focusable part inside the scoped focus ring (#95)',()=>{

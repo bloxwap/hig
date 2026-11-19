@@ -23,18 +23,20 @@ export interface LoginBlockProps extends Omit<SocialLoginProps, 'lastUsed' | 'la
   onMoreLogin?: (provider: 'email' | 'wallet') => void;
 }
 
-export function LoginBlock({onLogin, onMoreLogin, onClose, lastUsed, disabled, analyticsEnabled, onAnalyticsChange, labels, termsUrl = loginTermsUrl, privacyUrl = loginPrivacyUrl}: LoginBlockProps) {
+export function LoginBlock({onLogin, onMoreLogin, onClose, lastUsed, disabled, pending, analyticsEnabled, onAnalyticsChange, analyticsDisabled, onOpenLink, labels, termsUrl = loginTermsUrl, privacyUrl = loginPrivacyUrl}: LoginBlockProps) {
   const copy = {...loginCopy, ...moreLabels, ...labels};
   const [expanded, setExpanded] = useState(lastUsed === 'email' || lastUsed === 'wallet');
   const optionsId = useId();
   const primary = lastUsed ?? 'google';
+  // A host that opens legal pages its own way takes the click; otherwise the link navigates to its URL.
+  const opens = (url: string, link: 'terms' | 'privacy') => onOpenLink ? (event: React.MouseEvent) => { event.preventDefault(); onOpenLink(url, link); } : undefined;
 
   function providerButton(provider: WebLoginProvider) {
     const extra = provider === 'email' || provider === 'wallet';
     const icon = provider === 'email' ? <Mail size={20}/> : provider === 'wallet' ? <Wallet size={20}/> :
       <svg width="20" height="20" viewBox="0 0 24 24">{loginArtwork[provider].map(path =>
         <path key={path.d} d={path.d} fill={path.fill ?? 'currentColor'}/>)}</svg>;
-    return <Button key={provider} className="hig-login-provider" fullWidth disabled={disabled}
+    return <Button key={provider} className="hig-login-provider" fullWidth disabled={disabled || !!(pending as readonly WebLoginProvider[] | undefined)?.includes(provider)}
       intent={primary === provider ? 'primary' : 'secondary'}
       onClick={() => extra ? onMoreLogin?.(provider) : onLogin(provider)}>
       <span className="hig-login-provider-label"><span aria-hidden="true">{icon}</span>{copy[provider]}</span>
@@ -55,14 +57,14 @@ export function LoginBlock({onLogin, onMoreLogin, onClose, lastUsed, disabled, a
         </div>
       </>}
     </div>
-    <div className="hig-login-analytics">
+    {onAnalyticsChange && <div className="hig-login-analytics">
       <span>{copy.analytics}</span>
       <Popover label={copy.analyticsInfo} closeLabel={copy.close}
         trigger={<IconButton label={copy.analyticsInfo} intent="ghost"><Info size={18}/></IconButton>}>
         <p>{copy.description}</p>
       </Popover>
-      <Switch hideLabel label={copy.analytics} checked={analyticsEnabled} onCheckedChange={onAnalyticsChange}/>
-    </div>
-    <footer><a href={termsUrl}>{copy.terms}</a><a href={privacyUrl}>{copy.privacy}</a></footer>
+      <Switch hideLabel label={copy.analytics} checked={!!analyticsEnabled} disabled={analyticsDisabled} onCheckedChange={onAnalyticsChange}/>
+    </div>}
+    <footer><a href={termsUrl} onClick={opens(termsUrl, 'terms')}>{copy.terms}</a><a href={privacyUrl} onClick={opens(privacyUrl, 'privacy')}>{copy.privacy}</a></footer>
   </section>;
 }

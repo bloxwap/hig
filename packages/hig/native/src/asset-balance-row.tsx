@@ -3,7 +3,7 @@ import React,{useState} from 'react';
 import {Image,Pressable,View,type ViewStyle} from 'react-native';
 import {useColors,useFills,useNumberLocale,usePresentNumber} from './provider.js';
 import {Text} from './surface.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import {plainText} from './text-content.js';
 /** Asset artwork: an image URL, or the host's own element. */
@@ -57,13 +57,13 @@ export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=u
  const strong=disabled?colors.muted:colors.text;
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
  const art=typeof icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:icon}} style={shape as object}/>:<View style={shape}>{icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{symbol.slice(0,3)}</Text>}</View>;
- const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed&&!disabled?fills.raised:fills.well});
+ const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed&&!disabled?colors.nested:colors.surface});
  const content=<>
   <View {...hidden} style={disabled?{opacity:0.5}:undefined}>{art}</View>
   <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}><Text numberOfLines={1} style={{fontSize:16,lineHeight:24,fontWeight:'600',color:strong}}>{name}</Text><Text numberOfLines={1} style={{fontSize:14,lineHeight:20,color:colors.muted}}>{symbol}</Text></View>
   {amounts||tag?<View {...hidden} style={{alignItems:'flex-end',justifyContent:'center'}}>
-   {amounts?unitsFirst?<AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix} tone={disabled?'muted':undefined} testID={testID?`${testID}-balance`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:<AnimatedNumberReadout value={value} options={usd} tone={disabled?'muted':undefined} testID={testID?`${testID}-value`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
-   {hasUnits?<AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix} tone='muted' testID={testID?`${testID}-balance`:undefined} style={{fontSize:14,lineHeight:20}}/>:null}
+   {amounts?unitsFirst?<NumberFlow value={balance} options={balanceOptions} suffix={unitsSuffix} tone={disabled?'muted':undefined} testID={testID?`${testID}-balance`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:<NumberFlow value={value} options={usd} tone={disabled?'muted':undefined} testID={testID?`${testID}-value`:undefined} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
+   {hasUnits?<NumberFlow value={balance} options={balanceOptions} suffix={unitsSuffix} tone='muted' testID={testID?`${testID}-balance`:undefined} style={{fontSize:14,lineHeight:20}}/>:null}
    {tag?<Text testID={testID?`${testID}-tag`:undefined} numberOfLines={1} style={{fontSize:12,lineHeight:18,color:colors.muted}}>{tag}</Text>:null}
   </View>:null}
   {trailing!=null&&trailing!==false&&!split?<View {...hidden} testID={testID?`${testID}-trailing`:undefined} style={{flexDirection:'row',alignItems:'center',gap:8}}>{trailing}</View>:null}

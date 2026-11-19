@@ -33,7 +33,7 @@ jest.mock('../../packages/hig/native/src/surface',()=>{
  return {...actual,Text:React.forwardRef(function CountedText(props,ref){useHIG();mockDrawn.text++;return React.createElement(actual.Text,{...props,ref});})};
 });
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {AnimatedNumberReadout,NumberFlow}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {createNumberReelModel,formatNumberReadout}=require('../../packages/hig/native/src/animated-number-model');
 const h=React.createElement;
 const usd={style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2};
@@ -55,7 +55,8 @@ const advance=ms=>{mockClock.now+=ms;for(const value of mockClock.values)value.f
 function cost(change){const before={commits,text:mockDrawn.text,formatters:formatters.mock.calls.length};change();return {commits:commits-before.commits,texts:mockDrawn.text-before.text,formatters:formatters.mock.calls.length-before.formatters};}
 const reading=()=>{const children=root.root.findAllByType(RNText).find(node=>node.props.accessible!==false&&!node.props.onLayout).props.children;return Array.isArray(children)?children.join(''):children;};
 
-describe.each([['NumberFlow',NumberFlow],['AnimatedNumberReadout, sliding',AnimatedNumberReadout]])('%s under load on native',(name,Component)=>{
+const SlidingNumber=props=>React.createElement(NumberFlow,{...props,motion:'slide'});
+describe.each([['NumberFlow',NumberFlow],['NumberFlow, sliding',SlidingNumber]])('%s under load on native',(name,Component)=>{
  const flowing=Component===NumberFlow;
  it('reuses rounded numeric places until the reading or its format changes',()=>{
   const parts=jest.spyOn(Object.getPrototypeOf(new Intl.NumberFormat()),'formatToParts');
@@ -147,7 +148,7 @@ describe('the reel model under load',()=>{
 (process.env.HIG_PERF_REPORT?it:it.skip)('reports the JS time of forty figures ticking',()=>{
  const report={};
  const random=seed=>()=>{seed=(seed+0x6d2b79f5)|0;let t=Math.imul(seed^(seed>>>15),1|seed);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
- for(const [name,Component] of [['flow',NumberFlow],['slide',AnimatedNumberReadout]]){
+ for(const [name,Component] of [['flow',NumberFlow],['slide',SlidingNumber]]){
   const next=random(20260117),steps=[2.5,0.006,180,0.02];let values=Array.from({length:40},(_,index)=>[997.25,0.0042,64250.1,0.482][index%4]*(1+Math.floor(index/4)*0.01));
   mount(board(Component,values));measure();
   const ticks=[],same=[],before={text:mockDrawn.text,formatters:formatters.mock.calls.length};

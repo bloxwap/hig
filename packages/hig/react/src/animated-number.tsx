@@ -19,7 +19,7 @@ export interface AnimatedNumberProps extends NumberProps {
   * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new
   * value, a figure that gains or loses a place slides closed while the place fades, and a new value joins the motion in flight.
   * `'slide'` is the short settle: the old digit leaves by one line as the new one arrives, and a newer value restarts it.
-  * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading that cannot be laid out place by place
+  * `NumberFlow` flows by default. A reading that cannot be laid out place by place
   * (right-to-left letters or bidi controls in the number itself) slides.
   */
  motion?:'flow'|'slide';
@@ -52,13 +52,7 @@ function renderNumberReadout(motion:AnimatedNumberProps['motion'],props:Animated
   ?JSON.stringify([props.digits,props.spinTiming,props.transformTiming,props.opacityTiming]):undefined;
  return <MemoFlowReadout {...props} optionsKey={optionsKey} motionKey={motionKey}/>;
 }
-/**
- * A number that moves place by place when its value changes. It slides by default; `motion='flow'` (or `NumberFlow`, which is
- * this component flowing by default) gives it NumberFlow's motion. Either way the reading assistive technology gets is one
- * static text, and reduced motion draws each new value at once.
- */
-export function AnimatedNumberReadout({motion='slide',...props}:AnimatedNumberProps){return renderNumberReadout(motion,props);}
-/** `AnimatedNumberReadout` with NumberFlow's motion by default: the same component and the same props, under the name the product uses for it. */
+/** A localized number that rolls through changes and honors reduced motion. */
 export function NumberFlow({motion='flow',...props}:AnimatedNumberProps){return renderNumberReadout(motion,props);}
 export type NumberFlowProps=AnimatedNumberProps;
 // A rounded reading can span many raw ticks. Decode its places once, on demand, while retaining each raw value for trend callbacks.

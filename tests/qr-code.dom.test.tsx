@@ -7,13 +7,12 @@ import * as qr from '../packages/hig/contracts/src/qr';
 import {qrCodeGeometry} from '@bloxwap/hig/contracts/qr';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {QRCode} from '../packages/hig/react/src/qr-code';
-import {WalletAddress as WalletAddressCore} from '../packages/hig/react/src/wallet-address-core';
+import {WalletAddress as WalletAddressCore} from '../packages/hig/react/src/wallet-address';
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import sharp from 'sharp';
-// `qr` is the encoder and decoder behind Cuer, installed as its dependency: resolved from Cuer so the test does not lean on hoisting.
-const fromCuer=createRequire(createRequire(import.meta.url).resolve('cuer/package.json'));
-const {decodeQR}=await import(pathToFileURL(fromCuer.resolve('qr/decode.js')).href) as {decodeQR:(image:{width:number;height:number;data:Uint8Array})=>string};
+// `qr` is the reference decoder, a development dependency of this workspace only.
+const {decodeQR}=await import(pathToFileURL(createRequire(import.meta.url).resolve('qr/decode.js')).href) as {decodeQR:(image:{width:number;height:number;data:Uint8Array})=>string};
 // The package entry the component imports, with the encoding step counted. The expectations use the source module.
 vi.mock('@bloxwap/hig/contracts/qr',async original=>{const actual=await original<typeof import('@bloxwap/hig/contracts/qr')>();return {...actual,qrCodeGeometry:vi.fn(actual.qrCodeGeometry)};});
 const encode=qrCodeGeometry as Mock<typeof qrCodeGeometry>;
@@ -178,14 +177,14 @@ describe('QRCode',()=>{
   expect(exportsMap['./contracts/qr']).toMatchObject({types:'./contracts/dist/qr.d.ts',import:'./contracts/dist/qr.js'});
  });
 });
-describe('WalletAddress from wallet-address-core',()=>{
+describe('WalletAddress draws HIG\'s QRCode',()=>{
  it('draws HIG’s own QRCode when the host passes none, with no tile or quiet zone, named once by the wrapper',()=>{
   const view=render(<WalletAddressCore address={eth} size={140}/>);
   const named=screen.getAllByRole('img');expect(named).toHaveLength(1);expect(named[0].className).toBe('hig-wallet-address-qr');expect(named[0].getAttribute('aria-label')).toBe('QR code');
   const code=named[0].children[0] as HTMLElement,svg=code.querySelector('svg')!;
   expect(code.className).toBe('hig-qr-code');expect(code.getAttribute('aria-hidden')).toBe('true');expect(code.style.getPropertyValue('--hig-qr-code-size')).toBe('140px');expect(svg.getAttribute('viewBox')).toBe('0 0 29 29');
   expect(svg.querySelector('rect')).toBeNull();expect(svg.querySelector('path')!.getAttribute('d')).toBe(qr.qrCodeGeometry(eth)!.path);
-  // As the Cuer code of the `wallet-address` entry is drawn: in the address's own text colour, so a host that recolours the component recolours the code.
+  // The code is drawn in the address's own text colour, so a host that recolours the component recolours the code.
   expect(fill(svg.querySelector('path'))).toBe('currentColor');
   expect((view.container.querySelector('.hig-vertical-address') as HTMLElement).style.getPropertyValue('--hig-address-row')).toBe('20px');
  });

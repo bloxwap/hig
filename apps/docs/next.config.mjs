@@ -58,7 +58,7 @@ const config=createMDX()({
   config.resolve.alias['react-native$']='react-native-web';
   // Metro picks the backdrop by platform. This browser build can import the web implementation directly.
   config.module.rules.push({
-   test:/[\\/]native[\\/]dist[\\/](?:overlay|gesture-sheet|gesture-sheet-next)\.js$/,
+   test:/[\\/]native[\\/]dist[\\/](?:overlay|gesture-sheet)\.js$/,
    resolve:{alias:{'./backdrop-blur.js$':fileURLToPath(new URL('../../packages/hig/native/dist/backdrop-blur-view.web.js',import.meta.url))}},
   });
   // LoginBlock and its sheet header draw SVG shapes. Resolve them directly to the SVG

@@ -3,7 +3,7 @@ const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {HIGProvider,useNumberLocale,usePresentNumber}=require('../../packages/hig/native/src/provider');
 const {NumberReadout,Usd,Percent}=require('../../packages/hig/native/src/data');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {AccountBlock}=require('../../packages/hig/native/src/account-block');
 const {AssetBalanceRow}=require('../../packages/hig/native/src/asset-balance-row');
 const {TokenActionBlock}=require('../../packages/hig/native/src/token-action-block');
@@ -23,7 +23,7 @@ const narrow={numberFormat:{currencyDisplay:'narrowSymbol'}};
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 const scene=()=>[
  h(Usd,{key:'usd',value:12.5,testID:'usd'}),h(Usd,{key:'code',value:12.5,testID:'code',options:{currencyDisplay:'code'}}),h(Percent,{key:'percent',value:5,testID:'percent'}),
- h(AnimatedNumberReadout,{key:'eur',value:3,testID:'eur',options:{style:'currency',currency:'EUR'}}),
+ h(NumberFlow,{motion:'slide',key:'eur',value:3,testID:'eur',options:{style:'currency',currency:'EUR'}}),
  h(AccountBlock,{key:'account',assets:[{id:'sol',name:'Solana',symbol:'SOL',value:203}],balance:1042.09}),
  h(AssetBalanceRow,{key:'row',name:'Hyperliquid',symbol:'HYPE',value:759,balance:13.2,testID:'hype'}),
  h(TokenActionBlock,{key:'token',symbol:'HYPE',name:'Hyperliquid',value:759,assets:[],chains:[],actions:[]}),

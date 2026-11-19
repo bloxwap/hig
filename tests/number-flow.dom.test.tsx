@@ -2,7 +2,7 @@ import React from 'react';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,render,screen} from '@testing-library/react';
 import {renderToString} from 'react-dom/server';
-import {AnimatedNumberReadout,NumberFlow,NumberFlowGroup,type AnimatedNumberProps} from '../packages/hig/react/src/animated-number';
+import {NumberFlow,NumberFlowGroup,type AnimatedNumberProps} from '../packages/hig/react/src/animated-number';
 import {HIGProvider} from '../packages/hig/react/src/provider';
 import {numberFlowCurve} from '../packages/hig/contracts/src/number-flow';
 
@@ -229,16 +229,15 @@ describe('NumberFlow on web',()=>{
  });
 });
 
-describe('one component under two names',()=>{
- it('NumberFlow flows and AnimatedNumberReadout slides by default, and `motion` chooses either way',()=>{
+describe('NumberFlow motion modes',()=>{
+ it('NumberFlow defaults to flow and supports explicit slide motion',()=>{
   const changed=(first:React.ReactElement,second:React.ReactElement)=>{const {rerender,unmount}=render(first);rerender(second);const flowing=!!document.querySelector('.hig-number-flow-window'),sliding=!!document.querySelector('.hig-animated-number-place');unmount();animations=[];return {flowing,sliding};};
   expect(changed(<NumberFlow value={1}/>,<NumberFlow value={2}/>)).toEqual({flowing:true,sliding:false});
-  expect(changed(<AnimatedNumberReadout value={1}/>,<AnimatedNumberReadout value={2}/>)).toEqual({flowing:false,sliding:true});
-  expect(changed(<AnimatedNumberReadout value={1} motion='flow'/>,<AnimatedNumberReadout value={2} motion='flow'/>)).toEqual({flowing:true,sliding:false});
-  expect(changed(<NumberFlow value={1} motion='slide'/>,<NumberFlow value={2} motion='slide'/>)).toEqual({flowing:false,sliding:true});
+  expect(changed(<NumberFlow motion="slide" value={1}/>,<NumberFlow motion="slide" value={2}/>)).toEqual({flowing:false,sliding:true});
+  expect(changed(<NumberFlow value={1} motion='flow'/>,<NumberFlow value={2} motion='flow'/>)).toEqual({flowing:true,sliding:false});
  });
  it('gives the sliding readout `animated` and `className` too',()=>{
-  const {rerender}=render(<AnimatedNumberReadout value={1} animated={false} className='host-size'/>);rerender(<AnimatedNumberReadout value={2} animated={false} className='host-size'/>);
+  const {rerender}=render(<NumberFlow motion="slide" value={1} animated={false} className='host-size'/>);rerender(<NumberFlow motion="slide" value={2} animated={false} className='host-size'/>);
   expect(animations).toHaveLength(0);expect(document.querySelector('.hig-number')?.className).toBe('hig-number host-size');expect(document.querySelector('.hig-animated-number-visual')?.textContent).toBe('2');
  });
 });

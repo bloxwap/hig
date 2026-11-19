@@ -532,6 +532,18 @@
       ]
     },
     {
+      "name": "InlineNotice",
+      "route": "components/inline-notice",
+      "family": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "success",
+        "warning",
+        "error"
+      ]
+    },
+    {
       "name": "Callout",
       "route": "components/callout",
       "family": "status",
@@ -643,17 +655,6 @@
       ]
     },
     {
-      "name": "AnimatedNumberReadout",
-      "route": "components/animated-number-readout",
-      "family": "financial-data",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ]
-    },
-    {
       "name": "NumberFlow",
       "route": "components/number-flow",
       "family": "financial-data",
@@ -663,7 +664,8 @@
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ]
     },
     {
@@ -1193,6 +1195,27 @@
       "nativeSupport": "renderer",
       "states": [
         "default"
+      ]
+    },
+    {
+      "name": "AdvancedBlock",
+      "route": "components/advanced-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "completed"
+      ]
+    },
+    {
+      "name": "ReceiveBlock",
+      "route": "components/receive-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "ethereum",
+        "solana"
       ]
     }
   ]

@@ -6,7 +6,7 @@ import {RowWindow} from '../row-window.js';
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {PressDecoration,usePresentNumber,useNumberLocale} from '../provider.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
 /** The words of the card. They are trading terms, so the host supplies them; HIG ships none. */
@@ -92,7 +92,7 @@ const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOption
   const leverage=React.useMemo(()=>formatLeverageText(trade.leverage,locale),[trade.leverage,locale]);
   const interactive=!!onSelect;
   const spokenPnl=React.useMemo(()=>interactive?formatNumber(pnl,locale,present(result)):'',[interactive,pnl,locale,present,result,formatKey]);
-  const amount=React.useMemo(()=><AnimatedNumberReadout value={pnl} options={result}/>,[pnl,result,formatKey]);
+  const amount=React.useMemo(()=><NumberFlow value={pnl} options={result}/>,[pnl,result,formatKey]);
   const content=<>
    <span className='hig-asset-row-icon' aria-hidden='true'>{typeof trade.icon==='string'?<img src={trade.icon} alt=''/>:trade.icon??trade.symbol??trade.name.slice(0,3)}</span>
    <span className='hig-trade-row-identity'><strong>{trade.name}</strong><span className='hig-trade-row-side' data-side={trade.side}>{arrow(trade.side)}<span className='hig-sr-only'>{trade.side==='long'?long:short} </span>{leverage}{trade.leverageNote&&<span className='hig-trade-row-note'>{trade.leverageNote}</span>}</span></span>

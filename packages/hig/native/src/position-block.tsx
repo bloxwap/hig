@@ -6,7 +6,7 @@ import {Text} from './surface.js';
 import {Button} from './button.js';
 import {SwitchRow} from './switch-row.js';
 import {ListGroup,ListRow} from './list-group.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {HeaderClose,ScreenHeader,type HeaderCloseProps,type ScreenHeaderControlProps} from './screen-header.js';
 import {StickyHeaderLayout,stickyHeaderFill} from './sticky-header.js';
 import {figureProps,figureReading,type Figure} from './figure.js';
@@ -112,11 +112,11 @@ function Track({checked,testID}:{checked:boolean;testID?:string}){
 /** The position being opened or edited as a screen: a summary of what it costs and where it ends, an optional paper trading switch, and its settings as grouped rows that open the host's own views. */
 export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBack,headerAction,headingId,header=true,stickyHeader,stickyHeaderBackground,scrollComponent,backProps,closeProps,testID}:PositionBlockProps){
  const horizontalInset=useBlockHorizontalInset();
- const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale(),present=usePresentNumber();
+ const colors=useColors(),direction=useLayoutDirection(),locale=useNumberLocale(),present=usePresentNumber();
  const figure={fontSize:16,lineHeight:24,fontWeight:'500'} as const;
  const shown=groups.filter(group=>group.length>0);
  const read=(live:PositionBlockFigure)=>figureReading(live,locale,present(live.options));
- const flagRow=paperTrade?<SwitchRow testID='position-paper-trade' label={paperTrade.label} checked={paperTrade.checked} disabled={paperTrade.disabled} onCheckedChange={paperTrade.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,borderRadius:20,backgroundColor:fills.well,opacity:paperTrade.disabled?0.5:1}}>
+ const flagRow=paperTrade?<SwitchRow testID='position-paper-trade' label={paperTrade.label} checked={paperTrade.checked} disabled={paperTrade.disabled} onCheckedChange={paperTrade.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,borderRadius:20,backgroundColor:colors.surface,opacity:paperTrade.disabled?0.5:1}}>
   <View style={{flex:1,flexDirection:'row',alignItems:'center',gap:12}}>
    <Text style={{flex:1,flexShrink:1,minWidth:0,fontSize:16,lineHeight:24,color:colors.text}}>{paperTrade.label}</Text>
    <Track checked={paperTrade.checked} testID='position-paper-trade-track'/>
@@ -125,14 +125,14 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
  const action=paperTrade?.action;
  const row=(item:PositionBlockRow)=>{
   const live=item.value==null||typeof item.value==='string'?null:item.value,reading=live?read(live):item.value as string|undefined;
-  if(item.onCheckedChange)return <SwitchRow key={item.id} testID={`position-row-${item.id}`} label={item.label} accessibilityHint={reading} checked={!!item.checked} disabled={item.disabled} onCheckedChange={item.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:fills.well,opacity:item.disabled?0.5:1}}>
+  if(item.onCheckedChange)return <SwitchRow key={item.id} testID={`position-row-${item.id}`} label={item.label} accessibilityHint={reading} checked={!!item.checked} disabled={item.disabled} onCheckedChange={item.onCheckedChange} style={{minHeight:56,paddingVertical:8,paddingHorizontal:20,backgroundColor:colors.surface,opacity:item.disabled?0.5:1}}>
    <View style={{flex:1,flexDirection:'row',alignItems:'center',gap:12}}>
     <Text style={{flex:1,flexShrink:1,minWidth:0,fontSize:16,lineHeight:24,color:colors.text}}>{item.label}</Text>
-    {live?<AnimatedNumberReadout {...figureProps(live)} tone='muted' style={{fontSize:16,lineHeight:24}}/>:reading?<Text numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',fontSize:16,lineHeight:24,color:colors.muted,textAlign:'right'}}>{reading}</Text>:null}
+    {live?<NumberFlow {...figureProps(live)} tone='muted' style={{fontSize:16,lineHeight:24}}/>:reading?<Text numberOfLines={1} style={{flexShrink:1,maxWidth:'50%',fontSize:16,lineHeight:24,color:colors.muted,textAlign:'right'}}>{reading}</Text>:null}
     <Track checked={!!item.checked} testID={`position-row-${item.id}-track`}/>
    </View>
   </SwitchRow>;
-  return <ListRow key={item.id} testID={`position-row-${item.id}`} label={item.label} value={live?<AnimatedNumberReadout {...figureProps(live)} tone='muted' testID={`position-row-${item.id}-value`} style={{fontSize:16,lineHeight:24}}/>:item.value as string|undefined} valueLabel={live?reading:undefined} onSelect={item.onSelect} disabled={item.disabled}/>;
+  return <ListRow key={item.id} testID={`position-row-${item.id}`} label={item.label} value={live?<NumberFlow {...figureProps(live)} tone='muted' testID={`position-row-${item.id}-value`} style={{fontSize:16,lineHeight:24}}/>:item.value as string|undefined} valueLabel={live?reading:undefined} onSelect={item.onSelect} disabled={item.disabled}/>;
  };
  const headerRow=<HeaderRow title={title} onClose={onClose} onBack={onBack} headerAction={headerAction} headingId={headingId} backProps={backProps} closeProps={closeProps}/>;
  const content=<>
@@ -140,7 +140,7 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
    {details.map((detail,index)=>{
     const key=detail.id??index,live=typeof detail.value==='string'?null:detail.value,reading=live?read(live):detail.value as string;
     const spoken=`${detail.label}, ${reading}${detail.struck?`, ${detail.struck}`:''}`;
-    const value=live?<AnimatedNumberReadout {...figureProps(live)} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>;
+    const value=live?<NumberFlow {...figureProps(live)} tone={detail.tone??'text'} style={figure}/>:<Text style={{...figure,color:detail.tone?colors[detail.tone]:colors.text,textAlign:'right'}}>{reading}</Text>;
     // The line is drawn over the figure, so it crosses animated digits as well as text.
     const drawn=detail.struck?<View testID={`position-detail-${key}-struck`} style={{position:'relative'}}>{value}<View pointerEvents='none' style={{position:'absolute',start:0,end:0,top:'50%',height:1,backgroundColor:detail.tone?colors[detail.tone]:colors.text}}/></View>:value;
     const label=<Text {...hidden} style={{flexShrink:1,fontSize:16,lineHeight:24,color:colors.muted}}>{detail.label}</Text>;
@@ -159,7 +159,7 @@ export function PositionBlock({title,details,note,paperTrade,groups,onClose,onBa
   </View>:null}
   {note?<Text testID='position-note' style={{color:colors.muted,fontSize:13,lineHeight:20,marginTop:8,paddingHorizontal:20}}>{note}</Text>:null}
   {paperTrade||shown.length>0?<View testID='position-groups' style={{gap:24,marginTop:16}}>
-   {action?<View testID='position-paper-trade-card' style={{borderRadius:20,overflow:'hidden',backgroundColor:fills.well}}>
+   {action?<View testID='position-paper-trade-card' style={{borderRadius:20,overflow:'hidden',backgroundColor:colors.surface}}>
     {flagRow}
     <View style={{paddingHorizontal:20,paddingBottom:16}}><Button testID='position-paper-trade-action' fullWidth intent={action.intent??'primary'} busy={action.busy} disabled={action.disabled} onPress={action.onSelect}>{action.label}</Button></View>
    </View>:flagRow}

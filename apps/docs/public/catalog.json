@@ -1,5 +1,5 @@
 {
-  "version": "0.9.3",
+  "version": "0.10.0",
   "components": [
     {
       "name": "Button",
@@ -395,6 +395,18 @@
       ]
     },
     {
+      "name": "InlineNotice",
+      "route": "components/inline-notice",
+      "entry": "status",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "success",
+        "warning",
+        "error"
+      ]
+    },
+    {
       "name": "Callout",
       "route": "components/callout",
       "entry": "status",
@@ -506,17 +518,6 @@
       ]
     },
     {
-      "name": "AnimatedNumberReadout",
-      "route": "components/animated-number-readout",
-      "entry": "animated-number",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ]
-    },
-    {
       "name": "NumberFlow",
       "route": "components/number-flow",
       "entry": "animated-number",
@@ -526,7 +527,8 @@
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ]
     },
     {
@@ -1056,6 +1058,27 @@
       "nativeSupport": "renderer",
       "states": [
         "default"
+      ]
+    },
+    {
+      "name": "AdvancedBlock",
+      "route": "components/advanced-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "completed"
+      ]
+    },
+    {
+      "name": "ReceiveBlock",
+      "route": "components/receive-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "ethereum",
+        "solana"
       ]
     }
   ]

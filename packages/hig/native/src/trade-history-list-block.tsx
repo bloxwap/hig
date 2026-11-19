@@ -9,7 +9,7 @@ import {ChevronIcon} from './icons.js';
 import {ScreenHeader} from './screen-header.js';
 import {ListWithIntro,PickerFlatList} from './picker-flat-list.js';
 import {StickyHeaderLayout,stickyHeaderFill,useStickyHeaderScroll} from './sticky-header.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 /** The words of the block. They are trading terms, so the host supplies them; HIG ships none. */
 export interface TradeHistoryListLabels {
@@ -129,7 +129,7 @@ const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOption
 }){
  const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale(),present=usePresentNumber();
  const shape:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
- const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?fills.raised:fills.well});
+ const row=(pressed:boolean):ViewStyle=>({flexDirection:'row',alignItems:'center',gap:12,minHeight:56,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:28,backgroundColor:pressed?colors.nested:colors.surface});
  const meta={fontSize:14,lineHeight:20,color:colors.muted} as const;
  const pnl=trade.pnl;
   const side=trade.side==='long'?colors.up:colors.down,result=trade.pnlOptions??pnlOptions;
@@ -138,7 +138,7 @@ const TradeRow=React.memo(function TradeRow({trade,long,short,onSelect,pnlOption
   const leverage=React.useMemo(()=>formatLeverageText(trade.leverage,locale),[trade.leverage,locale]);
   const spokenPnl=React.useMemo(()=>formatNumber(pnl,locale,present(result)),[pnl,locale,present,result,formatKey]);
   const reading=[trade.name,sideText(trade.side==='long'?long:short,leverage,trade.leverageNote),spokenPnl,trade.tag,trade.time].filter(Boolean).join(', ');
-  const amount=React.useMemo(()=><AnimatedNumberReadout value={pnl} options={result} tone={pnl==null||pnl===0?'text':pnl>0?'up':'down'} testID={amountId} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>,[pnl,result,formatKey,amountId]);
+  const amount=React.useMemo(()=><NumberFlow value={pnl} options={result} tone={pnl==null||pnl===0?'text':pnl>0?'up':'down'} testID={amountId} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>,[pnl,result,formatKey,amountId]);
   const content=<>
    <View {...hidden}>{typeof trade.icon==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:trade.icon}} style={shape as object}/>:<View style={shape}>{trade.icon??<Text accessible={false} maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{trade.symbol??trade.name.slice(0,3)}</Text>}</View>}</View>
    <View {...hidden} style={{flex:1,flexShrink:1,minWidth:0}}>

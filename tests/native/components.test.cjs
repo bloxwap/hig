@@ -69,8 +69,8 @@ it('native accordion emits one silent disclosure intent instead of duplicate act
  const target=tree.findAll(n=>n.props.accessibilityRole==='button'&&typeof n.props.onPress==='function')[0];act(()=>target.props.onPress({stopPropagation:()=>{},isDefaultPrevented:()=>false}));expect(emit).toHaveBeenCalledTimes(1);expect(emit.mock.calls[0][0].intent).toBe('disclosure');
 });
 it('optional native number motion exposes one quiet accessible final reading',()=>{
- const {Text}=require('react-native');const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');const {HIGProvider}=require('../../packages/hig/native/src/provider');
- const element=(value,reducedMotion=false)=>React.createElement(HIGProvider,{reducedMotion},React.createElement(AnimatedNumberReadout,{value,label:'Price',testID:'animated-price'}));
+ const {Text}=require('react-native');const {NumberFlow}=require('../../packages/hig/native/src/animated-number');const {HIGProvider}=require('../../packages/hig/native/src/provider');
+ const element=(value,reducedMotion=false)=>React.createElement(HIGProvider,{reducedMotion},React.createElement(NumberFlow,{motion:'slide',value,label:'Price',testID:'animated-price'}));
  mount(element(1));act(()=>root.update(element(4,true)));
  const readings=root.root.findAllByType(Text).filter(node=>node.props.testID==='animated-price');expect(readings).toHaveLength(1);expect(readings[0].props.accessibilityLabel).toBe('Price: 4');expect(readings[0].props.accessibilityLiveRegion).toBeUndefined();
 });
@@ -239,22 +239,22 @@ it('native switch and alert accept token colour roles only (#67)',()=>{
  expect(thumb()).toBeUndefined();
  const os=RN.Platform.OS;Object.defineProperty(RN.Platform,'OS',{value:'android',configurable:true});
  try{expect(thumb()).toBe(colors.text);}finally{Object.defineProperty(RN.Platform,'OS',{value:os,configurable:true});}
- // The title carries the tone; the panel is tinted with it.
+ // Severity tints the panel. Its title uses the primary text role.
  const accent=props=>{const tree=mount(React.createElement(Alert,{title:'Result',announce:false,...props}));const style=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.View&&n.props.style)[0].props.style);const tone=RN.StyleSheet.flatten(tree.findAll(n=>n.type===RN.Text&&n.props.accessibilityRole==='header')[0].props.style).color;act(()=>root.unmount());root=null;return {...style,tone};};
  const tint=(tone,amount)=>'#'+[1,3,5].map(k=>Math.round(parseInt(colors.surface.slice(k,k+2),16)*(1-amount)+parseInt(tone.slice(k,k+2),16)*amount).toString(16).padStart(2,'0')).join('');
- expect(accent({}).tone).toBe(colors.info);
- expect(accent({severity:'success'}).tone).toBe(colors.positive);
- expect(accent({severity:'warning'}).tone).toBe(colors.warning);
- expect(accent({severity:'error'}).tone).toBe(colors.negative);
- expect(accent({severity:'note'}).tone).toBe(colors.info);
- expect(accent({severity:'tip'}).tone).toBe(colors.positive);
- expect(accent({severity:'error',tone:'action'}).tone).toBe(colors.action);
- expect(accent({severity:'error',tone:'rgb(1,2,3)'}).tone).toBe(colors.negative);
+ expect(accent({}).tone).toBe(colors.text);
+ expect(accent({severity:'success'}).tone).toBe(colors.text);
+ expect(accent({severity:'warning'}).tone).toBe(colors.text);
+ expect(accent({severity:'error'}).tone).toBe(colors.text);
+ expect(accent({severity:'note'}).tone).toBe(colors.text);
+ expect(accent({severity:'tip'}).tone).toBe(colors.text);
+ expect(accent({severity:'error',tone:'action'}).tone).toBe(colors.text);
+ expect(accent({severity:'error',tone:'rgb(1,2,3)'}).tone).toBe(colors.text);
  // No stroke and no glow: a 10% tone tint of the surface, 6% of text for the neutral default.
  const base=accent({});expect(base.borderWidth).toBeUndefined();expect(base.borderColor).toBeUndefined();expect(base.boxShadow).toBeUndefined();
  expect(base.backgroundColor).toBe(tint(colors.info,0.1));expect(accent({severity:'error'}).backgroundColor).toBe(tint(colors.negative,0.1));
  const neutral=accent({severity:'default'});expect(neutral.tone).toBe(colors.text);expect(neutral.backgroundColor).toBe(tint(colors.text,0.06));
- expect(accent({severity:'default',tone:'warning'}).tone).toBe(colors.warning);
+ expect(accent({severity:'default',tone:'warning'}).tone).toBe(colors.text);
 });
 it('native Text caps font scale from the prop or the provider and readouts pass it through (#67)',()=>{
  const {HIGProvider}=require('../../packages/hig/native/src/provider');const {Text,Heading}=require('../../packages/hig/native/src/surface');const {Text:RNText}=require('react-native');

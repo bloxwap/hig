@@ -33,8 +33,8 @@ export function SettingSwitch({label,description,checked:requested,onCheckedChan
 }
 /** The card a setting sits in, as on web: 4 above and below the switch's own 48dp row, and 16 at the foot when content follows the switch (a channel's body, a signal's hint or error), 12 under the switch. Inside a list the cards share one rounded container, so they drop their own radius. */
 export function SettingCard({children,joined,testID}:React.PropsWithChildren<{joined?:boolean;testID?:string}>){
- const fills=useFills();const extended=React.Children.toArray(children).length>1;
- return <View testID={testID} style={{gap:12,paddingTop:4,paddingBottom:extended?16:4,paddingHorizontal:20,borderRadius:joined?0:20,backgroundColor:fills.well}}>{children}</View>;
+ const colors=useColors();const extended=React.Children.toArray(children).length>1;
+ return <View testID={testID} style={{gap:12,paddingTop:4,paddingBottom:extended?16:4,paddingHorizontal:20,borderRadius:joined?0:20,backgroundColor:colors.surface}}>{children}</View>;
 }
 /** The shared header of a settings screen: Back on the leading edge, the title centred, a host control on the trailing edge. */
 export {SettingHeader} from './setting-header.js';

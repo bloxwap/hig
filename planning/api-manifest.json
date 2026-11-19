@@ -1,5 +1,5 @@
 {
-  "version": "0.9.3",
+  "version": "0.10.0",
   "api": {
     "react": {
       "AnimatedNumberTrend": {
@@ -8,11 +8,7 @@
       },
       "AnimatedNumberProps": {
         "entry": "animated-number",
-        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 500. Flowing: sets the roll and the sideways slide (500 by default) and fades take half of it; the three timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value, a figure that gains or loses a place slides closed while the place fades, and a new value joins the motion in flight.\n     * `'slide'` is the short settle: the old digit leaves by one line as the new one arrives, and a newer value restarts it.\n     * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading that cannot be laid out place by place\n     * (right-to-left letters or bidi controls in the number itself) slides.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the sideways slide when the figure changes width, and the roll unless `spinTiming` is set. Default 500 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a part that arrives or leaves. Default 250 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Flowing only: keeps the moving parts on their own compositor layers between changes. For a figure that changes many times a second; it costs memory, so leave it off elsewhere. */\n    willChange?: boolean;\n    /** Class names for the readout's root, for the host's type size, weight and colour. */\n    className?: string;\n    /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */\n    formattedValue?: string;\n    /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */\n    animateFormatted?: boolean;\n}"
-      },
-      "AnimatedNumberReadout": {
-        "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 500. Flowing: sets the roll and the sideways slide (500 by default) and fades take half of it; the three timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value, a figure that gains or loses a place slides closed while the place fades, and a new value joins the motion in flight.\n     * `'slide'` is the short settle: the old digit leaves by one line as the new one arrives, and a newer value restarts it.\n     * `NumberFlow` flows by default. A reading that cannot be laid out place by place\n     * (right-to-left letters or bidi controls in the number itself) slides.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the sideways slide when the figure changes width, and the roll unless `spinTiming` is set. Default 500 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a part that arrives or leaves. Default 250 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Flowing only: keeps the moving parts on their own compositor layers between changes. For a figure that changes many times a second; it costs memory, so leave it off elsewhere. */\n    willChange?: boolean;\n    /** Class names for the readout's root, for the host's type size, weight and colour. */\n    className?: string;\n    /** Host-formatted text for a finite `value`, drawn in place of the Intl reading and read the same way, for a host whose number table the browser's Intl does not match. Never parse it back. Empty text falls back to Intl. Unknown values still read as the dash. */\n    formattedValue?: string;\n    /** With `formattedValue`, moves the host's text place by place: each digit rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static. */\n    animateFormatted?: boolean;\n}"
       },
       "NumberFlow": {
         "entry": "animated-number",
@@ -168,7 +164,7 @@
       },
       "LoginBlock": {
         "entry": "blocks/login-block",
-        "signature": "export declare function LoginBlock({ onLogin, onMoreLogin, onClose, lastUsed, disabled, analyticsEnabled, onAnalyticsChange, labels, termsUrl, privacyUrl }: LoginBlockProps): React.JSX.Element;"
+        "signature": "export declare function LoginBlock({ onLogin, onMoreLogin, onClose, lastUsed, disabled, pending, analyticsEnabled, onAnalyticsChange, analyticsDisabled, onOpenLink, labels, termsUrl, privacyUrl }: LoginBlockProps): React.JSX.Element;"
       },
       "LoginBlockProps": {
         "entry": "blocks/login-block",
@@ -212,7 +208,7 @@
       },
       "TokenActionBlockProps": {
         "entry": "blocks/token-action-block",
-        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, for a token with no dollar value: with `value` left out or `null` it is drawn in place of the dollar total. */\n    units?: number | null;\n    /** Host text after the units, such as ` BLOX`. */\n    unitsSuffix?: string;\n    /** Format of the units. Defaults to at most six fraction digits. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */\n    stickyHeader?: boolean;\n    /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n}"
+        "signature": "export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; `null` reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, for a token with no dollar value: with `value` left out or `null` it is drawn in place of the dollar total. */\n    units?: number | null;\n    /** Host text after the units, such as ` BLOX`. */\n    unitsSuffix?: string;\n    /** Format of the units. Defaults to at most six fraction digits. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in “Chains”. */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** Pins the header to the top of the nearest scroller: transparent at rest, filled once content scrolls under it, and still when it starts to stick. See Pinned headers. */\n    stickyHeader?: boolean;\n    /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** A line above the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n}"
       },
       "TokenAction": {
         "entry": "blocks/token-action-block",
@@ -510,14 +506,6 @@
         "entry": "blocks/pickers",
         "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, addressLabel, addressRef, addressInputProps, className, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
       },
-      "FromPicker": {
-        "entry": "blocks/pickers",
-        "signature": "export declare const FromPicker: typeof FromPickerBlock;"
-      },
-      "ToPicker": {
-        "entry": "blocks/pickers",
-        "signature": "export declare const ToPicker: typeof ToPickerBlock;"
-      },
       "FromPickerBlockProps": {
         "entry": "blocks/pickers",
         "signature": "export interface FromPickerBlockProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    className?: string;\n}"
@@ -525,14 +513,6 @@
       "ToPickerBlockProps": {
         "entry": "blocks/pickers",
         "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    /** A visible label over the address field, which then names it in place of the built-in hidden “Recipient”. */\n    addressLabel?: string;\n    /** A ref to the address input, for example to focus it or register it with a host sheet. */\n    addressRef?: React.Ref<HTMLInputElement>;\n    /** Attributes for the address input, such as `name='recipient'`, `data-1p-ignore`, `data-lpignore`, a mono `className` or `onFocus`/`onBlur`. The value and its change handler stay HIG's. */\n    addressInputProps?: PickerInputProps;\n    className?: string;\n}"
-      },
-      "FromPickerProps": {
-        "entry": "blocks/pickers",
-        "signature": "export type FromPickerProps = FromPickerBlockProps;"
-      },
-      "ToPickerProps": {
-        "entry": "blocks/pickers",
-        "signature": "export type ToPickerProps = ToPickerBlockProps;"
       },
       "PickerListProps": {
         "entry": "blocks/pickers",
@@ -550,14 +530,6 @@
         "entry": "blocks/swap-block",
         "signature": "export declare function SwapBlock({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, submittingLabel, onReset, destination, details, note, noteTone, title, onBack, headingId, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, keypad, shortcuts, captureKeyboard, active, view: viewProp, onViewChange, settings, className, style }: SwapBlockProps): React.JSX.Element;"
       },
-      "SwapPanelBlock": {
-        "entry": "blocks/swap-block",
-        "signature": "export declare const SwapPanelBlock: typeof SwapBlock;"
-      },
-      "SwapPanel": {
-        "entry": "blocks/swap-block",
-        "signature": "export declare const SwapPanel: typeof SwapBlock;"
-      },
       "swapAction": {
         "entry": "blocks",
         "signature": "export declare function swapAction(from: SwapToken | null, to: SwapToken | null): SwapAction;"
@@ -565,14 +537,6 @@
       "SwapBlockProps": {
         "entry": "blocks/swap-block",
         "signature": "export interface SwapBlockProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, typed keys, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */\n    submitting?: boolean;\n    /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */\n    submittingLabel?: string;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet (“Withdraw from Papertrade”), drawn as the shared `ScreenHeader` (the title centred in a 44px row) like every other block. `onBack` adds Back on its leading edge. */\n    title?: string;\n    onBack?: () => void;\n    /** With `title`: `id` of the heading, so a host dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    /** `auto` shows the keypad for a coarse pointer (touch), where there is no hardware keyboard. */\n    keypad?: 'auto' | 'always' | 'never';\n    /** ⌘F / Ctrl+F opens the From picker and ⌘K / Ctrl+K the To picker while the panel is mounted. */\n    shortcuts?: boolean;\n    /** Digits typed anywhere on the page (outside a text field) drive the amount, not only inside the panel. */\n    captureKeyboard?: boolean;\n    /** Disable global shortcuts and amount capture while a retained screen is inactive. */\n    active?: boolean;\n    /** The view on show. The panel pushes its token pickers and settings as views inside its own bounds; `main` is the cards. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    className?: string;\n    style?: React.CSSProperties;\n}"
-      },
-      "SwapPanelBlockProps": {
-        "entry": "blocks/swap-block",
-        "signature": "export type SwapPanelBlockProps = SwapBlockProps;"
-      },
-      "SwapPanelProps": {
-        "entry": "blocks/swap-block",
-        "signature": "export type SwapPanelProps = SwapBlockProps;"
       },
       "SwapToken": {
         "entry": "blocks",
@@ -632,7 +596,7 @@
       },
       "PresetPickerBlockProps": {
         "entry": "blocks/preset-picker-block",
-        "signature": "export interface PresetPickerBlockProps<T extends string | number = number> extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading of the header. Leave it out for a pane whose host draws its own header: the block then starts at the headline figure. */\n    title?: string;\n    /** The headline figure, the value being chosen. `null` reads as unknown. */\n    value: number | null;\n    /** Format of the headline figure, such as `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */\n    valueOptions?: Intl.NumberFormatOptions;\n    /** Text drawn before the figure, such as a sign the format does not draw. */\n    valuePrefix?: string;\n    /** Text drawn after the figure, such as `×` for leverage. */\n    valueSuffix?: string;\n    /** What the figure is read as before its value: Size. */\n    valueLabel?: string;\n    /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn static unless `animateFormatted`; `value` still decides known or unknown and the direction of a move. As `AnimatedNumberReadout` `formattedValue`. */\n    formattedValue?: string;\n    /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `AnimatedNumberReadout` `animateFormatted`. */\n    animateFormatted?: boolean;\n    /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. */\n    presets: readonly PresetOption<T>[];\n    /** The chip shown selected; `null` selects none, such as for a custom value. */\n    selected: T | null;\n    /** Called with the chip taken. A press on the selected chip, or on a dimmed one, does nothing. */\n    onPresetChange: (value: T) => void;\n    /** Accessible name of the chips' group, not drawn: Size. Defaults to `title`. */\n    presetsLabel?: string;\n    /** Chips per row. Defaults to every chip in one row. */\n    columns?: number;\n    /** The row that opens the host's own entry, drawn above the chips. */\n    custom?: PresetPickerCustom;\n    /** Fill of the selected chip, the selected custom row and the confirming action: `primary` (the default) or `destructive`. */\n    intent?: 'primary' | 'destructive';\n    /** Drawn as given between the chips and the actions, such as a muted note. */\n    children?: React.ReactNode;\n    /** Called on the confirming action. */\n    onSubmit: () => void;\n    /** Text of the confirming action: Set Size. */\n    submitLabel: string;\n    submitDisabled?: boolean;\n    /** The confirming action shows a spinner and ignores presses. */\n    busy?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in “Cancel”. */\n    cancelLabel?: string;\n    /** The confirming action's `data-testid`. */\n    submitTestID?: string;\n    /** Cancel's `data-testid`. */\n    cancelTestID?: string;\n    /** Keeps the provider's feedback off the chips and both actions, for a host that plays its own cue. */\n    suppressFeedback?: boolean;\n    /** Shows Back on the leading edge of the header (needs `title`). */\n    onBack?: () => void;\n    /** Attributes for the header's Back `<button>`. */\n    backProps?: ScreenHeaderControlProps;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** `id` of the header's heading, so a dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** Pins the header to the top of the nearest scroller. See Pinned headers. */\n    stickyHeader?: boolean;\n}"
+        "signature": "export interface PresetPickerBlockProps<T extends string | number = number> extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {\n    /** Heading of the header. Leave it out for a pane whose host draws its own header: the block then starts at the headline figure. */\n    title?: string;\n    /** The headline figure, the value being chosen. `null` reads as unknown. */\n    value: number | null;\n    /** Format of the headline figure, such as `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */\n    valueOptions?: Intl.NumberFormatOptions;\n    /** Text drawn before the figure, such as a sign the format does not draw. */\n    valuePrefix?: string;\n    /** Text drawn after the figure, such as `×` for leverage. */\n    valueSuffix?: string;\n    /** What the figure is read as before its value: Size. */\n    valueLabel?: string;\n    /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn static unless `animateFormatted`; `value` still decides known or unknown and the direction of a move. As `NumberFlow` `formattedValue`. */\n    formattedValue?: string;\n    /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `NumberFlow` `animateFormatted`. */\n    animateFormatted?: boolean;\n    /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. */\n    presets: readonly PresetOption<T>[];\n    /** The chip shown selected; `null` selects none, such as for a custom value. */\n    selected: T | null;\n    /** Called with the chip taken. A press on the selected chip, or on a dimmed one, does nothing. */\n    onPresetChange: (value: T) => void;\n    /** Accessible name of the chips' group, not drawn: Size. Defaults to `title`. */\n    presetsLabel?: string;\n    /** Chips per row. Defaults to every chip in one row. */\n    columns?: number;\n    /** The row that opens the host's own entry, drawn above the chips. */\n    custom?: PresetPickerCustom;\n    /** Fill of the selected chip, the selected custom row and the confirming action: `primary` (the default) or `destructive`. */\n    intent?: 'primary' | 'destructive';\n    /** Drawn as given between the chips and the actions, such as a muted note. */\n    children?: React.ReactNode;\n    /** Called on the confirming action. */\n    onSubmit: () => void;\n    /** Text of the confirming action: Set Size. */\n    submitLabel: string;\n    submitDisabled?: boolean;\n    /** The confirming action shows a spinner and ignores presses. */\n    busy?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in “Cancel”. */\n    cancelLabel?: string;\n    /** The confirming action's `data-testid`. */\n    submitTestID?: string;\n    /** Cancel's `data-testid`. */\n    cancelTestID?: string;\n    /** Keeps the provider's feedback off the chips and both actions, for a host that plays its own cue. */\n    suppressFeedback?: boolean;\n    /** Shows Back on the leading edge of the header (needs `title`). */\n    onBack?: () => void;\n    /** Attributes for the header's Back `<button>`. */\n    backProps?: ScreenHeaderControlProps;\n    /** A control on the trailing edge of the header, usually an `IconButton`. */\n    headerAction?: React.ReactNode;\n    /** `id` of the header's heading, so a dialog or sheet can name itself with `aria-labelledby`. */\n    headingId?: string;\n    /** Pins the header to the top of the nearest scroller. See Pinned headers. */\n    stickyHeader?: boolean;\n}"
       },
       "PresetPickerCustom": {
         "entry": "blocks/preset-picker-block",
@@ -650,6 +614,18 @@
         "entry": "blocks/positions-block",
         "signature": "export interface OpenPosition extends Omit<ManagePositionBlockSummary, 'onSelect'> {\n    id: string;\n    side: 'long' | 'short';\n}"
       },
+      "ReceiveBlock": {
+        "entry": "blocks/receive-block",
+        "signature": "export declare function ReceiveBlock({ mode, solanaAddress, ethereumAddress, title, onBack, headingId, onCopy }: ReceiveBlockProps): React.JSX.Element;"
+      },
+      "ReceiveBlockProps": {
+        "entry": "blocks/receive-block",
+        "signature": "export type ReceiveBlockProps = {\n    title?: string;\n    onBack?: () => void;\n    headingId?: string;\n    onCopy?: (network: ReceiveNetwork, address: string) => void | Promise<void>;\n} & ({\n    mode?: 'both';\n    solanaAddress: string;\n    ethereumAddress: string;\n} | {\n    mode: 'solana';\n    solanaAddress: string;\n    ethereumAddress?: string;\n} | {\n    mode: 'ethereum';\n    ethereumAddress: string;\n    solanaAddress?: string;\n});"
+      },
+      "ReceiveNetwork": {
+        "entry": "blocks/receive-block",
+        "signature": "export type ReceiveNetwork = 'solana' | 'ethereum';"
+      },
       "ClaimRewardBlock": {
         "entry": "blocks/claim-reward-block",
         "signature": "export declare function ClaimRewardBlock({ amount, symbol, walletAddress, chain, details, labels, onClaim, onCancel }: ClaimRewardBlockProps): React.JSX.Element;"
@@ -657,6 +633,10 @@
       "ClaimRewardBlockProps": {
         "entry": "blocks/claim-reward-block",
         "signature": "export interface ClaimRewardBlockProps {\n    amount: number;\n    symbol: string;\n    walletAddress: string;\n    chain: string;\n    details?: readonly {\n        label: string;\n        value: string;\n    }[];\n    labels: {\n        title: string;\n        claim: string;\n        cancel: string;\n        wallet: string;\n        chain: string;\n    };\n    /** Open the host's confirmation screen for this prize. */\n    onClaim: () => void;\n    onCancel: () => void;\n}"
+      },
+      "AdvancedBlock": {
+        "entry": "blocks/advanced-block",
+        "signature": "export declare function AdvancedBlock(props: AdvancedBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",
@@ -804,11 +784,11 @@
       },
       "GestureSheetBackendProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetBackendProps = HostBackendProps<BackendProps>;"
+        "signature": "export type GestureSheetBackendProps = EngineOptions & SnapOptions & FadeOptions;"
       },
       "GestureSheetDynamicBackendProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetDynamicBackendProps = Omit<GestureSheetBackendProps, SnapPointBackendProp> & {\n    [Key in SnapPointBackendProp]?: never;\n};"
+        "signature": "export type GestureSheetDynamicBackendProps = EngineOptions & {\n    [Key in SnapPointBackendProp]?: never;\n};"
       },
       "GestureSheetContentProps": {
         "entry": "gesture-sheet",
@@ -816,15 +796,15 @@
       },
       "GestureSheetHandleProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetHandleProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Handle>, 'children' | 'aria-hidden' | 'dangerouslySetInnerHTML' | 'onClick' | 'onPointerDown' | 'onPointerMove' | 'onPointerCancel'>;"
+        "signature": "export type GestureSheetHandleProps = Omit<React.ComponentPropsWithoutRef<'div'>, 'children' | 'aria-hidden' | 'dangerouslySetInnerHTML' | 'onClick' | 'onPointerDown' | 'onPointerMove' | 'onPointerCancel'> & {\n    preventCycle?: boolean;\n};"
       },
       "GestureSheetOverlayProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetOverlayProps = Omit<React.ComponentPropsWithoutRef<typeof Drawer.Overlay>, 'children' | 'asChild' | 'forceMount' | 'dangerouslySetInnerHTML'>;"
+        "signature": "export type GestureSheetOverlayProps = Omit<React.ComponentPropsWithoutRef<typeof Modal.Overlay>, 'children' | 'asChild' | 'forceMount' | 'dangerouslySetInnerHTML'>;"
       },
       "GestureSheetProps": {
         "entry": "gesture-sheet",
-        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Backend defaults are retained, including autoFocus=false and repositionInputs=true. */\n{\n    enableDynamicSizing?: false;\n    backendProps?: GestureSheetBackendProps;\n    maxDynamicContentSize?: never;\n}\n/** Vertical content sizing is intrinsic and cannot be combined with Vaul detents. */\n | {\n    enableDynamicSizing: true;\n    backendProps?: GestureSheetDynamicBackendProps; /** A finite positive content-height ceiling in CSS pixels; the viewport ceiling still applies. */\n    maxDynamicContentSize?: number;\n});"
+        "signature": "export type GestureSheetProps = GestureSheetCommonProps & (\n/** Engine defaults apply, including autoFocus=false and repositionInputs=true. */\n{\n    enableDynamicSizing?: false;\n    backendProps?: GestureSheetBackendProps;\n    maxDynamicContentSize?: never;\n}\n/** Vertical content sizing is intrinsic and cannot be combined with detents. */\n | {\n    enableDynamicSizing: true;\n    backendProps?: GestureSheetDynamicBackendProps; /** A finite positive content-height ceiling in CSS pixels; the viewport ceiling still applies. */\n    maxDynamicContentSize?: number;\n});"
       },
       "GestureSheet": {
         "entry": "gesture-sheet",
@@ -1110,13 +1090,33 @@
         "entry": "status",
         "signature": "export declare const Callout: typeof Alert;"
       },
+      "InlineNoticeProps": {
+        "entry": "status",
+        "signature": "export interface InlineNoticeProps {\n    /** Selects the decorative icon and surface tint. Defaults to info. */\n    severity?: Notice['severity'];\n    icon?: React.ReactNode;\n    title: string;\n    description: React.ReactNode;\n}"
+      },
+      "InlineNotice": {
+        "entry": "status",
+        "signature": "export declare function InlineNotice({ severity, icon, title, description }: InlineNoticeProps): React.JSX.Element;"
+      },
       "Notice": {
         "entry": "status",
         "signature": "export interface Notice {\n    id: string;\n    message: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n}"
       },
+      "ToastNoticeAccent": {
+        "entry": "status",
+        "signature": "export type ToastNoticeAccent = 'up' | 'down';"
+      },
+      "ToastNoticeProps": {
+        "entry": "status",
+        "signature": "export interface ToastNoticeProps {\n    message: React.ReactNode;\n    /** A second line under the message, smaller and muted. With one the capsule keeps a fixed corner radius, not a full pill. */\n    description?: React.ReactNode;\n    severity?: Notice['severity'];\n    /** The primary action, usually a `ToastAction`: inline before the close control, or in the action row of a stacked notice. */\n    action?: React.ReactNode;\n    /** A second, quieter action beside the primary one; the notice is then stacked. */\n    secondaryAction?: React.ReactNode;\n    /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode;\n    /** Takes the market direction's colour (`up`, `down`) for the border, glow and tile instead of the severity's. */\n    accent?: ToastNoticeAccent;\n    /** `stacked` moves the actions to a full-width row under the message. Default `inline`. */\n    layout?: 'inline' | 'stacked';\n    /** Makes the tile and message one button. */\n    onPress?: () => void;\n    /** Accessible name of the `onPress` button. */\n    pressName?: string;\n    /** Accessible name of the close button. */\n    dismissName?: string;\n    /** Omit for a notice the host closes itself; the close button is then not drawn. */\n    onDismiss?: () => void;\n}"
+      },
       "ToastNotice": {
         "entry": "status",
-        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss }: {\n    message: React.ReactNode; /** A second line under the message, in regular weight. With one the capsule keeps a fixed corner radius, not a full pill. */\n    description?: React.ReactNode;\n    severity?: Notice['severity'];\n    action?: React.ReactNode; /** Accessible name of the close button. */\n    dismissName: string;\n    onDismiss: () => void;\n}): React.JSX.Element;"
+        "signature": "export declare function ToastNotice({ message, description, severity, action, secondaryAction, icon, accent, layout, onPress, pressName, dismissName, onDismiss }: ToastNoticeProps): React.JSX.Element;"
+      },
+      "ToastAction": {
+        "entry": "status",
+        "signature": "export declare function ToastAction({ children, icon, onClick, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & {\n    icon?: React.ReactNode;\n}): React.JSX.Element;"
       },
       "Toast": {
         "entry": "status",
@@ -1184,7 +1184,7 @@
       },
       "ToastOptions": {
         "entry": "toast",
-        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode; /** A second, quieter action; the notice is then stacked. */\n    secondaryAction?: React.ReactNode; /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode; /** Drawn in place of the message text (a live countdown, a figure in a numeric face); `message` stays what is announced and what names the close button. */\n    messageNode?: React.ReactNode;\n}"
       },
       "dismissToast": {
         "entry": "toast",
@@ -1194,17 +1194,13 @@
         "entry": "toast",
         "signature": "export declare const toast: ToastCall<ToastOptions>;"
       },
-      "WalletAddressCoreProps": {
-        "entry": "wallet-address-core",
-        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder, or a `cuer` QR it renders itself), sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */\n    qr?: React.ReactNode;\n    /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */\n    qrValue?: string;\n    /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
-      },
-      "WalletAddress": {
-        "entry": "wallet-address-core",
-        "signature": "export declare function WalletAddress({ address, kind, qr, qrValue, arena, size, onCopy, announce, className, style }: WalletAddressCoreProps): React.JSX.Element;"
-      },
       "WalletAddressProps": {
         "entry": "wallet-address",
-        "signature": "export interface WalletAddressProps extends Omit<WalletAddressCoreProps, 'qr'> {\n    /** QR payload when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR; the code then uses high error correction. */\n    arena?: string;\n    /** The host's own QR drawing in place of the Cuer code; `qrValue` and `arena` are then unused. Without `cuer` installed, import `WalletAddress` from `wallet-address-core` instead. */\n    qr?: React.ReactNode;\n}"
+        "signature": "export interface WalletAddressProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host with its own encoder, sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */\n    qr?: React.ReactNode;\n    /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */\n    qrValue?: string;\n    /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+      },
+      "WalletAddress": {
+        "entry": "wallet-address",
+        "signature": "export declare function WalletAddress({ address, kind, qr, qrValue, arena, size, onCopy, announce, className, style }: WalletAddressProps): React.JSX.Element;"
       },
       "SwapArtwork": {
         "entry": "blocks/swap-block",
@@ -1378,6 +1374,34 @@
         "entry": "figure",
         "signature": "export declare function figureReading(figure: Figure, locale: string, options?: Intl.NumberFormatOptions): string;"
       },
+      "SheetDirection": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export type SheetDirection = 'bottom' | 'top' | 'left' | 'right';"
+      },
+      "SheetPoint": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export type SheetPoint = number | string;"
+      },
+      "SheetEngineOptions": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export interface SheetEngineOptions {\n    open: boolean;\n    direction: SheetDirection;\n    snapPoints?: readonly SheetPoint[];\n    activeSnapPoint?: SheetPoint | null;\n    fadeFromIndex?: number;\n    snapToSequentialPoint: boolean;\n    handleOnly: boolean;\n    dismissible: boolean;\n    closeThreshold: number;\n    scrollLockTimeout: number;\n    container?: HTMLElement | null;\n    reducedMotion: boolean;\n    shouldScaleBackground: boolean;\n    setBackgroundColorOnScale: boolean;\n    noBodyStyles: boolean;\n    repositionInputs: boolean;\n    fixed: boolean;\n    preventScroll: boolean;\n    preventScrollRestoration: boolean;\n    onDrag?: (event: SheetPointer, percentageDragged: number) => void;\n    onRelease?: (event: SheetPointer, open: boolean) => void;\n    /** Ask the host to close. The sheet waits where it is until `open` answers. */\n    requestClose: () => void;\n    /** A release settled on this detent. */\n    selectSnapPoint: (point: SheetPoint) => void;\n    /** The sheet came to rest open, or finished closing. */\n    onSettled: (open: boolean) => void;\n}"
+      },
+      "cssNumber": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare const cssNumber: typeof digits;"
+      },
+      "cssCurve": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare const cssCurve: (curve: readonly number[]) => string;"
+      },
+      "sharedPoint": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare function sharedPoint(point: SheetPoint): SheetSnapPoint;"
+      },
+      "SheetEngine": {
+        "entry": "gesture-sheet-engine",
+        "signature": "export declare class SheetEngine {\n    /** The latest props, replaced on every render. */\n    options: SheetEngineOptions;\n    /** The last press moved the sheet, so the click that ends it is not a tap. */\n    dragged: boolean;\n    private sheet;\n    private overlay;\n    private wrapper;\n    private phase;\n    private position;\n    private index;\n    private closed;\n    private room;\n    private flush;\n    private detents;\n    private stops;\n    private travel;\n    private settled;\n    private press;\n    private drag;\n    private scrolledAt;\n    private overshoot;\n    private lift;\n    private early;\n    private undo;\n    private get vertical();\n    private get sign();\n    private offset;\n    /** The overlay's strength: full from the fade detent up, none at the detent below it, or at closed when it is the lowest. */\n    private fade;\n    /** The page behind recedes while the sheet is at any detent and comes back as the sheet leaves its lowest one. */\n    private recede;\n    private activeIndex;\n    /** Where the sheet is drawn now: where it rests, or the point a travel has reached. */\n    private visual;\n    /** One layout read, taken when the sheet opens, closes, is picked up or the viewport changes: never while it moves. */\n    private measure;\n    private draw;\n    private hint;\n    private halt;\n    /** Travel to a position from wherever the sheet is drawn. A travel under way is retargeted, not restarted. */\n    private glide;\n    /** The sheet has arrived: drop the transition and the compositing hints, and report a finished open or close. */\n    private rest;\n    attach(sheet: HTMLElement | null): void;\n    attachOverlay(overlay: HTMLElement): void;\n    /** Forget the sheet: its elements are gone. */\n    release(): void;\n    /** Follow `open`: present a sheet that should be open, dismiss one that should not, and keep an open one on its detent. */\n    sync(): void;\n    /**\n     * Travel to the detent the host names when the sheet is anywhere else: a controlled detent change, a close the host\n     * declined, or a detent it declined.\n     */\n    settle(): void;\n    /** What an open sheet holds on the page until its close starts: Safari's body pin and the iOS focus guard. */\n    private hold;\n    /** What the sheet's element holds until it has closed: its listeners and the page it scales. */\n    private arm;\n    private resize;\n    /** `repositionInputs`: keep a bottom sheet above the software keyboard while a field in it is focused. */\n    private keyboard;\n    private touch;\n    down(event: SheetPointer): void;\n    move(event: SheetPointer): void;\n    up(event: SheetPointer): void;\n    /** The browser took the pointer away, for a scroll or a system gesture: the sheet goes back to its detent. */\n    cancel(event?: SheetPointer): void;\n    /** Whether the press has become a drag of the sheet, deciding it once the pointer has left `slop`. */\n    private begin;\n    /**\n     * Scroll handoff, as in Vaul. The handle always drags, and so does a sheet below its tallest detent or caught on the way.\n     * At the tallest detent the content comes first: a move toward open, selected text, content scrolled away from the edge\n     * the sheet closes toward, and the moments after any of those leave the sheet where it is.\n     */\n    private allows;\n    private follow;\n    /** Pixels per second toward closed over the last of the drag, or none when the pointer rested before letting go. */\n    private velocity;\n}"
+      },
       "NotifyOptions": {
         "entry": "notify",
         "signature": "export interface NotifyOptions {\n    severity?: 'info' | 'success' | 'warning' | 'error'; /** Accessible name of the notice's close button. */\n    dismissName?: string;\n    duration?: number;\n    id?: string | number;\n}"
@@ -1464,17 +1488,21 @@
         "entry": "account-block",
         "signature": "export declare function AccountBlock({ title, onBack, onShowAddress, headerAction, balance, assets, sections, pinnedSymbol, pinnedId, order, onDeposit, depositLabel, onAssetSelect: hostSelect, stickyHeader, stickyHeaderBackground, scrollComponent, headingId, testID }: AccountBlockProps): React.JSX.Element;"
       },
+      "AdvancedBlock": {
+        "entry": "advanced-block",
+        "signature": "export declare function AdvancedBlock(props: AdvancedBlockProps): React.JSX.Element;"
+      },
       "AnimatedNumberTrend": {
         "entry": "animated-number",
         "signature": "export type AnimatedNumberTrend = NumberTrend;"
       },
       "AnimatedNumberProps": {
         "entry": "animated-number",
-        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 500. Flowing: sets the roll (500 by default) and fades take half of it; the timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value on NumberFlow's curve, a place the figure gains rolls up from zero as it fades in, and a new value joins the roll in\n     * flight. `'slide'` is the short settle: the reel eases straight to the new digit and a newer value retargets it.\n     * `NumberFlow` flows and `AnimatedNumberReadout` slides unless told otherwise. A reading native cannot lay out place by\n     * place (right-to-left, unmeasured glyphs) is drawn static either way.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the roll unless `spinTiming` is set. On web it also times the sideways slide when the figure changes width; native changes width at once. Default 500 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a place that arrives. Default 250 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Accepted so one call site serves both platforms. Web keeps the moving parts on their own layers; native reels already are. */\n    willChange?: boolean;\n    /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */\n    animateFormatted?: boolean;\n}"
+        "signature": "export interface AnimatedNumberProps extends NumberProps {\n    /** How long a change takes, in milliseconds. Sliding: 180 by default, at most 500. Flowing: sets the roll (500 by default) and fades take half of it; the timings below override it. Zero or less draws the new value at once. */\n    duration?: number;\n    /** Which way digits move: `1` up, `-1` down, `0` each digit its own way, or a function of the old and new value. Defaults to the direction the value moved. */\n    trend?: AnimatedNumberTrend;\n    /**\n     * How a change is drawn. `'flow'` is NumberFlow's motion: every changed digit rolls through the digits between its old and new\n     * value on NumberFlow's curve, a place the figure gains rolls up from zero as it fades in, and a new value joins the roll in\n     * flight. `'slide'` is the short settle: the reel eases straight to the new digit and a newer value retargets it.\n     * `NumberFlow` flows by default. A reading native cannot lay out place by\n     * place (right-to-left, unmeasured glyphs) is drawn static either way.\n     */\n    motion?: 'flow' | 'slide';\n    /** `false` draws every new value at once, with no motion, as reduced motion does. Use it for typed echoes and until first data arrives. Default `true`. */\n    animated?: boolean;\n    /** Flowing only: the roll of a changed digit. Defaults to `transformTiming`. */\n    spinTiming?: NumberFlowTiming;\n    /** Flowing only: the roll unless `spinTiming` is set. On web it also times the sideways slide when the figure changes width; native changes width at once. Default 500 ms on NumberFlow's curve. */\n    transformTiming?: NumberFlowTiming;\n    /** Flowing only: the fade of a place that arrives. Default 250 ms ease-out. */\n    opacityTiming?: NumberFlowTiming;\n    /** Flowing only: a limit for an integer place, keyed by place (0 is the ones). `{1:{max:5}}` makes the tens of a seconds counter wrap from 5 to 0. */\n    digits?: NumberFlowDigits;\n    /** Flowing only, with a trend: every place below the highest one that changed turns once all the way round even when its digit is the same, so the figure reads as counting through the values between. */\n    continuous?: boolean;\n    /** Accepted so one call site serves both platforms. Web keeps the moving parts on their own layers; native reels already are. */\n    willChange?: boolean;\n    /** With `formattedValue`, moves the host's text place by place: each digit it contains rolls in place, counted from the end, and the rest stays as written. Without it `formattedValue` is drawn static, as before. */\n    animateFormatted?: boolean;\n}"
       },
       "NumberFlow": {
         "entry": "animated-number",
-        "signature": "export declare function NumberFlow({ motion, ...props }: AnimatedNumberProps): React.JSX.Element;"
+        "signature": "export declare function NumberFlow(props: NumberFlowProps): React.JSX.Element;"
       },
       "NumberFlowProps": {
         "entry": "animated-number",
@@ -1483,10 +1511,6 @@
       "NumberFlowGroup": {
         "entry": "animated-number",
         "signature": "export declare function NumberFlowGroup({ children }: {\n    children?: React.ReactNode;\n}): React.JSX.Element;"
-      },
-      "AnimatedNumberReadout": {
-        "entry": "animated-number",
-        "signature": "export declare function AnimatedNumberReadout(props: AnimatedNumberProps): React.JSX.Element;"
       },
       "AssetSignal": {
         "entry": "assets-block",
@@ -1626,7 +1650,11 @@
       },
       "LoginBlock": {
         "entry": "login-block",
-        "signature": "export declare function LoginBlock({ onLogin, onClose, lastUsed, disabled, analyticsEnabled, onAnalyticsChange, labels, termsUrl, privacyUrl }: LoginBlockProps): React.JSX.Element;"
+        "signature": "export declare function LoginBlock({ onLogin, onClose, lastUsed, disabled, pending, analyticsEnabled, onAnalyticsChange, analyticsDisabled, onOpenLink, labels, termsUrl, privacyUrl, testID, titleRef, headingHint }: LoginBlockProps): React.JSX.Element;"
+      },
+      "LoginBlockProps": {
+        "entry": "login-block",
+        "signature": "export interface LoginBlockProps extends LoginContract {\n    /** Prefix for the block's test IDs: the header (`<testID>-header`, `<testID>-title`), `-close`, `-<provider>`, `-analytics-row`, `-analytics`, `-analytics-info`, `-terms` and `-privacy`. */\n    testID?: string;\n    /** The heading, for a sheet that moves focus to it on presentation. */\n    titleRef?: React.Ref<React.ComponentRef<typeof View>>;\n    /** Host text read after the heading as its hint, never drawn. */\n    headingHint?: string;\n}"
       },
       "DepositBlock": {
         "entry": "deposit-block",
@@ -1658,7 +1686,7 @@
       },
       "TokenActionBlock": {
         "entry": "token-action-block",
-        "signature": "export declare function TokenActionBlock({ symbol, name, value, units, unitsSuffix, unitsOptions, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, stickyHeader, stickyHeaderBackground, scrollComponent, headingId, testID }: TokenActionBlockProps): React.JSX.Element;"
+        "signature": "export declare function TokenActionBlock({ symbol, name, value, units, unitsSuffix, unitsOptions, assets, chains, chainsTitle, actions, onBack, headerAction, note, noteTone, noteInfo, stickyHeader, stickyHeaderBackground, scrollComponent, headingId, testID }: TokenActionBlockProps): React.JSX.Element;"
       },
       "tokenActionLabel": {
         "entry": "token-action-block",
@@ -1666,7 +1694,7 @@
       },
       "TokenActionBlockProps": {
         "entry": "token-action-block",
-        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, for a token with no dollar value: with `value` left out or null it is drawn in place of the dollar total. */\n    units?: number | null;\n    /** Host text after the units, such as ` BLOX`. */\n    unitsSuffix?: string;\n    /** Format of the units; default `{maximumFractionDigits:6}`. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** A line under the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    testID?: string;\n}"
+        "signature": "export interface TokenActionBlockProps {\n    /** Heading, usually the ticker: HYPE. */\n    symbol: string;\n    /** Title of the assets bar: Hyperliquid. Needed only with `assets`; the symbol stands in without it. */\n    name?: string;\n    /** Total holding in dollars, on the trailing edge of the assets bar. Defaults to the sum of the asset values; null reads as unknown. */\n    value?: number | null;\n    /** The holding in token units, for a token with no dollar value: with `value` left out or null it is drawn in place of the dollar total. */\n    units?: number | null;\n    /** Host text after the units, such as ` BLOX`. */\n    unitsSuffix?: string;\n    /** Format of the units; default `{maximumFractionDigits:6}`. */\n    unitsOptions?: Intl.NumberFormatOptions;\n    /** Where the token is held: Staked, Core, Paper. Leave it out to draw no assets bar. */\n    assets?: readonly BarMarkElement[];\n    /** The chains the token sits on. Leave it out to draw no chains bar. */\n    chains?: readonly BarMarkElement[];\n    /** Title of the chains bar. Defaults to the built-in \"Chains\". */\n    chainsTitle?: string;\n    actions: readonly TokenAction[];\n    /** Shows Back on the leading edge of the header. */\n    onBack?: () => void;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** A line above the actions, for example why some are missing. `noteTone` tints it as in SwapBlock. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Accessible name of an info button on the trailing edge of the header that shows `note` in a popover instead of above the actions: About Papertrade. It sits before `headerAction` when both are given. */\n    noteInfo?: string;\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it. Place it in a bounded container, such as a sheet body. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. Defaults to React Native's ScrollView. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** `nativeID` of the title, so a sheet around the block can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    testID?: string;\n}"
       },
       "TokenAction": {
         "entry": "token-action-block",
@@ -1940,14 +1968,6 @@
         "entry": "pickers",
         "signature": "export declare function ToPickerBlock({ address, onAddressChange, addressPlaceholder, onScan, addressLabel, addressRef, addressInputProps, style, tokens, onSelect, ...list }: ToPickerBlockProps): React.JSX.Element;"
       },
-      "FromPicker": {
-        "entry": "pickers",
-        "signature": "export declare const FromPicker: typeof FromPickerBlock;"
-      },
-      "ToPicker": {
-        "entry": "pickers",
-        "signature": "export declare const ToPicker: typeof ToPickerBlock;"
-      },
       "FromPickerBlockProps": {
         "entry": "pickers",
         "signature": "export interface FromPickerBlockProps extends PickerListProps {\n    /** The connected wallet. Omit for a list with no wallet row at all. */\n    wallet?: SwapWallet;\n    /** Shows Connect wallet while no wallet is connected. */\n    onConnect?: () => void;\n    /** Shows the disconnect button beside a connected wallet. Omit it where signing out does not belong. */\n    onDisconnect?: () => void;\n    /** The Generate address switch, offered while no wallet is connected: the user picks a chain and an asset and the host shows an address to send it to. Omit `onGenerateAddressChange` to hide it. */\n    generateAddress?: boolean;\n    onGenerateAddressChange?: (generate: boolean) => void;\n    style?: StyleProp<ViewStyle>;\n}"
@@ -1955,14 +1975,6 @@
       "ToPickerBlockProps": {
         "entry": "pickers",
         "signature": "export interface ToPickerBlockProps extends Partial<PickerListProps> {\n    /** The destination address field. Omit `onAddressChange` to hide it. */\n    address?: string;\n    onAddressChange?: (address: string) => void;\n    /** Shown while the field is empty, for example the connected wallet shortened; defaults to the built-in label. */\n    addressPlaceholder?: string;\n    /** Shows the scan button. HIG ships no scanner: the host opens its own and writes the result to `address`. */\n    onScan?: () => void;\n    /** A visible label over the address field, which then names it in place of the built-in “Recipient”. */\n    addressLabel?: string;\n    /** A ref to the address input, for example to register it with a host bottom sheet's keyboard handling. */\n    addressRef?: React.Ref<React.ComponentRef<typeof TextInput>>;\n    /** Props for the address input, such as `onFocus`/`onBlur` for a host sheet, `textContentType` or a mono `style`. The value and its change handler stay HIG's. */\n    addressInputProps?: PickerInputProps;\n    style?: StyleProp<ViewStyle>;\n}"
-      },
-      "FromPickerProps": {
-        "entry": "pickers",
-        "signature": "export type FromPickerProps = FromPickerBlockProps;"
-      },
-      "ToPickerProps": {
-        "entry": "pickers",
-        "signature": "export type ToPickerProps = ToPickerBlockProps;"
       },
       "PickerListProps": {
         "entry": "pickers",
@@ -2006,15 +2018,7 @@
       },
       "SwapBlock": {
         "entry": "swap-block",
-        "signature": "export declare function SwapBlock({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, submittingLabel, onReset, keypad, destination, details, note, noteTone, title, onBack, headingId, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, settings, view: viewProp, onViewChange, style }: SwapBlockProps): React.JSX.Element;"
-      },
-      "SwapPanelBlock": {
-        "entry": "swap-block",
-        "signature": "export declare const SwapPanelBlock: typeof SwapBlock;"
-      },
-      "SwapPanel": {
-        "entry": "swap-block",
-        "signature": "export declare const SwapPanel: typeof SwapBlock;"
+        "signature": "export declare function SwapBlock({ tokens, fromTokens, fromTokensLoading, chains, hotTokenIds, from: fromProp, to: toProp, defaultFrom, defaultTo, onFromChange, onToChange, amount, onAmountChange, received, fee, fees, quoteLoading, slippage, onSlippageChange, denomination, onDenominationChange, wallet, onConnect, onDisconnect, recipient, onRecipientChange, onScanRecipient, receive, receiving, onReceivingChange, onSubmit, submitting, submittingLabel, onReset, keypad, destination, details, note, noteTone, noteInfo, title, onBack, headingId, controls, actionIcon, lockFrom, lockTo, actionLabel, actionDisabled, actionStatus, actionIntent, limitToBalance, banner, footer, oneWay: oneWayProp, denominationSwitch, settings, view: viewProp, onViewChange, style }: SwapBlockProps): React.JSX.Element;"
       },
       "swapAction": {
         "entry": "blocks",
@@ -2022,15 +2026,7 @@
       },
       "SwapBlockProps": {
         "entry": "swap-block",
-        "signature": "export interface SwapBlockProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */\n    submitting?: boolean;\n    /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */\n    submittingLabel?: string;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** Heading above the cards, for a panel that is its own screen or sheet, drawn as the shared `ScreenHeader` (the title centred, 17/24, in a 44dp row) like every other block. `onBack` adds Back on its leading edge. Test IDs `swap-header`, `swap-back` and `swap-title`. */\n    title?: string;\n    onBack?: () => void;\n    /** With `title`: `nativeID` of the heading, so a sheet around the panel can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
-      },
-      "SwapPanelBlockProps": {
-        "entry": "swap-block",
-        "signature": "export type SwapPanelBlockProps = SwapBlockProps;"
-      },
-      "SwapPanelProps": {
-        "entry": "swap-block",
-        "signature": "export type SwapPanelProps = SwapBlockProps;"
+        "signature": "export interface SwapBlockProps {\n    /** Catalog for the To side, and for the From side unless `fromTokens` is given. */\n    tokens: readonly SwapToken[];\n    /** Assets offered on the From side, typically the connected wallet's holdings. */\n    fromTokens?: readonly SwapToken[];\n    fromTokensLoading?: boolean;\n    /** Chain filter chips. Derived from the tokens, in first-seen order, when omitted. */\n    chains?: readonly SwapChain[];\n    /** Token ids for the picker's Hot section, in rank order. */\n    hotTokenIds?: readonly string[];\n    /** The chosen pair. Controlled when `from` / `to` is set (`null` is an empty side); otherwise the panel keeps it, seeded from the defaults. */\n    from?: SwapToken | null;\n    to?: SwapToken | null;\n    defaultFrom?: SwapToken | null;\n    defaultTo?: SwapToken | null;\n    onFromChange?: (token: SwapToken | null) => void;\n    onToChange?: (token: SwapToken | null) => void;\n    /** From amount in token units. Optional: set it to resync the entry, for example to `'0'` after a submit. */\n    amount?: string;\n    /** Reports the From amount in token units whenever the entry, denomination or price changes it. */\n    onAmountChange?: (units: string) => void;\n    /** To amount in token units from the host's quote. Until it arrives the panel shows a price estimate. */\n    received?: number | null;\n    /** Total fee in USD from the host's quote, and its breakdown for the settings sheet. */\n    fee?: number | null;\n    fees?: readonly SwapFee[];\n    quoteLoading?: boolean;\n    /** Slippage tolerance as a fraction (0.005 is 0.5%). Omit `onSlippageChange` to show it read-only. */\n    slippage?: number;\n    onSlippageChange?: (slippage: number) => void;\n    /** Default denomination of both amounts. Uncontrolled when omitted. */\n    denomination?: SwapDenomination;\n    onDenominationChange?: (denomination: SwapDenomination) => void;\n    wallet?: SwapWallet;\n    onConnect?: () => void;\n    onDisconnect?: () => void;\n    recipient?: string;\n    onRecipientChange?: (address: string) => void;\n    onScanRecipient?: () => void;\n    /** Enables the receive view, offered in the From picker before a wallet is connected. */\n    receive?: SwapReceive;\n    receiving?: boolean;\n    onReceivingChange?: (receiving: boolean) => void;\n    /** The host validates, quotes and executes. HIG never submits a transaction. */\n    onSubmit: (action: SwapAction) => void;\n    /** The host's submit is in flight: the action shows a spinner and ignores presses, the keypad, Max and Test leave the amount as it is, and the action keeps its ready name (or `submittingLabel`, or a held action's `actionStatus`) even when the host has cleared the amount meanwhile, never “Enter an amount” or the balance check. */\n    submitting?: boolean;\n    /** What the action says while `submitting`, in place of its ready name: Burning…. Host text. */\n    submittingLabel?: string;\n    /** Called after the panel clears its entry and both tokens (through `onFromChange(null)` / `onToChange(null)`), so the host can drop its quote. */\n    onReset?: () => void;\n    /** On native there is no hardware keyboard to rely on, so `auto` shows the keypad; `never` hides it. */\n    /** `false` fixes both amounts to `denomination` (dollars by default): the conversion capsule under each amount and the denomination setting are not shown. For hosts that only have one of the two, for example no token price. */\n    denominationSwitch?: boolean;\n    /** A fixed destination in place of the To token. The To card becomes compact (no picker, no amount), the panel is one-way, and the action is ready once the From side is. `onSubmit` receives `'send'`. */\n    destination?: SwapDestination;\n    /** Label and value rows on the bottom card, such as a staked balance or a fee tier. With no To token and no destination they are the bottom card on their own, and the panel behaves as it does for a destination. */\n    details?: readonly SwapDetail[];\n    /** A line under the cards: a limit, a delay, a warning. `noteTone` tints it. */\n    note?: React.ReactNode;\n    noteTone?: 'muted' | 'warning' | 'negative';\n    /** With `title`: accessible name of an info button on the trailing edge of the header that shows `note` in a popover instead of under the cards: About unstaking. */\n    noteInfo?: string;\n    /** Heading above the cards, for a panel that is its own screen or sheet, drawn as the shared `ScreenHeader` (the title centred, 17/24, in a 44dp row) like every other block. `onBack` adds Back on its leading edge. Test IDs `swap-header`, `swap-back` and `swap-title`. */\n    title?: string;\n    onBack?: () => void;\n    /** With `title`: `nativeID` of the heading, so a sheet around the panel can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** `false` leaves the action button on its own, full width: no settings and no reset button. */\n    controls?: boolean;\n    /** Decoration before the action text. */\n    actionIcon?: React.ReactNode;\n    /** Keep a side's token fixed: its card shows the token but does not open the picker. Use with `from` / `to` or their defaults. */\n    lockFrom?: boolean;\n    lockTo?: boolean;\n    /** Names the action when it is ready, in place of Send, Swap or Bridge: for example Stake, Deposit or Withdraw. The host supplies the translated text. */\n    actionLabel?: string;\n    /** Holds the action for a reason only the host knows: below a minimum, no quote yet, a closed market. The panel's own checks (a token, an amount, the balance) still apply first. */\n    actionDisabled?: boolean;\n    /** What the held action says, for example “Below minimum” or, while `submitting`, “Signing…” (a `submittingLabel` wins over it). Without it the action keeps its ready name. */\n    actionStatus?: string;\n    /** `destructive` for an action that cannot be undone, such as a burn. */\n    actionIntent?: 'primary' | 'destructive';\n    /** Refuses a key that would take the amount past the From balance, so the entry never reads more than the user holds. */\n    limitToBalance?: boolean;\n    /** Host content above the From card, such as a pending transfer. */\n    banner?: React.ReactNode;\n    /** Host content under the action, such as recent activity. */\n    footer?: React.ReactNode;\n    /** One direction only, top to bottom: the control between the cards becomes a down arrow instead of the flip button, and the pair cannot be exchanged. */\n    oneWay?: boolean;\n    keypad?: 'auto' | 'always' | 'never';\n    /** Web only (⌘F / ⌘K picker shortcuts); accepted and ignored so one example serves both platforms. */\n    shortcuts?: boolean;\n    /** Web only (page-wide digit capture); accepted and ignored. */\n    captureKeyboard?: boolean;\n    /** Host rows for the settings view, such as language or theme. */\n    settings?: React.ReactNode;\n    /** The view on show. Pickers and settings push inside the panel's own bounds; Back pops. Uncontrolled when omitted. */\n    view?: SwapView;\n    onViewChange?: (view: SwapView) => void;\n    /** Web only; accepted and ignored. */\n    className?: string;\n    style?: StyleProp<ViewStyle>;\n}"
       },
       "SwapToken": {
         "entry": "blocks",
@@ -2074,7 +2070,7 @@
       },
       "SwapDetail": {
         "entry": "swap-block",
-        "signature": "export interface SwapDetail {\n    label: string; /** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `AnimatedNumberReadout` when it changes. */\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string; /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */\n    formattedValue?: string;\n}"
+        "signature": "export interface SwapDetail {\n    label: string; /** Text is shown as given. A number is formatted with `options` between `prefix` and `suffix`, and updates through `NumberFlow` when it changes. */\n    value: string | number;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string; /** With a number `value`: host-formatted text drawn and read in place of Intl's, still moving place by place. */\n    formattedValue?: string;\n}"
       },
       "SwapView": {
         "entry": "blocks",
@@ -2102,7 +2098,7 @@
       },
       "PresetPickerBlockProps": {
         "entry": "preset-picker-block",
-        "signature": "export interface PresetPickerBlockProps<T extends string | number = number> {\n    /** Heading of the header. Leave it out for a pane whose host draws its own header: the block then starts at the headline figure. */\n    title?: string;\n    /** The headline figure, the value being chosen. `null` reads as unknown. */\n    value: number | null;\n    /** Format of the headline figure, such as `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */\n    valueOptions?: Intl.NumberFormatOptions;\n    /** Text drawn before the figure. */\n    valuePrefix?: string;\n    /** Text drawn after the figure, such as `×` for leverage. */\n    valueSuffix?: string;\n    /** What the figure is read as before its value: Size. */\n    valueLabel?: string;\n    /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn and read as given, static unless `animateFormatted`; `value` still decides known or unknown. As `AnimatedNumberReadout` `formattedValue`. */\n    formattedValue?: string;\n    /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `AnimatedNumberReadout` `animateFormatted`. */\n    animateFormatted?: boolean;\n    /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. A chip without `testID` takes `<testID>-preset-<value>`. */\n    presets: readonly PresetOption<T>[];\n    /** The chip shown selected; `null` selects none, such as for a custom value. */\n    selected: T | null;\n    /** Called with the chip taken. A press on the selected chip, or on a dimmed one, does nothing. */\n    onPresetChange: (value: T) => void;\n    /** Accessible name of the chips, read as each chip's hint: Size. Defaults to `title`. */\n    presetsLabel?: string;\n    /** Chips per row. Defaults to every chip in one row. */\n    columns?: number;\n    /** Makes the chips one adjustable control that steps to the next or previous enabled chip, named by `presetsLabel` and valued by the selected chip's label. */\n    adjustable?: PresetPickerAdjustable;\n    /** The row that opens the host's own entry, drawn above the chips. */\n    custom?: PresetPickerCustom;\n    /** Fill of the selected chip, the selected custom row and the confirming action: `primary` (the default) or `destructive`. */\n    intent?: 'primary' | 'destructive';\n    /** Drawn as given between the chips and the actions, such as a muted note. */\n    children?: React.ReactNode;\n    /** Called on the confirming action. */\n    onSubmit: () => void;\n    /** Text of the confirming action: Set Size. */\n    submitLabel: string;\n    submitDisabled?: boolean;\n    /** The confirming action shows a spinner and ignores presses. */\n    busy?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in \"Cancel\". */\n    cancelLabel?: string;\n    /** Keeps the provider's feedback off the chips and both actions, for a host that plays its own cue. */\n    suppressFeedback?: boolean;\n    /** Shows Back on the leading edge of the header (needs `title`). */\n    onBack?: () => void;\n    /** Pressable props for Back, such as `{android_disableSound: true}`. */\n    backProps?: ScreenHeaderControlProps;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** `nativeID` of the title, so a sheet can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child. Needs `title`; place it in a bounded container. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** Prefix of the test IDs: `<testID>-header`, `-back`, `-title`, `-headline`, `-custom`, `-custom-value`, `-presets`, `-preset-<value>`, `-adjustable`, `-actions`, `-cancel` and `-confirm`. Defaults to `preset-picker`. */\n    testID?: string;\n}"
+        "signature": "export interface PresetPickerBlockProps<T extends string | number = number> {\n    /** Heading of the header. Leave it out for a pane whose host draws its own header: the block then starts at the headline figure. */\n    title?: string;\n    /** The headline figure, the value being chosen. `null` reads as unknown. */\n    value: number | null;\n    /** Format of the headline figure, such as `{style:'currency',currency:'USD',maximumFractionDigits:0}`. */\n    valueOptions?: Intl.NumberFormatOptions;\n    /** Text drawn before the figure. */\n    valuePrefix?: string;\n    /** Text drawn after the figure, such as `×` for leverage. */\n    valueSuffix?: string;\n    /** What the figure is read as before its value: Size. */\n    valueLabel?: string;\n    /** The host's own text for the figure, in place of formatting `value` with `valueOptions`, for a host with its own number table: `$1,250.50`. Drawn and read as given, static unless `animateFormatted`; `value` still decides known or unknown. As `NumberFlow` `formattedValue`. */\n    formattedValue?: string;\n    /** With `formattedValue`, rolls each of its digits in place, counted from the end, as `NumberFlow` `animateFormatted`. */\n    animateFormatted?: boolean;\n    /** The quick choices as chips, in order: `{value, label, disabled?, testID?}`. Labels are host text: `$25`, `Max`, `40×`. A chip without `testID` takes `<testID>-preset-<value>`. */\n    presets: readonly PresetOption<T>[];\n    /** The chip shown selected; `null` selects none, such as for a custom value. */\n    selected: T | null;\n    /** Called with the chip taken. A press on the selected chip, or on a dimmed one, does nothing. */\n    onPresetChange: (value: T) => void;\n    /** Accessible name of the chips, read as each chip's hint: Size. Defaults to `title`. */\n    presetsLabel?: string;\n    /** Chips per row. Defaults to every chip in one row. */\n    columns?: number;\n    /** Makes the chips one adjustable control that steps to the next or previous enabled chip, named by `presetsLabel` and valued by the selected chip's label. */\n    adjustable?: PresetPickerAdjustable;\n    /** The row that opens the host's own entry, drawn above the chips. */\n    custom?: PresetPickerCustom;\n    /** Fill of the selected chip, the selected custom row and the confirming action: `primary` (the default) or `destructive`. */\n    intent?: 'primary' | 'destructive';\n    /** Drawn as given between the chips and the actions, such as a muted note. */\n    children?: React.ReactNode;\n    /** Called on the confirming action. */\n    onSubmit: () => void;\n    /** Text of the confirming action: Set Size. */\n    submitLabel: string;\n    submitDisabled?: boolean;\n    /** The confirming action shows a spinner and ignores presses. */\n    busy?: boolean;\n    /** Shows Cancel on the leading side of the confirming action, the two sharing the row equally. */\n    onCancel?: () => void;\n    /** Text of Cancel. Defaults to the built-in \"Cancel\". */\n    cancelLabel?: string;\n    /** Keeps the provider's feedback off the chips and both actions, for a host that plays its own cue. */\n    suppressFeedback?: boolean;\n    /** Shows Back on the leading edge of the header (needs `title`). */\n    onBack?: () => void;\n    /** Pressable props for Back, such as `{android_disableSound: true}`. */\n    backProps?: ScreenHeaderControlProps;\n    /** A control on the trailing edge of the header, usually an IconButton. */\n    headerAction?: React.ReactNode;\n    /** `nativeID` of the title, so a sheet can name itself with `accessibilityLabelledBy` (Android). */\n    headingId?: string;\n    /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child. Needs `title`; place it in a bounded container. */\n    stickyHeader?: boolean;\n    /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */\n    stickyHeaderBackground?: string;\n    /** The scroll view used with `stickyHeader`, such as a sheet library's own. */\n    scrollComponent?: React.ComponentType<ScrollViewProps>;\n    /** Prefix of the test IDs: `<testID>-header`, `-back`, `-title`, `-headline`, `-custom`, `-custom-value`, `-presets`, `-preset-<value>`, `-adjustable`, `-actions`, `-cancel` and `-confirm`. Defaults to `preset-picker`. */\n    testID?: string;\n}"
       },
       "PresetPickerCustom": {
         "entry": "preset-picker-block",
@@ -2123,6 +2119,18 @@
       "OpenPosition": {
         "entry": "positions-block",
         "signature": "export interface OpenPosition extends Omit<ManagePositionBlockSummary, 'onSelect'> {\n    id: string;\n    side: 'long' | 'short';\n}"
+      },
+      "ReceiveBlock": {
+        "entry": "receive-block",
+        "signature": "export declare function ReceiveBlock({ mode, solanaAddress, ethereumAddress, title, onBack, headingId, onCopy }: ReceiveBlockProps): React.JSX.Element;"
+      },
+      "ReceiveBlockProps": {
+        "entry": "receive-block",
+        "signature": "export type ReceiveBlockProps = {\n    title?: string;\n    onBack?: () => void;\n    headingId?: string;\n    onCopy?: (network: ReceiveNetwork, address: string) => void | Promise<void>;\n} & ({\n    mode?: 'both';\n    solanaAddress: string;\n    ethereumAddress: string;\n} | {\n    mode: 'solana';\n    solanaAddress: string;\n    ethereumAddress?: string;\n} | {\n    mode: 'ethereum';\n    ethereumAddress: string;\n    solanaAddress?: string;\n});"
+      },
+      "ReceiveNetwork": {
+        "entry": "receive-block",
+        "signature": "export type ReceiveNetwork = 'solana' | 'ethereum';"
       },
       "ClaimRewardBlock": {
         "entry": "claim-reward-block",
@@ -2170,11 +2178,11 @@
       },
       "AltimeterChartProps": {
         "entry": "chart",
-        "signature": "export interface AltimeterChartProps extends Omit<ViewProps, 'children'> {\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    price?: number | null;\n    feed?: AltimeterFeed;\n    height?: number;\n    priceOptions?: Intl.NumberFormatOptions;\n    position?: AltimeterPosition;\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    degen?: boolean;\n    /** @deprecated Use degen. */\n    dgen?: boolean;\n}"
+        "signature": "export interface AltimeterChartProps extends Omit<ViewProps, 'children'> {\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    price?: number | null;\n    feed?: AltimeterFeed;\n    height?: number;\n    priceOptions?: Intl.NumberFormatOptions;\n    position?: AltimeterPosition;\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    degen?: boolean;\n    /** Called with each DEGEN burst: the target the displayed price just crossed and the direction it moved. Shares the burst's cooldown and reduced-motion rule. */\n    onTargetCross?: (target: AltimeterTarget, direction: 'up' | 'down') => void;\n}"
       },
       "AltimeterChart": {
         "entry": "chart",
-        "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, ...view }: AltimeterChartProps): React.JSX.Element;"
+        "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, degen, onTargetCross, ...view }: AltimeterChartProps): React.JSX.Element;"
       },
       "Checkbox": {
         "entry": "checkbox",
@@ -2202,7 +2210,7 @@
       },
       "NumberTone": {
         "entry": "data",
-        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'warning' | 'muted' | 'faint' | 'up' | 'down';"
+        "signature": "export type NumberTone = 'text' | 'positive' | 'negative' | 'warning' | 'muted' | 'faint' | 'up' | 'down' | 'action';"
       },
       "NumberReadoutStyle": {
         "entry": "data",
@@ -2296,24 +2304,28 @@
         "entry": "field",
         "signature": "export declare const SearchInput: React.ForwardRefExoticComponent<SearchInputProps & React.RefAttributes<React.ComponentRef<typeof TextInput>>>;"
       },
-      "SheetSnapPoint": {
-        "entry": "gesture-sheet-next",
-        "signature": "export type SheetSnapPoint = number | `${number}%`;"
+      "gestureSheetResize": {
+        "entry": "gesture-sheet",
+        "signature": "export declare const gestureSheetResize: {\n    duration: 270;\n    easing: import(\"react-native-reanimated\").EasingFunctionFactory;\n};"
+      },
+      "gestureSheetTravel": {
+        "entry": "gesture-sheet",
+        "signature": "export declare const gestureSheetTravel: {\n    duration: 500;\n    easing: import(\"react-native-reanimated\").EasingFunctionFactory;\n};"
       },
       "GestureSheetProps": {
-        "entry": "gesture-sheet-next",
+        "entry": "gesture-sheet",
         "signature": "export type GestureSheetProps = SheetCommonProps & (\n/** Fixed detents, as points or a percentage of the room under `topInset`. Sorted for you; `initialIndex` counts from the lowest. */\n{\n    enableDynamicSizing?: false;\n    snapPoints: readonly SheetSnapPoint[];\n    initialIndex?: number;\n    maxDynamicContentSize?: never;\n}\n/** One detent as tall as the content, up to `maxDynamicContentSize` points (default: all the room). */\n | {\n    enableDynamicSizing: true;\n    snapPoints?: never;\n    initialIndex?: never;\n    maxDynamicContentSize?: number;\n});"
       },
       "GestureSheetHost": {
-        "entry": "gesture-sheet-next",
+        "entry": "gesture-sheet",
         "signature": "export declare function GestureSheetHost({ children, style }: {\n    children: React.ReactNode;\n    style?: StyleProp<ViewStyle>;\n}): React.JSX.Element;"
       },
       "GestureSheetScrollView": {
-        "entry": "gesture-sheet-next",
+        "entry": "gesture-sheet",
         "signature": "export declare const GestureSheetScrollView: React.ForwardRefExoticComponent<Omit<import(\"react-native-reanimated\").AnimatedScrollViewProps, \"ref\"> & React.RefAttributes<Reanimated.ScrollView>>;"
       },
       "GestureSheet": {
-        "entry": "gesture-sheet-next",
+        "entry": "gesture-sheet",
         "signature": "export declare const GestureSheet: React.MemoExoticComponent<(props: GestureSheetProps) => React.JSX.Element | null>;"
       },
       "ListGroupAction": {
@@ -2478,7 +2490,7 @@
       },
       "Raised": {
         "entry": "provider",
-        "signature": "export declare function Raised({ children }: React.PropsWithChildren): React.JSX.Element;"
+        "signature": "export declare function Raised({ children, raised }: React.PropsWithChildren<{\n    raised?: boolean;\n}>): React.JSX.Element;"
       },
       "useFills": {
         "entry": "provider",
@@ -2664,6 +2676,14 @@
         "entry": "status",
         "signature": "export declare const Callout: typeof Alert;"
       },
+      "InlineNoticeProps": {
+        "entry": "status",
+        "signature": "export interface InlineNoticeProps {\n    /** Selects the decorative icon and surface tint. Defaults to info. */\n    severity?: Notice['severity'];\n    icon?: React.ReactNode;\n    title: string;\n    description: React.ReactNode;\n    testID?: string;\n    accessible?: boolean;\n}"
+      },
+      "InlineNotice": {
+        "entry": "status",
+        "signature": "export declare function InlineNotice({ severity, icon, title, description, testID, accessible }: InlineNoticeProps): React.JSX.Element;"
+      },
       "Notice": {
         "entry": "status",
         "signature": "export interface Notice {\n    id: string;\n    message: string;\n    description?: string;\n    severity: 'info' | 'success' | 'warning' | 'error';\n    action?: React.ReactNode;\n    /** Defaults to true when Toast has an onDismiss handler. */\n    closable?: boolean;\n}"
@@ -2672,13 +2692,29 @@
         "entry": "status",
         "signature": "export interface ToastProps {\n    notices: readonly Notice[];\n    onDismiss?: (id: string) => void;\n    /** Dismiss wording inside the close control's accessible name; defaults to HIGProvider messages.dismiss. The control shows an x, not text. */\n    dismissLabel?: string;\n    /** Scroll viewport limit, in dp or a percentage of the parent. Defaults to 60% of the window height. */\n    maxHeight?: DimensionValue;\n    testID?: string;\n}"
       },
+      "ToastFrameOptions": {
+        "entry": "status",
+        "signature": "export interface ToastFrameOptions {\n    severity?: Notice['severity'];\n    accent?: 'up' | 'down';\n    described?: boolean;\n    stacked?: boolean;\n}"
+      },
+      "toastFrame": {
+        "entry": "status",
+        "signature": "export declare function toastFrame(colors: Readonly<Record<string, string>>, { severity, accent, described, stacked }: ToastFrameOptions): {\n    accent: string;\n    style: ViewStyle;\n};"
+      },
       "ToastNoticeProps": {
         "entry": "status",
-        "signature": "export interface ToastNoticeProps {\n    message: string;\n    /** A second line under the message, in regular weight. */\n    description?: string;\n    severity?: Notice['severity'];\n    action?: React.ReactNode;\n    /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */\n    dismissName?: string;\n    /** Draws the close control and takes its press. Omitted, the notice has none. */\n    onDismiss?: () => void;\n    /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */\n    hug?: boolean;\n    /** Merged over the capsule's fill, radius and shadow. */\n    style?: StyleProp<ViewStyle>;\n}"
+        "signature": "export interface ToastNoticeProps {\n    message: string;\n    /** A second line under the message, smaller and muted. */\n    description?: string;\n    severity?: Notice['severity'];\n    /** The primary action, usually a `ToastAction`: inline before the close control, or in the action row of a stacked notice. */\n    action?: React.ReactNode;\n    /** A second, quieter action beside the primary one; the notice is then stacked. */\n    secondaryAction?: React.ReactNode;\n    /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode;\n    /** Takes the market direction's colour (`up`, `down`) for the border, glow and tile instead of the severity's. */\n    accent?: 'up' | 'down';\n    /** `stacked` moves the actions to a full-width row under the message. Default `inline`. */\n    layout?: 'inline' | 'stacked';\n    /** Makes the tile and message one button. */\n    onPress?: () => void;\n    /** Accessible name of the `onPress` button; defaults to the message. */\n    pressName?: string;\n    /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */\n    dismissName?: string;\n    /** Draws the close control and takes its press. Omitted, the notice has none. */\n    onDismiss?: () => void;\n    /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */\n    hug?: boolean;\n    /** Merged over the capsule's frame (border, glow, fill, radius). */\n    style?: StyleProp<ViewStyle>;\n}"
       },
       "ToastNotice": {
         "entry": "status",
-        "signature": "export declare function ToastNotice({ message, description, severity, action, dismissName, onDismiss, hug, style }: ToastNoticeProps): React.JSX.Element;"
+        "signature": "export declare function ToastNotice({ message, description, severity, action, secondaryAction, icon, accent, layout, onPress, pressName, dismissName, onDismiss, hug, style }: ToastNoticeProps): React.JSX.Element;"
+      },
+      "ToastActionProps": {
+        "entry": "status",
+        "signature": "export interface ToastActionProps {\n    children?: React.ReactNode; /** Drawn before the label. */\n    icon?: React.ReactNode;\n    onPress: () => void;\n    accessibilityLabel?: string;\n    testID?: string;\n}"
+      },
+      "ToastAction": {
+        "entry": "status",
+        "signature": "export declare function ToastAction({ children, icon, onPress, accessibilityLabel, testID }: ToastActionProps): React.JSX.Element;"
       },
       "Toast": {
         "entry": "status",
@@ -2834,7 +2870,7 @@
       },
       "ToastOptions": {
         "entry": "toast",
-        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode;\n}"
+        "signature": "export interface ToastOptions extends ToastBaseOptions {\n    action?: React.ReactNode; /** A second, quieter action; the notice is then stacked. */\n    secondaryAction?: React.ReactNode; /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */\n    icon?: React.ReactNode;\n}"
       },
       "ToasterProps": {
         "entry": "toast",
@@ -2870,11 +2906,7 @@
       },
       "WalletAddressProps": {
         "entry": "wallet-address",
-        "signature": "export interface WalletAddressProps extends Omit<WalletAddressCoreProps, 'qr'> {\n    /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR. */\n    arena?: string;\n    /** The host's own QR drawing in place of the cuer-style code; `qrValue` and `arena` are then unused and nothing is encoded. Without `cuer` installed, import `WalletAddress` from `wallet-address-core` instead. */\n    qr?: React.ReactNode;\n}"
-      },
-      "qrGeometry": {
-        "entry": "wallet-address",
-        "signature": "export declare function qrGeometry(grid: readonly (readonly boolean[])[], withArena: boolean): {\n    edge: number;\n    finders: {\n        x: number;\n        y: number;\n    }[];\n    dots: string;\n    count: number;\n    arena: {\n        origin: number;\n        size: number;\n    } | null;\n};"
+        "signature": "export interface WalletAddressProps extends Omit<WalletAddressCoreProps, 'qr'> {\n    /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */\n    qrValue?: string;\n    /** Image URL shown in the centre of the QR. */\n    arena?: string;\n    /** The host's own QR drawing in place of HIG's code; `qrValue` and `arena` are then unused and nothing is encoded. A host that draws every code itself can import `WalletAddress` from `wallet-address-core`, which loads no SVG. */\n    qr?: React.ReactNode;\n}"
       },
       "AddressReadout": {
         "entry": "address-readout",
@@ -2972,6 +3004,14 @@
         "entry": "backdrop-blur-view",
         "signature": "export declare function BackdropBlur(): React.JSX.Element | null;"
       },
+      "translucent": {
+        "entry": "button-tint",
+        "signature": "export declare function translucent(fill: string, alpha: number): string | undefined;"
+      },
+      "buttonTint": {
+        "entry": "button-tint",
+        "signature": "export declare const buttonTint: (accent: string) => string;"
+      },
       "Figure": {
         "entry": "figure",
         "signature": "export interface Figure {\n    value: number | null;\n    options?: Intl.NumberFormatOptions;\n    prefix?: string;\n    suffix?: string;\n    formattedValue?: string;\n}"
@@ -2988,49 +3028,13 @@
         "entry": "flat-list-options",
         "signature": "export declare const memoizedRenderer: {\n    readonly strictMode: true;\n};"
       },
-      "detentHeight": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function detentHeight(point: SheetSnapPoint, room: number): number;"
+      "HeaderInfoProps": {
+        "entry": "header-info",
+        "signature": "export interface HeaderInfoProps {\n    /** Accessible name of the info button: About Papertrade. */\n    label: string;\n    /** What the popover says. Host text. */\n    children: React.ReactNode;\n    /** `warning` and `negative` lead the popover with that severity's symbol in its colour. Default `muted`. */\n    tone?: 'muted' | 'warning' | 'negative';\n    /** Test ID of the button; the popover is `<testID>-popover`. Default `header-info`. */\n    testID?: string;\n}"
       },
-      "detentHeights": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function detentHeights(points: readonly SheetSnapPoint[], room: number): number[];"
-      },
-      "rubberBand": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function rubberBand(overshoot: number, limit: number): number;"
-      },
-      "dragPosition": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function dragPosition(raw: number, top: number, lowest: number, closed: number, dismissible: boolean): number;"
-      },
-      "SHEET_PROJECTION": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_PROJECTION = 0.18;"
-      },
-      "SHEET_FLICK": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_FLICK = 500;"
-      },
-      "releaseTarget": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function releaseTarget(position: number, velocity: number, positions: readonly number[], closed: number, dismissible: boolean): number;"
-      },
-      "SHEET_SPRING": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_SPRING: {\n    readonly damping: 36;\n    readonly stiffness: 320;\n    readonly mass: 1;\n    readonly overshootClamping: true;\n};"
-      },
-      "backdropProgress": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function backdropProgress(position: number, lowest: number, closed: number): number;"
-      },
-      "SHEET_RESIZE": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare const SHEET_RESIZE: {\n    readonly duration: 270;\n    readonly curve: readonly [0.26, 0.08, 0.25, 1];\n};"
-      },
-      "validateSnapPoints": {
-        "entry": "gesture-sheet-model",
-        "signature": "export declare function validateSnapPoints(points: readonly SheetSnapPoint[], initialIndex?: number): void;"
+      "HeaderInfo": {
+        "entry": "header-info",
+        "signature": "export declare function HeaderInfo({ label, children, tone, testID }: HeaderInfoProps): React.JSX.Element;"
       },
       "SearchIcon": {
         "entry": "icons",
@@ -3128,6 +3132,10 @@
         "entry": "sheet-header-glow",
         "signature": "export declare const GestureSheetHeaderContext: React.Context<\"custom\" | \"default\" | false>;"
       },
+      "GestureSheetSurfaceContext": {
+        "entry": "sheet-header-glow",
+        "signature": "export declare const GestureSheetSurfaceContext: React.Context<string | undefined>;"
+      },
       "useBlockHorizontalInset": {
         "entry": "sheet-header-glow",
         "signature": "export declare function useBlockHorizontalInset(): 0 | 8;"
@@ -3140,9 +3148,9 @@
         "entry": "sheet-header-glow",
         "signature": "export declare function sheetGripStyle(accent: string): {\n    width: number;\n    height: number;\n    borderRadius: number;\n    backgroundColor: string;\n    boxShadow: {\n        offsetX: number;\n        offsetY: number;\n        blurRadius: number;\n        color: string;\n    }[];\n};"
       },
-      "SheetHeaderGlow": {
+      "SheetHeaderScrim": {
         "entry": "sheet-header-glow",
-        "signature": "export declare function SheetHeaderGlow({ height, backdrop }: {\n    height?: number;\n    backdrop?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function SheetHeaderScrim({ backdrop }: {\n    backdrop: string;\n}): React.JSX.Element;"
       },
       "StaticLoadingRing": {
         "entry": "static-loading-ring",
@@ -3272,11 +3280,11 @@
       },
       "AltimeterChart": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, dgen, degen, style, ...props }: AltimeterChartProps): React.JSX.Element;"
+        "signature": "export declare function AltimeterChart({ summary, paused, price, feed, height, priceOptions, position, targets, targetLabelInsets, degen, onTargetCross, style, ...props }: AltimeterChartProps): React.JSX.Element;"
       },
       "AltimeterChartProps": {
         "entry": "@bloxwap/hig/chart",
-        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Shade the trail to break-even and color the capsule by actual P&L. */\n    position?: AltimeterPosition;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Horizontal dotted levels with optional right-aligned labels and CSS colors. Offscreen labels pin and stack at the edges. Use stable, unique IDs. */\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */\n    degen?: boolean;\n    /** @deprecated Use degen. */\n    dgen?: boolean;\n}"
+        "signature": "export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLElement>, 'children'> {\n    /** Text alternative shown as the figure's caption, for example what the chart tracks and where the price comes from. */\n    summary: string;\n    /** Suspend chart frames while an opaque overlay covers the plot. */\n    paused?: boolean;\n    /** Latest price, owned by the host. `null` reads as waiting for a price. Omit it to use `feed`. */\n    price?: number | null;\n    /** Live price source, used only while `price` is omitted. Defaults to `bitcoinPrice`. Keep its identity stable. */\n    feed?: AltimeterFeed;\n    /** Shade the trail to break-even and color the capsule by actual P&L. */\n    position?: AltimeterPosition;\n    /** Chart height in pixels. Default 320. */\n    height?: number;\n    /** Format of the current price and the ladder. Defaults to US dollars with the digits the ladder needs. */\n    priceOptions?: Intl.NumberFormatOptions;\n    /** Horizontal dotted levels with optional right-aligned labels and CSS colors. Offscreen labels pin and stack at the edges. Use stable, unique IDs. */\n    targets?: readonly AltimeterTarget[];\n    /** Top and bottom clearance for target text only. Defaults to 8 per edge. */\n    targetLabelInsets?: TargetLabelInsets;\n    /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */\n    degen?: boolean;\n    /** Called with each DEGEN burst: the target the displayed price just crossed and the direction it moved. Shares the burst's cooldown and reduced-motion rule. */\n    onTargetCross?: (target: AltimeterTarget, direction: 'up' | 'down') => void;\n}"
       },
       "AltimeterTarget": {
         "entry": "@bloxwap/hig/chart",
@@ -3362,6 +3370,18 @@
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function easeInOut(t: number): number;"
       },
+      "AltimeterTweenState": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type AltimeterTweenState = {\n    from: number;\n    to: number;\n    start: number;\n    tangent: number;\n};"
+      },
+      "ALTIMETER_TWEEN_IDLE": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare const ALTIMETER_TWEEN_IDLE: AltimeterTweenState;"
+      },
+      "stepPriceTween": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function stepPriceTween(state: AltimeterTweenState, target: number, now: number, snap?: boolean): {\n    value: number;\n    state: AltimeterTweenState;\n};"
+      },
       "priceTween": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function priceTween(): {\n    reset(): void;\n    update(target: number, now: number, snap?: boolean): number;\n};"
@@ -3405,6 +3425,70 @@
       "targetCrossings": {
         "entry": "@bloxwap/hig/chart",
         "signature": "export declare function targetCrossings({ immutableTargets }?: {\n    immutableTargets?: boolean | undefined;\n}): {\n    reset(): void;\n    update(price: number, targets: readonly AltimeterTarget[], enabled?: boolean): AltimeterTarget[];\n};"
+      },
+      "TrailSpace": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailSpace {\n    t0: number;\n    p0: number;\n    spacing: number;\n}"
+      },
+      "trailX": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailX(space: TrailSpace, t: number): number;"
+      },
+      "trailY": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailY(space: TrailSpace, price: number): number;"
+      },
+      "trailScroll": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailScroll(space: TrailSpace, now: number, price: number, pixel: number): {\n    x: number;\n    y: number;\n};"
+      },
+      "tweenValue": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function tweenValue(state: AltimeterTweenState, now: number): number;"
+      },
+      "tweenVelocity": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function tweenVelocity(state: AltimeterTweenState, now: number): number;"
+      },
+      "TrailSegment": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export type TrailSegment = readonly [number, number, number, number, number, number, number, number];"
+      },
+      "TweenChange": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TweenChange {\n    at: number;\n    state: AltimeterTweenState;\n}"
+      },
+      "liveSegments": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function liveSegments(log: readonly TweenChange[], from: number, until: number): TrailSegment[];"
+      },
+      "TrailPatch": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailPatch {\n    space: number;\n    left: number;\n    top: number;\n    width: number;\n    height: number;\n    d: string;\n}"
+      },
+      "TrailTile": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailTile extends TrailPatch {\n    key: number; /** Chart time at the tile's right edge. */\n    until: number; /** The tile holds one level line. */\n    level?: boolean;\n}"
+      },
+      "TrailArea": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailArea extends TrailPatch {\n    from: number;\n    to: number;\n}"
+      },
+      "TrailView": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailView {\n    /** Settled history, oldest first. The array is replaced only when a tile is added or dropped. */\n    tiles: readonly TrailTile[];\n    /** The part that still changes: the newest samples, the tween in flight and the line it will follow, drawn past the pill. */\n    live: TrailPatch | null;\n    area: TrailArea | null;\n}"
+      },
+      "TrailViewport": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailViewport {\n    /** Visible length of the trail in pixels, from the chart's left inset to the pill. */\n    span: number;\n    /** Chart height in pixels. */\n    height: number;\n    /** The price at the pill now. */\n    display: number;\n    /** Break-even price; the area is drawn only for a valid one. */\n    basis?: number;\n}"
+      },
+      "TrailOptions": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export interface TrailOptions {\n    /** Tile width in layout pixels. A whole number of device pixels, so neighbouring tiles meet without a seam. */\n    tile: number;\n    /** Device pixels per layout pixel. */\n    pixel: number;\n    /** How far ahead of the pill the patch is drawn, in ms. Default 2000. */\n    lookahead?: number;\n    /** The patch is drawn again when the pill comes within this many ms of its end. Default 500. */\n    reserve?: number;\n}"
+      },
+      "trailTiles": {
+        "entry": "@bloxwap/hig/chart",
+        "signature": "export declare function trailTiles({ tile, pixel, lookahead, reserve }: TrailOptions): {\n    reset(): void;\n    /** Whether a first price has been given since the last reset. */\n    readonly seeded: boolean;\n    /** The space new pieces are drawn in: 0 or 1. */\n    readonly current: number;\n    /** Chart time at the left edge of the next tile, where a new space takes over from the one before. */\n    readonly edge: number;\n    /** Draw in `space`, as the first (default) or second of the two. Call after `reset`, before `seed`. */\n    start(space: TrailSpace, index?: 0 | 1): void;\n    /** Draw every later piece in the other space, and return its index. Tiles already drawn stay in theirs until they leave the chart. */\n    flip(space: TrailSpace): number;\n    /** A level trail `keep` ms long ending at `now`, as the chart shows before it has any history. */\n    seed(now: number, price: number, keep: number): void;\n    /** The tween changed course at `at`: the line ahead of the pill is drawn again. */\n    retarget(state: AltimeterTweenState, at: number): void;\n    view(now: number, viewport: TrailViewport): TrailView;\n};"
       },
       "nextChampionsLeagueQuestion": {
         "entry": "@bloxwap/hig/chart",

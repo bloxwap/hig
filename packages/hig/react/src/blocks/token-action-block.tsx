@@ -1,11 +1,13 @@
 "use client";
+import {TriangleAlert} from '@bloxwap/icons/react/triangle-alert';
+import {CircleX} from '@bloxwap/icons/react/circle-x';
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts/format';
 import * as en from '@bloxwap/hig/contracts/messages';
 import type {HIGMessages} from '@bloxwap/hig/contracts/messages';
 import {useHIG,useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {BarMark,type BarMarkElement} from '../bar-mark.js';
 import {ScreenHeader} from './screen-header.js';
 export type {BarMarkElement,BarMarkFigure,BarMarkTone} from '../bar-mark.js';
@@ -45,7 +47,7 @@ export interface TokenActionBlockProps extends Omit<React.HTMLAttributes<HTMLEle
  stickyHeader?:boolean;
  /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
  headingId?:string;
- /** A line under the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */
+ /** A line above the actions, for example why some are missing. `noteTone` tints it as in `SwapBlock`. */
  note?:React.ReactNode;noteTone?:'muted'|'warning'|'negative';
 }
 const usd={style:'currency',currency:'USD'} as const,unitsFormat={maximumFractionDigits:6} as const,held=(value:number)=>Number.isFinite(value)&&value>0;
@@ -57,14 +59,14 @@ export function TokenActionBlock({symbol,name,value,units,unitsSuffix,unitsOptio
  const total=value!==undefined?value:(assets??[]).reduce((sum,asset)=>sum+(held(asset.value)?asset.value:0),0);
  // With no dollar value the units are the headline, as an AccountBlock row headlines them.
  const showChains=chains!==undefined&&chains.length>1;
- const headline=units!==undefined&&value==null?<AnimatedNumberReadout key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout key='value' value={total} options={usd}/>;
+ const headline=units!==undefined&&value==null?<NumberFlow key='units' value={units} options={unitsOptions} suffix={unitsSuffix}/>:<NumberFlow key='value' value={total} options={usd}/>;
  return <section {...rest} className={`hig-token-card${className?` ${className}`:''}`}>
   <ScreenHeader title={symbol} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
   {(assets||showChains)&&<div className='hig-token-bars'>
    {assets&&<BarMark surface={false} title={name??symbol} description={headline} elements={assets}/>}
    {showChains&&<BarMark surface={false} title={chainsTitle??messages.swapChains??en.swapChains} description={formatNumber(chains.filter(chain=>held(chain.value)).length,locale)} elements={chains}/>}
   </div>}
+  {note!=null&&note!==false&&<p className='hig-swap-note hig-token-note' data-tone={noteTone} role='note'>{noteTone==='muted'?note:<>{noteTone==='warning'?<TriangleAlert size={20} aria-hidden='true'/>:<CircleX size={20} aria-hidden='true'/>}<span>{note}</span></>}</p>}
   {actions.length>0&&<div className='hig-token-actions'>{actions.map(action=><Button key={action.id} fullWidth intent={action.intent??'secondary'} disabled={action.disabled} onClick={action.onSelect}>{tokenActionLabel(action,messages)}</Button>)}</div>}
-  {note!=null&&note!==false&&<p className='hig-swap-note hig-token-note' data-tone={noteTone} role='note'>{note}</p>}
  </section>;
 }

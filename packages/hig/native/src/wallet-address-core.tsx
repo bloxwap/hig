@@ -37,7 +37,7 @@ export function WalletAddressFrame({address,kind,code,size=196,onCopy,announce=t
  </View>;
 }
 /**
- * `WalletAddress` without the QR encoder: the host passes the code as `qr`, so neither `cuer` nor `react-native-svg` is
+ * `WalletAddress` without the QR encoder: the host passes the code as `qr`, so `react-native-svg` is not
  * needed. The address column, the copy button, its hint and the notice are the same as `WalletAddress` from `wallet-address`.
  */
 export function WalletAddress({qr,...props}:WalletAddressCoreProps){

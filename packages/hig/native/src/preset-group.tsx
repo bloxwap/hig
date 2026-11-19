@@ -1,3 +1,4 @@
+import {primaryButtonInk} from '@bloxwap/hig/tokens';
 import {assertUniqueKeys} from '@bloxwap/hig/contracts/invariants';
 import React from 'react';
 import {View,type StyleProp,type ViewStyle} from 'react-native';
@@ -40,7 +41,7 @@ function PresetChip<T extends string|number>({option,selected,blocked,intent,sel
 }){
  const choose=()=>{if(!blocked&&!selected)selection.current(option.value);};
  const colors=useColors();
- const color=blocked?colors.muted:!selected?colors.text:intent==='primary'?colors.onAction:colors.background;
+ const color=blocked?colors.muted:!selected?colors.text:intent==='up'?colors.up:intent==='down'?colors.down:intent==='destructive'?colors.negative:primaryButtonInk(colors);
  const chipID=option.testID??(groupTestID===undefined?undefined:`${groupTestID}-${option.value}`);
  return <Button testID={chipID} intent={selected?intent:'secondary'} disabled={blocked||undefined} accessibilityLabel={option.label} accessibilityState={{selected}} accessibilityHint={label||undefined} hitSlop={chipSlop} suppressFeedback contentMode='custom' onPress={choose} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>
   <Text testID={option.testID?`${option.testID}-label`:groupTestID===undefined?undefined:`${groupTestID}-${option.value}-label`} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75} style={{alignSelf:'stretch',color,fontSize:16,fontWeight:'600',textAlign:'center'}}>{option.label}</Text>

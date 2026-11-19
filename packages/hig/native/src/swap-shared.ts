@@ -3,7 +3,7 @@ import {createPickerSearch} from '@bloxwap/hig/contracts/picker-search';
 import type React from 'react';
 // Pure helpers for the SwapBlock block. Same behaviour as the web block's helpers; kept separate so native never imports the react entry.
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
-/** A live figure in place of a line of text: formatted with `options` between `prefix` and `suffix`, and updated through `AnimatedNumberReadout` when `value` changes. For example `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
+/** A live figure in place of a line of text: formatted with `options` between `prefix` and `suffix`, and updated through `NumberFlow` when `value` changes. For example `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
 export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;
  /** Host-formatted text for `value`, drawn and read in place of Intl's and still moving place by place. Never parsed back. */
  formattedValue?:string}

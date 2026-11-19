@@ -18,7 +18,7 @@ import { Wallet } from '@bloxwap/icons/react/wallet';
 import { X } from '@bloxwap/icons/react/x';
 import {decimal,decimalMultiply,decimalDivide} from '@bloxwap/hig/contracts/decimal';
 import React from 'react';
-import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../animated-number.js';
+import {NumberFlow,type AnimatedNumberProps} from '../../animated-number.js';
 import {PressDecoration} from '../../provider.js';
 import {figureProps} from '../../figure.js';
 /** An asset on one chain. The host supplies every value; HIG formats and lays it out. */
@@ -86,10 +86,10 @@ export {fuzzyMatch} from '@bloxwap/hig/contracts/picker-search';
 const numberMark='\uE000';
 /** A number in the swap card that can change while it is on screen. It always updates place by place (never by swapping the text), and `template` keeps it inside its localized sentence: `template={messages.swapFee}` renders "Fee " around the moving amount. */
 export function SwapNumber({template,...number}:AnimatedNumberProps&{template?:(value:string)=>string}){
- if(!template)return <AnimatedNumberReadout {...number}/>;
+ if(!template)return <NumberFlow {...number}/>;
  const [before,after='']=template(numberMark).split(numberMark);
  // One element, so a flex parent spaces the sentence as a single item.
- return <span>{before}<AnimatedNumberReadout {...number}/>{after}</span>;
+ return <span>{before}<NumberFlow {...number}/>{after}</span>;
 }
 /** A figure the host supplies as a number so it can update place by place: `{value:234.68,options:{style:'currency',currency:'USD'},suffix:' available'}`. */
 export interface SwapFigure {value:number;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;

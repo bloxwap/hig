@@ -6,7 +6,6 @@ import {tokens,nativeMetrics} from '@bloxwap/hig/tokens';
 import {capsuleRadius} from './modal-radius.js';
 import {CloseIcon,EmptyIcon,SeverityIcon} from './icons.js';
 import {notificationDelta} from '@bloxwap/hig/contracts/announcements';
-import {AvatarFrame,sameFrame,type AvatarFrameProps} from './avatar-frame.js';
 import {ActivityIndicator,Animated,Easing,View,ScrollView,useWindowDimensions,Platform,type DimensionValue,type StyleProp,type ViewProps,type ViewStyle,type TextProps} from 'react-native';
 import {Text,Heading,Surface,Stack} from './surface.js';
 import {formatNumber} from './number-format.js';
@@ -31,8 +30,34 @@ export function Badge({children,tone='neutral',dot,testID}:BadgeProps){const fil
 /** Opaque sRGB blend of `tone` into `base` (both `#rrggbb`): the native counterpart of CSS `color-mix`. */
 const tint=(tone:string,base:string,amount:number)=>'#'+[1,3,5].map(i=>Math.round(parseInt(base.slice(i,i+2),16)*(1-amount)+parseInt(tone.slice(i,i+2),16)*amount).toString(16).padStart(2,'0')).join('');
 /** Severity tints the fill 10% and colours the title from a token role (info/note → info, success/tip → positive, warning, error → negative; default → 6% of `text`), with no stroke or glow; `tone` swaps in another approved token role, never a raw colour. A non-string title renders inside the Heading, so pass strings or inline Text; its visible text is announced. A string or number child is drawn in a HIG `Text`. `announce` (default true) speaks the title and body when they appear or change; pass `false` for guidance that is present from the start. */
-export function Alert({title,children:body,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;/** Speaks the alert when it appears or changes (iOS announcement, Android live region). Defaults to true. */announce?:boolean}>){const children=React.Children.map(body,child=>typeof child==='string'||typeof child==='number'?<Text>{child}</Text>:child);const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.text:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderRadius:nativeMetrics.space.xl+capsuleRadius,backgroundColor:tint(accent,colors.surface,neutral?0.06:0.1)}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><Heading style={{color:accent}}>{title}</Heading>{children}{action}</Surface>;}
+export function Alert({title,children:body,severity='info',tone,action,announce=true}:React.PropsWithChildren<{title:React.ReactNode;severity?:AlertSeverity;tone?:AccentRole;action?:React.ReactNode;/** Speaks the alert when it appears or changes (iOS announcement, Android live region). Defaults to true. */announce?:boolean}>){const children=React.Children.map(body,child=>typeof child==='string'||typeof child==='number'?<Text>{child}</Text>:child);const colors=useColors();const neutral=severity==='default'&&tone===undefined;const accent=neutral?colors.text:roleColor(tone,severityRole[severity as keyof typeof severityRole]??'info',colors);const message=[plainText(title),blockText(children)].filter(Boolean).join('. ');const previous=useRef('');useEffect(()=>{const key=severity+message;if(announce&&key!==previous.current){previous.current=key;if(Platform.OS==='ios')speak(message,severity);}});return <Surface style={{gap:12,borderRadius:nativeMetrics.space.xl+capsuleRadius,backgroundColor:tint(accent,colors.surface,neutral?0.06:0.1)}} accessibilityLiveRegion={announce&&Platform.OS!=='ios'?(severity==='error'?'assertive':'polite'):'none'}><View style={{flexDirection:"row",alignItems:"center",gap:8}}><View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden><SeverityIcon kind={severity==='tip'?'success':severity==='note'||severity==='default'?'info':severity} color={accent}/></View><Heading style={{color:colors.text,flexShrink:1}}>{title}</Heading></View>{children}{action}</Surface>;}
 export const Callout=Alert;
+
+export interface InlineNoticeProps {
+ /** Selects the decorative icon and surface tint. Defaults to info. */
+ severity?:Notice['severity'];
+ icon?:React.ReactNode;
+ title:string;
+ description:React.ReactNode;
+ testID?:string;
+ accessible?:boolean;
+}
+/** An inline severity card with a decorative leading icon beside a stacked title and description. */
+export function InlineNotice({severity='info',icon,title,description,testID,accessible}:InlineNoticeProps){
+ const colors=useColors();
+ const accent=colors[severityRole[severity]];
+ const padding=nativeMetrics.space.xl;
+ return <Surface testID={testID} accessible={accessible} style={{padding,borderRadius:capsuleRadius+padding,flexDirection:'row',gap:12,alignItems:'flex-start',backgroundColor:tint(accent,colors.surface,0.1)}}>
+  <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden style={{width:capsuleRadius*2,height:capsuleRadius*2,borderRadius:capsuleRadius,alignItems:'center',justifyContent:'center',backgroundColor:tint(accent,colors.surface,0.2)}}>
+   {icon??<SeverityIcon kind={severity} color={accent}/>}
+  </View>
+  <View style={{flex:1,minWidth:0,gap:4}}>
+   <Heading testID={testID&&testID+'-title'} style={{fontSize:17,lineHeight:24}}>{title}</Heading>
+   <Text testID={testID&&testID+'-body'}>{description}</Text>
+  </View>
+ </Surface>;
+}
+
 export interface Notice {
  id:string;
  message:string;
@@ -62,32 +87,86 @@ function useLoop(active:boolean,duration:number,easing:(value:number)=>number=Ea
  },[duration,easing,value]);
  return value;
 }
+const severityAccent={info:'info',success:'positive',warning:'warning',error:'negative'} as const;
+const hex=(color:string)=>/^#[0-9a-f]{6}$/i.test(color);
+/** `color` at `alpha` (0–1) over whatever is behind, as web color-mix with transparent; a colour that is not #rrggbb stays opaque. */
+const alphaOf=(color:string,alpha:number)=>hex(color)?color+Math.round(alpha*255).toString(16).padStart(2,'0'):color;
+export interface ToastFrameOptions {severity?:Notice['severity'];accent?:'up'|'down';described?:boolean;stacked?:boolean}
+/**
+ * A notice's frame: its accent colour (the severity's role, or the market direction's) and the
+ * pill's border, glow, fill and radius. `ToastNotice` draws it; the `Toaster` draws it on the card
+ * that moves, so a notice behind a collapsed stack keeps its edge while its content is hidden.
+ */
+export function toastFrame(colors:Readonly<Record<string,string>>,{severity='info',accent,described=false,stacked=false}:ToastFrameOptions):{accent:string;style:ViewStyle}{
+ const color=accent?colors[accent]:colors[severityAccent[severity]];
+ return {accent:color,style:{borderWidth:2,borderColor:color,backgroundColor:colors.background,borderRadius:stacked?32:described?16:9999,boxShadow:hex(color)?`0 0 24px ${alphaOf(color,0.55)}`:undefined}};
+}
+const ToastActionContext=React.createContext<{accent:string;rank:'primary'|'secondary'}|null>(null);
 export interface ToastNoticeProps {
  message:string;
- /** A second line under the message, in regular weight. */
+ /** A second line under the message, smaller and muted. */
  description?:string;
  severity?:Notice['severity'];
+ /** The primary action, usually a `ToastAction`: inline before the close control, or in the action row of a stacked notice. */
  action?:React.ReactNode;
+ /** A second, quieter action beside the primary one; the notice is then stacked. */
+ secondaryAction?:React.ReactNode;
+ /** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */
+ icon?:React.ReactNode;
+ /** Takes the market direction's colour (`up`, `down`) for the border, glow and tile instead of the severity's. */
+ accent?:'up'|'down';
+ /** `stacked` moves the actions to a full-width row under the message. Default `inline`. */
+ layout?:'inline'|'stacked';
+ /** Makes the tile and message one button. */
+ onPress?:()=>void;
+ /** Accessible name of the `onPress` button; defaults to the message. */
+ pressName?:string;
  /** Accessible name of the close control; defaults to HIGProvider `messages.dismissNotice` around the message. */
  dismissName?:string;
  /** Draws the close control and takes its press. Omitted, the notice has none. */
  onDismiss?:()=>void;
  /** Sizes the capsule to its content, up to the room it has, instead of filling its parent. `Toaster` draws it this way. Default `false`. */
  hug?:boolean;
- /** Merged over the capsule's fill, radius and shadow. */
+ /** Merged over the capsule's frame (border, glow, fill, radius). */
  style?:StyleProp<ViewStyle>;
 }
-/** One notice as a single capsule row: severity symbol on the leading edge, message with an optional description under it, optional action, close on the trailing edge. Shared by `Toast` and the transient `Toaster` of `@bloxwap/hig/native/toast`; it announces nothing itself. */
-export function ToastNotice({message,description,severity='info',action,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
+/**
+ * One notice: a pill with a border and glow in its accent (the severity's colour, or the market
+ * direction's), the symbol in a tinted tile, the message with an optional muted description, the
+ * actions as tinted pills and the close control on the trailing edge. A longer notice or one with
+ * two actions stacks its actions under the message. Shared by `Toast` and the transient `Toaster`
+ * of `@bloxwap/hig/native/toast`; it announces nothing itself.
+ */
+export function ToastNotice({message,description,severity='info',action,secondaryAction,icon,accent,layout='inline',onPress,pressName,dismissName,onDismiss,hug=false,style}:ToastNoticeProps){
  const messages=useMessageOverrides();const direction=useLayoutDirection();const colors=useColors();
- const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:'center'}}><CloseIcon color={colors.muted}/></Button>:null;
- return <View accessibilityLiveRegion='none' style={[{direction,flexDirection:'row',alignItems:'center',gap:10,minHeight:44,paddingVertical:6,paddingHorizontal:12,borderRadius:22,backgroundColor:colors.nested,boxShadow:'0 4px 16px #0006'},style]}>
-  <SeverityIcon kind={severity} color={colors[severityRole[severity]]}/>
-  {/* Filling its parent, the message takes the room that is left. Hugging, nothing in the row may grow, or the row would take all the room it is offered. */}
-  <View style={hug?{flexShrink:1,minWidth:0}:{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{message}</Text>{description?<Text>{description}</Text>:null}</View>
-  {action}
+ const stacked=layout==='stacked'||secondaryAction!=null;
+ const frame=toastFrame(colors,{severity,accent,described:!!description,stacked});
+ const close=onDismiss?<Button intent='ghost' contentMode='custom' suppressFeedback accessibilityLabel={dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} hitSlop={8} onPress={onDismiss} style={{minHeight:32,minWidth:32,paddingHorizontal:0,paddingVertical:0,alignSelf:stacked?'flex-start':'center'}}><CloseIcon color={colors.muted}/></Button>:null;
+ const tile=icon===null?null:<View accessibilityElementsHidden importantForAccessibility='no-hide-descendants' aria-hidden style={{width:36,height:36,borderRadius:18,overflow:'hidden',alignItems:'center',justifyContent:'center',backgroundColor:alphaOf(frame.accent,0.15)}}>{icon??<SeverityIcon kind={severity} color={frame.accent}/>}</View>;
+ const text=<View style={hug&&!stacked?{flexShrink:1,minWidth:0}:{flex:1,minWidth:0}}><Text style={{fontWeight:'600',fontSize:14,lineHeight:18}}>{message}</Text>{description?<Text style={{fontSize:12,lineHeight:16,fontWeight:'500',color:colors.muted,marginTop:2}}>{description}</Text>:null}</View>;
+ const row={flexDirection:'row' as const,alignItems:stacked?'flex-start' as const:'center' as const,gap:12};
+ const lead=onPress?<Button intent='ghost' contentMode='custom' accessibilityLabel={pressName??message} onPress={onPress} style={[row,{flexShrink:1,flexGrow:hug&&!stacked?0:1,minWidth:0,paddingHorizontal:0,paddingVertical:0,minHeight:36,backgroundColor:'transparent'}]}>{tile}{text}</Button>:<>{tile}{text}</>;
+ const actions=(rank:'primary'|'secondary',node:React.ReactNode)=>node?<ToastActionContext.Provider value={{accent:frame.accent,rank}}>{node}</ToastActionContext.Provider>:null;
+ const primary=actions('primary',action),secondary=actions('secondary',secondaryAction);
+ if(stacked)return <View accessibilityLiveRegion='none' style={[{direction,gap:12,padding:12},frame.style,style]}>
+  <View style={row}>{lead}{close}</View>
+  {action||secondaryAction?<View style={{flexDirection:'row',gap:8}}>{primary?<View style={{flex:1}}>{primary}</View>:null}{secondary?<View style={{flex:1}}>{secondary}</View>:null}</View>:null}
+ </View>;
+ return <View accessibilityLiveRegion='none' style={[{direction,...row,minHeight:52,paddingVertical:4,paddingLeft:8,paddingRight:8},frame.style,style]}>
+  {lead}
+  {primary}
   {close}
  </View>;
+}
+export interface ToastActionProps {children?:React.ReactNode;/** Drawn before the label. */icon?:React.ReactNode;onPress:()=>void;accessibilityLabel?:string;testID?:string}
+/** A toast's action as a tinted pill in the notice's accent (muted as a secondary action). Its press is the caller's: dismiss the notice in it if it should go. */
+export function ToastAction({children,icon,onPress,accessibilityLabel,testID}:ToastActionProps){
+ const colors=useColors();const context=React.useContext(ToastActionContext);
+ const color=context?.rank==='secondary'?colors.muted:context?.accent??colors.info;
+ return <Button intent='ghost' contentMode='custom' testID={testID} accessibilityLabel={accessibilityLabel} onPress={onPress} style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6,minHeight:36,paddingHorizontal:12,paddingVertical:0,borderRadius:9999,backgroundColor:alphaOf(color,0.15)}}>
+  {icon}
+  {typeof children==='string'?<Text style={{fontWeight:'800',fontSize:14,color}}>{children}</Text>:children}
+ </Button>;
 }
 const PersistentNotice = React.memo(function PersistentNotice({
  id, message, severity, action, dismiss, formatDismiss, onDismiss, description, closable
@@ -183,14 +262,6 @@ export function EmptyState({title,description,action,illustration,titleStyle,des
  {description?<Text style={[{textAlign:'center',color:colors.muted},descriptionStyle]} maxFontSizeMultiplier={maxFontSizeMultiplier}>{description}</Text>:null}
  {action}
 </Surface>;}
-/** The Avatar frame, kept while its props are the same: a list that renders again renders no frame for the rows that did not change. */
-const StillFrame=React.memo(AvatarFrame,sameFrame);
-/**
- * A person or account as a 40dp disc: an image, else the first two letters of the name on the well fill (one step lighter inside a Surface, Dialog or sheet).
- * `size`, `square` and `decorative` are as in `@bloxwap/hig/native/avatar`, whose `Avatar` also draws a face generated from a seed; that entry needs `react-native-svg` and this one does not.
- * It renders again only when one of its props changes.
- */
-export function Avatar(props:AvatarFrameProps){return <StillFrame {...props}/>;}
 const statusRole={online:'positive',stale:'warning',offline:'muted'} as const;
 const ringEasing=Easing.out(Easing.quad);
 /** The dot carries the state colour. Online and stale emit a ring that grows and fades in that colour; offline and reduced motion stay still. */

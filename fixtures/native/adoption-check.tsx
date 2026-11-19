@@ -3,15 +3,14 @@ import {getLoadedFonts,useFonts} from 'expo-font';
 import {Linking,ScrollView,View,Text as RNText,useWindowDimensions} from 'react-native';
 import {SafeAreaProvider,SafeAreaView} from 'react-native-safe-area-context';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {BottomSheetModalProvider,BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import {HIGProvider,useColors,useHIG} from '@bloxwap/hig/native/provider';
 import {Heading,Text,Stack} from '@bloxwap/hig/native/surface';
 import {Button} from '@bloxwap/hig/native/button';
 import {RadioGroup} from '@bloxwap/hig/native/radio-group';
 import {NumberReadout} from '@bloxwap/hig/native/data';
-import {AnimatedNumberReadout} from '@bloxwap/hig/native/animated-number';
+import {NumberFlow} from '@bloxwap/hig/native/animated-number';
 import {Toast,type Notice} from '@bloxwap/hig/native/status';
-import {GestureSheet} from '@bloxwap/hig/native/gesture-sheet';
+import {GestureSheet,GestureSheetHost,GestureSheetScrollView} from '@bloxwap/hig/native/gesture-sheet';
 
 type Section='type'|'number'|'toast'|'sheet';
 type NumberLocale='en-US'|'ar-EG'|'fa-IR'|'en-u-nu-arab';
@@ -32,7 +31,7 @@ function NumberChecks(){
  return <HIGProvider locale={locale} direction={direction}><ScrollView testID='adoption-number-scroll' contentContainerStyle={{gap:12,paddingBottom:24}}>
   <View style={{flexDirection:'row',flexWrap:'wrap',gap:8}}>{numberLocales.map(item=><Button key={item} testID={`adoption-locale-${item}`} intent={locale===item?'primary':'secondary'} maxFontSizeMultiplier={1.3} onPress={()=>selectLocale(item)}>{`Locale ${item}`}</Button>)}<Button testID='adoption-number-direction' intent='secondary' maxFontSizeMultiplier={1.3} onPress={()=>setDirection(current=>current==='ltr'?'rtl':'ltr')}>{direction==='ltr'?'Use RTL':'Use LTR'}</Button></View>
   <Text testID='adoption-number-environment' maxFontSizeMultiplier={1.3}>{`Number locale ${locale} · direction ${direction} · scale ${fontScale.toFixed(2)} · motion ${reducedMotion?'reduced':'normal'}`}</Text>
-  <AnimatedNumberReadout value={value} tone='positive' label='Number flow' testID='adoption-number' duration={240} maxFontSizeMultiplier={2} style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2,maximumFractionDigits:2}}/>
+  <NumberFlow value={value} tone='positive' label='Number flow' testID='adoption-number' duration={240} maxFontSizeMultiplier={2} style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2,maximumFractionDigits:2}}/>
   <View style={{flexDirection:'row',flexWrap:'wrap',gap:8}}>
    <Button testID='adoption-number-reset' intent='secondary' maxFontSizeMultiplier={1.3} onPress={()=>show(999.99)}>Reset 999.99</Button>
    <Button testID='adoption-number-carry' intent='secondary' maxFontSizeMultiplier={1.3} onPress={()=>show(1000)}>Carry 1,000.00</Button>
@@ -71,7 +70,7 @@ function Checks(){
    <Text testID='adoption-zh-regular'>中文 中文</Text><Heading testID='adoption-zh-semibold'>中文</Heading>
    <NumberReadout value={1250.25} tone='positive' label='Positive balance' testID='adoption-positive' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
    <NumberReadout value={-250.5} tone='negative' label='Negative change' testID='adoption-negative' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
-   <AnimatedNumberReadout value={value} tone='positive' label='Animated balance' testID='adoption-animated' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
+   <NumberFlow value={value} tone='positive' label='Animated balance' testID='adoption-animated' style={{fontFamily:'BloxwapMonoRegular',fontSize:20,lineHeight:30}} options={{minimumFractionDigits:2}}/>
    <Button onPress={()=>setValue(current=>current+1)}>Update number</Button>
    <Button busy testID='adoption-busy'>Log out</Button>
   </ScrollView>:section==='number'?<NumberChecks/>:section==='toast'?<Toast testID='adoption-toast' notices={notices} onDismiss={id=>{setDismissed(current=>[...current,id]);setResult(`Dismissed request ${id}`);}}/>:<Stack>
@@ -81,7 +80,7 @@ function Checks(){
   <GestureSheet open={open} onOpenChange={setOpen} contentMode='custom' title={title} titleRef={titleRef} snapPoints={isAccount?['45%','85%']:['70%']} returnFocusRef={triggerRef}>
    <View style={{flex:1,paddingHorizontal:16,paddingBottom:16}}>
     <View style={{gap:12,paddingBottom:12}}><Heading ref={titleRef} testID='adoption-card-title'>{title}</Heading><View style={{flexDirection:'row',flexWrap:'wrap',gap:12}}><Button testID='adoption-switch-card' intent='secondary' onPress={()=>setCard(isAccount?'activity':'account')}>{isAccount?'Activity':'Back to account'}</Button><Button testID='adoption-close-sheet' intent='secondary' onPress={()=>{setOpen(false);setResult('Sheet closed');}}>Done</Button></View></View>
-    <BottomSheetScrollView key={card} testID='adoption-card-scroll' contentContainerStyle={{gap:12,paddingBottom:24}}>{Array.from({length:30},(_,index)=><Text key={index}>{`${title} row ${index+1}`}</Text>)}<Button testID='adoption-card-end' onPress={()=>setResult(`Reached ${card} end`)}>{`End ${card}`}</Button></BottomSheetScrollView>
+    <GestureSheetScrollView key={card} testID='adoption-card-scroll' contentContainerStyle={{gap:12,paddingBottom:24}}>{Array.from({length:30},(_,index)=><Text key={index}>{`${title} row ${index+1}`}</Text>)}<Button testID='adoption-card-end' onPress={()=>setResult(`Reached ${card} end`)}>{`End ${card}`}</Button></GestureSheetScrollView>
    </View>
   </GestureSheet>
  </SafeAreaView>;
@@ -94,5 +93,5 @@ export default function AdoptionCheck(){
  /* eslint-enable @typescript-eslint/no-require-imports */
  if(error)return <Text accessibilityRole='alert'>{`Adoption fonts failed: ${error.message}`}</Text>;
  if(!loaded)return <Text>Loading adoption faces…</Text>;
- return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><HIGProvider locale='en-US' fontFamily='BloxwapSansRegular' fontFamilies={families} fontFamiliesByScript={scriptFamilies} monoFontFamily='BloxwapMonoRegular'><BottomSheetModalProvider><Checks/></BottomSheetModalProvider></HIGProvider></SafeAreaProvider></GestureHandlerRootView>;
+ return <GestureHandlerRootView style={{flex:1}}><SafeAreaProvider><HIGProvider locale='en-US' fontFamily='BloxwapSansRegular' fontFamilies={families} fontFamiliesByScript={scriptFamilies} monoFontFamily='BloxwapMonoRegular'><GestureSheetHost><Checks/></GestureSheetHost></HIGProvider></SafeAreaProvider></GestureHandlerRootView>;
 }

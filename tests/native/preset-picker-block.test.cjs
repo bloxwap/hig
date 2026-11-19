@@ -8,7 +8,7 @@ const {PresetPickerBlock}=require('../../packages/hig/native/src/preset-picker-b
 const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {PresetGroup}=require('../../packages/hig/native/src/preset-group');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 const steps=[25,50,100,250,500,1000];
@@ -29,7 +29,7 @@ it('draws the Size pane under the host prefix: no header without a title, the fi
  const preset=jest.fn(),custom=jest.fn(),submit=jest.fn(),cancel=jest.fn();
  const view=mount({testID:'size-lev-size',presetsLabel:'Size',columns:4,onPresetChange:preset,custom:{label:'Custom amount',onSelect:custom},onSubmit:submit,onCancel:cancel,cancelLabel:'Cancel',suppressFeedback:true});
  expect(has(view,'size-lev-size-header')).toBe(false);expect(has(view,'size-lev-size-title')).toBe(false);
- expect(view.findAllByType(AnimatedNumberReadout)[0].props).toMatchObject({value:100,options:usd0});expect(text(host(view,'size-lev-size-headline'))).toBe('$100');
+ expect(view.findAllByType(NumberFlow)[0].props).toMatchObject({value:100,options:usd0});expect(text(host(view,'size-lev-size-headline'))).toBe('$100');
  const row=pressable(view,'size-lev-size-custom');expect(row.props.accessibilityState).toEqual({selected:false});expect(has(view,'size-lev-size-custom-value')).toBe(false);
  expect(flat(row).backgroundColor).not.toBe(nativeSrgb.action);
  act(()=>row.props.onPress());expect(custom).toHaveBeenCalledTimes(1);
@@ -47,7 +47,7 @@ it('fills the Custom row with its value when the host holds a custom value, and 
  const view=mount({selected:null,value:75,custom:{label:'Custom amount',value:'$75',onSelect:()=>{}}});
  const row=pressable(view,'preset-picker-custom');
  expect(row.props.accessibilityState).toEqual({selected:true});expect(row.props.accessibilityLabel).toBe('Custom amount, $75');
- expect(flat(row).backgroundColor).toBe(nativeSrgb.action);expect(text(host(view,'preset-picker-custom-value'))).toBe('$75');
+ expect(flat(row).backgroundColor).toBe(nativeSrgb.action+'26');expect(text(host(view,'preset-picker-custom-value'))).toBe('$75');
  // A host accessibility label and test ID replace the defaults.
  const own=mount({custom:{label:'Custom amount',value:'$75',selected:false,onSelect:()=>{},accessibilityLabel:'Edit custom size, current $75',testID:'my-custom'}});
  expect(pressable(own,'my-custom').props.accessibilityLabel).toBe('Edit custom size, current $75');expect(pressable(own,'my-custom').props.accessibilityState).toEqual({selected:false});
@@ -99,7 +99,7 @@ it('reports min, max and now on the adjustable group with a range, and draws the
  view=mount({testID:'lev',value:10,presets,selected:10,adjustable:{incrementLabel:'Up',decrementLabel:'Down'}});
  expect(host(view,'lev-adjustable').props.accessibilityValue).toEqual({text:'10×'});
  view=mount({testID:'size',value:1250.5,formattedValue:'$1,250.50',valueLabel:'Size'});
- const readout=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='size-headline');expect(readout.props.formattedValue).toBe('$1,250.50');
+ const readout=view.findAllByType(NumberFlow).find(node=>node.props.testID==='size-headline');expect(readout.props.formattedValue).toBe('$1,250.50');
 });
 
 it('keeps preset choices mounted without rereading them on headline updates',()=>{

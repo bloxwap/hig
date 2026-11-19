@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {NumberReadout,Percent,Usd,type NumberProps,type NumberReadoutStyle} from '../../packages/hig/native/src/data.js';
-import {AnimatedNumberReadout,type AnimatedNumberProps} from '../../packages/hig/native/src/animated-number.js';
+import {NumberFlow,type AnimatedNumberProps} from '../../packages/hig/native/src/animated-number.js';
 
 const registered=StyleSheet.create({equity:{fontFamily:'HostMonoSemiBold',fontWeight:'normal',fontSize:20,lineHeight:28}});
 const typography:NumberReadoutStyle={fontSize:24,textAlign:'right',letterSpacing:.2};
@@ -11,7 +11,7 @@ export const nativeReadoutTypecheck=<>
  <NumberReadout value={1} tone='positive' testID='equity' prefix='≈ ' suffix=' USD' style={[registered.equity,false,[typography]]}/>
  <Usd value={1} tone='muted' testID='usd' style={registered.equity}/>
  <Percent value={5} tone='negative' testID='percent' style={typography}/>
- <AnimatedNumberReadout value={1} tone='text' testID='price' duration={180} trend={(previous,current)=>current===previous?0:current>previous?1:-1} prefix='' suffix='' style={registered.equity}/>
+ <NumberFlow motion="slide" value={1} tone='text' testID='price' duration={180} trend={(previous,current)=>current===previous?0:current>previous?1:-1} prefix='' suffix='' style={registered.equity}/>
 </>;
 
 // @ts-expect-error Readouts use semantic tone roles rather than raw colours.

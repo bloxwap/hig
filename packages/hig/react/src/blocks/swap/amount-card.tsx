@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import {AnimatedNumberReadout} from '../../animated-number.js';
+import {NumberFlow} from '../../animated-number.js';
 import {PressDecoration} from '../../provider.js';
 
 export interface SwapAmountCardProps {
@@ -53,7 +53,7 @@ export function SwapAmountCard({name,symbol,icon,chainIcon,context,actions,meta,
   </div>
   <div className='hig-swap-amount-area'><div className='hig-swap-amount-content'>
    <div className='hig-swap-amount' role='textbox' tabIndex={0} aria-readonly='true' aria-label={amountLabel}>
-    <AnimatedNumberReadout value={value} prefix={prefix} suffix={(trailingDot?'.':'')+suffix} options={{minimumFractionDigits:Math.min(fractionDigits,maximumFractionDigits),maximumFractionDigits,useGrouping:false}}/>
+    <NumberFlow value={value} prefix={prefix} suffix={(trailingDot?'.':'')+suffix} options={{minimumFractionDigits:Math.min(fractionDigits,maximumFractionDigits),maximumFractionDigits,useGrouping:false}}/>
    </div>
    {conversion}
   </div></div>

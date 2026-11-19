@@ -306,3 +306,26 @@ it('leaves settled target transforms alone while the canvas keeps scrolling',()=
  rerender(view(100.01));frame(1016);frame(1066);
  expect(write).toHaveBeenCalled();
 });
+
+it('requests a Display P3 canvas and draws position colours from the brand palette',()=>{
+ vi.stubGlobal('CSS',{supports:()=>true});
+ const view=(side:'long'|'short')=><HIGProvider reducedMotion><AltimeterChart price={101} summary="Position" position={{side,breakEvenPrice:100,pnl:1}}/></HIGProvider>;
+ const {rerender}=render(view('long'));frame(1000);
+ expect(HTMLCanvasElement.prototype.getContext).toHaveBeenCalledWith('2d',{colorSpace:'display-p3'});
+ expect(context.calls).toContainEqual(['addColorStop',1,'color(display-p3 0 1 0.24)']);
+ context.calls.length=0;rerender(view('short'));frame(1016);
+ expect(context.calls).toContainEqual(['addColorStop',1,'color(display-p3 1 0.24 0.62)']);
+});
+
+it('reports a DEGEN crossing with its target and direction, and stays quiet with DEGEN off',()=>{
+ const motion=recordAnimations(),onTargetCross=vi.fn(),targets=[{id:'tp',price:100.01,label:'Take profit'}];
+ const view=(price:number,degen=true)=><HIGProvider><AltimeterChart summary='DEGEN' price={price} targets={targets} degen={degen} onTargetCross={onTargetCross}/></HIGProvider>;
+ try{
+  const {rerender,unmount}=render(view(100,false));frame(1000);
+  rerender(view(100.02,false));frame(1400);frame(1700);expect(onTargetCross).not.toHaveBeenCalled();
+  rerender(view(100.02));frame(1800);
+  rerender(view(100));frame(2000);frame(2100);frame(2300);
+  expect(onTargetCross).toHaveBeenCalledTimes(1);expect(onTargetCross).toHaveBeenLastCalledWith(expect.objectContaining({id:'tp'}),'down');
+  unmount();
+ }finally{motion.restore();}
+});

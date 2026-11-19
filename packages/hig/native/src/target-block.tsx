@@ -1,3 +1,5 @@
+import {primaryButtonInk} from '@bloxwap/hig/tokens';
+import {buttonTint} from './button-tint.js';
 import React,{useState} from 'react';
 import {Pressable,View,type ScrollViewProps} from 'react-native';
 import {formatNumber} from './number-format.js';
@@ -9,7 +11,7 @@ import {Button,IconButton} from './button.js';
 import {SegmentedControl} from './radio-group.js';
 import {PresetGroup} from './preset-group.js';
 import {ChevronIcon,SeverityIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 /** What the target does: close in profit, or cap the loss. */
 export type TargetKind='take-profit'|'stop-loss';
@@ -139,7 +141,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
  const target=trigger!==undefined?trigger:unit==='price'?value:null;
  const {positions,order,from,to}=targetLayout({entry,trigger:target});
  const prices:Record<TargetPrice,number|null|undefined>={entry,trigger:target};
- const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const,onFill=stop?colors.background:colors.onAction;
+ const stop=kind==='stop-loss',tone=stop?colors.negative:colors.positive,intent=stop?'destructive' as const:'primary' as const,onFill=stop?colors.negative:primaryButtonInk(colors);
  const triggerLeads=(positions.trigger??0)<(positions.entry??0);
  const align=(index:number)=>order.length>1&&index===order.length-1?'flex-end' as const:order.length===3&&index===1?'center' as const:'flex-start' as const;
  const part=(grow:number)=>({flexGrow:grow,flexShrink:1,flexBasis:0,backgroundColor:fills.raised});
@@ -150,7 +152,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <View style={{minWidth:side,alignItems:'flex-end'}}>{info?(()=>{const button=<IconButton intent='ghost' label={info} suppressFeedback testID='target-info' accessibilityState={{expanded:open}} onPress={()=>setOpen(!open)}><SeverityIcon kind='info' color={colors.text}/></IconButton>;return pair?<View testID='target-header-actions' style={{direction,flexDirection:'row',alignItems:'center',gap:4}}>{button}{headerAction}</View>:button;})():headerAction}</View>
   </View>;
  const body=<>
-  <View style={{alignItems:'center',marginTop:16}}><AnimatedNumberReadout testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
+  <View style={{alignItems:'center',marginTop:16}}><NumberFlow testID='target-amount' value={value} options={targetFormat(unit,priceOptions)} style={{fontSize:44,lineHeight:50,fontWeight:'700',letterSpacing:-0.9,textAlign:'center'}}/></View>
   {note&&!info?<Text testID='target-note' style={{color:colors.muted,fontSize:14,lineHeight:21,textAlign:'center',marginTop:16}}>{note}</Text>:null}
   <PriceCard testID='target-prices' style={{gap:12,marginTop:16,minWidth:0}}>
    {position||orderType?<View style={{flexDirection:'row',alignItems:'baseline',justifyContent:'space-between',gap:12}}>
@@ -164,7 +166,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    </View>
    <View style={{flexDirection:'row',justifyContent:'space-between',gap:12}}>
     {order.map((price,index)=><View key={price} accessible accessibilityLabel={`${labels[price]}, ${formatNumberReadout(prices[price],locale,present(priceOptions)).text}`} testID={`target-${price}`} style={{alignItems:align(index),flexShrink:1,minWidth:0}}>
-     <View {...hidden}><AnimatedNumberReadout value={prices[price]} options={priceOptions} tone={price==='trigger'?(stop?'negative':'positive'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
+     <View {...hidden}><NumberFlow value={prices[price]} options={priceOptions} tone={price==='trigger'?(stop?'negative':'positive'):'text'} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
      <Text {...hidden} numberOfLines={1} style={{color:colors.muted,fontSize:12,lineHeight:16}}>{labels[price]}</Text>
     </View>)}
    </View>
@@ -174,7 +176,7 @@ export function TargetBlock({kind,labels,position,orderType,note,entry,trigger,u
    <Text numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{labels.custom}</Text>
    <View {...hidden} style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
   </Pressable>:null}
-  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:stop?colors.negative:colors.action,opacity:pressed?0.9:1,marginTop:16})}>
+  {onCustom&&customText!==null?<Pressable testID='target-custom' accessibilityRole='button' accessibilityLabel={`${labels.custom}, ${customText}`} accessibilityState={{selected:true}} onPress={onCustom} style={({pressed})=>({flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12,minHeight:48,paddingHorizontal:16,borderRadius:9999,backgroundColor:buttonTint(stop?colors.negative:colors.action),opacity:pressed?0.9:1,marginTop:16})}>
    <Text {...hidden} numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'600',color:onFill}}>{labels.custom}</Text>
    <View {...hidden} style={{direction,flexDirection:'row',alignItems:'center',gap:6,flexShrink:1}}>
     <Text testID='target-custom-value' numberOfLines={1} style={{flexShrink:1,fontSize:16,lineHeight:24,fontWeight:'500',color:onFill}}>{customText}</Text>

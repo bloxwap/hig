@@ -9,7 +9,7 @@ HIG="$(cd "$(dirname "$0")/../.." && pwd -P)"
 export PATH="${ANDROID_HOME:-$HOME/Library/Android/sdk}/platform-tools:$PATH"
 PKG=com.bloxwap.hig.gallery
 COMPONENTS="$(node -e "console.log(require('$HIG/fixtures/native/gallery-manifest.json').examples.map(e=>e.name).join(','))")"
-SUBSET="Button,Text,Select,Field,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,AnimatedNumberReadout,MarketRow,TradeEntry,EmptyState"
+SUBSET="Button,Text,Select,Field,Checkbox,Switch,RadioGroup,SegmentedControl,Slider,Tabs,Alert,Toast,NumberReadout,NumberFlow,MarketRow,TradeEntry,EmptyState"
 mkdir -p "$OUT/logs" "$OUT/host"
 adb install -r "$APP/android/app/build/outputs/apk/release/app-release.apk" >/dev/null
 adb install -r "$APP/android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk" >/dev/null
@@ -27,7 +27,7 @@ run() { # run <method> [key value ...]
 adb logcat -c
 run galleryCaptures components "$COMPONENTS" prefix android
 run snapshot name baseline
-run animatedNumberReadout prefix normal
+run numberFlow prefix normal
 run sliderAccessibilityActions
 run sliderActionLabels catalogs en,fr,ko # #87: increase/decrease labels from the host catalog
 run busyButtonName catalogs en,fr,ko # #94: busy content description keeps the label
@@ -49,7 +49,7 @@ adb shell am force-stop $PKG; adb shell cmd locale set-app-locales $PKG --locale
 adb shell settings put system font_scale 2.0
 run snapshot name font-scale-200
 run galleryCaptures components "$SUBSET" prefix android-font200
-run animatedNumberReadout prefix font200 minFontScale 2
+run numberFlow prefix font200 minFontScale 2
 # #67: scroll the Text/Switch/Alert examples into view at 200% and measure the capped readout against prose.
 run exampleCapture name font200-example-text query "component=Text&state=default" scrollTo "Review the amount" measure 'BLOXWAP|한국어|Price: 67,234.56|Review the amount'
 run exampleCapture name font200-example-switch query "component=Switch&state=default" scrollTo "Preference preview" measure "Preference preview|Info tone preview"
@@ -57,8 +57,8 @@ run exampleCapture name font200-example-alert-error query "component=Alert&state
 adb shell settings put system font_scale 1.0
 # Remove animations (Android's reduce-motion signal for React Native).
 adb shell settings put global transition_animation_scale 0; adb shell settings put global animator_duration_scale 0
-run snapshot name reduce-motion query "component=AnimatedNumberReadout&state=default&diag=1"
-run animatedNumberReadout prefix reduce-motion expectReduceMotion 1
+run snapshot name reduce-motion query "component=NumberFlow&state=default&diag=1"
+run numberFlow prefix reduce-motion expectReduceMotion 1
 adb shell settings put global transition_animation_scale 1; adb shell settings put global animator_duration_scale 1
 # TalkBack (installed in the Google Play image): initial/return focus with a real screen reader running.
 TB=com.google.android.marvin.talkback/com.google.android.marvin.talkback.TalkBackService

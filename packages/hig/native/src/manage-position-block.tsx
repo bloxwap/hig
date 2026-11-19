@@ -5,7 +5,7 @@ import {useColors,useFills,useHIG,useMessages,useNumberLocale,usePresentNumber} 
 import {Text} from './surface.js';
 import {IconButton} from './button.js';
 import {ChevronIcon} from './icons.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {figureProps,figureReading,type Figure} from './figure.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import {BarMark,type BarMarkElement} from './bar-mark.js';
@@ -108,7 +108,7 @@ function Sentence({template,text,value,options,suffix,testID}:{template:(amount:
  if(value===null||parts.length!==2)return <Text testID={testID} style={{...words,flexShrink:1}}>{reading}</Text>;
  return <View accessible accessibilityLabel={reading} testID={testID} style={{direction,flexDirection:'row',alignItems:'center',flexShrink:1}}>
   {parts[0]?<Text accessible={false} style={words}>{parts[0]}</Text>:null}
-  <AnimatedNumberReadout value={value} options={options} suffix={suffix} tone='muted' style={type}/>
+  <NumberFlow value={value} options={options} suffix={suffix} tone='muted' style={type}/>
   {parts[1]?<Text accessible={false} style={words}>{parts[1]}</Text>:null}
  </View>;
 }
@@ -139,12 +139,12 @@ export function PositionSummaryRow({position,side,labels,pnlOptions,disclosure=f
     <Text testID='manage-position-side' style={{...meta,fontWeight:'600',color:long?colors.up:colors.down}}>{long?up:down}</Text>
     {gearing?<Text testID='manage-position-leverage' style={{...meta,fontWeight:'600',color:long?colors.up:colors.down}}>{gearing}</Text>:null}
     {gearing&&held?<Text style={{...meta,color:colors.muted}}>{dot.trim()}</Text>:null}
-    {size!==undefined?<AnimatedNumberReadout value={size} options={units} tone='muted' testID='manage-position-size' style={meta}/>:null}
+    {size!==undefined?<NumberFlow value={size} options={units} tone='muted' testID='manage-position-size' style={meta}/>:null}
    </View>
   </View>
   <View {...hidden} style={{alignItems:'flex-end',justifyContent:'center'}}>
-   {pnl!==undefined?<AnimatedNumberReadout value={pnl} options={pnlUsd} tone={known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text'} testID='manage-position-pnl' style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
-   {pnlPercent!==undefined?<AnimatedNumberReadout value={pnlPercent} options={pnlShare} tone='muted' testID='manage-position-pnl-percent' style={meta}/>:null}
+   {pnl!==undefined?<NumberFlow value={pnl} options={pnlUsd} tone={known(pnl)&&pnl>0?'up':known(pnl)&&pnl<0?'down':'text'} testID='manage-position-pnl' style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/>:null}
+   {pnlPercent!==undefined?<NumberFlow value={pnlPercent} options={pnlShare} tone='muted' testID='manage-position-pnl-percent' style={meta}/>:null}
   </View>
   {disclosure&&onSelect&&<View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>}
  </>;
@@ -165,7 +165,7 @@ export function ManagePositionBlock({labels,mode,side,entry,mark,liquidation,mar
  const actionValue=(action:ManagePositionBlockAction):{value?:React.ReactNode;valueLabel?:string;valueTone?:ManagePositionBlockAction['tone']}=>{
   const figure=action.value;if(figure==null)return {};
   if(typeof figure==='string')return {value:figure,valueTone:action.tone};
-  return {value:<AnimatedNumberReadout {...figureProps(figure)} tone={action.tone??'muted'} testID={`manage-action-${action.id}-value`} style={{fontSize:16,lineHeight:24}}/>,valueLabel:figureReading(figure,locale,present(figure.options))};
+  return {value:<NumberFlow {...figureProps(figure)} tone={action.tone??'muted'} testID={`manage-action-${action.id}-value`} style={{fontSize:16,lineHeight:24}}/>,valueLabel:figureReading(figure,locale,present(figure.options))};
  };
  const header=<View testID='manage-header' style={{flexDirection:'row',alignItems:'center',minHeight:44}}>
   <View style={{minWidth:44,alignItems:'flex-start'}}>{onBack?<IconButton intent='ghost' label={t.back} suppressFeedback testID='manage-back' onPress={onBack}><View style={{transform:[{rotate:direction==='rtl'?'-90deg':'90deg'}]}}><ChevronIcon color={colors.text}/></View></IconButton>:null}</View>

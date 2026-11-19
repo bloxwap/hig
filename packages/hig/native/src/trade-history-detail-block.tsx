@@ -6,7 +6,7 @@ import {BarPnl} from './bar-pnl.js';
 import {Button} from './button.js';
 import {ScreenHeader} from './screen-header.js';
 import {StickyHeaderLayout} from './sticky-header.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {formatNumberReadout} from './animated-number-model.js';
 import type {AssetArtwork} from './asset-balance-row.js';
 export type {AssetArtwork} from './asset-balance-row.js';
@@ -86,7 +86,7 @@ function Sentence({template,text,value,options,tone,testID}:{template:(amount:st
  if(value===null||parts.length!==2)return <Text testID={testID} style={{...words,textAlign:'center'}}>{reading}</Text>;
  return <View accessible accessibilityLabel={reading} testID={testID} style={{direction,flexDirection:'row',alignItems:'center',justifyContent:'center',flexShrink:1}}>
   {parts[0]?<Text accessible={false} style={words}>{parts[0]}</Text>:null}
-  <AnimatedNumberReadout value={value} options={options} tone={tone} style={type}/>
+  <NumberFlow value={value} options={options} tone={tone} style={type}/>
   {parts[1]?<Text accessible={false} style={words}>{parts[1]}</Text>:null}
  </View>;
 }
@@ -103,9 +103,9 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
  const fill=summaryBackground===true?colors.background:typeof summaryBackground==='string'&&summaryBackground?summaryBackground:undefined;
  const wrap=(summary:React.ReactElement)=>summaryRef?<View ref={summaryRef} collapsable={false} testID='trade-summary' style={fill?{backgroundColor:fill}:undefined}>{summary}</View>:summary;
  // Three figures to a line: a small label over its value.
- const rows=details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{width:'33.333%',paddingEnd:8,gap:2}}>
+ const rows=details.map(detail=><View key={detail.label} testID={`trade-detail-${detail.label}`} style={{width:'50%',paddingEnd:8,gap:2}}>
   <Text numberOfLines={1} style={{fontSize:12,lineHeight:16,color:colors.muted}}>{detail.label}</Text>
-  {typeof detail.value==='number'?<AnimatedNumberReadout value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} tone='text' style={{fontSize:15,lineHeight:22,fontWeight:'600'}}/>:<Text style={{fontSize:15,lineHeight:22,fontWeight:'600',color:colors.text}}>{detail.value}</Text>}
+  {typeof detail.value==='number'?<NumberFlow value={detail.value} options={detail.options} prefix={detail.prefix} suffix={detail.suffix} formattedValue={detail.formattedValue} animateFormatted={!!detail.formattedValue} tone='text' style={{fontSize:15,lineHeight:22,fontWeight:'600'}}/>:<Text style={{fontSize:15,lineHeight:22,fontWeight:'600',color:colors.text}}>{detail.value}</Text>}
  </View>);
  const header=<ScreenHeader testID='trade' title={labels.title} badge={badge} onBack={onBack} action={headerAction}/>;
  const body=<>
@@ -122,7 +122,7 @@ export function TradeHistoryDetailBlock({labels,name,icon,symbol,side,leverage,l
    </View>
   </View>
   <View testID='trade-pnl' style={{alignItems:'center',gap:4,marginTop:8}}>
-   <AnimatedNumberReadout testID='trade-pnl-value' label={labels.netPnl} value={pnl} options={pnlOptions} tone={tone} style={{fontSize:40,lineHeight:48,fontWeight:'700'}}/>
+   <NumberFlow testID='trade-pnl-value' label={labels.netPnl} value={pnl} options={pnlOptions} tone={tone} style={{fontSize:40,lineHeight:48,fontWeight:'700'}}/>
    {pnlPercent!==undefined?<Sentence testID='trade-pnl-percent' template={labels.onMargin} text={known(pnlPercent)?formatNumberReadout(pnlPercent,locale,percentOptions).text:unknown} value={known(pnlPercent)?pnlPercent:null} options={percentOptions} tone={tone}/>:null}
   </View></>)}
   {known(entry)&&known(exit)?<View style={{marginTop:20,paddingHorizontal:4}}><BarPnl testID='trade-bar' surface={false} fit side={side} entry={entry} mark={exit} labels={{entry:labels.entry??empty,mark:labels.exit??empty,liquidation:empty}} priceOptions={priceOptions}/></View>:null}

@@ -9,7 +9,7 @@ const blocks=require('../../packages/hig/native/src/blocks');
 const {Button}=require('../../packages/hig/native/src/button');
 const {ListRow}=require('../../packages/hig/native/src/list-group');
 const labels=view=>host(view,'confirm-details').children.map(line=>line.props.accessibilityLabel);
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 const address='0x1111111111111111111111111111111111111111';
@@ -26,13 +26,13 @@ afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 it('shows the heading, the amount with its ticker, the address in full, the network and the warning',()=>{
  const view=mount();
  expect(text(host(view,'confirm-title'))).toBe('Confirm Send');expect(has(view,'confirm-back')).toBe(false);
- expect(view.findAllByType(AnimatedNumberReadout)[0].props).toMatchObject({value:2.5,options:{maximumFractionDigits:6}});expect(text(host(view,'confirm-amount'))).toBe('2.5');expect(text(host(view,'confirm-symbol'))).toBe('HYPE');
+ expect(view.findAllByType(NumberFlow)[0].props).toMatchObject({value:2.5,options:{maximumFractionDigits:6}});expect(text(host(view,'confirm-amount'))).toBe('2.5');expect(text(host(view,'confirm-symbol'))).toBe('HYPE');
  expect(text(host(view,'confirm-to'))).toBe('0x1111111111111111111\n111111111111111111111');
  // First six and last four in the text colour, the rest muted.
  expect(host(view,'confirm-to').findAll(node=>typeof node.type==='string'&&typeof node.props.children==='string').map(node=>[node.props.children,flat(node).color])).toEqual([['0x1111',nativeSrgb.text],['111111111111111',nativeSrgb.muted],['11111111111111111',nativeSrgb.muted],['1111',nativeSrgb.text]]);expect(text(host(view,'confirm-network'))).toBe('HyperEVM');expect(labels(view)).toEqual([`To, ${address}`,'Network, HyperEVM']);
  // The details are read-only text: no rows and nothing to press.
  expect(view.findAllByType(ListRow)).toHaveLength(0);
- expect(text(host(view,'confirm-warning-title'))).toBe('Double-check the address.');expect(flat(host(view,'confirm-warning-title')).color).toBe(nativeSrgb.warning);
+ expect(text(host(view,'confirm-warning-title'))).toBe('Double-check the address.');expect(flat(host(view,'confirm-warning-title')).color).toBe(nativeSrgb.text);
  expect(text(host(view,'confirm-warning-body'))).toBe("HYPE moves to this address on HyperEVM instantly — there's no clawback if the address is wrong.");
  expect(button(view,'confirm-confirm').props.intent??'primary').toBe('primary');expect(has(view,'confirm-cancel')).toBe(false);
 });
@@ -145,10 +145,10 @@ it('takes a test ID per action, Pressable props for Back, and cancelDisabled hol
  expect(button(held,'delete-account-export').props.disabled).toBe(true);expect(button(held,'delete-account-withdraw').props.disabled).toBeFalsy();expect(button(held,'delete-account-anyway').props.disabled).toBe(false);
 });
 
-it('fills the confirming action in the warning role with a dark label for confirmIntent warning',()=>{
+it('fills the confirming action in the warning role with an accent label for confirmIntent warning',()=>{
  if(root)act(()=>root.unmount());
  act(()=>{root=render(h(HIGProvider,{reducedMotion:true},h(ConfirmBlock,{title:'Send anyway?',confirmLabel:'Send anyway',confirmIntent:'warning',warning:'This address is new to you.',onConfirm:()=>{},onCancel:()=>{}})));});
  const confirm=button(root.root,'confirm-confirm');expect(confirm.props.intent).toBe('warning');
- const pressable=confirm.findAll(node=>typeof node.props.style==='function')[0];expect(StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe(nativeSrgb.warning);
- expect(flat(confirm.findAll(node=>node.type==='Text'&&node.props.children==='Send anyway')[0]).color).toBe(nativeSrgb.background);
+ const pressable=confirm.findAll(node=>typeof node.props.style==='function')[0];expect(StyleSheet.flatten(pressable.props.style({pressed:false})).backgroundColor).toBe(nativeSrgb.warning+'26');
+ expect(flat(confirm.findAll(node=>node.type==='Text'&&node.props.children==='Send anyway')[0]).color).toBe(nativeSrgb.warning);
 });

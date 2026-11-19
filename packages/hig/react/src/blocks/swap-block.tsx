@@ -1,11 +1,13 @@
 "use client";
 import {decimal,decimalDivide,decimalCompare,localizeDecimal} from '@bloxwap/hig/contracts/decimal';
 import {useAsyncResult} from '../async-result.js';
+import {TriangleAlert} from '@bloxwap/icons/react/triangle-alert';
+import {CircleX} from '@bloxwap/icons/react/circle-x';
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {PressDecoration,useControllable,useHIG,useNumberLocale} from '../provider.js';
 import {Button,IconButton} from '../button.js';
-import {AnimatedNumberReadout} from '../animated-number.js';
+import {NumberFlow} from '../animated-number.js';
 import {notify} from '../notify.js';
 import {VerticalAddress} from '../data.js';
 import {SwapPicker,type SwapWallet} from './swap/picker.js';
@@ -239,11 +241,11 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
      {!locked&&<button type='button' disabled={submitting} className='hig-swap-hit' tabIndex={-1} aria-hidden='true' onClick={()=>openPicker(side)}><PressDecoration kind='row'/></button>}
      <div className='hig-swap-amount-content'>
       <div className='hig-swap-amount' data-muted={side==='to'||undefined} {...(side==='from'?{role:'textbox',tabIndex:0,'aria-label':(messages.swapAmount??en.swapAmount)(label)}:{})}>
-       <AnimatedNumberReadout value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&mode==='usd'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
+       <NumberFlow value={shown} formattedValue={side==='from'&&mode==='token'?localizeDecimal(entry,locale):undefined} label={side==='to'?(messages.swapAmount??en.swapAmount)(label):undefined} prefix={mode==='usd'?'$':''} suffix={side==='from'&&mode==='usd'&&entry.endsWith('.')?'.':''} options={{minimumFractionDigits:side==='from'?fraction:0,maximumFractionDigits:mode==='usd'?2:8,useGrouping:false}}/>
       </div>
       {denominationSwitch&&<SwapPill disabled={submitting} aria-label={(messages.swapSwitchDenomination??en.swapSwitchDenomination)} onClick={()=>side==='from'?switchFromMode(fromMode==='usd'?'token':'usd'):applyToMode(toMode==='usd'?'token':'usd')}>
        <span aria-hidden='true' className='hig-swap-equals'>=</span>
-       {mode==='token'?<AnimatedNumberReadout value={cardUsd} options={{style:'currency',currency:'USD'}}/>:<AnimatedNumberReadout value={cardUnits} suffix={token?` ${token.symbol}`:''} options={{maximumFractionDigits:8,useGrouping:false}}/>}
+       {mode==='token'?<NumberFlow value={cardUsd} options={{style:'currency',currency:'USD'}}/>:<NumberFlow value={cardUnits} suffix={token?` ${token.symbol}`:''} options={{maximumFractionDigits:8,useGrouping:false}}/>}
        <SwapIcon name='flip' size={14}/>
       </SwapPill>}
      </div>
@@ -270,7 +272,7 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
   <div className='hig-swap-flip'>{oneWay?<span aria-hidden='true'><SwapIcon name='down' size={16}/></span>:<button type='button' aria-label={(messages.swapFlip??en.swapFlip)} disabled={submitting||!from||!to} onClick={flip}><SwapIcon name='flip' size={16}/><PressDecoration kind='icon-button' disabled={submitting||!from||!to}/></button>}</div>
   {toCard}
   {!showReceive&&(keypad==='always'||(keypad==='auto'&&touch))&&<SwapKeypad onKey={press} label={(messages.swapKeypad??en.swapKeypad)} deleteLabel={(messages.swapDelete??en.swapDelete)}/>}
-  {note&&<p className='hig-swap-note' data-tone={noteTone} role='note'>{note}</p>}
+  {note&&<p className='hig-swap-note' data-tone={noteTone} role='note'>{noteTone==='muted'?note:<>{noteTone==='warning'?<TriangleAlert size={20} aria-hidden='true'/>:<CircleX size={20} aria-hidden='true'/>}<span>{note}</span></>}</p>}
   <div className='hig-swap-actions'>
    {controls&&<IconButton disabled={submitting} className='hig-swap-settings-button' intent='secondary' label={(messages.swapSettings??en.swapSettings)} suppressFeedback onClick={()=>show('settings')}><SwapIcon name='menu'/></IconButton>}
    <Button fullWidth intent={actionIntent} busy={submitting} disabled={!showReceive&&!ready} onClick={submit}>{actionIcon}{actionText}</Button>
@@ -286,12 +288,3 @@ export function SwapBlock({tokens,fromTokens,fromTokensLoading,chains,hotTokenId
  </section>;
 }
 
-/** @deprecated Renamed `SwapBlock`. The old name and the `blocks/swap-panel` and `recipes/swap-panel` import paths keep working until the next major release. */
-export const SwapPanel=SwapBlock;
-/** @deprecated Renamed `SwapBlockProps`. */
-export type SwapPanelProps=SwapBlockProps;
-
-/** @deprecated Use SwapBlock. */
-export const SwapPanelBlock=SwapBlock;
-/** @deprecated Use SwapBlockProps. */
-export type SwapPanelBlockProps=SwapBlockProps;

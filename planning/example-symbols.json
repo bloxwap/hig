@@ -37,6 +37,7 @@
     "Toaster": "toast",
     "toast": "toast",
     "dismissToast": "toast",
+    "ToastAction": "toast",
     "Progress": "status",
     "Spinner": "status",
     "Skeleton": "status",
@@ -92,17 +93,19 @@
     "IconButton": "button",
     "Link": "button",
     "HIGProvider": "provider",
-    "AnimatedNumberReadout": "animated-number",
     "NumberFlow": "animated-number",
     "NumberFlowGroup": "animated-number",
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
+    "InlineNotice": "status",
     "ListRow": "list-group",
     "LoginBlock": "blocks",
     "DepositBlock": "blocks",
     "LanguageBlock": "blocks",
     "PositionsBlock": "blocks",
-    "ClaimRewardBlock": "blocks"
+    "ClaimRewardBlock": "blocks",
+    "AdvancedBlock": "blocks",
+    "ReceiveBlock": "blocks"
   },
   "native": {
     "ScreenHeader": "screen-header",
@@ -140,6 +143,7 @@
     "Toaster": "toast",
     "toast": "toast",
     "dismissToast": "toast",
+    "ToastAction": "toast",
     "Spinner": "status",
     "Progress": "status",
     "Skeleton": "status",
@@ -193,11 +197,11 @@
     "IconButton": "button",
     "Link": "button",
     "HIGProvider": "provider",
-    "AnimatedNumberReadout": "animated-number",
     "NumberFlow": "animated-number",
     "NumberFlowGroup": "animated-number",
     "BarPnl": "bar-pnl",
     "ListGroup": "list-group",
+    "InlineNotice": "status",
     "ListRow": "list-group",
     "LoginBlock": "blocks",
     "DepositBlock": "blocks",
@@ -205,6 +209,9 @@
     "AltimeterChart": "chart",
     "PositionsBlock": "blocks",
     "ClaimRewardBlock": "blocks",
-    "BottomSheetScrollView": "@gorhom/bottom-sheet"
+    "GestureSheetScrollView": "gesture-sheet",
+    "GestureSheetHost": "gesture-sheet",
+    "AdvancedBlock": "blocks",
+    "ReceiveBlock": "blocks"
   }
 }

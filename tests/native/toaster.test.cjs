@@ -24,7 +24,7 @@ jest.mock('react-native-gesture-handler',()=>{
 const {GestureDetector}=require('react-native-gesture-handler');
 const {SafeAreaInsetsContext}=require('react-native-safe-area-context');
 const {nativeDisplayP3,nativeSrgb}=require('@bloxwap/hig/tokens');
-const {Toaster,toast,dismissToast}=require('../../packages/hig/native/src/toast');
+const {Toaster,toast,dismissToast,ToastAction}=require('../../packages/hig/native/src/toast');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {Button}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
@@ -63,7 +63,7 @@ it('draws nothing while idle, then the HIG capsule with its message, description
  expect(layer.props.pointerEvents).toBe('box-none');expect(layer.children[0].props.pointerEvents).toBe('box-none');expect(layer.children[0].props.accessibilityLabel).toBe('Notifications');
  expect(view.findAll(node=>node.props.accessibilityLabel==='Dismiss Transfer failed').length).toBeGreaterThan(0);
  // The capsule hugs its content: nothing in its row grows, so a short notice is a short pill.
- const row=cards()[0].findAll(node=>typeof node.type==='string'&&StyleSheet.flatten(node.props.style)?.minHeight===44)[0],parts=row.children.map(child=>typeof child.type==='string'?child:child.findAll(node=>typeof node.type==='string')[0]);
+ const row=cards()[0].findAll(node=>typeof node.type==='string'&&StyleSheet.flatten(node.props.style)?.minHeight===52)[0],parts=row.children.map(child=>typeof child.type==='string'?child:child.findAll(node=>typeof node.type==='string')[0]);
  expect(StyleSheet.flatten(row.props.style)).toMatchObject({flexDirection:'row',alignItems:'center',backgroundColor:'transparent'});expect(parts).toHaveLength(4);
  expect(parts.map(part=>StyleSheet.flatten(part.props.style)?.flex)).toEqual([undefined,undefined,undefined,undefined]);expect(StyleSheet.flatten(parts[1].props.style)).toMatchObject({flexShrink:1,minWidth:0});
  // Until it is laid out it is transparent and out of the stack; then it is the front.
@@ -76,14 +76,14 @@ it('paints the capsule and its severity symbol from the provider roles, Display 
  const painted=()=>{const colors=new Set();for(const node of root.root.findAll(node=>typeof node.type==='string'))for(const part of [...flat(node.props.style),{tintColor:node.props.tintColor}])for(const value of Object.values(part))if(typeof value==='string'&&/^#[0-9a-f]{6}$/i.test(value))colors.add(value);return colors;};
  mount();act(()=>{toast.success('Saved');toast.error('Failed');toast.warning('Slow network');toast.info('Synced');});
  const srgb=painted();
- for(const role of ['positive','negative','warning','info','nested','muted'])expect(srgb.has(nativeSrgb[role])).toBe(true);
- // Every colour drawn is a role of the provider's table.
+ for(const role of ['positive','negative','warning','info','background','muted'])expect(srgb.has(nativeSrgb[role])).toBe(true);
+ // Every opaque colour drawn is a role of the provider's table (the tile tint and glow are those roles with an alpha suffix).
  for(const color of srgb)expect(Object.values(nativeSrgb)).toContain(color);
  act(()=>root.unmount());root=null;act(()=>dismissToast());
  onIOS(()=>{
   mount({},{colorSpace:'display-p3'});act(()=>{toast.success('Saved');toast.error('Failed');toast.warning('Slow network');toast.info('Synced');});
   const p3=painted();
-  for(const role of ['positive','negative','warning','info','nested'])expect(p3.has(nativeDisplayP3[role])).toBe(true);
+  for(const role of ['positive','negative','warning','info','background'])expect(p3.has(nativeDisplayP3[role])).toBe(true);
   for(const color of p3)expect(Object.values(nativeDisplayP3)).toContain(color);
  });
  expect(nativeDisplayP3.negative).not.toBe(nativeSrgb.negative);
@@ -97,7 +97,8 @@ it('hangs from the chosen edge, clear of the safe area, and is as wide as the wi
  const card=()=>Object.assign({},...flat(cards()[0].props.style).filter(part=>!part.__style));
  // Narrow window: 16 points past the insets on every side, full width between them, anchored at the bottom by default.
  expect(rail()).toMatchObject({position:'absolute',top:75,bottom:50,start:16,end:16,alignItems:'center'});expect(StyleSheet.flatten(layer().props.style)).toMatchObject({position:'absolute',top:0,bottom:0,left:0,right:0,direction:'ltr'});
- expect(card()).toMatchObject({position:'absolute',bottom:0,maxWidth:'100%',borderRadius:22});expect(card().top).toBeUndefined();
+ // The card that moves carries the notice's frame: a one-line notice is a full pill.
+ expect(card()).toMatchObject({position:'absolute',bottom:0,maxWidth:'100%',borderRadius:9999,borderWidth:2});expect(card().top).toBeUndefined();
  act(()=>root.update(tree({position:'top-right',offset:{top:60,left:8}},{direction:'rtl'},{top:59,right:47,bottom:21,left:0})));
  // Left and right stay physical under right-to-left: the layer still lays out left to right, each side takes its own inset, and edges the host did not name keep the default.
  expect(rail()).toMatchObject({top:119,bottom:37,start:8,end:63,alignItems:'flex-end'});expect(StyleSheet.flatten(layer().props.style).direction).toBe('ltr');expect(card()).toMatchObject({top:0});expect(card().bottom).toBeUndefined();
@@ -359,7 +360,7 @@ it('keeps left and right physical under right-to-left, as Sonner does: only the 
  // The layer lays out left to right whatever the provider or the OS says, so start is the physical left.
  expect(StyleSheet.flatten(layer.props.style).direction).toBe('ltr');expect(rail).toMatchObject({start:11+8,end:47+30,alignItems:'flex-end'});
  // The capsule row itself follows the provider.
- const row=cards()[0].findAll(node=>typeof node.type==='string'&&StyleSheet.flatten(node.props.style)?.minHeight===44)[0];
+ const row=cards()[0].findAll(node=>typeof node.type==='string'&&StyleSheet.flatten(node.props.style)?.minHeight===52)[0];
  expect(StyleSheet.flatten(row.props.style).direction).toBe('rtl');
  // The default swipe is towards the physical right edge.
  const pan=gestures()[0];
@@ -402,4 +403,35 @@ it('draws a very long message and an empty one without cutting either',()=>{
  // No line limit: the capsule grows, and large text is not capped.
  for(const node of root.root.findAllByType(RNText)){expect(node.props.numberOfLines).toBeUndefined();expect(node.props.allowFontScaling).not.toBe(false);}
  expect(drawn(cards()[0]).y).toBe(-(480+14));
+});
+
+it('draws a notice in its market accent, swaps or hides the tile, and stacks two ToastAction pills',()=>{
+ mount();
+ const confirm=jest.fn();
+ act(()=>{
+  toast('+$125.50',{severity:'success',accent:'up',icon:h(RNText,null,'coin')});
+  toast('Check this transfer',{severity:'error',description:'It may have gone through.',action:h(ToastAction,{onPress:confirm},'I checked'),secondaryAction:h(ToastAction,{onPress:jest.fn()},'Close')});
+ });
+ const frame=card=>StyleSheet.flatten(card.props.style.filter(part=>part&&!part.__style));
+ const [payout,recovery]=cards();
+ // The moving card carries the frame: the market accent wins over the severity; the stacked notice gets the concentric radius.
+ expect(frame(payout)).toMatchObject({borderWidth:2,borderColor:nativeSrgb.buy,borderRadius:9999});
+ expect(frame(recovery)).toMatchObject({borderColor:nativeSrgb.negative,borderRadius:32});
+ expect(texts()).toEqual(expect.arrayContaining(['coin','I checked','Close']));
+ // The primary pill takes the accent, the secondary one the muted role.
+ const label=name=>root.root.findAllByType(RNText).find(node=>text(node)===name);
+ expect(StyleSheet.flatten(label('I checked').props.style).color).toBe(nativeSrgb.negative);
+ expect(StyleSheet.flatten(label('Close').props.style).color).toBe(nativeSrgb.muted);
+ act(()=>{root.root.findAll(node=>typeof node.props.onPress==='function'&&text(node)==='I checked')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented:()=>false});});
+ expect(confirm).toHaveBeenCalledTimes(1);
+});
+
+it('runs onClose for the close control only, then onDismiss; a swipe or dismissToast skips it',()=>{
+ mount();const order=[];
+ act(()=>{toast('Minimums',{onClose:()=>order.push('close'),onDismiss:()=>order.push('dismiss')});});
+ act(()=>{root.root.findAll(node=>node.props.accessibilityLabel==='Dismiss Minimums'&&typeof node.props.onPress==='function')[0].props.onPress({stopPropagation(){},preventDefault(){},isDefaultPrevented:()=>false});});
+ expect(order).toEqual(['close','dismiss']);
+ let id;act(()=>{id=toast('Bridge',{onClose:()=>order.push('close b'),onDismiss:()=>order.push('dismiss b')});});
+ act(()=>dismissToast(id));
+ expect(order).toEqual(['close','dismiss','dismiss b']);
 });

@@ -43,9 +43,8 @@ A component or block enters the catalog only when all of the following hold:
 ## Component removal
 
 1. Inventory every consumer with org-wide code search and the adoption matrix.
-2. Deprecate the component in a minor release. Name the replacement, provide a codemod or checklist, and keep the export working for at least one minor release and 30 days.
-3. Open removal PRs in each consuming repository, or record dated exceptions for them.
-4. Remove the component in the next major release and record the change in the changelog and the matrix.
+2. Until HIG reaches its final version, remove the component in the change that replaces it. Name the replacement, add the rename to `codemods/superseded.mjs` or give a checklist, and record the change in the changelog and the matrix; consuming repositories run the codemod when they next upgrade.
+3. From the final version on, deprecate first: keep the export working for at least one minor release and 30 days, open removal PRs in each consuming repository or record dated exceptions, and remove the component in the next major release.
 
 ## Platform support policy
 

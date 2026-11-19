@@ -5,6 +5,7 @@ const {StyleSheet,View}=require('react-native');
 const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {ListGroup,ListRow}=require('../../packages/hig/native/src/list-group');
+const {InlineNotice}=require('../../packages/hig/native/src/status');
 const h=React.createElement;
 let root;
 function mount(element,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,provider,element));});return root.root;}
@@ -55,4 +56,41 @@ it('reads an element value as valueLabel on a selectable row and tones a text va
  tree=mount(h(ListRow,{label:'PnL',value:'+$12.50',valueTone:'positive',testID:'row'}));
  expect(flat(host(tree,'row-value')).color).toBe(colors.positive);expect(text(host(tree,'row-value'))).toBe('+$12.50');
  tree=mount(h(ListRow,{label:'PnL',value:'+$12.50',testID:'row'}));expect(flat(host(tree,'row-value')).color).toBe(colors.muted);
+});
+
+it('renders information as static text with a decorative leading icon',()=>{
+ const props={title:'Transfer timing',description:'Allow three days.'};
+ const tree=mount(h(InlineNotice,props));
+ expect(text(tree)).toContain('Transfer timingAllow three days.');
+ expect(tree.findAll(node=>node.props.onPress)).toHaveLength(0);
+ const {SeverityIcon}=require('../../packages/hig/native/src/icons');
+ for(const severity of ['info','success','warning','error']){
+  const card=mount(h(InlineNotice,{...props,severity}));
+  const symbol=card.findByType(SeverityIcon);expect(symbol.props.kind).toBe(severity);
+  const disc=symbol.parent;const surface=card.findByType(require('../../packages/hig/native/src/surface').Surface);
+  expect(flat(surface).borderRadius).toBe(flat(surface).padding+flat(disc).borderRadius);
+  expect(flat(surface)).toMatchObject({flexDirection:'row',alignItems:'flex-start'});
+  const copy=surface.findAll(node=>node.type===View&&flat(node).flex===1&&text(node)===props.title+props.description);
+  expect(copy).toHaveLength(1);
+ }
+ const custom=mount(h(InlineNotice,{...props,icon:h(View,{testID:'custom'})}));
+ expect(custom.findAll(node=>node.props.accessibilityElementsHidden&&node.findAll(child=>child.props.testID==='custom').length>0).length).toBeGreaterThan(0);
+});
+
+it('keeps a row\'s resting and pressed fills at every elevation',()=>{
+ const {Raised}=require('../../packages/hig/native/src/provider');
+ const fills=tree=>{const press=all(tree,'row').find(node=>typeof node.props.style==='function');return [false,true].map(pressed=>StyleSheet.flatten(press.props.style({pressed})).backgroundColor);};
+ const row=h(ListRow,{label:'Signals',testID:'row',onSelect:()=>{}});
+ expect(fills(mount(row))).toEqual([colors.surface,colors.nested]);
+ // One elevation up, as in a sheet, wells step a shade; rows do not.
+ expect(fills(mount(h(Raised,null,row)))).toEqual([colors.surface,colors.nested]);
+});
+
+it('centres the leading mark and the trailing glyph on a two-line label',()=>{
+ const slot=(tree,id)=>{let node=host(tree,id).parent;while(node&&typeof node.type!=='string')node=node.parent;return flat(node);};
+ const marks={leading:h(View,{testID:'lead'}),trailing:h(View,{testID:'trail'}),testID:'row',onSelect:()=>{}};
+ let tree=mount(h(ListRow,{label:'Bank transfer',description:'One to three days',...marks}));
+ expect(slot(tree,'lead').alignSelf).toBe('center');
+ tree=mount(h(ListRow,{label:'Bank transfer',...marks}));
+ expect(slot(tree,'lead').alignSelf).toBeUndefined();
 });

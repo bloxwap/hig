@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import React from 'react';
 import {renderToString} from 'react-dom/server';
-import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
+import {NumberFlow} from '@bloxwap/hig/react/animated-number';
 import {Button} from '@bloxwap/hig/react/button';
 import {GestureSheet} from '@bloxwap/hig/react/gesture-sheet';
 import {HIGProvider} from '@bloxwap/hig/react/provider';
@@ -10,7 +10,7 @@ const html=renderToString(React.createElement(HIGProvider,null,React.createEleme
 assert.match(html,/Review order/);
 const options={minimumFractionDigits:2,maximumFractionDigits:2};
 const animatedProps={value:1234.5,options,stale:true,label:'Balance',duration:240,prefix:'$',suffix:' USD',trend:1};
-const renderAnimated=()=>renderToString(React.createElement(HIGProvider,{locale:'de-DE'},React.createElement(AnimatedNumberReadout,animatedProps)));
+const renderAnimated=()=>renderToString(React.createElement(HIGProvider,{locale:'de-DE'},React.createElement(NumberFlow,animatedProps)));
 const animated=renderAnimated(),formatted=new Intl.NumberFormat('de-DE',options).format(animatedProps.value);
 assert.equal(animated,renderAnimated());
 assert.ok(animated.includes(formatted),'SSR must include the final localized semantic reading');

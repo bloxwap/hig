@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -40,6 +40,11 @@
       "types": "./contracts/dist/format.d.ts",
       "import": "./contracts/dist/format.js",
       "default": "./contracts/dist/format.js"
+    },
+    "./contracts/gesture-sheet": {
+      "types": "./contracts/dist/gesture-sheet.d.ts",
+      "import": "./contracts/dist/gesture-sheet.js",
+      "default": "./contracts/dist/gesture-sheet.js"
     },
     "./contracts/decimal": {
       "types": "./contracts/dist/decimal.d.ts",
@@ -110,6 +115,11 @@
       "types": "./contracts/dist/qr.d.ts",
       "import": "./contracts/dist/qr.js",
       "default": "./contracts/dist/qr.js"
+    },
+    "./contracts/advanced-block": {
+      "types": "./contracts/dist/advanced-block.d.ts",
+      "import": "./contracts/dist/advanced-block.js",
+      "default": "./contracts/dist/advanced-block.js"
     },
     "./native-fonts": {
       "types": "./native-fonts/dist/index.d.ts",
@@ -235,17 +245,7 @@
       "import": "./react/dist/blocks.js",
       "default": "./react/dist/blocks.js"
     },
-    "./react/recipes": {
-      "types": "./react/dist/blocks.d.ts",
-      "import": "./react/dist/blocks.js",
-      "default": "./react/dist/blocks.js"
-    },
     "./react/blocks/market-row": {
-      "types": "./react/dist/blocks/market-row.d.ts",
-      "import": "./react/dist/blocks/market-row.js",
-      "default": "./react/dist/blocks/market-row.js"
-    },
-    "./react/recipes/market-row": {
       "types": "./react/dist/blocks/market-row.d.ts",
       "import": "./react/dist/blocks/market-row.js",
       "default": "./react/dist/blocks/market-row.js"
@@ -255,27 +255,7 @@
       "import": "./react/dist/blocks/trade-entry.js",
       "default": "./react/dist/blocks/trade-entry.js"
     },
-    "./react/recipes/trade-entry": {
-      "types": "./react/dist/blocks/trade-entry.d.ts",
-      "import": "./react/dist/blocks/trade-entry.js",
-      "default": "./react/dist/blocks/trade-entry.js"
-    },
     "./react/blocks/swap-block": {
-      "types": "./react/dist/blocks/swap-block.d.ts",
-      "import": "./react/dist/blocks/swap-block.js",
-      "default": "./react/dist/blocks/swap-block.js"
-    },
-    "./react/blocks/swap-panel-block": {
-      "types": "./react/dist/blocks/swap-block.d.ts",
-      "import": "./react/dist/blocks/swap-block.js",
-      "default": "./react/dist/blocks/swap-block.js"
-    },
-    "./react/blocks/swap-panel": {
-      "types": "./react/dist/blocks/swap-block.d.ts",
-      "import": "./react/dist/blocks/swap-block.js",
-      "default": "./react/dist/blocks/swap-block.js"
-    },
-    "./react/recipes/swap-panel": {
       "types": "./react/dist/blocks/swap-block.d.ts",
       "import": "./react/dist/blocks/swap-block.js",
       "default": "./react/dist/blocks/swap-block.js"
@@ -285,17 +265,7 @@
       "import": "./react/dist/blocks/pickers.js",
       "default": "./react/dist/blocks/pickers.js"
     },
-    "./react/recipes/pickers": {
-      "types": "./react/dist/blocks/pickers.d.ts",
-      "import": "./react/dist/blocks/pickers.js",
-      "default": "./react/dist/blocks/pickers.js"
-    },
     "./react/blocks/swap-sheet": {
-      "types": "./react/dist/blocks/swap-sheet.d.ts",
-      "import": "./react/dist/blocks/swap-sheet.js",
-      "default": "./react/dist/blocks/swap-sheet.js"
-    },
-    "./react/recipes/swap-sheet": {
       "types": "./react/dist/blocks/swap-sheet.d.ts",
       "import": "./react/dist/blocks/swap-sheet.js",
       "default": "./react/dist/blocks/swap-sheet.js"
@@ -305,17 +275,7 @@
       "import": "./react/dist/blocks/install-command.js",
       "default": "./react/dist/blocks/install-command.js"
     },
-    "./react/recipes/install-command": {
-      "types": "./react/dist/blocks/install-command.d.ts",
-      "import": "./react/dist/blocks/install-command.js",
-      "default": "./react/dist/blocks/install-command.js"
-    },
     "./react/blocks/marketing-hero": {
-      "types": "./react/dist/blocks/marketing-hero.d.ts",
-      "import": "./react/dist/blocks/marketing-hero.js",
-      "default": "./react/dist/blocks/marketing-hero.js"
-    },
-    "./react/recipes/marketing-hero": {
       "types": "./react/dist/blocks/marketing-hero.d.ts",
       "import": "./react/dist/blocks/marketing-hero.js",
       "default": "./react/dist/blocks/marketing-hero.js"
@@ -337,11 +297,6 @@
       "types": "./react/dist/wallet-address.d.ts",
       "import": "./react/dist/wallet-address.js",
       "default": "./react/dist/wallet-address.js"
-    },
-    "./react/wallet-address-core": {
-      "types": "./react/dist/wallet-address-core.d.ts",
-      "import": "./react/dist/wallet-address-core.js",
-      "default": "./react/dist/wallet-address-core.js"
     },
     "./react/qr-code": {
       "types": "./react/dist/qr-code.d.ts",
@@ -718,11 +673,6 @@
       "import": "./native/dist/blocks.js",
       "default": "./native/dist/blocks.js"
     },
-    "./native/recipes": {
-      "types": "./native/dist/blocks.d.ts",
-      "import": "./native/dist/blocks.js",
-      "default": "./native/dist/blocks.js"
-    },
     "./native/switch": {
       "types": "./native/dist/switch.d.ts",
       "import": "./native/dist/switch.js",
@@ -757,11 +707,6 @@
       "types": "./native/dist/gesture-sheet.d.ts",
       "import": "./native/dist/gesture-sheet.js",
       "default": "./native/dist/gesture-sheet.js"
-    },
-    "./native/gesture-sheet-next": {
-      "types": "./native/dist/gesture-sheet-next.d.ts",
-      "import": "./native/dist/gesture-sheet-next.js",
-      "default": "./native/dist/gesture-sheet-next.js"
     },
     "./native/animated-number": {
       "types": "./native/dist/animated-number.d.ts",
@@ -803,6 +748,26 @@
       "types": "./native/dist/claim-reward-block.d.ts",
       "import": "./native/dist/claim-reward-block.js",
       "default": "./native/dist/claim-reward-block.js"
+    },
+    "./react/blocks/advanced-block": {
+      "types": "./react/dist/blocks/advanced-block.d.ts",
+      "import": "./react/dist/blocks/advanced-block.js",
+      "default": "./react/dist/blocks/advanced-block.js"
+    },
+    "./native/advanced-block": {
+      "types": "./native/dist/advanced-block.d.ts",
+      "import": "./native/dist/advanced-block.js",
+      "default": "./native/dist/advanced-block.js"
+    },
+    "./react/blocks/receive-block": {
+      "types": "./react/dist/blocks/receive-block.d.ts",
+      "import": "./react/dist/blocks/receive-block.js",
+      "default": "./react/dist/blocks/receive-block.js"
+    },
+    "./native/receive-block": {
+      "types": "./native/dist/receive-block.d.ts",
+      "import": "./native/dist/receive-block.js",
+      "default": "./native/dist/receive-block.js"
     }
   },
   "files": [
@@ -849,15 +814,12 @@
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "vaul": "^1.1.2",
     "sonner": "^2.0.0",
-    "cuer": ">=0.0.3 <0.1.0",
     "@bloxwap/chart": "^0.3.0 || ^0.4.0 || ^0.5.0",
     "react-native": "^0.81.5 || ^0.83.10 || ^0.88.0",
     "react-native-svg": "15.12.1 || 15.15.3 || 15.16.0",
     "@react-native-community/slider": "5.0.1 || 5.1.2 || 5.2.1",
     "react-native-safe-area-context": "~5.6.0 || ~5.10.1 || ~5.11.1",
-    "@gorhom/bottom-sheet": "^5.2.14",
     "react-native-reanimated": "^4.1.1",
     "react-native-worklets": "^0.5.1 || ^0.7.4 || ^0.13.0",
     "react-native-gesture-handler": "^2.28.0 || ^3.3.0",
@@ -895,13 +857,7 @@
     "@radix-ui/react-tooltip": {
       "optional": true
     },
-    "vaul": {
-      "optional": true
-    },
     "sonner": {
-      "optional": true
-    },
-    "cuer": {
       "optional": true
     },
     "react-native": {
@@ -914,9 +870,6 @@
       "optional": true
     },
     "react-native-safe-area-context": {
-      "optional": true
-    },
-    "@gorhom/bottom-sheet": {
       "optional": true
     },
     "react-native-reanimated": {

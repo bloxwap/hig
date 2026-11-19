@@ -6,7 +6,7 @@ const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {AccountBlock,accountRows,assetValue}=require('../../packages/hig/native/src/account-block');
 const blocks=require('../../packages/hig/native/src/blocks');
 const {AssetBalanceRow}=require('../../packages/hig/native/src/asset-balance-row');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 let root;
 function mount(props,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},h(AccountBlock,props)));});return root.root;}
@@ -18,7 +18,7 @@ const sol={id:'sol',name:'Solana',symbol:'SOL',balance:1.25,price:162.4};
 const hype={id:'hype',name:'Hyperliquid',symbol:'HYPE',balance:13.2,value:759};
 const assets=[sol,usdc,hype];
 const rows=view=>view.findAllByType(AssetBalanceRow);
-const total=view=>all(view,'account-balance').flatMap(hit=>hit.type===AnimatedNumberReadout?[hit]:hit.findAllByType(AnimatedNumberReadout))[0];
+const total=view=>all(view,'account-balance').flatMap(hit=>hit.type===NumberFlow?[hit]:hit.findAllByType(NumberFlow))[0];
 afterEach(()=>{if(root)act(()=>root.unmount());root=undefined;});
 
 it('values an asset by its own value, else balance × price, else unknown',()=>{
@@ -85,7 +85,7 @@ it('draws titled sections with their own totals, 24 apart, in place of the flat 
  expect(has(view,'account-assets')).toBe(false);expect(has(view,'account-section-empty')).toBe(false);
  const group=all(view,'account-sections').find(node=>typeof node.type==='string');expect(Object.assign({},...[].concat(group.props.style))).toMatchObject({gap:24,marginTop:16});
  const title=id=>all(view,`account-section-${id}-title`).find(node=>node.props.accessibilityRole==='header');expect(text(title('exchange'))).toBe('Exchange');expect(text(title('wallet'))).toBe('Wallet');
- const sectionTotal=id=>all(view,`account-section-${id}-total`).find(node=>node.type===AnimatedNumberReadout);
+ const sectionTotal=id=>all(view,`account-section-${id}-total`).find(node=>node.type===NumberFlow);
  expect(sectionTotal('exchange').props.value).toBe(1259);expect(sectionTotal('wallet').props.value).toBe(999);expect(total(view).props.value).toBe(2258);
  expect(rows(view).map(row=>row.props.testID)).toEqual(['account-section-exchange-asset-perp-usdc','account-section-exchange-asset-perp-hype','account-section-wallet-asset-usdc','account-section-wallet-asset-sol','account-section-wallet-asset-blox']);
  act(()=>{rows(view)[3].props.onSelect();});expect(select).toHaveBeenCalledWith(sol,sections[2]);
@@ -157,7 +157,7 @@ it('windows holdings across sections and preserves section totals, order and sel
  expect(new Set(keys).size).toBe(pairs.length);
  expect(has(view,'account-section-empty-title')).toBe(false);
  expect(all(view,'account-section-wallet0-title').some(node=>node.props.accessibilityRole==='header')).toBe(true);
- const sectionTotal=id=>all(view,'account-section-'+id+'-total').find(node=>node.type===AnimatedNumberReadout).props.value;
+ const sectionTotal=id=>all(view,'account-section-'+id+'-total').find(node=>node.type===NumberFlow).props.value;
  expect(sectionTotal('first')).toBe(100);
  expect(sectionTotal('wallet0')).toBe(780);
  expect(total(view).props.value).toBe(19600);
@@ -207,7 +207,7 @@ it('reuses each section valuation for its heading and the account balance',()=>{
  expect(read).not.toHaveBeenCalled();
  update({sections:[{...sections[0],assets:[{...usdc,value:13}]}]});
  expect(total(root.root).props.value).toBe(13);
- expect(all(root.root,'account-section-wallet-total').find(node=>node.type===AnimatedNumberReadout).props.value).toBe(13);
+ expect(all(root.root,'account-section-wallet-total').find(node=>node.type===NumberFlow).props.value).toBe(13);
 });
 
 it('defers an offscreen section valuation when a sticky account has an explicit balance',()=>{

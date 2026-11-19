@@ -1,21 +1,19 @@
-// SwapPanelBlock block: one panel for send, swap and bridge. The host owns tokens, prices, quote and wallet; the panel owns the entry.
+// SwapBlock block: one panel for send, swap and bridge. The host owns tokens, prices, quote and wallet; the panel owns the entry.
 // Pickers and settings are views pushed inside the panel, never a dialog; SwapSheet presents the panel in the gesture sheet.
-jest.mock('@gorhom/bottom-sheet',()=>{
- const React=require('react'),{View,ScrollView,FlatList}=require('react-native');
- const methods={present:jest.fn(),dismiss:jest.fn(),snapToIndex:jest.fn()};
- const BottomSheetModal=React.forwardRef((props,ref)=>{React.useImperativeHandle(ref,()=>methods);return React.createElement(View,{...props,testID:'backend'},props.children);});
- const BottomSheetFlatList=props=>React.createElement(FlatList,{...props,sheetList:true});
- return {__esModule:true,default:View,methods,BottomSheetModal,BottomSheetView:View,BottomSheetScrollView:ScrollView,BottomSheetBackdrop:View,BottomSheetFlatList};
+// The gesture library cannot load under Jest here; the sheet's pan and its scroller's native gesture are inert stand-ins.
+jest.mock('react-native-gesture-handler',()=>{
+ const chain=()=>{const gesture={};for(const name of ['activeOffsetY','failOffsetX','onStart','onChange','onEnd','onFinalize','simultaneousWithExternalGesture'])gesture[name]=()=>gesture;return gesture;};
+ return {Gesture:{Pan:chain,Native:chain},GestureDetector:({children})=>children};
 });
 const React=require('react');
 const {create,act}=require('react-test-renderer');
 const {StyleSheet,View,Modal,BackHandler,Animated}=require('react-native');
 const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
-const {SwapPanelBlock,swapAction}=require('../../packages/hig/native/src/blocks');
+const {SwapBlock,swapAction}=require('../../packages/hig/native/src/blocks');
 const {SwapSheet}=require('../../packages/hig/native/src/swap-sheet');
 const shared=require('../../packages/hig/native/src/swap-shared');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const h=React.createElement;
 const eth={id:'1-eth',symbol:'ETH',name:'Ether',chain:'Ethereum',chainId:1,balance:0.5,price:2000};
 const usdc={id:'1-usdc',symbol:'USDC',name:'USD Coin',chain:'Ethereum',chainId:1,balance:100,price:1};
@@ -24,7 +22,7 @@ const baseEth={id:'8453-eth',symbol:'ETH',name:'Ether',chain:'Base',chainId:8453
 const tokens=[eth,usdc,baseUsdc,baseEth];
 const event={stopPropagation(){},isDefaultPrevented:()=>false,preventDefault(){}};
 let root;
-function mount(props){if(root)act(()=>root.unmount());act(()=>{root=create(h(HIGProvider,{reducedMotion:true},h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;}
+function mount(props){if(root)act(()=>root.unmount());act(()=>{root=create(h(HIGProvider,{reducedMotion:true},h(SwapBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;}
 afterEach(()=>{if(root)act(()=>root.unmount());root=null;jest.useRealTimers();jest.restoreAllMocks();});
 const all=(tree,id)=>tree.findAll(node=>node.props.testID===id&&typeof node.type!=='string');
 const node=(tree,id)=>{const hits=all(tree,id);if(!hits.length)throw new Error(`No ${id}`);return hits[0];};
@@ -36,8 +34,8 @@ const amount=(tree,side='from')=>node(tree,`swap-amount-${side}`).props.accessib
 // What an element reads as: its accessible name when it has one (a sentence around a live number), else its own text.
 const read=(tree,id)=>{const hit=all(tree,id).find(found=>found.props.accessibilityLabel||found.props.children!==undefined);if(!hit)throw new Error(`No reading for ${id}`);return hit.props.accessibilityLabel??[].concat(hit.props.children).join('');};
 // Live numbers: the readouts under an element (or the element itself when it is one).
-const flows=(tree,id)=>[...new Set(all(tree,id).flatMap(hit=>hit.type===AnimatedNumberReadout?[hit]:hit.findAllByType(AnimatedNumberReadout)))];
-const update=props=>{act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;};
+const flows=(tree,id)=>[...new Set(all(tree,id).flatMap(hit=>hit.type===NumberFlow?[hit]:hit.findAllByType(NumberFlow)))];
+const update=props=>{act(()=>{root.update(h(HIGProvider,{reducedMotion:true},h(SwapBlock,{tokens,onSubmit:jest.fn(),...props})));});return root.root;};
 const conversion=(tree,side='from')=>read(tree,`swap-conversion-${side}`);
 const action=tree=>node(tree,'swap-action');
 const actionText=tree=>[].concat(action(tree).props.children).join('');
@@ -149,7 +147,7 @@ it('reset clears the entry, both tokens and the receive view',()=>{
  expect(actionText(tree)).toBe('Select a token');expect(node(tree,'swap-reset').props.disabled).toBe(true);
 });
 it('resyncs the entry when the host sets a different amount',()=>{
- const render=amount=>h(HIGProvider,null,h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),defaultFrom:eth,defaultTo:usdc,amount}));
+ const render=amount=>h(HIGProvider,null,h(SwapBlock,{tokens,onSubmit:jest.fn(),defaultFrom:eth,defaultTo:usdc,amount}));
  act(()=>{root=create(render(undefined));});const tree=root.root;type(tree,'30');expect(amount(tree)).toBe('$30');
  act(()=>root.update(render('0')));expect(amount(tree)).toBe('$0');
  act(()=>root.update(render('0.25')));expect(amount(tree)).toBe('$500');
@@ -185,7 +183,7 @@ it('wallet row and recipient field appear in the pickers when the host supplies 
  act(()=>tree.findAll(n=>n.props.accessibilityLabel==='Scan QR code'&&n.props.onPress)[0].props.onPress(event));expect(onScanRecipient).toHaveBeenCalledTimes(1);
 });
 it('uses the provider translations and keeps helper behaviour in step with web',()=>{
- act(()=>{root=create(h(HIGProvider,{messages:{swapFrom:'De',swapChooseToken:'Choisir un jeton',swapSelectToken:side=>`Choisir le jeton ${side}`}},h(SwapPanelBlock,{tokens,onSubmit:jest.fn()})));});
+ act(()=>{root=create(h(HIGProvider,{messages:{swapFrom:'De',swapChooseToken:'Choisir un jeton',swapSelectToken:side=>`Choisir le jeton ${side}`}},h(SwapBlock,{tokens,onSubmit:jest.fn()})));});
  expect(node(root.root,'swap-slot-from').props.accessibilityLabel).toBe('Choisir le jeton De');expect(actionText(root.root)).toBe('Choisir un jeton');
  expect(shared.sanitizeAmount('00012.5.6abc')).toBe('12.56');expect(shared.sanitizeAmount('.')).toBe('0');
  expect(shared.applyAmountKey('1.25','3','usd')).toBe('1.25');expect(shared.applyAmountKey('1.25','3','token')).toBe('1.253');expect(shared.applyAmountKey('7','back','usd')).toBe('0');
@@ -204,7 +202,7 @@ it('shows exactly one view inside its own bounds, with Back and no dialog or clo
  press(tree,'swap-setting-fees');expect(views()).toEqual(['swap-view-fees']);press(tree,'swap-back');press(tree,'swap-back');expect(views()).toEqual(['swap-view-main']);
 });
 it('follows a controlled view and only reports the view it wants',()=>{
- const onViewChange=jest.fn();const render=view=>h(HIGProvider,{reducedMotion:true},h(SwapPanelBlock,{tokens,onSubmit:jest.fn(),view,onViewChange}));
+ const onViewChange=jest.fn();const render=view=>h(HIGProvider,{reducedMotion:true},h(SwapBlock,{tokens,onSubmit:jest.fn(),view,onViewChange}));
  act(()=>{root=create(render('main'));});const tree=root.root;
  press(tree,'swap-slot-from');expect(onViewChange).toHaveBeenCalledWith('from');expect(has(tree,'swap-view-main')).toBe(true);
  act(()=>root.update(render('from')));expect(has(tree,'swap-picker-from')).toBe(true);
@@ -221,7 +219,7 @@ it('Android back pops a pushed view and is not intercepted on the main view',()=
 it('slides a pushed view in from the trailing side and a popped one from the leading side, and not at all with reduced motion',()=>{
  const timing=jest.spyOn(Animated,'timing').mockImplementation(()=>({start:jest.fn(),stop:jest.fn()}));
  const offset=tree=>{const stage=tree.findAll(n=>n.props.testID==='swap-stage'&&typeof n.type!=='string')[0];const inner=root.toJSON();void stage;const find=node=>{if(!node||typeof node==='string')return null;if(node.props?.testID==='swap-stage')return node.children[0];for(const child of node.children??[]){const hit=find(child);if(hit)return hit;}return null;};return StyleSheet.flatten(find(inner).props.style);};
- const render=direction=>h(HIGProvider,{reducedMotion:false,direction},h(SwapPanelBlock,{tokens,onSubmit:jest.fn()}));
+ const render=direction=>h(HIGProvider,{reducedMotion:false,direction},h(SwapBlock,{tokens,onSubmit:jest.fn()}));
  act(()=>{root=create(render('ltr'));});let tree=root.root;expect(timing).not.toHaveBeenCalled();
  press(tree,'swap-settings-button');expect(timing).toHaveBeenCalledTimes(1);expect(timing.mock.calls[0][1]).toMatchObject({toValue:1,duration:260,useNativeDriver:true});
  expect(offset(tree).height).toBeUndefined();
@@ -232,26 +230,29 @@ it('slides a pushed view in from the trailing side and a popped one from the lea
  timing.mockClear();tree=mount({});press(tree,'swap-settings-button');expect(timing).not.toHaveBeenCalled();expect(offset(tree).opacity).toBe(1);
 });
 it('SwapSheet presents the panel in the gesture sheet, pushes views inside it, and pops before it closes',()=>{
- const backend=require('@gorhom/bottom-sheet');const onOpenChange=jest.fn();
+ const {GestureSheetHost,GestureSheetScrollView}=require('../../packages/hig/native/src/gesture-sheet');const onOpenChange=jest.fn();
  // Like the platform, the most recently registered live handler runs first.
  const handlers=[];jest.spyOn(BackHandler,'addEventListener').mockImplementation((type,handler)=>{handlers.push(handler);return {remove:()=>{handlers.splice(handlers.indexOf(handler),1);}};});const back=()=>handlers[handlers.length-1]();
- const render=open=>h(HIGProvider,{reducedMotion:true},h(SwapSheet,{open,onOpenChange,title:'Swap',tokens,onSubmit:jest.fn(),onSlippageChange:jest.fn()}));
- act(()=>{root=create(render(true));});const tree=root.root;const sheet=()=>tree.findAll(n=>n.props.testID==='backend')[0];
- expect(backend.methods.present).toHaveBeenCalledTimes(1);expect(sheet().props.accessibilityLabel).toBe('Swap');expect(sheet().props.enableDynamicSizing).toBe(true);
+ const frames=[];jest.spyOn(global,'requestAnimationFrame').mockImplementation(callback=>{frames.push(callback);return frames.length;});const frame=()=>act(()=>{frames.splice(0).forEach(callback=>callback(0));});
+ const render=open=>h(HIGProvider,{reducedMotion:true},h(GestureSheetHost,null,h(SwapSheet,{open,onOpenChange,title:'Swap',tokens,onSubmit:jest.fn(),onSlippageChange:jest.fn()})));
+ act(()=>{root=create(render(true));});const tree=root.root;
+ // The sheet lays its content out once it knows its room.
+ act(()=>{tree.findAll(n=>typeof n.type==='string'&&n.props.pointerEvents==='box-none'&&typeof n.props.onLayout==='function')[0].props.onLayout({nativeEvent:{layout:{height:800}}});});
+ const askToClose=()=>tree.findAll(n=>typeof n.props.onAccessibilityEscape==='function')[0].props.onAccessibilityEscape();
  expect(tree.findAllByType(Modal)).toHaveLength(0);expect(has(tree,'swap-view-main')).toBe(true);
- press(tree,'swap-slot-to');expect(has(tree,'swap-picker-to')).toBe(true);expect(has(tree,'backend')||sheet()).toBeTruthy();
- // The token list is the sheet backend's list, so a drag at its edge moves the sheet.
- expect(tree.findAll(n=>n.props.sheetList===true&&n.props.testID==='swap-list-to').length).toBeGreaterThan(0);
- // A dismiss gesture or Android back pops the pushed view first.
- act(()=>{sheet().props.onChange(-1,0,0);});expect(onOpenChange).not.toHaveBeenCalled();expect(has(tree,'swap-view-main')).toBe(true);
+ press(tree,'swap-slot-to');expect(has(tree,'swap-picker-to')).toBe(true);
+ // The token list scrolls in the sheet's own scroller, so a drag at its edge moves the sheet.
+ expect(tree.findAll(n=>n.props.testID==='swap-list-to').length).toBeGreaterThan(0);expect(tree.findAllByType(GestureSheetScrollView).length).toBeGreaterThan(0);
+ // A dismiss request or Android back pops the pushed view first, and the sheet keeps listening afterwards.
+ act(()=>{askToClose();});expect(onOpenChange).not.toHaveBeenCalled();expect(has(tree,'swap-view-main')).toBe(true);frame();
  press(tree,'swap-settings-button');press(tree,'swap-setting-slippage');
  act(()=>{back();});expect(has(tree,'swap-view-settings')).toBe(true);act(()=>{back();});expect(has(tree,'swap-view-main')).toBe(true);expect(onOpenChange).not.toHaveBeenCalled();
  act(()=>{back();});expect(onOpenChange).toHaveBeenCalledWith(false);
  // Closing returns to the main form for the next open.
  press(tree,'swap-settings-button');expect(has(tree,'swap-view-settings')).toBe(true);
- act(()=>root.update(render(false)));act(()=>root.update(render(true)));expect(has(tree,'swap-view-main')).toBe(true);
+ act(()=>root.update(render(false)));frame();act(()=>root.update(render(true)));expect(has(tree,'swap-view-main')).toBe(true);
 });
-it('keeps the sheet backend and Dialog out of the block: only swap-sheet imports them',()=>{
+it('keeps the gesture sheet and Dialog out of the block: only swap-sheet imports the sheet',()=>{
  const {readFileSync}=require('fs');
  for(const file of ['swap-block.tsx','swap-views.tsx','swap-parts.tsx','swap-shared.ts','blocks.tsx']){const source=readFileSync(`packages/hig/native/src/${file}`,'utf8');expect(source).not.toMatch(/gesture-sheet|bottom-sheet|swap-sheet/);if(file!=='blocks.tsx')expect(source).not.toMatch(/overlay\.js/);}
  expect(readFileSync('packages/hig/native/src/swap-sheet.tsx','utf8')).toContain("from './gesture-sheet.js'");
@@ -368,7 +369,7 @@ it('shows a note under the cards: plain when muted, a tinted capsule for warning
  expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.muted);
  tree=mount({note:'Transfer to spot afterwards.',noteTone:'negative'});
  expect(flat(node(tree,'swap-note'))).toMatchObject({borderRadius:16,paddingVertical:12,paddingHorizontal:16,backgroundColor:`${colors.negative}1a`});
- expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.negative);
+ expect(flat(node(tree,'swap-note').findAll(n=>n.type==='Text')[0]).color).toBe(colors.text);
  tree=mount({note:'Rates change.',noteTone:'warning'});expect(flat(node(tree,'swap-note')).backgroundColor).toBe(`${colors.warning}1a`);
  expect(exists(mount({}),'swap-note')).toBe(false);
 });
@@ -416,7 +417,7 @@ it('draws host artwork elements in place of image URLs, and host content above t
  expect(has(tree,'usdc-art')).toBe(true);expect(has(tree,'paper-art')).toBe(true);
  expect(has(node(tree,'swap-banner'),'pending')).toBe(true);expect(has(node(tree,'swap-footer'),'recent')).toBe(true);
 });
-// Number flow: every number that can change while the card is on screen is an AnimatedNumberReadout, so a new
+// Number flow: every number that can change while the card is on screen is an NumberFlow, so a new
 // balance, quote, fee or slippage moves its digits instead of swapping the text.
 it('balance, conversion, fee and slippage are live numbers that follow their props, and read as before',()=>{
  const base={from:eth,to:usdc,fee:0.27,slippage:0.01,amount:'0.01'};let tree=mount(base);
@@ -505,4 +506,20 @@ it('does not mutate the pair or denomination during submission',()=>{
  const changed=jest.fn();const tree=mount({from:eth,to:usdc,amount:'1',denomination:'token',submitting:true,onFromChange:changed});
  press(tree,'swap-flip');press(tree,'swap-slot-from');press(tree,'swap-mode-from');
  expect(changed).not.toHaveBeenCalled();expect(amount(tree)).toBe('1');expect(has(tree,'swap-keypad')).toBe(true);
+});
+
+it('moves a titled note into a popover behind a header info button with noteInfo, keeping its tone',()=>{
+ const note='Undelegating does not start the exit clock.';
+ const tree=mount({title:'Unstake HYPE',note,noteTone:'negative',noteInfo:'About unstaking'});
+ expect(tree.findAll(n=>n.props.testID==='swap-note')).toHaveLength(0);
+ const button=tree.findAll(n=>n.props.accessibilityLabel==='About unstaking'&&typeof n.props.onPress==='function')[0];
+ expect(button).toBeTruthy();
+ act(()=>button.props.onPress());
+ const popover=tree.findAll(n=>n.props.testID==='swap-info-popover'&&typeof n.props.onPress==='function')[0];
+ expect(texts(popover)).toContain(note);
+ // A negative note leads with the error symbol in its colour.
+ expect(popover.findAll(n=>n.props.tintColor===colors.negative||n.props.color===colors.negative).length).toBeGreaterThan(0);
+ // Without a title there is no header to hold the button, so the note stays under the cards.
+ const plain=mount({note,noteInfo:'About unstaking'});
+ expect(plain.findAll(n=>n.props.testID==='swap-note').length).toBeGreaterThan(0);
 });

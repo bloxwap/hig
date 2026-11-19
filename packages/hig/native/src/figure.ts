@@ -5,7 +5,7 @@ import {formatNumberReadout} from './animated-number-model.js';
  * still moves place by place: use it where this runtime's Intl does not match the host's number table. Never parse it back.
  */
 export interface Figure {value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;formattedValue?:string}
-/** The props of an `AnimatedNumberReadout` that draws a figure: its host text, when given, moves place by place too. */
+/** The props of an `NumberFlow` that draws a figure: its host text, when given, moves place by place too. */
 export function figureProps(figure:Figure):{value:number|null;options?:Intl.NumberFormatOptions;prefix?:string;suffix?:string;formattedValue?:string;animateFormatted?:boolean}{
  const {value,options,prefix,suffix,formattedValue}=figure;
  return formattedValue?{value,options,prefix,suffix,formattedValue,animateFormatted:true}:{value,options,prefix,suffix};

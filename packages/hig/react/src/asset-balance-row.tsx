@@ -1,7 +1,7 @@
 "use client";
 import { Check } from '@bloxwap/icons/react/check';
 import React from 'react';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {PressDecoration} from './provider.js';
 /** Artwork for an asset: an image URL, or an element the host draws. */
 export type AssetArtwork=string|React.ReactElement;
@@ -41,7 +41,7 @@ const check=<Check size={20} className='hig-asset-row-check'/>;
 /** One holding in a list: round artwork, the asset's name over its symbol, and its dollar value over its units. Both numbers update place by place. */
 export function AssetBalanceRow({name,symbol,icon,value,balance,balanceOptions=units,unitsSuffix,headline='value',amounts=true,tag,trailing,trailingLabel,trailingInteractive,selected,disabled,onSelect,className,...rest}:AssetBalanceRowProps){
  const unitsFirst=headline==='units',hasTrailing=trailing!=null&&trailing!==false,split=!!trailingInteractive&&hasTrailing;
- const figures=amounts&&<><strong>{unitsFirst?<AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix}/>:<AnimatedNumberReadout value={value} options={usd}/>}</strong>{!unitsFirst&&balance!==undefined&&<span><AnimatedNumberReadout value={balance} options={balanceOptions} suffix={unitsSuffix}/></span>}</>;
+ const figures=amounts&&<><strong>{unitsFirst?<NumberFlow value={balance} options={balanceOptions} suffix={unitsSuffix}/>:<NumberFlow value={value} options={usd}/>}</strong>{!unitsFirst&&balance!==undefined&&<span><NumberFlow value={balance} options={balanceOptions} suffix={unitsSuffix}/></span>}</>;
  const main=<>
   <span className='hig-asset-row-icon' aria-hidden='true'>{typeof icon==='string'?<img src={icon} alt=''/>:icon??symbol.slice(0,3)}</span>
   <span className='hig-asset-row-identity'><strong>{name}</strong><span>{symbol}</span></span>

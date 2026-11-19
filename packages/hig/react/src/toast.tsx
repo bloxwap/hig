@@ -5,9 +5,10 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {TOAST_DURATION,TOAST_GAP,TOAST_NARROW_OFFSET,TOAST_OFFSET,TOAST_VISIBLE,toastDuration,type ToastBaseOptions,type ToastCall,type ToastId,type ToastSeverity} from '@bloxwap/hig/contracts/toast';
 import {useHIG} from './provider.js';
 import {ToastNotice} from './status.js';
+export {ToastAction} from './status.js';
 import {registerNotifier} from './notify.js';
 export type {ToasterProps} from 'sonner';
-export type {ToastBaseOptions,ToastCall,ToastId,ToastPosition,ToastSeverity,ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
+export type {ToastAccent,ToastBaseOptions,ToastCall,ToastId,ToastLayout,ToastPosition,ToastSeverity,ToastSwipeDirection} from '@bloxwap/hig/contracts/toast';
 const edges=['top','right','bottom','left'] as const;
 /** A number, for every edge or for one named edge, is a distance added to that edge's safe-area inset, as the native host places its stack; an edge left out keeps the default. A string is the host's own CSS and reaches Sonner untouched. */
 const inset=(offset:ToasterProps['offset'],fallback:number):ToasterProps['offset']=>typeof offset==='string'?offset:Object.fromEntries(edges.map(edge=>{const value=typeof offset==='object'?offset[edge]:offset;return [edge,typeof value==='string'?value:`calc(env(safe-area-inset-${edge}, 0px) + ${value??fallback}px)`];}));
@@ -22,10 +23,10 @@ export function Toaster({offset,mobileOffset,...props}:ToasterProps){const {dire
  // While mounted, HIG components that report a result (InstallCommand) raise it here instead of inline.
  useEffect(()=>registerNotifier(toast),[]);
  return <SonnerToaster position='bottom-center' theme='dark' dir={direction} visibleToasts={TOAST_VISIBLE} gap={TOAST_GAP} duration={TOAST_DURATION} containerAriaLabel={messages.notifications??en.notifications} offset={inset(offset,TOAST_OFFSET)} mobileOffset={inset(mobileOffset??offset,TOAST_NARROW_OFFSET)} {...props}/>;}
-export interface ToastOptions extends ToastBaseOptions {/** A control drawn before the close button, such as a `Button` that retries. */action?:React.ReactNode}
+export interface ToastOptions extends ToastBaseOptions {/** The primary action, usually a `ToastAction` pill: before the close button, or in the action row of a stacked notice. */action?:React.ReactNode;/** A second, quieter action; the notice is then stacked. */secondaryAction?:React.ReactNode;/** Replaces the severity symbol in the tile (a spinner, a clock, a coin logo); `null` draws no tile. */icon?:React.ReactNode;/** Drawn in place of the message text (a live countdown, a figure in a numeric face); `message` stays what is announced and what names the close button. */messageNode?:React.ReactNode}
 /** The capsule as Sonner draws it: inside the Toaster's tree, so the close button's name comes from the provider's translation. */
 function Raised({message,options,onClose}:{message:string;options:ToastOptions;onClose:()=>void}){const {messages}=useHIG();
- return <ToastNotice message={message} description={options.description} severity={options.severity??'info'} action={options.action} dismissName={options.dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} onDismiss={onClose}/>;}
+ return <ToastNotice message={options.messageNode??message} description={options.description} severity={options.severity??'info'} action={options.action} secondaryAction={options.secondaryAction} icon={options.icon} accent={options.accent} layout={options.layout} onPress={options.onPress} pressName={options.pressName} dismissName={options.dismissName??(messages.dismissNotice??en.dismissNotice)(message,messages.dismiss??en.dismiss)} onDismiss={()=>{options.onClose?.();onClose();}}/>;}
 function raise(message:string,options:ToastOptions={}):ToastId{const {duration,id,onDismiss,onAutoClose}=options;
  return sonner.custom(current=><Raised message={message} options={options} onClose={()=>sonner.dismiss(current)}/>,{duration:toastDuration(duration),id,onDismiss:onDismiss&&(()=>onDismiss()),onAutoClose:onAutoClose&&(()=>onAutoClose())});
 }

@@ -10,7 +10,8 @@ const {Input,SearchInput}=require('../../packages/hig/native/src/field');
 const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
 const {Dialog}=require('../../packages/hig/native/src/overlay');
 const {Tabs,Accordion}=require('../../packages/hig/native/src/navigation');
-const {Badge,Toast,Skeleton,EmptyState,Avatar,StatusIndicator}=require('../../packages/hig/native/src/status');
+const {Badge,Toast,Skeleton,EmptyState,StatusIndicator}=require('../../packages/hig/native/src/status');
+const {Avatar}=require('../../packages/hig/native/src/avatar');
 const {Button}=require('../../packages/hig/native/src/button');
 const h=React.createElement;
 const flat=node=>StyleSheet.flatten(typeof node.props.style==='function'?node.props.style({pressed:false}):node.props.style);
@@ -80,11 +81,12 @@ it('Accordion is a strokeless card whose trailing chevron and content animate; r
   act(()=>header(reduced).props.onPress(event));expect(timing).not.toHaveBeenCalled();expect(reduced.findAllByType(RNText).map(n=>n.props.children)).toEqual(['Advanced','Body']);
  }finally{timing.mockRestore();}
 });
-it('Toast notices are one-row capsules: severity symbol, message, action, then an x close control; no stroke or visible dismiss text',()=>{
+it('Toast notices are one-row pills in their accent: severity symbol in a tile, message, action, then an x close control; no visible dismiss text',()=>{
  const dismissed=jest.fn();const retry=h(Button,{onPress:jest.fn()},'Retry');
  const tree=mount(h(Toast,{notices:[{id:'1',message:'Order failed',severity:'error',action:retry}],onDismiss:dismissed}));
- const capsule=json(root.toJSON(),n=>jsonStyle(n)?.backgroundColor===colors.nested);
- expect(jsonStyle(capsule)).toMatchObject({flexDirection:'row',alignItems:'center',minHeight:44,borderRadius:22});expect(jsonStyle(capsule).borderWidth).toBeUndefined();
+ const capsule=json(root.toJSON(),n=>jsonStyle(n)?.backgroundColor===colors.background&&jsonStyle(n)?.minHeight===52);
+ // The border and glow take the severity's role; the fill is the page colour.
+ expect(jsonStyle(capsule)).toMatchObject({flexDirection:'row',alignItems:'center',minHeight:52,borderRadius:9999,borderWidth:2,borderColor:colors.negative});
  const parts=capsule.children;expect(parts).toHaveLength(4);
  expect(json(parts[0],n=>n.type==='ExpoImage').props.tintColor).toBe(colors.negative);
  expect(jsonStyle(parts[1])).toMatchObject({flex:1});expect(json(parts[1],n=>n.type==='Text').children).toEqual(['Order failed']);
@@ -136,7 +138,7 @@ it('an unavailable button is a neutral well with muted text; busy keeps its inte
  for(const intent of ['primary','secondary','destructive']){const tree=mount(h(Button,{intent,disabled:true},'Go'));expect(flat(button(tree))).toMatchObject({backgroundColor:colors.surface,opacity:1});expect(label(tree)).toBe(colors.muted);}
  const inCard=mount(h(Surface,null,h(Button,{disabled:true},'Go')));expect(flat(button(inCard)).backgroundColor).toBe(colors.nested);
  const ghost=mount(h(Button,{intent:'ghost',disabled:true},'Go'));expect(flat(button(ghost)).backgroundColor).toBe('transparent');expect(label(ghost)).toBe(colors.faint);
- const busy=mount(h(Button,{busy:true},'Go'));expect(flat(button(busy))).toMatchObject({backgroundColor:colors.action,opacity:0.7});expect(label(busy)).toBe(colors.onAction);
+ const busy=mount(h(Button,{busy:true},'Go'));expect(flat(button(busy))).toMatchObject({backgroundColor:colors.action+'26',opacity:0.7});expect(label(busy)).toBe(colors.action);
 });
 it('the selected tab is a raised neutral capsule and the others are bare muted labels',()=>{
  const tabs=tree=>tree.findAll(n=>n.props.accessibilityRole==='tab'&&typeof n.props.style==='function'),label=tab=>StyleSheet.flatten(tab.findAllByType(RNText).at(-1).props.style).color;

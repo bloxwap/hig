@@ -1,6 +1,4 @@
 /** Native host options on the asset rows, the account and token blocks, the pickers, WalletAddress and MarketRow. */
-let mockCuerLoaded=false;
-jest.mock('cuer/QrCode',()=>{mockCuerLoaded=true;return {create:()=>({grid:Array.from({length:21},()=>Array.from({length:21},()=>false))})};});
 const React=require('react');
 const {readFileSync}=require('node:fs');
 const {create:render,act}=require('react-test-renderer');
@@ -12,7 +10,7 @@ const {TokenActionBlock}=require('../../packages/hig/native/src/token-action-blo
 const pickers=require('../../packages/hig/native/src/pickers');
 const blocks=require('../../packages/hig/native/src/blocks');
 const core=require('../../packages/hig/native/src/wallet-address-core');
-const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
 const {Button}=require('../../packages/hig/native/src/button');
 const {Usd,Percent}=require('../../packages/hig/native/src/data');
 const h=React.createElement;
@@ -23,7 +21,7 @@ const all=(view,id)=>view.findAll(node=>node.props.testID===id);
 const host=(view,id)=>all(view,id).find(node=>typeof node.type==='string');
 const outer=(view,id)=>all(view,id).find(node=>node.props.accessibilityLabel!==undefined);
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
-const flows=view=>view.findAllByType(AnimatedNumberReadout);
+const flows=view=>view.findAllByType(NumberFlow);
 const reading=(view,id)=>text(view.findAll(node=>node.type==='Text'&&node.props.testID===id)[0]);
 
 describe('AssetBalanceRow',()=>{
@@ -111,16 +109,15 @@ describe('Pickers',()=>{
 });
 describe('WalletAddress',()=>{
  const ethereum='0x9e0fD0622874ca1ccBf79DA087BaF4622Faf7768';
- it('draws the host QR from the core entry without loading cuer or react-native-svg',()=>{
+ it('draws the host QR from the core entry without loading react-native-svg',()=>{
   const view=mount(h(core.WalletAddress,{address:ethereum,qr:h(View,{testID:'host-qr'}),size:140}));
-  expect(mockCuerLoaded).toBe(false);
   const image=host(view,'wallet-address-qr');expect(image.props.accessibilityRole).toBe('image');expect(image.props.accessibilityLabel).toBe('QR code');expect(host(view,'host-qr')).toBeDefined();
-  expect(readFileSync('packages/hig/native/src/wallet-address-core.tsx','utf8')).not.toMatch(/from '(cuer|react-native-svg)[/']/);
+  expect(readFileSync('packages/hig/native/src/wallet-address-core.tsx','utf8')).not.toMatch(/from '(react-native-svg|\.\/qr-code)[./']/);
   // The main entry takes the same qr and then encodes nothing.
   const main=require('../../packages/hig/native/src/wallet-address');
   mount(h(main.WalletAddress,{address:ethereum,qr:h(View,{testID:'host-qr'})}));expect(host(root.root,'host-qr')).toBeDefined();
-  // As on web, qr={null} is the same as leaving it out: the cuer code is drawn.
-  mount(h(main.WalletAddress,{address:ethereum,qr:null}));expect(root.root.findAll(node=>typeof node.type==='function'&&node.type.name==='CuerCode')).toHaveLength(1);
+  // As on web, qr={null} is the same as leaving it out: HIG's own code is drawn.
+  mount(h(main.WalletAddress,{address:ethereum,qr:null}));expect(root.root.findAllByType(require('../../packages/hig/native/src/qr-code').QRCode)).toHaveLength(1);
  });
  it('announce={false} shows no notice after a copy',async()=>{
   const copy=jest.fn();

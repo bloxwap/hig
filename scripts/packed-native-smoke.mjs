@@ -44,7 +44,7 @@ assert.equal(walk(join(dir,'node_modules/@bloxwap/hig/tokens')).filter(p=>/\.(?:
 console.log('Packed native fonts: hashes match the generator manifest and Metro bundles the registered faces');
 writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-gesture.js'));
 execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-gesture'],{cwd:dir,stdio:'inherit'});
-console.log(`Packed optional gesture-sheet consumer (${profile}) exported Android/iOS with real Gorhom/Reanimated/Worklets peers`);
+console.log(`Packed gesture-sheet consumer (${profile}) exported Android/iOS with real Reanimated/Gesture Handler/Worklets peers`);
 writeFileSync(join(dir,'index.js'),readFileSync('fixtures/native/index-adoption.js'));
 execFileSync('npm',['run','bundle','--','--max-workers','2','--output-dir','dist-adoption'],{cwd:dir,stdio:'inherit'});
 const adoptionAssets=new Set(walk(join(dir,'dist-adoption')).filter(p=>statSync(p).size>100000).map(p=>sha(readFileSync(p))));

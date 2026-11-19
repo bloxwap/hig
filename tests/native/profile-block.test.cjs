@@ -109,14 +109,14 @@ it('makes the avatar a named button with onAvatarPress, the status dot outside i
  view=mount();expect(has(view,'profile-avatar-button')).toBe(false);
 });
 it('draws a live figure value and a toned value, read with the label',()=>{
- const {AnimatedNumberReadout}=require('../../packages/hig/native/src/animated-number');
+ const {NumberFlow}=require('../../packages/hig/native/src/animated-number');
  const view=mount({sections:[{id:'s',rows:[
   {id:'accounts',label:'Accounts',value:{value:1042.09,options:{style:'currency',currency:'USD'}},onSelect:()=>{}},
   {id:'history',label:'History',value:'Live',tone:'positive',onSelect:()=>{}},
   {id:'demo',label:'Mode',value:'Demo',tone:'warning'},
   {id:'plain',label:'Version',value:'1.0'}]}]});
  expect(button(view,'profile-row-accounts').props.accessibilityLabel).toBe('Accounts, $1,042.09');
- const figure=view.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='profile-row-accounts-value');expect(figure.props).toMatchObject({value:1042.09,tone:'muted'});
+ const figure=view.findAllByType(NumberFlow).find(node=>node.props.testID==='profile-row-accounts-value');expect(figure.props).toMatchObject({value:1042.09,tone:'muted'});
  expect(button(view,'profile-row-history').props.accessibilityLabel).toBe('History, Live');expect(flat(host(view,'profile-row-history-value')).color).toBe(colors.positive);
  expect(flat(host(view,'profile-row-demo-value')).color).toBe(colors.warning);
  expect(view.findAllByType(ListRow).find(row=>row.props.testID==='profile-row-plain').props.value).toBe('1.0');
@@ -124,7 +124,7 @@ it('draws a live figure value and a toned value, read with the label',()=>{
  for(const id of ['history','demo','plain'])expect(flat(host(view,`profile-row-${id}-value`))).toMatchObject({flexShrink:1,maxWidth:'50%'});
  expect(host(view,'profile-row-demo-value').props.numberOfLines).toBe(1);expect(flat(host(view,'profile-row-plain-value')).color).toBe(colors.muted);
  const toned=mount({sections:[{id:'s',rows:[{id:'pnl',label:'PnL',value:{value:-4.2},tone:'negative'}]}]});
- expect(toned.findAllByType(AnimatedNumberReadout).find(node=>node.props.testID==='profile-row-pnl-value').props.tone).toBe('negative');
+ expect(toned.findAllByType(NumberFlow).find(node=>node.props.testID==='profile-row-pnl-value').props.tone).toBe('negative');
 });
 it('draws a footer under the sections on the block inset, 24 below',()=>{
  let view=mount({footer:h(View,{testID:'legal'})});

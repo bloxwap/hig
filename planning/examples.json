@@ -429,7 +429,7 @@
       "variants": {
         "scrollable": {
           "web": "<C.GestureSheet open={open} onOpenChange={setOpen} trigger={<C.Button>Open scrollable account</C.Button>} title='Account' labelledBy='scrollable-account-title' closeButton={null} enableDynamicSizing maxDynamicContentSize={380} contentProps={{style:{maxWidth:390,marginInline:'auto'}}}><C.AccountBlock headingId='scrollable-account-title' headerAction={<C.IconButton label='Close account' intent='ghost' onClick={()=>setOpen(false)}><C.Text>×</C.Text></C.IconButton>} assets={[['USDC','USD Coin'],['BTC','Bitcoin'],['ETH','Ether'],['SOL','Solana'],['HYPE','Hyperliquid'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['ADA','Cardano'],['LTC','Litecoin'],['UNI','Uniswap'],['AAVE','Aave']].map(([symbol,name])=>({id:symbol,symbol,name,balance:0,price:1}))}/></C.GestureSheet>",
-          "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open scrollable account</C.Button><C.GestureSheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Account' labelledBy='scrollable-account-title' contentMode='custom' snapPoints={['50%','80%']}><C.AccountBlock stickyHeader scrollComponent={({children,...props})=><C.BottomSheetScrollView {...props}>{children}</C.BottomSheetScrollView>} headingId='scrollable-account-title' headerAction={<C.IconButton label='Close account' intent='ghost' onPress={()=>setOpen(false)}><C.Text>×</C.Text></C.IconButton>} assets={[['USDC','USD Coin'],['BTC','Bitcoin'],['ETH','Ether'],['SOL','Solana'],['HYPE','Hyperliquid'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['ADA','Cardano'],['LTC','Litecoin'],['UNI','Uniswap'],['AAVE','Aave']].map(([symbol,name])=>({id:symbol,symbol,name,balance:0,price:1}))}/></C.GestureSheet></C.Stack>"
+          "native": "<C.Stack><C.Button ref={trigger} onPress={()=>setOpen(true)}>Open scrollable account</C.Button><C.GestureSheet open={open} onOpenChange={setOpen} returnFocusRef={trigger} title='Account' labelledBy='scrollable-account-title' contentMode='custom' snapPoints={['50%','80%']}><C.AccountBlock stickyHeader scrollComponent={({children,...props})=><C.GestureSheetScrollView {...props}>{children}</C.GestureSheetScrollView>} headingId='scrollable-account-title' headerAction={<C.IconButton label='Close account' intent='ghost' onPress={()=>setOpen(false)}><C.Text>×</C.Text></C.IconButton>} assets={[['USDC','USD Coin'],['BTC','Bitcoin'],['ETH','Ether'],['SOL','Solana'],['HYPE','Hyperliquid'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['ADA','Cardano'],['LTC','Litecoin'],['UNI','Uniswap'],['AAVE','Aave']].map(([symbol,name])=>({id:symbol,symbol,name,balance:0,price:1}))}/></C.GestureSheet></C.Stack>"
         }
       }
     },
@@ -655,6 +655,38 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
+      "name": "InlineNotice",
+      "added": "0.10.0",
+      "slug": "inline-notice",
+      "entry": "status",
+      "family": "status",
+      "web": "<C.InlineNotice severity='info' title='Transfer timing' description='Bank transfers usually arrive within three business days.'/>",
+      "native": "<C.InlineNotice severity='info' title='Transfer timing' description='Bank transfers usually arrive within three business days.'/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "success",
+        "warning",
+        "error"
+      ],
+      "a11y": "The icon is decorative. The title and description are readable static text.",
+      "feedback": "No feedback.",
+      "variants": {
+        "success": {
+          "web": "<C.InlineNotice severity='success' title='Transfer complete' description='Your funds are available.'/>",
+          "native": "<C.InlineNotice severity='success' title='Transfer complete' description='Your funds are available.'/>"
+        },
+        "warning": {
+          "web": "<C.InlineNotice severity='warning' title='Transfer delayed' description='Allow an extra business day.'/>",
+          "native": "<C.InlineNotice severity='warning' title='Transfer delayed' description='Allow an extra business day.'/>"
+        },
+        "error": {
+          "web": "<C.InlineNotice severity='error' title='Transfer failed' description='Check the account details before trying again.'/>",
+          "native": "<C.InlineNotice severity='error' title='Transfer failed' description='Check the account details before trying again.'/>"
+        }
+      }
+    },
+    {
       "name": "Callout",
       "slug": "callout",
       "entry": "status",
@@ -688,8 +720,8 @@
       "entry": "toast",
       "family": "status",
       "added": "0.8.0",
-      "web": "<><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>",
-      "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='ghost' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "web": "<><C.Button onClick={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onClick={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onClick={()=>C.toast.success('+$125.50',{id:'payout',accent:'up',action:<C.ToastAction onClick={()=>C.dismissToast('payout')}>Share</C.ToastAction>})}>Show a payout</C.Button><C.Button intent='secondary' onClick={()=>C.toast.error('Check this transfer before retrying',{id:'recovery',description:'An earlier transfer may have gone through. Check your history first.',duration:Infinity,action:<C.ToastAction onClick={()=>C.dismissToast('recovery')}>I checked</C.ToastAction>,secondaryAction:<C.ToastAction onClick={()=>C.dismissToast('recovery')}>Close</C.ToastAction>})}>Show a stacked notice</C.Button><C.Button intent='secondary' onClick={()=>C.dismissToast()}>Dismiss all</C.Button></>",
+      "native": "<><C.Button onPress={()=>C.toast.success('Demo copied')}>Show a notice</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Transfer failed',{id:'transfer',description:'Check your balance and retry.',duration:Infinity,action:<C.Button intent='destructive' onPress={()=>C.dismissToast('transfer')}>Retry</C.Button>})}>Show a failure that stays</C.Button><C.Button intent='secondary' onPress={()=>C.toast.success('+$125.50',{id:'payout',accent:'up',action:<C.ToastAction onPress={()=>C.dismissToast('payout')}>Share</C.ToastAction>})}>Show a payout</C.Button><C.Button intent='secondary' onPress={()=>C.toast.error('Check this transfer before retrying',{id:'recovery',description:'An earlier transfer may have gone through. Check your history first.',duration:Infinity,action:<C.ToastAction onPress={()=>C.dismissToast('recovery')}>I checked</C.ToastAction>,secondaryAction:<C.ToastAction onPress={()=>C.dismissToast('recovery')}>Close</C.ToastAction>})}>Show a stacked notice</C.Button><C.Button intent='secondary' onPress={()=>C.dismissToast()}>Dismiss all</C.Button></>",
       "nativeSupport": "renderer",
       "states": [
         "default",
@@ -833,22 +865,6 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
     },
     {
-      "name": "AnimatedNumberReadout",
-      "slug": "animated-number-readout",
-      "entry": "animated-number",
-      "family": "financial-data",
-      "web": "<><C.AnimatedNumberReadout label=\"Estimated quantity\" value={empty?null:range} stale={!!error} trend={0} prefix=\"≈ \" suffix=\" units\"/><C.Slider label=\"Estimated quantity\" value={range} onValueChange={setRange}/></>",
-      "native": "<><C.AnimatedNumberReadout label=\"Estimated quantity\" value={empty?null:range} stale={!!error} trend={0} prefix=\"≈ \" suffix=\" units\"/><C.Slider label=\"Estimated quantity\" value={range} onValueChange={setRange}/></>",
-      "nativeSupport": "renderer",
-      "states": [
-        "default",
-        "error",
-        "empty"
-      ],
-      "a11y": "One final localized reading with prefix/suffix stays accessible; decorative per-place motion honors reduced motion, latest value wins and no live region or feedback is emitted.",
-      "feedback": "accepted intent only; outcomes supplied by host; live updates silent"
-    },
-    {
       "name": "NumberFlow",
       "slug": "number-flow",
       "entry": "animated-number",
@@ -862,7 +878,8 @@
         "error",
         "empty",
         "countdown",
-        "continuous"
+        "continuous",
+        "slide"
       ],
       "a11y": "One final localized reading stays accessible while the digits roll; the moving copy is hidden, reduced motion draws each value at once and no live region or feedback is emitted.",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
@@ -874,6 +891,10 @@
         "continuous": {
           "web": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>",
           "native": "<><C.NumberFlow label=\"Points\" value={range*125} trend={1} continuous spinTiming={{duration:600,easing:'standard'}}/><C.Slider label=\"Points\" value={range} onValueChange={setRange}/></>"
+        },
+        "slide": {
+          "web": "<><C.NumberFlow motion=\"slide\" label=\"Sample price\" value={range}/><C.Slider label=\"Sample price\" value={range} onValueChange={setRange}/></>",
+          "native": "<><C.NumberFlow motion=\"slide\" label=\"Sample price\" value={range}/><C.Slider label=\"Sample price\" value={range} onValueChange={setRange}/></>"
         }
       }
     },
@@ -1762,8 +1783,8 @@
       "slug": "deposit-block",
       "entry": "blocks",
       "family": "blocks",
-      "web": "open?<C.Stack><C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>navigator.clipboard.writeText('0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688')}/><C.Button intent='secondary' onClick={()=>setOpen(false)}>Back to deposit methods</C.Button></C.Stack>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
-      "native": "open?<C.Stack><C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>setMessage('Copy requested; the host owns the clipboard')}/><C.Button intent='secondary' onPress={()=>setOpen(false)}>Back to deposit methods</C.Button></C.Stack>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
+      "web": "open?<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onCopy={(_, address) => navigator.clipboard.writeText(address)} onBack={() => setOpen(false)}/>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
+      "native": "open?<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onBack={() => setOpen(false)}/>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -1951,8 +1972,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.3' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.9.3')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.9.3' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.10.0')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -2053,6 +2074,55 @@
       ],
       "a11y": "The prize amount and the Claim and Cancel buttons are named.",
       "feedback": "Claim opens the host confirmation screen. Cancel dismisses the prize."
+    },
+    {
+      "name": "AdvancedBlock",
+      "added": "0.10.0",
+      "slug": "advanced-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "completed"
+      ],
+      "variants": {
+        "completed": {
+          "web": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:true,onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>",
+          "native": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:true,onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>"
+        }
+      },
+      "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
+      "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
+      "web": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:false,onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>",
+      "native": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:false,onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>"
+    },
+    {
+      "name": "ReceiveBlock",
+      "added": "0.10.0",
+      "slug": "receive-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onCopy={(_, address) => navigator.clipboard.writeText(address)}/>",
+      "native": "<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\"/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "ethereum",
+        "solana"
+      ],
+      "variants": {
+        "ethereum": {
+          "web": "<C.ReceiveBlock mode=\"ethereum\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onCopy={(_, address) => navigator.clipboard.writeText(address)}/>",
+          "native": "<C.ReceiveBlock mode=\"ethereum\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\"/>"
+        },
+        "solana": {
+          "web": "<C.ReceiveBlock mode=\"solana\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" onCopy={(_, address) => navigator.clipboard.writeText(address)}/>",
+          "native": "<C.ReceiveBlock mode=\"solana\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\"/>"
+        }
+      },
+      "a11y": "The network selector identifies the active network. The copy action names the displayed address.",
+      "feedback": "Pass onCopy to use the host clipboard and show copy feedback."
     }
   ]
 }

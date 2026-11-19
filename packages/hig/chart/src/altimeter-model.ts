@@ -55,28 +55,40 @@ export function easeInOut(t:number):number{
  return 3*(1-u)*u*u+u*u*u;
 }
 
+/** The state of a price tween: easing from `from` to `to` since `start`, leaving `from` with velocity `tangent`. */
+export type AltimeterTweenState={from:number;to:number;start:number;tangent:number};
+/** A tween that has not seen a price. */
+export const ALTIMETER_TWEEN_IDLE:AltimeterTweenState={from:NaN,to:NaN,start:0,tangent:0};
+/**
+ * One step of the 300ms monotone Hermite price tween, as a pure function of its state: retarget from the current position
+ * and retain forward velocity without overshoot. Returns the displayed price and the next state, which is the same object
+ * unless the tween changed course; `state` is not modified. A renderer can hand the state to another thread, which reads
+ * the price at any later time with `tweenValue`.
+ */
+export function stepPriceTween(state:AltimeterTweenState,target:number,now:number,snap=false):{value:number;state:AltimeterTweenState}{
+ const {from,to,start,tangent}=state;
+ if(snap||!Number.isFinite(to))return {value:target,state:{from:target,to:target,start:now,tangent:0}};
+ if(from===to||now-start>=ALTIMETER_EASE_MS){
+  if(target!==to)return {value:to,state:{from:to,to:target,start:now,tangent:0}};
+  return {value:to,state};
+ }
+ const t=Math.max(0,(now-start)/ALTIMETER_EASE_MS),delta=to-from;
+ const value=from+delta*t*t*(3-2*t)+tangent*t*(1-t)*(1-t);
+ if(target===to)return {value,state};
+ const velocity=(delta*6*t*(1-t)+tangent*(1-t)*(1-3*t))/ALTIMETER_EASE_MS;
+ const next=target-value,direction=Math.sign(next);
+ // A reversal starts from rest. A nearer endpoint limits the tangent so it cannot overshoot a target.
+ return {value,state:{from:value,to:target,start:now,tangent:direction*Math.min(3*Math.abs(next),Math.max(0,direction*velocity*ALTIMETER_EASE_MS))}};
+}
 /** A 300ms monotone Hermite tween: retarget from the current position and retain forward velocity without overshoot. */
 export function priceTween(){
- let from=NaN,to=NaN,start=0,tangent=0;
+ let state=ALTIMETER_TWEEN_IDLE;
  return {
-  reset(){from=to=NaN;tangent=0;},
+  reset(){state=ALTIMETER_TWEEN_IDLE;},
   update(target:number,now:number,snap=false):number{
-   if(snap||!Number.isFinite(to)){from=to=target;start=now;tangent=0;return target;}
-   if(from===to||now-start>=ALTIMETER_EASE_MS){
-    const settled=to;
-    if(target!==to){from=settled;to=target;start=now;tangent=0;}
-    return settled;
-   }
-   const t=Math.max(0,(now-start)/ALTIMETER_EASE_MS),delta=to-from;
-   const value=from+delta*t*t*(3-2*t)+tangent*t*(1-t)*(1-t);
-   if(target!==to){
-    const velocity=(delta*6*t*(1-t)+tangent*(1-t)*(1-3*t))/ALTIMETER_EASE_MS;
-    from=value;to=target;start=now;
-    const next=to-from,direction=Math.sign(next);
-    // A reversal starts from rest. A nearer endpoint limits the tangent so it cannot overshoot a target.
-    tangent=direction*Math.min(3*Math.abs(next),Math.max(0,direction*velocity*ALTIMETER_EASE_MS));
-   }
-   return value;
+   const step=stepPriceTween(state,target,now,snap);
+   state=step.state;
+   return step.value;
   },
  };
 }

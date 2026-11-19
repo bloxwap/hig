@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {afterEach,beforeAll,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,render,screen,waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {Toaster,toast,dismissToast} from '../packages/hig/react/src/toast';
+import {Toaster,toast,dismissToast,ToastAction} from '../packages/hig/react/src/toast';
 import {Toast} from '../packages/hig/react/src/status';
 import {Button} from '../packages/hig/react/src/button';
 import {HIGProvider} from '../packages/hig/react/src/provider';
@@ -23,8 +23,9 @@ describe('web toasts: the unified API over Sonner',()=>{
   const capsule=close.closest<HTMLElement>('.hig-toast-item')!;
   expect(capsule.dataset.severity).toBe('error');expect(capsule.hasAttribute('data-described')).toBe(true);
   expect(capsule.querySelector('.hig-toast-message')!.firstChild!.textContent).toBe('Transfer failed');expect(capsule.querySelector('.hig-toast-description')!.textContent).toBe('Check your balance and retry.');
-  // Symbol, message, action, close: the action sits before the close button.
-  expect([...capsule.children].map(child=>child.tagName.toLowerCase())).toEqual(['svg','span','button','button']);
+  // Tile (holding the symbol), message, action, close: the action sits before the close button.
+  expect([...capsule.children].map(child=>child.className.split(' ')[0]||child.tagName.toLowerCase())).toEqual(['hig-toast-tile','hig-toast-message','hig-button','hig-toast-close']);
+  expect(capsule.querySelector('.hig-toast-tile > svg.hig-toast-icon')).toBeTruthy();
   await userEvent.click(screen.getByRole('button',{name:'Retry'}));expect(retry).toHaveBeenCalledTimes(1);
   // Sonner's region takes the provider's name for it.
   expect(document.querySelector('section[aria-label^="Notifications reçues"]')).toBeTruthy();
@@ -126,8 +127,10 @@ describe('web toasts: the unified API over Sonner',()=>{
   }finally{vi.useRealTimers();}
  });
  it('paints severities from token roles that are Display P3 on capable screens, and stops Sonner under provider reduced motion',()=>{
-  for(const [severity,role] of [['success','positive'],['warning','warning'],['error','negative']])expect(css).toContain(`.hig-toast-item[data-severity='${severity}'] .hig-toast-icon { color:var(--hig-${role}); }`);
-  expect(css).toContain('.hig-toast-icon { color:var(--hig-info); }');
+  // The severity picks the accent the border, glow, tile and action pills share; info is the default, and a market accent wins.
+  for(const [severity,role] of [['success','positive'],['warning','warning'],['error','negative']])expect(css).toContain(`.hig-toast-item[data-severity='${severity}'] { --hig-toast-accent:var(--hig-${role}); }`);
+  expect(css).toMatch(/\.hig-toast-item \{ --hig-toast-accent:var\(--hig-info\);/);
+  for(const direction of ['up','down'])expect(css).toContain(`.hig-toast-item[data-accent='${direction}'] { --hig-toast-accent:var(--hig-${direction}); }`);
   // No colour in the toast rules is written out: every one is a token, apart from the shadow.
   const rules=css.split('\n').filter(line=>line.startsWith('.hig-toast')).join('\n');
   expect(rules.replace(/box-shadow:[^;]+;/g,'')).not.toMatch(/#[0-9a-f]{3,8}\b|rgb\(|hsl\(/i);
@@ -135,7 +138,7 @@ describe('web toasts: the unified API over Sonner',()=>{
   // The capsule's fill and text are neutral greys, the same in both spaces; the severity roles are the ones with a wider-gamut value.
   for(const role of ['info','positive','warning','negative'])expect(p3).toMatch(new RegExp(`--hig-${role}: color\\(display-p3 `));
   expect(css).toContain("[data-hig-motion='reduced'] [data-sonner-toast],[data-hig-motion='reduced'] [data-sonner-toast] > * { transition:none!important;animation:none!important; }");
-  expect(css).toContain('.hig-toast-item[data-described] { border-radius:22px;padding-block:8px; }');
+  expect(css).toContain('.hig-toast-item[data-described] { border-radius:16px;padding-block:6px; }');
  });
 });
 
@@ -150,4 +153,52 @@ it('formats only changed persistent notice rows on host updates',()=>{
  expect(format).toHaveBeenCalledTimes(0);
  view.rerender(board([{...notices[0],message:'Changed'},...notices.slice(1)]));
  expect(format).toHaveBeenCalledTimes(1);
+});
+
+describe('toast presentation options',()=>{
+ it('swaps the tile symbol, hides the tile, and takes a market accent',async()=>{
+  render(<HIGProvider><Toaster/></HIGProvider>);
+  act(()=>{toast('Hyperliquid to Base',{id:'flight',icon:<i data-testid='spinner'/>});toast('Signed in',{id:'plain',icon:null});toast('+$125.50',{id:'payout',severity:'success',accent:'up',messageNode:<b data-testid='figure'>+$125.50</b>});});
+  const flight=(await screen.findByTestId('spinner')).closest<HTMLElement>('.hig-toast-item')!;
+  expect(flight.querySelector('.hig-toast-tile > [data-testid=spinner]')).toBeTruthy();expect(flight.querySelector('.hig-toast-icon')).toBeNull();
+  const plain=screen.getByRole('button',{name:'Dismiss Signed in'}).closest<HTMLElement>('.hig-toast-item')!;
+  expect(plain.querySelector('.hig-toast-tile')).toBeNull();
+  const payout=screen.getByTestId('figure').closest<HTMLElement>('.hig-toast-item')!;
+  expect(payout.dataset.accent).toBe('up');expect(payout.dataset.severity).toBe('success');
+  // The figure is drawn; the message is still what names the close button.
+  expect(screen.getByRole('button',{name:'Dismiss +$125.50'})).toBeTruthy();
+ });
+ it('stacks two ToastAction pills under the message, the second one quieter',async()=>{
+  const confirm=vi.fn(),close=vi.fn();
+  render(<HIGProvider><Toaster/></HIGProvider>);
+  act(()=>{toast('Check this transfer before retrying',{severity:'error',description:'It may have gone through.',action:<ToastAction onClick={confirm}>I checked</ToastAction>,secondaryAction:<ToastAction onClick={close}>Close</ToastAction>});});
+  const primary=await screen.findByRole('button',{name:'I checked'});
+  const capsule=primary.closest<HTMLElement>('.hig-toast-item')!;
+  expect(capsule.dataset.layout).toBe('stacked');
+  expect(primary.closest('.hig-toast-actions')?.getAttribute('data-count')).toBe('2');
+  expect(primary.dataset.rank).toBe('primary');expect(screen.getByRole('button',{name:'Close'}).dataset.rank).toBe('secondary');
+  await userEvent.click(primary);expect(confirm).toHaveBeenCalledTimes(1);
+  expect(css).toContain(".hig-toast-action[data-rank='secondary'] { color:var(--hig-muted); }");
+ });
+ it('makes the tile and message one control with onPress, apart from the close button',async()=>{
+  const open=vi.fn();
+  render(<HIGProvider><Toaster/></HIGProvider>);
+  act(()=>{toast("It's live",{severity:'success',onPress:open,pressName:'Open the tournament'});});
+  const body=await screen.findByRole('button',{name:'Open the tournament'});
+  expect(body.classList.contains('hig-toast-body')).toBe(true);expect(body.querySelector('.hig-toast-tile')).toBeTruthy();
+  expect(body.contains(screen.getByRole('button',{name:"Dismiss It's live"}))).toBe(false);
+  await userEvent.click(body);expect(open).toHaveBeenCalledTimes(1);
+ });
+});
+
+it('runs onClose for the close control only, before onDismiss, and not for dismissToast',async()=>{
+ const order:string[]=[];
+ render(<HIGProvider><Toaster/></HIGProvider>);
+ act(()=>{toast('Minimums',{id:'a',duration:Infinity,onClose:()=>order.push('close'),onDismiss:()=>order.push('dismiss')});});
+ await userEvent.click(await screen.findByRole('button',{name:'Dismiss Minimums'}));
+ await waitFor(()=>expect(order).toEqual(['close','dismiss']));
+ act(()=>{toast('Bridge',{id:'b',duration:Infinity,onClose:()=>order.push('close b')});});
+ await screen.findByRole('button',{name:'Dismiss Bridge'});
+ act(()=>dismissToast('b'));
+ expect(order).not.toContain('close b');
 });

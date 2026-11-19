@@ -1,10 +1,4 @@
 /** Native side of the defects and small gaps the app audits found (Unreleased). */
-jest.mock('@gorhom/bottom-sheet',()=>{
- const React=require('react'),{View,ScrollView,FlatList}=require('react-native');
- const methods={present:jest.fn(),dismiss:jest.fn(),snapToIndex:jest.fn()};
- const BottomSheetModal=React.forwardRef((props,ref)=>{React.useImperativeHandle(ref,()=>methods);return React.createElement(View,{...props,testID:'backend'},props.children);});
- return {__esModule:true,default:View,methods,BottomSheetModal,BottomSheetView:View,BottomSheetScrollView:ScrollView,BottomSheetBackdrop:View,BottomSheetFlatList:FlatList};
-});
 jest.mock('react-native-safe-area-context',()=>({useSafeAreaInsets:()=>({top:0,bottom:0,left:0,right:0})}));
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
@@ -17,7 +11,6 @@ const {SegmentedControl}=require('../../packages/hig/native/src/radio-group');
 const {Button}=require('../../packages/hig/native/src/button');
 const {ListRow}=require('../../packages/hig/native/src/list-group');
 const {NumberReadout}=require('../../packages/hig/native/src/data');
-const {GestureSheet}=require('../../packages/hig/native/src/gesture-sheet');
 const h=React.createElement;
 let root;
 function mount(element,provider={}){if(root)act(()=>root.unmount());act(()=>{root=render(h(HIGProvider,{reducedMotion:true,...provider},element));});return root.root;}
@@ -91,9 +84,9 @@ describe('picker token rows',()=>{
  });
 });
 
-describe('SwapPanelBlock title',()=>{
+describe('SwapBlock title',()=>{
  it('draws the shared ScreenHeader: centred 17/24 title in a 44 row',()=>{
-  const onBack=jest.fn();const view=mount(h(blocks.SwapPanelBlock,{tokens:[],onSubmit:jest.fn(),title:'Deposit',onBack,headingId:'deposit-title'}));
+  const onBack=jest.fn();const view=mount(h(blocks.SwapBlock,{tokens:[],onSubmit:jest.fn(),title:'Deposit',onBack,headingId:'deposit-title'}));
   const title=host(view,'swap-title');expect(flat(title)).toMatchObject({textAlign:'center',fontSize:17,lineHeight:24,fontWeight:'600'});expect(title.props.nativeID).toBe('deposit-title');
   expect(flat(host(view,'swap-header')).minHeight).toBe(44);
   press(view,'swap-back');expect(onBack).toHaveBeenCalledTimes(1);
@@ -110,21 +103,20 @@ describe('SegmentedControl',()=>{
 });
 
 describe('Button market fills',()=>{
- it('fills up and down with the provider market colours and a dark label',()=>{
+ it('fills up and down with the provider market colours at 15% behind a full-colour label',()=>{
   let view=mount(h(View,null,h(Button,{intent:'up',testID:'long'},'Long'),h(Button,{intent:'down',testID:'short'},'Short')));
-  expect(flat(host(view,'long')).backgroundColor).toBe(nativeSrgb.buy);expect(flat(host(view,'short')).backgroundColor).toBe(nativeSrgb.sell);
-  const label=view.findAll(node=>node.type==='Text'&&node.props.children==='Long')[0];expect(flat(label).color).toBe(nativeSrgb.background);
-  view=mount(h(Button,{intent:'up',testID:'long'},'Long'),{marketColors:{up:'#ff3b30',down:'#0a84ff'}});expect(flat(host(view,'long')).backgroundColor).toBe('#ff3b30');
+  expect(flat(host(view,'long')).backgroundColor).toBe(nativeSrgb.buy+'26');expect(flat(host(view,'short')).backgroundColor).toBe(nativeSrgb.sell+'26');
+  const label=view.findAll(node=>node.type==='Text'&&node.props.children==='Long')[0];expect(flat(label).color).toBe(nativeSrgb.buy);
+  view=mount(h(Button,{intent:'up',testID:'long'},'Long'),{marketColors:{up:'#ff3b30',down:'#0a84ff'}});expect(flat(host(view,'long')).backgroundColor).toBe('#ff3b3026');
   view=mount(h(Button,{intent:'down',disabled:true,testID:'short'},'Short'));expect(flat(host(view,'short')).backgroundColor).not.toBe(nativeSrgb.sell);
  });
 });
 
 describe('headingId and labelledBy',()=>{
- it('sets nativeID on the block titles and accessibilityLabelledBy on the sheet content',()=>{
+ // The sheet's side, `labelledBy` on its content, is covered with the sheet in gesture-sheet.test.cjs.
+ it('sets nativeID on the block titles',()=>{
   for(const [element,id] of [[h(blocks.AccountBlock,{assets:[],headingId:'h'}),'account-title'],[h(blocks.TokenActionBlock,{symbol:'HYPE',actions:[],headingId:'h'}),'token-title'],[h(blocks.LanguageBlock,{languages:[],onSelect:jest.fn(),headingId:'h',testID:'language'}),'language-title'],[h(ProfileBlock,{name:'Joe',sections:[],headingId:'h'}),'profile-name']]){
    expect([id,host(mount(element),id).props.nativeID]).toEqual([id,'h']);
   }
-  const view=mount(h(GestureSheet,{open:true,onOpenChange:jest.fn(),title:'Profile',snapPoints:['50%'],labelledBy:'profile-name'},h(RNText,null,'Body')));
-  expect(view.findAll(node=>node.props.accessibilityLabelledBy==='profile-name').length).toBeGreaterThan(0);
  });
 });

@@ -31,8 +31,8 @@ import {Button} from '@bloxwap/hig/react/button';
 
 ## Peers
 
-Every renderer, device and overlay peer is optional: install React DOM and Radix for web overlays, React Native
-and its community modules for native, `vaul` for the web gesture sheet, and the Expo or Bloxwap audio/haptic
+Every renderer, device and overlay peer is optional: install React DOM and Radix for web overlays and the web
+gesture sheet, React Native and its community modules for native, and the Expo or Bloxwap audio/haptic
 packages for feedback, only when you import those entries. `@bloxwap/chart` `^0.3.0 || ^0.4.0` is the one required peer;
 an optional peer on it makes npm 11 drop a host's workspace `@bloxwap/chart` (bloxwap/hig#96).
 

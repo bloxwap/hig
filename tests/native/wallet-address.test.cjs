@@ -1,23 +1,17 @@
 /**
- * Native wallet address components: the vertical address column and the cuer-style QR beside it.
- * The encoder (`cuer/QrCode`, ESM) is replaced by a fixed grid so the drawing can be asserted module by module.
+ * Native wallet address components: the vertical address column and HIG's own QR code beside it.
+ * The code's modules are covered with the encoder in tests/qr-model.test.ts; here it is the drawing HIG's `QRCode` makes.
  */
-const size=21;
-// 21×21 (version 1): finder squares in three corners, then a few data modules, one of them in the centre.
-const grid=Array.from({length:size},(_,row)=>Array.from({length:size},(_,column)=>{
- const finder=(row<7&&(column<7||column>=size-7))||(row>=size-7&&column<7);
- return finder||(row===10&&column===10)||(row===8&&column===8)||(row===12&&column===15)||(row===20&&column===20);
-}));
-const create=jest.fn(()=>({grid,edgeLength:size,finderLength:7}));
-jest.mock('cuer/QrCode',()=>({create:(...args)=>create(...args)}));
 const React=require('react');
 const {create:render,act}=require('react-test-renderer');
 const {StyleSheet,Image}=require('react-native');
 const {Path,Rect}=require('react-native-svg');
+const {qrCodeGeometry}=require('@bloxwap/hig/contracts/qr');
+const {QRCode}=require('../../packages/hig/native/src/qr-code');
 const {nativeSrgb:colors}=require('@bloxwap/hig/tokens');
 const {HIGProvider}=require('../../packages/hig/native/src/provider');
 const {VerticalAddress,addressKind,addressRows}=require('../../packages/hig/native/src/data');
-const {WalletAddress,qrGeometry}=require('../../packages/hig/native/src/wallet-address');
+const {WalletAddress}=require('../../packages/hig/native/src/wallet-address');
 const h=React.createElement;
 const ethereum='0x9e0fD0622874ca1ccBf79DA087BaF4622Faf7768';
 const solana='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ';
@@ -27,7 +21,7 @@ const flat=node=>StyleSheet.flatten(node.props.style)??{};
 const host=(tree,testID)=>tree.findAll(node=>node.props.testID===testID&&typeof node.type==='string')[0];
 const text=node=>typeof node==='string'?node:node.children.map(text).join('');
 const cells=tree=>tree.findAll(node=>node.type==='Text'&&typeof node.props.children==='string');
-beforeEach(()=>{jest.useFakeTimers();create.mockClear();});
+beforeEach(()=>{jest.useFakeTimers();});
 afterEach(()=>{if(root){act(()=>root.unmount());root=undefined;}jest.useRealTimers();});
 it('tells Ethereum from Solana by the 0x prefix',()=>{
  expect(addressKind(ethereum)).toBe('ethereum');expect(addressKind(solana)).toBe('solana');expect(addressKind('')).toBe('solana');
@@ -56,35 +50,27 @@ it('draws the column as one selectable, left-to-right text named by the whole ad
  tree=mount(h(VerticalAddress,{address:solana,testID:'column'}));
  expect(flat(host(tree,'column'))).toMatchObject({lineHeight:22,fontSize:20});expect(text(host(tree,'column')).split('\n')).toHaveLength(11);
 });
-it('maps the encoder grid to three finders and one path of dots, clearing the centre for an arena',()=>{
- const plain=qrGeometry(grid,false);
- expect(plain.edge).toBe(21);expect(plain.finders).toEqual([{x:0,y:0},{x:14,y:0},{x:0,y:14}]);expect(plain.arena).toBeNull();
- // Four data modules; the finder modules are drawn as rounded squares instead.
- expect(plain.count).toBe(4);expect(plain.dots.match(/M/g)).toHaveLength(4);expect(plain.dots.startsWith('M8.05 8.5a0.45 0.45 0 1 0 0.9 0')).toBe(true);
- const cleared=qrGeometry(grid,true);
- expect(cleared.arena).toEqual({origin:8,size:5});expect(cleared.count).toBe(2);expect(cleared.dots).not.toContain('M10.05 10.5');
-});
-it('renders the QR as a named image in the text colour beside a column exactly as tall as the code',()=>{
+it('renders HIG\'s QR code as a named image in the text colour beside a column exactly as tall as the code',()=>{
  const tree=mount(h(WalletAddress,{address:ethereum,testID:'wallet'}));
- expect(create).toHaveBeenCalledWith(ethereum,{errorCorrection:'medium'});
+ // The code sits on the host's surface: no tile, and no quiet zone of its own.
+ expect(tree.findByType(QRCode).props).toMatchObject({value:ethereum,size:196,quietZone:0,background:'none'});
  const qr=host(tree,'wallet-address-qr');
  expect(qr.props.accessibilityLabel).toBe('QR code');expect(qr.props.accessibilityRole).toBe('image');
- const rects=tree.findAllByType(Rect);expect(rects).toHaveLength(6);
- expect(rects.filter(rect=>rect.props.fill==='none').map(rect=>[rect.props.x,rect.props.y,rect.props.width,rect.props.stroke])).toEqual([[0.5,0.5,6,colors.text],[14.5,0.5,6,colors.text],[0.5,14.5,6,colors.text]]);
- expect(rects.filter(rect=>rect.props.fill!=='none').map(rect=>[rect.props.x,rect.props.y,rect.props.width,rect.props.fill])).toEqual([[2,2,3,colors.text],[16,2,3,colors.text],[2,16,3,colors.text]]);
- const dots=tree.findByType(Path);expect(dots.props.fill).toBe(colors.text);expect(dots.props.d.match(/M/g)).toHaveLength(4);
+ expect(tree.findAllByType(Rect)).toHaveLength(0);
+ const drawing=tree.findByType(Path);expect(drawing.props.fill).toBe(colors.text);expect(drawing.props.d).toBe(qrCodeGeometry(ethereum).path);
  // 196dp code, 7 rows: 28dp each.
  expect(flat(host(tree,'wallet-address-column')).lineHeight).toBe(28);expect(tree.findAllByType(Image)).toHaveLength(0);
  // Without a clipboard adapter it is not a control and shows no hint.
  expect(tree.findAll(node=>node.props.accessibilityRole==='button')).toHaveLength(0);expect(tree.findAll(node=>node.type==='Text'&&text(node)==='Tap to copy')).toHaveLength(0);
 });
-it('sizes the Solana column to the code, encodes a separate payload and raises the error correction for an arena',()=>{
- const tree=mount(h(WalletAddress,{address:solana,qrValue:`solana:${solana}?amount=1`,arena:'https://example.test/sol.png',size:220}));
- expect(create).toHaveBeenCalledWith(`solana:${solana}?amount=1`,{errorCorrection:'high'});
+it('sizes the Solana column to the code, encodes a separate payload and clears the centre for an arena',()=>{
+ const payload=`solana:${solana}?amount=1`;
+ const tree=mount(h(WalletAddress,{address:solana,qrValue:payload,arena:'https://example.test/sol.png',size:220}));
+ expect(tree.findByType(QRCode).props).toMatchObject({value:payload,arena:'https://example.test/sol.png',size:220});
  expect(flat(host(tree,'wallet-address-column')).lineHeight).toBe(20);expect(text(host(tree,'wallet-address-column')).replace(/\n/g,'')).toBe(solana);
- const arena=host(tree,'wallet-address-arena');expect(arena.props.source).toEqual({uri:'https://example.test/sol.png'});
- const unit=220/21;expect(flat(arena)).toMatchObject({position:'absolute',left:8.5*unit,top:8.5*unit,width:4*unit,height:4*unit});
- expect(tree.findByType(Path).props.d.match(/M/g)).toHaveLength(2);
+ expect(tree.findByType(Image).props.source).toEqual({uri:'https://example.test/sol.png'});
+ // With an arena the code is encoded at a higher error correction and its centre is left clear.
+ const cleared=qrCodeGeometry(payload,{arena:true});expect(tree.findByType(Path).props.d).toBe(cleared.path);expect(cleared.path).not.toBe(qrCodeGeometry(payload).path);
 });
 it('copies through the host as one button, shows Tap to copy, and raises Address copied only on success',async()=>{
  const onCopy=jest.fn(()=>Promise.resolve());let tree=mount(h(WalletAddress,{address:ethereum,onCopy}));

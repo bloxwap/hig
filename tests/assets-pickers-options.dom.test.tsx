@@ -10,7 +10,6 @@ import {AssetBalanceRow} from '../packages/hig/react/src/asset-balance-row';
 import {AccountBlock,accountRows,type AccountAsset} from '../packages/hig/react/src/blocks/account-block';
 import {TokenActionBlock} from '../packages/hig/react/src/blocks/token-action-block';
 import {FromPickerBlock,ToPickerBlock} from '../packages/hig/react/src/blocks/pickers';
-import {WalletAddress as WalletAddressCore} from '../packages/hig/react/src/wallet-address-core';
 import {WalletAddress} from '../packages/hig/react/src/wallet-address';
 import {MarketRow} from '../packages/hig/react/src/blocks/market-row';
 afterEach(cleanup);
@@ -109,11 +108,10 @@ describe('Picker host options',()=>{
 });
 describe('WalletAddress host options',()=>{
  const eth='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688';
- it('draws the host QR without cuer from the core entry, and the main entry takes the same qr',()=>{
-  const view=render(<WalletAddressCore address={eth} qr={<svg data-testid='host-qr' aria-hidden='true'/>} size={140}/>);
-  const img=screen.getByRole('img',{name:'QR code'});expect(within(img).getByTestId('host-qr')).toBeTruthy();expect(img.querySelector('[data-cuer]')).toBeNull();
+ it('draws the host QR in place of its own',()=>{
+  const view=render(<WalletAddress address={eth} qr={<svg data-testid='host-qr' aria-hidden='true'/>} size={140}/>);
+  const img=screen.getByRole('img',{name:'QR code'});expect(within(img).getByTestId('host-qr')).toBeTruthy();expect(img.querySelector('.hig-qr-code')).toBeNull();
   view.rerender(<WalletAddress address={eth} qr={<svg data-testid='host-qr' aria-hidden='true'/>}/>);expect(screen.getByTestId('host-qr')).toBeTruthy();
-  expect(readFileSync('packages/hig/react/src/wallet-address-core.tsx','utf8')).not.toMatch(/from 'cuer'/);
  });
  it('draws the press decoration in its copy button, and announce={false} raises no notice',async()=>{
   const copy=vi.fn();

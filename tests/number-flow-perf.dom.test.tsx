@@ -1,7 +1,7 @@
 import React,{Profiler} from 'react';
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {act,cleanup,render} from '@testing-library/react';
-import {AnimatedNumberReadout,NumberFlow,NumberFlowGroup} from '../packages/hig/react/src/animated-number';
+import {NumberFlow,NumberFlowGroup} from '../packages/hig/react/src/animated-number';
 import * as flowTimings from '@bloxwap/hig/contracts/number-flow';
 import * as numberModels from '../packages/hig/react/src/animated-number-model';
 import {numberFlowCommit} from '../packages/hig/react/src/animated-number-flow';
@@ -223,7 +223,7 @@ describe('formatting under load on web',()=>{
   // Sixty new values in one format: the formatter, and the one that names its digits. It was two of each for every value.
   expect(formatters).toHaveBeenCalledTimes(2);
   // The same options written out again are the same format; other options are another.
-  rerender(<HIGProvider><NumberFlow value={5} options={{style:'currency',currency:'USD'}}/><AnimatedNumberReadout value={6} options={{...usd}}/></HIGProvider>);expect(formatters).toHaveBeenCalledTimes(2);
+  rerender(<HIGProvider><NumberFlow value={5} options={{style:'currency',currency:'USD'}}/><NumberFlow motion="slide" value={6} options={{...usd}}/></HIGProvider>);expect(formatters).toHaveBeenCalledTimes(2);
   rerender(<HIGProvider><NumberFlow value={5} options={{style:'percent'}}/></HIGProvider>);expect(formatters).toHaveBeenCalledTimes(3);
  });
  it('formats with whatever Intl.NumberFormat is installed now, not one it kept from before',()=>{

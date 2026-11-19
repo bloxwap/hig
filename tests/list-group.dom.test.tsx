@@ -4,9 +4,28 @@ import {afterEach,describe,expect,it,vi} from 'vitest';
 import {cleanup,render,screen,within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {ListGroup,ListRow} from '../packages/hig/react/src/list-group';
+import {InlineNotice} from '../packages/hig/react/src/status';
 import {Switch} from '../packages/hig/react/src/selection';
 import {readFileSync} from 'node:fs';
 afterEach(cleanup);
+it('renders an information row with readable text and a decorative icon',()=>{
+ const view=render(<InlineNotice title="Transfer timing" description="Allow three days."/>);
+ expect(screen.getByText('Transfer timing')).toBeTruthy();
+ expect(screen.getByText('Allow three days.')).toBeTruthy();
+ expect(view.container.querySelector('[aria-hidden="true"] svg')).toBeTruthy();
+ expect(screen.queryByRole('button')).toBeNull();
+ for(const severity of ['info','success','warning','error'] as const){
+  view.rerender(<InlineNotice severity={severity} title="Transfer timing" description="Allow three days."/>);
+  const card=view.container.querySelector('section');
+  expect(card?.dataset.severity).toBe(severity);
+  const copy=card?.firstElementChild?.nextElementSibling;
+  expect(copy?.children[0]).toBe(screen.getByText('Transfer timing'));
+  expect(copy?.children[1]).toBe(screen.getByText('Allow three days.'));
+  expect(card?.firstElementChild?.querySelector('svg')).toBeTruthy();
+ }
+ view.rerender(<InlineNotice title="Transfer timing" description="Allow three days." icon={<span data-testid="custom"/>}/>);
+ expect(screen.getByTestId('custom').closest('[aria-hidden="true"]')).toBeTruthy();
+});
 describe('ListGroup',()=>{
  it('is a region named by its title whose rows are a list; without a title it is the container alone',()=>{
   const view=render(<ListGroup title='Settings'><ListRow label='Signals' onSelect={()=>{}}/><ListRow label='Language' value='English' onSelect={()=>{}}/>{null}</ListGroup>);

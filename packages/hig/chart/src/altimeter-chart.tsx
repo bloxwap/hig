@@ -4,7 +4,7 @@ import {appendTrailSample,appendLiveTail,beginTrail,fillTrail,historyPath,visibl
 import {tokens} from '@bloxwap/hig/tokens';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {useHIG,useColors} from '@bloxwap/hig/react/provider';
-import {AnimatedNumberReadout} from '@bloxwap/hig/react/animated-number';
+import {NumberFlow} from '@bloxwap/hig/react/animated-number';
 import {ALTIMETER_FLOW_PX,ALTIMETER_SAMPLE_MS,ALTIMETER_TICK_PX,gridPhase,labelDecimalsFor,ladderPrices,priceTween,tickSpacingFor,type AltimeterTick} from './altimeter-model.js';
 import {drawPlusGrid,monoFallback,monoFont} from './plus-grid.js';
 import {bitcoinPrice,type AltimeterFeed} from './bitcoin-price.js';
@@ -36,8 +36,8 @@ export interface AltimeterChartProps extends Omit<React.HTMLAttributes<HTMLEleme
  targetLabelInsets?:TargetLabelInsets;
  /** DEGEN: shake the live pill and burst particles on target crossings. Off by default; suppressed by reduced motion. */
  degen?:boolean;
- /** @deprecated Use degen. */
- dgen?:boolean;
+ /** Called with each DEGEN burst: the target the displayed price just crossed and the direction it moved. Shares the burst's cooldown and reduced-motion rule. */
+ onTargetCross?:(target:AltimeterTarget,direction:'up'|'down')=>void;
 }
 
 /** Inset of the ladder's tick marks from the chart edges. */
@@ -45,6 +45,8 @@ const PAD=18;
 /** Length of a ladder tick mark, and the gap between the pill and the trailing edge. */
 const EDGE=8;
 const NO_TARGETS:readonly AltimeterTarget[]=[];
+const gainP3=`color(display-p3 ${tokens.colors.positive.p3.join(' ')})`;
+const lossP3=`color(display-p3 ${tokens.colors.negative.p3.join(' ')})`;
 const transparent=(color:string)=>/^#[0-9a-f]{6}$/i.test(color)?`${color}00`:'transparent';
 const usable=(price:number|null|undefined):price is number=>price!=null&&Number.isFinite(price)&&price>0;
 const positionColor=(value:number,colors:ReturnType<typeof useColors>)=>
@@ -121,8 +123,12 @@ export function drawAltimeter(ctx:CanvasRenderingContext2D,frame:AltimeterFrame)
  * price ladder that keeps the current price at the vertical center, and the current price at the trail's tip. It
  * accepts optional target lines and opt-in DEGEN crossing feedback. Web only.
  */
-export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,dgen,degen=dgen??false,style,...props}:AltimeterChartProps){
- const {locale,messages,reducedMotion}=useHIG();const colors=useColors();
+export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,height=320,priceOptions,position,targets=NO_TARGETS,targetLabelInsets,degen=false,onTargetCross,style,...props}:AltimeterChartProps){
+ const {locale,messages,reducedMotion,primaryColor}=useHIG();
+ const theme=useColors();
+ const [supportsP3,setSupportsP3]=useState(false);
+ useEffect(()=>{const wide=globalThis.CSS?.supports?.('color',gainP3)??false;setSupportsP3(wide);},[]);
+ const colors=useMemo(()=>supportsP3?{...theme,positive:gainP3,negative:lossP3,action:primaryColor?theme.action:gainP3}:theme,[theme,supportsP3,primaryColor]);
  const pauseFrames=useRef<((paused:boolean)=>void)|undefined>(undefined);
  const initiallyPaused=useRef(paused);
  useEffect(()=>{initiallyPaused.current=paused;pauseFrames.current?.(paused);},[paused]);
@@ -130,6 +136,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  const targetRows=useRef(new Map<string,HTMLDivElement>()),targetLabels=useRef(new Map<string,HTMLSpanElement>()),effects=useRef<HTMLDivElement>(null);
  const levels=useMemo(()=>validTargets(targets),[targets]);
  const crossings=useMemo(()=>targetCrossings({immutableTargets:true}),[]),cancelBurst=useRef<(()=>void)|undefined>(undefined);
+ const onCross=useRef(onTargetCross);onCross.current=onTargetCross;
  const [stale,setStale]=useState(false);
  const controlled=price!==undefined;
  const latest=useRef<number|null>(usable(price)?price:null);
@@ -158,7 +165,8 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
  useEffect(()=>{
   const surface=canvas.current,container=box.current;if(!surface||!container)return;
   let context:CanvasRenderingContext2D|null=null;
-  try{context=surface.getContext('2d');}catch{/* No canvas: the caption and the price reading remain. */}
+  try{context=surface.getContext('2d',{colorSpace:'display-p3'});}catch{/* Older engines may reject the colour space. */}
+  if(!context){try{context=surface.getContext('2d');}catch{/* The caption and price reading remain available. */}}
   let width=container.clientWidth,sampled=-Infinity,shown:number|null|undefined;
   let lastFrame=-Infinity,lastBurst=-Infinity;
   crossings.reset();
@@ -236,6 +244,7 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
     if(hit&&degen&&!reducedMotion&&now-lastBurst>=ALTIMETER_BURST_COOLDOWN_MS&&effects.current){
      lastBurst=now;cancelBurst.current?.();
      cancelBurst.current=burstAtPill(pill.current,effects.current,hit.color??colors.action,display>previousDisplay?'up':'down');
+     onCross.current?.(hit,display>previousDisplay?'up':'down');
     }
    }
   };
@@ -250,12 +259,12 @@ export function AltimeterChart({summary,paused=false,price,feed=bitcoinPrice,hei
    <div aria-hidden style={{position:'absolute',inset:0,pointerEvents:'none'}}>
     {levels.map(level=><React.Fragment key={level.id}>
      <div ref={node=>{if(node)targetRows.current.set(level.id,node);else targetRows.current.delete(level.id);}} data-hig-altimeter-target={level.id} style={{position:'absolute',top:0,left:0,right:0,visibility:'hidden',borderTop:'2px dotted currentColor',color:level.color??colors.action}}/>
-     {level.label&&<span ref={node=>{if(node)targetLabels.current.set(level.id,node);else targetLabels.current.delete(level.id);}} data-hig-altimeter-target-label={level.id} dir='ltr' title={`${level.label} ${targetFormat.format(level.price)}`} style={{position:'absolute',right:EDGE,top:0,visibility:'hidden',transform:'translateY(0px)',maxWidth:`calc(100% - ${EDGE*2}px)`,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',textAlign:'right',color:level.color??colors.action,fontSize:12,fontWeight:600,lineHeight:'18px',fontVariantNumeric:'tabular-nums'}}><bdi style={{textTransform:'capitalize'}}>{level.label}</bdi>{' '}<bdi>{targetFormat.format(level.price)}</bdi></span>}
+     {level.label&&<span ref={node=>{if(node)targetLabels.current.set(level.id,node);else targetLabels.current.delete(level.id);}} data-hig-altimeter-target-label={level.id} dir='ltr' title={`${level.label} ${targetFormat.format(level.price)}`} style={{position:'absolute',right:EDGE,top:0,visibility:'hidden',transform:'translateY(0px)',maxWidth:`calc(100% - ${EDGE*2}px)`,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',textAlign:'right',color:level.color??colors.action,fontSize:13,fontWeight:600,lineHeight:'18px',fontVariantNumeric:'tabular-nums',WebkitTextStroke:`2px ${colors.background}`,paintOrder:'stroke fill'}}><bdi style={{textTransform:'capitalize'}}>{level.label}</bdi>{' '}<bdi>{targetFormat.format(level.price)}</bdi></span>}
     </React.Fragment>)}
    </div>
    {reading==null
     ?<p role='status' style={{position:'absolute',inset:0,margin:0,display:'grid',placeItems:'center',color:colors.muted,fontFamily:'var(--hig-font-sans, inherit)'}}>{stale?(messages.stale??en.stale):(messages.loadingChart??en.loadingChart)}</p>
-    :<span ref={pill} data-hig-altimeter-price style={{position:'absolute',right:EDGE,top:height/2-18,height:36,minWidth:110,boxSizing:'border-box',display:'flex',alignItems:'center',justifyContent:'center',paddingInline:10,border:`1px solid ${capsuleColor}`,borderRadius:tokens.radius.pill,background:colors.background,color:capsuleColor,fontSize:16,fontWeight:600,lineHeight:1,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{pillValue!=null&&Number.isFinite(pillValue)?<AnimatedNumberReadout value={pillValue} options={pillOptions}/>:'—'}</span>}
+    :<span ref={pill} data-hig-altimeter-price style={{position:'absolute',right:EDGE,top:height/2-18,height:36,minWidth:110,boxSizing:'border-box',display:'flex',alignItems:'center',justifyContent:'center',paddingInline:10,border:`1px solid ${capsuleColor}`,borderRadius:tokens.radius.pill,background:colors.background,color:capsuleColor,fontSize:16,fontWeight:600,lineHeight:1,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'}}>{pillValue!=null&&Number.isFinite(pillValue)?<NumberFlow value={pillValue} options={pillOptions}/>:'—'}</span>}
    <div ref={effects} aria-hidden style={{position:'absolute',inset:0,pointerEvents:'none'}}/>
   </div>
   {levels.length>0&&<ul className='hig-sr-only'>{levels.map(level=><li key={level.id}>{level.label?`${level.label}: `:''}{targetFormat.format(level.price)}</li>)}</ul>}

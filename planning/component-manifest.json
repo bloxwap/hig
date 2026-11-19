@@ -100,6 +100,7 @@
       "components": [
         "Badge",
         "Alert/Callout",
+        "InlineNotice",
         "Toast",
         "Toaster",
         "Progress",
@@ -121,7 +122,6 @@
       "module": "data",
       "components": [
         "NumberReadout",
-        "AnimatedNumberReadout (optional animated-number entry)",
         "NumberFlow (optional animated-number entry)",
         "Usd",
         "Percent",
@@ -186,7 +186,9 @@
         "SwapBlock",
         "FromPickerBlock",
         "ToPickerBlock",
-        "ClaimRewardBlock"
+        "ClaimRewardBlock",
+        "AdvancedBlock",
+        "ReceiveBlock"
       ],
       "docs": "docs/components/blocks.md",
       "web": "implemented",

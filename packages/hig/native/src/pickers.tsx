@@ -1,3 +1,4 @@
+import {primaryButtonInk} from '@bloxwap/hig/tokens';
 import React,{useContext,useEffect,useMemo,useState} from 'react';
 import {createPickerSearch} from '@bloxwap/hig/contracts/picker-search';
 import {FlatList,Pressable,View,useWindowDimensions,type FlatListProps,type StyleProp,type TextInput,type TextInputProps,type ViewStyle} from 'react-native';
@@ -6,7 +7,7 @@ import {Text} from './surface.js';
 import {Button,IconButton} from './button.js';
 import {Field,Input,SearchInput} from './field.js';
 import {Filter} from './radio-group.js';
-import {AnimatedNumberReadout} from './animated-number.js';
+import {NumberFlow} from './animated-number.js';
 import {SwitchRow} from './switch-row.js';
 import {LeaveIcon,LockIcon,ScanIcon,SwapHostContext,TokenIcon,WalletIcon} from './swap-parts.js';
 import {addressColor,pickerRows,shortAddress,type SwapChain,type SwapToken,type SwapWallet} from './swap-shared.js';
@@ -61,7 +62,7 @@ const TokenPickerRow=React.memo(function TokenPickerRow({token,isSelected,headin
   <Pressable nativeID={host?.nativeID} accessibilityHint={host?.accessibilityHint} accessibilityRole='button' accessibilityState={{selected:isSelected}} testID={host?.testID??`swap-token-${token.id}`} onPress={()=>onSelect(token)} style={({pressed})=>({direction,flexDirection:'row',alignItems:'center',gap:12,marginBottom:4,paddingVertical:8,paddingStart:8,paddingEnd:16,borderRadius:9999,backgroundColor:pressed?fills.well:'transparent',opacity:isSelected?0.5:1})}>
    <TokenIcon token={token}/>
    <View style={{flex:1,minWidth:0}}><Text style={{fontWeight:'600'}}>{token.name}</Text><Text style={{fontSize:14,lineHeight:21,color:colors.muted}}>{token.detail??token.chain}{isSelected?` · ${t.swapSelected}`:''}</Text></View>
-   {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><AnimatedNumberReadout testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<AnimatedNumberReadout testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
+   {showBalance(token,zeroBalances)?<View style={{alignItems:'flex-end'}}><NumberFlow testID={`swap-token-balance-${token.id}`} value={balance} options={{maximumFractionDigits:6}} suffix={token.unitsSuffix} style={{fontWeight:'600',textAlign:'right'}}/>{price>0?<NumberFlow testID={`swap-token-value-${token.id}`} value={balance*price} options={{style:'currency',currency:'USD'}} tone='muted' style={{fontSize:14,lineHeight:21,textAlign:'right'}}/>:null}</View>:null}
   </Pressable>
  </View>;
 });
@@ -157,7 +158,7 @@ export function FromPickerBlock({wallet,onConnect,onDisconnect,generateAddress=f
     {onDisconnect?<IconButton intent='secondary' label={t.swapDisconnect} testID='picker-disconnect' onPress={onDisconnect} style={{minWidth:48,minHeight:48}}><LeaveIcon color={colors.text}/></IconButton>:null}
    </View>
    :wallet&&(onConnect||onGenerateAddressChange)?<View testID='picker-connect-row' style={{flexDirection:'row',alignItems:'stretch',gap:8}}>
-    {onConnect?<Button testID='picker-connect' onPress={onConnect} style={{flex:1,alignSelf:'auto'}}><View key='icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><WalletIcon color={colors.onAction}/></View>{t.swapConnectWallet}</Button>:null}
+    {onConnect?<Button testID='picker-connect' onPress={onConnect} style={{flex:1,alignSelf:'auto'}}><View key='icon' accessible={false} accessibilityElementsHidden importantForAccessibility='no-hide-descendants'><WalletIcon color={primaryButtonInk(colors)}/></View>{t.swapConnectWallet}</Button>:null}
     {/* One named switch: the label and the drawn track inside the capsule are decoration. */}
     {onGenerateAddressChange?<SwitchRow label={t.swapGenerateAddress} checked={generateAddress} onCheckedChange={onGenerateAddressChange} testID='picker-generate' style={{flex:onConnect?undefined:1,minHeight:44,alignItems:'center',paddingStart:16,paddingEnd:12,borderRadius:9999,backgroundColor:fills.well}}>
      <View style={{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}><Text numberOfLines={1} style={{fontWeight:'500'}}>{t.swapGenerateAddress}</Text><View style={{width:40,height:24,borderRadius:12,padding:3,backgroundColor:generateAddress?colors.action:colors.border,alignItems:generateAddress?'flex-end':'flex-start'}}><View style={{width:18,height:18,borderRadius:9,backgroundColor:generateAddress?colors.onAction:colors.text}}/></View></View>
@@ -197,11 +198,3 @@ export function ToPickerBlock({address,onAddressChange,addressPlaceholder,onScan
  </View>;
 }
 
-/** @deprecated Renamed `FromPickerBlock`. The old name keeps working until the next major release. */
-export const FromPicker=FromPickerBlock;
-/** @deprecated Renamed `FromPickerBlockProps`. */
-export type FromPickerProps=FromPickerBlockProps;
-/** @deprecated Renamed `ToPickerBlock`. The old name keeps working until the next major release. */
-export const ToPicker=ToPickerBlock;
-/** @deprecated Renamed `ToPickerBlockProps`. */
-export type ToPickerProps=ToPickerBlockProps;
