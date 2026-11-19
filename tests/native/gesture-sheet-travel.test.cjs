@@ -10,6 +10,7 @@ jest.mock('react-native-reanimated',()=>{
  const shared=initial=>{const ref=React.useRef(null);if(ref.current===null){ref.current={value:initial,initial};mockSheet.values.push(ref.current);}return ref.current;};
  return {__esModule:true,default:{View:RN.View,ScrollView:RN.ScrollView},cancelAnimation:()=>{},Easing:{bezier:(...points)=>points},ReduceMotion:{Always:'always',System:'system'},runOnJS:fn=>fn,
   useSharedValue:shared,useDerivedValue:fn=>({get value(){return fn();}}),useAnimatedStyle:()=>({}),useAnimatedProps:()=>({}),useAnimatedScrollHandler:handler=>handler,
+  useAnimatedRef:()=>{const ref=React.useRef(null);if(ref.current===null){const set=node=>{set.current=node;};set.current=null;ref.current=set;}return ref.current;},scrollTo:()=>{},
   useAnimatedReaction:(prepare,react)=>{mockSheet.reaction={prepare,react};},
   withTiming:(to,config,done)=>({timing:true,to,config,done})};
 });

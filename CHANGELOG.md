@@ -3,6 +3,7 @@
 ## 0.11.2
 
 - `ModalBlock` adds a Push notifications modal on React and React Native: the ask before the system permission prompt. It says what the viewer gets (payouts, moves over 2%, market open and close) as three rows, then Not now and Turn on. It is built from `Dialog` and the existing modal classes, with no new API.
+- Hold a native sheet's content still while the sheet has the drag. `scrollEnabled` reaches the native scroll view a frame or more after the sheet moves, and until then the scroller measured the finger against a view that was moving with it, scrolled by the difference, and the pan read that as a scroll and handed the drag over: the sheet jumped to its top detent and back on alternate frames, so a list pulled down from its top shook. `GestureSheetScrollView` now puts its content back on the same frame while the sheet is away from its top detent, without reporting the slip, and a drag that has moved the sheet stays the sheet's until the finger is back above where it began (`scrollerOwnsDrag` in the native sheet model).
 
 ## 0.11.1
 

@@ -7,6 +7,7 @@ jest.mock('react-native-reanimated',()=>{
  const shared=initial=>{const ref=React.useRef(null);if(ref.current===null)ref.current={value:initial};return ref.current;};
  return {__esModule:true,default:{View:RN.View,ScrollView:RN.ScrollView},cancelAnimation:()=>{},Easing:{bezier:(...points)=>points},ReduceMotion:{Always:'always',System:'system'},runOnJS:fn=>fn,
   useSharedValue:shared,useDerivedValue:fn=>({get value(){return fn();}}),useAnimatedStyle:()=>({}),useAnimatedProps:()=>({}),useAnimatedScrollHandler:handler=>handler,useAnimatedReaction:()=>{},
+  useAnimatedRef:()=>{const ref=React.useRef(null);if(ref.current===null){const set=node=>{set.current=node;};set.current=null;ref.current=set;}return ref.current;},scrollTo:jest.fn(),
   withTiming:to=>to};
 });
 jest.mock('react-native-gesture-handler',()=>{
@@ -127,6 +128,27 @@ it('hands a list its own scroll events as well as the sheet\'s, so a windowed li
  const scroller=root.root.findByType(ScrollView);
  act(()=>scroller.props.onScroll({contentOffset:{y:120}}));
  expect(onScroll).toHaveBeenCalledWith(expect.objectContaining({nativeEvent:expect.objectContaining({contentOffset:{y:120}})}));
+});
+it('holds its content while the sheet is away from its top detent, and tells neither the sheet nor the host',()=>{
+ const {ScrollView}=require('react-native');const {scrollTo}=require('react-native-reanimated');scrollTo.mockClear();
+ const onScroll=jest.fn();
+ // The stand-ins never run the opening travel, so this open sheet is still below its top detent.
+ const view=mount({open:true,contentMode:'custom',children:h(GestureSheetScrollView,{testID:'held',onScroll},h(RNText,null,'Row'))});layout(view);
+ const scroller=view.findAll(node=>node.type===ScrollView&&node.props.testID==='held')[0];
+ // The content slips 40 under a moving sheet: it is put back where it was (its top) at once.
+ act(()=>scroller.props.onScroll({contentOffset:{y:40}}));
+ expect(scrollTo).toHaveBeenCalledTimes(1);expect(scrollTo.mock.calls[0].slice(1)).toEqual([0,0,false]);
+ expect(onScroll).not.toHaveBeenCalled();
+ // The event that reports it back at its place moves nothing again.
+ act(()=>scroller.props.onScroll({contentOffset:{y:0}}));
+ expect(scrollTo).toHaveBeenCalledTimes(1);expect(onScroll).not.toHaveBeenCalled();
+});
+it('keeps a host ref on the scroller as well as its own',()=>{
+ const {ScrollView}=require('react-native');const ref=React.createRef();const seen=jest.fn();
+ act(()=>{root=create(h(GestureSheetScrollView,{ref}));});
+ expect(ref.current).toBe(root.root.findByType(ScrollView).instance);
+ act(()=>root.update(h(GestureSheetScrollView,{ref:seen})));
+ expect(seen).toHaveBeenCalledWith(root.root.findByType(ScrollView).instance);
 });
 it('draws nothing behind its handle: no highlight sits in the top corner of the surface',()=>{
  const {RadialGradient,LinearGradient}=require('react-native-svg');

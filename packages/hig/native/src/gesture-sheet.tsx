@@ -5,7 +5,7 @@ export {gestureSheetResize,gestureSheetTravel} from './gesture-sheet-motion.js';
 import {validateSnapPoints} from './gesture-sheet-model.js';
 import React,{createContext,useCallback,useContext,useEffect,useId,useMemo,useRef,useState} from 'react';
 import {AccessibilityInfo,BackHandler,findNodeHandle,Keyboard,PixelRatio,Platform,Pressable,StyleSheet,Text as RNText,TextInput,View,type LayoutChangeEvent,type StyleProp,type ViewStyle} from 'react-native';
-import Reanimated,{cancelAnimation,ReduceMotion,runOnJS,useAnimatedProps,useAnimatedReaction,useAnimatedScrollHandler,useAnimatedStyle,useDerivedValue,useSharedValue,withTiming,type SharedValue} from 'react-native-reanimated';
+import Reanimated,{cancelAnimation,ReduceMotion,runOnJS,scrollTo,useAnimatedProps,useAnimatedReaction,useAnimatedRef,useAnimatedScrollHandler,useAnimatedStyle,useDerivedValue,useSharedValue,withTiming,type SharedValue} from 'react-native-reanimated';
 import {Gesture,GestureDetector,type GestureType} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {nativeMetrics as tokens} from '@bloxwap/hig/tokens';
@@ -13,7 +13,7 @@ import * as en from '@bloxwap/hig/contracts/messages';
 import {Raised,useColors,useHIG} from './provider.js';
 import {Heading,Text,Stack} from './surface.js';
 import {Button} from './button.js';
-import {backdropProgress,detentHeights,dragPosition,releaseTarget,type SheetSnapPoint} from './gesture-sheet-model.js';
+import {backdropProgress,detentHeights,dragPosition,releaseTarget,scrollerOwnsDrag,type SheetSnapPoint} from './gesture-sheet-model.js';
 export type {SheetSnapPoint} from './gesture-sheet-model.js';
 
 type FocusTarget=React.ComponentRef<typeof View>|React.ComponentRef<typeof RNText>|React.ComponentRef<typeof TextInput>|null;
@@ -92,22 +92,36 @@ const ScrollContext=createContext<ScrollValue|null>(null);
 /**
  * A ScrollView that shares the drag with its sheet: at the top detent it scrolls, and a pull down from the top of the
  * content moves the sheet; below the top detent the drag moves the sheet and the content stays put. Outside a sheet it is a
- * plain ScrollView. Bounce and overscroll are off so the content cannot move while the sheet does.
+ * plain ScrollView. Bounce and overscroll are off so the content cannot move while the sheet does, and while the sheet is
+ * away from its top detent the content is held at its offset.
  */
 export const GestureSheetScrollView=React.forwardRef<React.ComponentRef<typeof Reanimated.ScrollView>,React.ComponentProps<typeof Reanimated.ScrollView>>(function GestureSheetScrollView(props,ref){
  const sheet=useContext(ScrollContext);
  const ownY=useSharedValue(0),ownCount=useSharedValue(0),free=useSharedValue(true);
  const scrollY=sheet?.scrollY??ownY,scrollers=sheet?.scrollers??ownCount,atTop=sheet?.atTop??free,pan=sheet?.pan;
  const native=useMemo(()=>pan?Gesture.Native().simultaneousWithExternalGesture(pan):Gesture.Native(),[pan]);
+ // This scroller's own offset as it was while the sheet last rested at its top detent: where its content is held.
+ const held=useSharedValue(0),scroller=useAnimatedRef<Reanimated.ScrollView>();
+ const setRef=useCallback((node:Reanimated.ScrollView|null)=>{scroller(node);if(typeof ref==='function')ref(node);else if(ref)ref.current=node;},[scroller,ref]);
  useEffect(()=>{scrollers.value+=1;return()=>{scrollers.value-=1;scrollY.value=0;};},[scrollers,scrollY]);
  // A list drawn through this scroller windows its rows from scroll events, and a pinned header reads them too, so the host's
  // listener hears each one as well as the sheet's pan.
  const listener=typeof props.onScroll==='function'?props.onScroll as (event:{nativeEvent:unknown;timeStamp:number})=>void:undefined;
  const notifyScroll=useCallback((nativeEvent:unknown)=>listener?.({nativeEvent,timeStamp:Date.now()}),[listener]);
  const hasListener=!!listener;
- const onScroll=useAnimatedScrollHandler(event=>{'worklet';scrollY.value=event.contentOffset.y;if(hasListener)runOnJS(notifyScroll)(event);},[hasListener,notifyScroll]);
+ const onScroll=useAnimatedScrollHandler(event=>{
+  'worklet';
+  const y=event.contentOffset.y;
+  // Away from its top detent the sheet has the drag and the content holds still. `scrollEnabled` reaches the native view a
+  // frame or more after the sheet moves, and until it does the scroller measures the finger against a view that is moving
+  // with it and scrolls by the difference. That is put back here, on the same frame, and no one is told: the pan would read
+  // it as a scroll and hand the drag over, the sheet would jump to its top, and the two would trade the drag every frame.
+  if(!atTop.value){if(Math.abs(y-held.value)>0.5)scrollTo(scroller,0,held.value,false);return;}
+  held.value=y;scrollY.value=y;
+  if(hasListener)runOnJS(notifyScroll)(event);
+ },[hasListener,notifyScroll]);
  const animatedProps=useAnimatedProps(()=>{'worklet';return {scrollEnabled:atTop.value};});
- return <GestureDetector gesture={native}><Reanimated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' {...props} ref={ref} bounces={false} overScrollMode='never' scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
+ return <GestureDetector gesture={native}><Reanimated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' {...props} ref={setRef} bounces={false} overScrollMode='never' scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
 });
 
 
@@ -223,7 +237,8 @@ function Surface({open,onOpenChange,title,description,children,contentMode='defa
    const list=positions.value;if(list.length===0)return;
    const space=roomValue.value,highest=list[0],lowest=list[list.length-1];
    // At the top detent with the content scrolled, the scroller owns the drag. The sheet holds still and the drag is rebased, so it picks up from here once the content is back at its top.
-   if(scrollers.value>0&&dragStart.value<=highest+0.5&&(scrollY.value>0||event.translationY-rebase.value<0)){if(scrollY.value>0)scrolled.value=true;rebase.value=event.translationY;position.value=highest;return;}
+   // Once the drag has moved the sheet it stays the sheet's until the finger is back above where it began (`scrollerOwnsDrag`).
+   if(scrollerOwnsDrag(scrollers.value,dragStart.value,highest,position.value,scrollY.value,event.translationY-rebase.value)){if(scrollY.value>0)scrolled.value=true;rebase.value=event.translationY;position.value=highest;return;}
    position.value=dragPosition(dragStart.value+event.translationY-rebase.value,highest,lowest,space,canDismiss.value);
   })
   .onEnd(event=>{

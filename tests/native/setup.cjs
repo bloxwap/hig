@@ -27,6 +27,7 @@ jest.mock('react-native-reanimated',()=>{
   useAnimatedStyle:updater=>updater(),
   // Inert stand-ins for a block that draws inside the gesture sheet; the sheet's own tests replace this module.
   runOnJS:fn=>fn,useDerivedValue:fn=>({get value(){return fn();}}),useAnimatedProps:()=>({}),useAnimatedScrollHandler:handler=>handler,useAnimatedReaction:()=>{},
+  useAnimatedRef:()=>{const ref=React.useRef(null);if(ref.current===null){const set=node=>{set.current=node;};set.current=null;ref.current=set;}return ref.current;},scrollTo:()=>{},
   useFrameCallback:()=>React.useRef({setActive:jest.fn()}).current,
   Easing:{cubic:value=>value,out:easing=>easing,bezier:(...points)=>({bezier:points})},
   ReduceMotion:{Never:'never',System:'system',Always:'always'},
