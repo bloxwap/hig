@@ -358,6 +358,45 @@ it('shares a visibility observer and measures only nearby categories while scrol
  }finally{cleanup();vi.useRealTimers();vi.unstubAllGlobals();}
 });
 
+// A 60-market list in a fixed sheet's scroller, both 600px tall; every list sits at `listTop()`.
+async function mountInFixedSheet(listTop:()=>number){
+ const {act}=await import('@testing-library/react');
+ vi.stubGlobal('IntersectionObserver',undefined);
+ vi.useFakeTimers({toFake:['requestAnimationFrame','cancelAnimationFrame']});
+ const box=(top:number,height:number)=>({x:0,y:top,top,left:0,right:390,bottom:top+height,width:390,height,toJSON:()=>({})}) as DOMRect;
+ vi.spyOn(HTMLElement.prototype,'getBoundingClientRect').mockImplementation(function(this:HTMLElement){
+  if(this.tagName==='UL')return box(listTop(),20*68);
+  return this.dataset.testid==='sheet'||this.dataset.testid==='scroller'?box(0,600):box(0,0);
+ });
+ vi.spyOn(HTMLElement.prototype,'clientHeight','get').mockImplementation(function(this:HTMLElement){return this.dataset.testid==='sheet'||this.dataset.testid==='scroller'?600:0;});
+ const markets=Array.from({length:60},(_,i)=>({...assets[0],id:String(i),category:categories[i%3].id}));
+ render(<div data-testid='sheet' style={{position:'fixed',overflowY:'auto'}}><div data-testid='scroller' style={{overflowY:'auto'}}><AssetsBlock assets={markets} categories={categories} categoryFilter={false} onSelect={()=>{}}/></div></div>);
+ return {act,rows:()=>document.querySelectorAll('[data-asset-id]').length};
+}
+const restoreFixedSheet=()=>{cleanup();document.body.style.overflowY='';vi.restoreAllMocks();vi.useRealTimers();vi.unstubAllGlobals();};
+
+it('draws the rows of a fixed sheet that a zero-height body with hidden overflow does not clip',async()=>{
+ // Safari pins the body under an open sheet (position: fixed; height: auto), and a shell whose surfaces are all fixed
+ // leaves it 0px tall. Overflow clips a fixed descendant only from its containing block, so the body is no clip.
+ document.body.style.overflowY='hidden';
+ try{
+  const {rows}=await mountInFixedSheet(()=>400);
+  expect(rows()).toBeGreaterThan(0);
+ }finally{restoreFixedSheet();}
+});
+
+it('measures the window again when the sheet around it comes to rest',async()=>{
+ // The sheet slides in with a transform, which fires no scroll or resize: the list is first measured below the screen.
+ let top=2000;
+ try{
+  const {act,rows}=await mountInFixedSheet(()=>top);
+  expect(rows()).toBe(0);
+  top=100;
+  act(()=>{screen.getByTestId('sheet').dispatchEvent(new Event('transitionend',{bubbles:true}));vi.advanceTimersByTime(32);});
+  expect(rows()).toBeGreaterThan(0);
+ }finally{restoreFixedSheet();}
+});
+
 it('reuses category labels across search edits',()=>{
  let reads=0;
  const groups=Array.from({length:40},(_,i)=>({id:String(i),get label(){reads++;return 'Category '+i;}}));
