@@ -104,7 +104,8 @@
     "LanguageBlock": "blocks",
     "PositionsBlock": "blocks",
     "ClaimRewardBlock": "blocks",
-    "AdvancedBlock": "blocks"
+    "AdvancedBlock": "blocks",
+    "ReceiveBlock": "blocks"
   },
   "native": {
     "ScreenHeader": "screen-header",
@@ -210,6 +211,7 @@
     "ClaimRewardBlock": "blocks",
     "GestureSheetScrollView": "gesture-sheet",
     "GestureSheetHost": "gesture-sheet",
-    "AdvancedBlock": "blocks"
+    "AdvancedBlock": "blocks",
+    "ReceiveBlock": "blocks"
   }
 }

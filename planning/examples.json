@@ -1783,8 +1783,8 @@
       "slug": "deposit-block",
       "entry": "blocks",
       "family": "blocks",
-      "web": "open?<C.Stack><C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>navigator.clipboard.writeText('0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688')}/><C.Button intent='secondary' onClick={()=>setOpen(false)}>Back to deposit methods</C.Button></C.Stack>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
-      "native": "open?<C.Stack><C.WalletAddress address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' onCopy={()=>setMessage('Copy requested; the host owns the clipboard')}/><C.Button intent='secondary' onPress={()=>setOpen(false)}>Back to deposit methods</C.Button></C.Stack>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
+      "web": "open?<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onCopy={(_, address) => navigator.clipboard.writeText(address)} onBack={() => setOpen(false)}/>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
+      "native": "open?<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onBack={() => setOpen(false)}/>:<C.DepositBlock description=\"Choose how you’ll add funds to your Wallet.\" methods={[{\"id\":\"qr\",\"label\":\"QR code\",\"description\":\"Scan or copy your wallet address\"},{\"id\":\"apple-pay\",\"label\":\"Apple Pay\",\"description\":\"Instant card deposit\"},{\"id\":\"cash-app\",\"label\":\"Cash App\",\"description\":\"Scan to send Bitcoin\"},{\"id\":\"exchange\",\"label\":\"Exchange\",\"description\":\"Coinbase, Binance, and more\"},{\"id\":\"crypto\",\"label\":\"Send crypto\",\"description\":\"From any wallet or exchange\"},{\"id\":\"bank\",\"label\":\"Bank transfer\",\"description\":\"ACH, SEPA, or Interac\"},{\"id\":\"blink\",\"label\":\"Blink\",\"description\":\"Card or one-tap stablecoin deposit\"}]} onSelect={method=>method.id==='qr'?setOpen(true):setMessage(method.label + ' selected')}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"
@@ -2090,6 +2090,32 @@
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "web": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:state===\"completed\",onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>",
       "native": "<C.AdvancedBlock title=\"Advanced\" exchangeLabel=\"Unified Exchange\" unifiedExchange={checked} onUnifiedExchangeChange={setChecked} tasksTitle=\"Tasks\" completeLabel=\"Complete\" incompleteLabel=\"Incomplete\" tasks={[{id:\"referral\",label:\"Referral\",detail:\"4% off\"},{id:\"agent\",label:\"Agent wallet\",detail:\"0-sig trading\"},{id:\"builder\",label:\"Builder fee\",detail:\"Support us\"}].map(task=>({...task,complete:state===\"completed\",onSelect:()=>setMessage(task.label+\" selected\")}))} warningTitle=\"Sensitive — never share\" warningBody=\"These export your wallets’ private keys. Anyone who sees them controls your funds forever. Never share them with anyone, for any reason.\" accountTitle=\"Account\" wallets={[{id:\"solana\",label:\"Export Solana\",address:\"72ze…9Gij\",onExport:()=>setMessage(\"Solana export requested\")},{id:\"ethereum\",label:\"Export Ethereum\",address:\"5459…6263\",onExport:()=>setMessage(\"Ethereum export requested\")}]} deleteLabel=\"Delete account\" onDeleteAccount={()=>setMessage(\"Account deletion requested\")} onBack={()=>setMessage(\"Back selected\")}/>"
+    },
+    {
+      "name": "ReceiveBlock",
+      "slug": "receive-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onCopy={(_, address) => navigator.clipboard.writeText(address)}/>",
+      "native": "<C.ReceiveBlock mode=\"both\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\"/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "ethereum",
+        "solana"
+      ],
+      "variants": {
+        "ethereum": {
+          "web": "<C.ReceiveBlock mode=\"ethereum\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\" onCopy={(_, address) => navigator.clipboard.writeText(address)}/>",
+          "native": "<C.ReceiveBlock mode=\"ethereum\" ethereumAddress=\"0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688\"/>"
+        },
+        "solana": {
+          "web": "<C.ReceiveBlock mode=\"solana\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\" onCopy={(_, address) => navigator.clipboard.writeText(address)}/>",
+          "native": "<C.ReceiveBlock mode=\"solana\" solanaAddress=\"4wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw\"/>"
+        }
+      },
+      "a11y": "The network selector identifies the active network. The copy action names the displayed address.",
+      "feedback": "Pass onCopy to use the host clipboard and show copy feedback."
     }
   ]
 }

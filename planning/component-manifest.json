@@ -187,7 +187,8 @@
         "FromPickerBlock",
         "ToPickerBlock",
         "ClaimRewardBlock",
-        "AdvancedBlock"
+        "AdvancedBlock",
+        "ReceiveBlock"
       ],
       "docs": "docs/components/blocks.md",
       "web": "implemented",

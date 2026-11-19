@@ -758,6 +758,16 @@
       "types": "./native/dist/advanced-block.d.ts",
       "import": "./native/dist/advanced-block.js",
       "default": "./native/dist/advanced-block.js"
+    },
+    "./react/blocks/receive-block": {
+      "types": "./react/dist/blocks/receive-block.d.ts",
+      "import": "./react/dist/blocks/receive-block.js",
+      "default": "./react/dist/blocks/receive-block.js"
+    },
+    "./native/receive-block": {
+      "types": "./native/dist/receive-block.d.ts",
+      "import": "./native/dist/receive-block.js",
+      "default": "./native/dist/receive-block.js"
     }
   },
   "files": [

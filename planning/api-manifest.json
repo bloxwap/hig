@@ -614,6 +614,18 @@
         "entry": "blocks/positions-block",
         "signature": "export interface OpenPosition extends Omit<ManagePositionBlockSummary, 'onSelect'> {\n    id: string;\n    side: 'long' | 'short';\n}"
       },
+      "ReceiveBlock": {
+        "entry": "blocks/receive-block",
+        "signature": "export declare function ReceiveBlock({ mode, solanaAddress, ethereumAddress, title, onBack, headingId, onCopy }: ReceiveBlockProps): React.JSX.Element;"
+      },
+      "ReceiveBlockProps": {
+        "entry": "blocks/receive-block",
+        "signature": "export type ReceiveBlockProps = {\n    title?: string;\n    onBack?: () => void;\n    headingId?: string;\n    onCopy?: (network: ReceiveNetwork, address: string) => void | Promise<void>;\n} & ({\n    mode?: 'both';\n    solanaAddress: string;\n    ethereumAddress: string;\n} | {\n    mode: 'solana';\n    solanaAddress: string;\n    ethereumAddress?: string;\n} | {\n    mode: 'ethereum';\n    ethereumAddress: string;\n    solanaAddress?: string;\n});"
+      },
+      "ReceiveNetwork": {
+        "entry": "blocks/receive-block",
+        "signature": "export type ReceiveNetwork = 'solana' | 'ethereum';"
+      },
       "ClaimRewardBlock": {
         "entry": "blocks/claim-reward-block",
         "signature": "export declare function ClaimRewardBlock({ amount, symbol, walletAddress, chain, details, labels, onClaim, onCancel }: ClaimRewardBlockProps): React.JSX.Element;"
@@ -2107,6 +2119,18 @@
       "OpenPosition": {
         "entry": "positions-block",
         "signature": "export interface OpenPosition extends Omit<ManagePositionBlockSummary, 'onSelect'> {\n    id: string;\n    side: 'long' | 'short';\n}"
+      },
+      "ReceiveBlock": {
+        "entry": "receive-block",
+        "signature": "export declare function ReceiveBlock({ mode, solanaAddress, ethereumAddress, title, onBack, headingId, onCopy }: ReceiveBlockProps): React.JSX.Element;"
+      },
+      "ReceiveBlockProps": {
+        "entry": "receive-block",
+        "signature": "export type ReceiveBlockProps = {\n    title?: string;\n    onBack?: () => void;\n    headingId?: string;\n    onCopy?: (network: ReceiveNetwork, address: string) => void | Promise<void>;\n} & ({\n    mode?: 'both';\n    solanaAddress: string;\n    ethereumAddress: string;\n} | {\n    mode: 'solana';\n    solanaAddress: string;\n    ethereumAddress?: string;\n} | {\n    mode: 'ethereum';\n    ethereumAddress: string;\n    solanaAddress?: string;\n});"
+      },
+      "ReceiveNetwork": {
+        "entry": "receive-block",
+        "signature": "export type ReceiveNetwork = 'solana' | 'ethereum';"
       },
       "ClaimRewardBlock": {
         "entry": "claim-reward-block",

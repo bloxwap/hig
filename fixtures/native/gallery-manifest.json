@@ -865,6 +865,15 @@
         "completed"
       ],
       "support": "renderer"
+    },
+    {
+      "name": "ReceiveBlock",
+      "states": [
+        "default",
+        "ethereum",
+        "solana"
+      ],
+      "support": "renderer"
     }
   ]
 }

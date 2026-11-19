@@ -26,6 +26,7 @@
     "api-and-anatomy",
     "loginblock",
     "claimrewardblock",
+    "receiveblock",
     "depositblock",
     "swapblock",
     "frompickerblock-and-topickerblock",

@@ -536,6 +536,9 @@ img.hig-avatar { object-fit:cover; }
 .hig-qr-code-arena { position:absolute;display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden; }
 .hig-qr-code-image { display:block;width:100%;height:100%;object-fit:cover; }
 /* WalletAddress: the QR code and the address column share one height; the hint sits under both. */
+.hig-receive-block { display:flex;flex-direction:column;gap:16px;min-width:0; }
+.hig-receive-network { display:flex;flex-direction:column;align-items:center;gap:4px; }
+.hig-receive-network h3 { margin:0;font-size:1rem;font-weight:600; }
 .hig-wallet-address { appearance:none;display:inline-flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;margin:0;padding:12px;border:0;border-radius:var(--hig-radius-xl,14px);background:transparent;color:var(--hig-text);font:inherit;text-align:start; }
 button.hig-wallet-address,button.hig-trade-row,button.hig-list-row,a.hig-list-row { cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 /* Long-pressing an actionable row should operate the control without selecting its label. */

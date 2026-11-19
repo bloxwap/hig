@@ -208,7 +208,7 @@ Source: docs/components/blocks.md
 
 Composed patterns for balances, markets, trade review, swapping, picking assets, and documentation.
 
-Includes `ClaimRewardBlock`, `LoginBlock`, `DepositBlock`, `SwapBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
+Includes `ReceiveBlock`, `ClaimRewardBlock`, `LoginBlock`, `DepositBlock`, `SwapBlock`, `FromPickerBlock`, `ToPickerBlock`, `AccountBlock`, `TokenActionBlock`, `ConfirmBlock`, `LanguageBlock`, `ManagePositionBlock`, `TradeHistoryListBlock`, `TradeHistoryDetailBlock`, `TargetBlock`, `PresetPickerBlock`, `PositionBlock`, `AssetsBlock`, `ProfileBlock`, `RewardBlock`, `SoundHapticsBlock`, `SignalsBlock`, and `NotificationsBlock`, and the `ScreenHeader` they all share.
 
 `MarketRow`, `TradeEntry`, `InstallCommand` and `MarketingHero` are still imported from the blocks entry, but they are single components, not whole screens, so they are documented with their families: `MarketRow` in Financial data, `TradeEntry` in Fields & inputs, and `InstallCommand` and `MarketingHero` in Actions & surfaces.
 
@@ -252,6 +252,10 @@ Present LoginBlock in a gesture sheet to offer X, Apple, and Google sign-in. The
 ### ClaimRewardBlock
 
 Show the prize amount, currency, full destination wallet address and chain with Claim and Cancel. Pass labeled rows in `details` for the drawing name, prize placement, or other award details. Use `onClaim` to open a separate `ConfirmBlock` showing the current wallet, and `onCancel` to dismiss the prize. The host submits the payout on confirmation and announces the receipt after the wallet is credited.
+
+### ReceiveBlock
+
+Offer both networks with `mode="both"` (the default), or pass `mode="ethereum"` or `mode="solana"` with just that network’s address. The combined mode initially shows Ethereum, the first of the two segments, with Solana after it. Use the segmented control beneath the QR code to switch the displayed address and copy action to Solana. Single-network modes show the network heading. The host supplies the addresses and can pass `onCopy(network, address)` to copy the selected address using its clipboard adapter.
 
 ### DepositBlock
 

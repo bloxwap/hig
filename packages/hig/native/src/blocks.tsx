@@ -30,5 +30,6 @@ export {SwapBlock,swapAction,type SwapBlockProps,type SwapToken,type SwapArtwork
 export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTertiaryAction} from './confirm-block.js';
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom,type PresetPickerAdjustable} from './preset-picker-block.js';
 export {PositionsBlock,type PositionsBlockProps,type OpenPosition} from './positions-block.js';
+export {ReceiveBlock,type ReceiveBlockProps,type ReceiveNetwork} from './receive-block.js';
 export {ClaimRewardBlock,type ClaimRewardBlockProps} from './claim-reward-block.js';
 export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWallet} from './advanced-block.js';

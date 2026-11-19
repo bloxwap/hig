@@ -58,6 +58,7 @@ const ChartExamples=lazy(()=>import('./example-groups/chart').then(module=>({def
 const BlocksPositionsBlockExamples=lazy(()=>import('./example-groups/blocks-positions-block').then(module=>({default:module.Example})));
 const BlocksClaimRewardBlockExamples=lazy(()=>import('./example-groups/blocks-claim-reward-block').then(module=>({default:module.Example})));
 const BlocksAdvancedBlockExamples=lazy(()=>import('./example-groups/blocks-advanced-block').then(module=>({default:module.Example})));
+const BlocksReceiveBlockExamples=lazy(()=>import('./example-groups/blocks-receive-block').then(module=>({default:module.Example})));
 const previews:Record<string,React.ComponentType<Props>>={
   "Button": ButtonExamples,
   "IconButton": ButtonExamples,
@@ -161,6 +162,7 @@ const previews:Record<string,React.ComponentType<Props>>={
   "PositionsBlock": BlocksPositionsBlockExamples,
   "ClaimRewardBlock": BlocksClaimRewardBlockExamples,
   "AdvancedBlock": BlocksAdvancedBlockExamples,
+  "ReceiveBlock": BlocksReceiveBlockExamples,
 };
 export const Example=React.memo(function Example(props:Props){
  const Preview=previews[props.name];

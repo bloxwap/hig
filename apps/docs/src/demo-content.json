@@ -1206,6 +1206,17 @@
         "default",
         "completed"
       ]
+    },
+    {
+      "name": "ReceiveBlock",
+      "route": "components/receive-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "ethereum",
+        "solana"
+      ]
     }
   ]
 }
