@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Accept `react-native-reanimated` from 4.1.1 up to, not including, 4.8.0. Reanimated 4.8.0 needs `react-native-worklets` 0.14, which HIG has not been tested with and its worklets range does not include, so the open `^4.1.1` range made a fresh install fail to resolve.
 - Draw the rows of a windowed list (`RowWindow`, behind the long lists of `AssetsBlock`, `AccountBlock`, `LanguageBlock`, `RewardBlock`, `TradeHistoryListBlock`, the data lists and navigation) inside a web gesture sheet. The window was measured as the sheet slid in, below the screen, and a transform fires no scroll or resize, so the list stayed empty until it was scrolled; it now measures again when a transition or animation around it ends. And it took every ancestor with hidden overflow as a clip, including a `body` that Safari's sheet pins at 0px tall under an all-fixed shell, so no row was drawn at all; overflow now clips a fixed or absolute list only from its containing block up.
 
 ## 0.10.0
