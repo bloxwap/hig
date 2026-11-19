@@ -1,4 +1,5 @@
 'use client';
+import './playground.css';
 import React,{lazy,Suspense,useEffect,useMemo,useState} from 'react';
 import {HIGProvider} from '@bloxwap/hig/react/provider';
 import {Button} from '@bloxwap/hig/react/button';
