@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import {ChevronDown} from '@bloxwap/icons/react/chevron-down';
 import {formatNumber} from '@bloxwap/hig/contracts/format';
 import {useNumberLocale} from '../provider.js';
 import {Button} from '../button.js';
@@ -56,32 +57,49 @@ type VolumeStepsProps=Omit<SoundVolume,'label'>&{disabled:boolean;locale:string}
 const VolumeSteps=React.memo(function VolumeSteps({options=steps,value,onValueChange,disabled,locale}:VolumeStepsProps){
  return <div className='hig-setting-steps'>{options.map(option=><Button key={option} fullWidth intent={option===value?'primary':'secondary'} aria-pressed={option===value} disabled={disabled} onClick={()=>onValueChange(option)}>{formatNumber(option,locale,percent)}</Button>)}</div>;
 });
-const SoundCard=React.memo(function SoundCard(section:SoundSection){
+const SoundCard=React.memo(function SoundCard({onChooseDevice,...section}:SoundSection&{onChooseDevice:(id:string)=>void}){
  const locale=useNumberLocale();
  const {source,choices,level,levelLabel,volume,action}=section,on=section.checked;
+ const selected=choices?.options.find(option=>option.value===choices.value)?.label;
  const showVolume=!!volume&&(on||section.volumeWhenOff==='disabled'),volumeOff=!!section.disabled||!on;
  const share=soundLevel(level);
- const open=(on&&(!!source||!!choices||level!==undefined))||showVolume||!!action;
- return <div className='hig-setting-card'>
+ const showInput=on&&(!!source||!!choices||(!volume&&level!==undefined));
+ const meter=on&&level!==undefined&&(levelLabel?<div className='hig-setting-meter' role='meter' aria-label={levelLabel} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share*100)} aria-valuetext={formatNumber(share,locale,percent)}><span style={{transform:`scaleX(${share})`}}/></div>
+     :<div className='hig-setting-meter' aria-hidden='true'><span style={{transform:`scaleX(${share})`}}/></div>);
+ const controlRow=<div className='hig-setting-card'>
   <SettingSwitch label={section.label} description={section.description} checked={section.checked} disabled={section.disabled} onCheckedChange={section.onCheckedChange}/>
-  {open&&<div className='hig-setting-body'>
-   {on&&source&&<span className='hig-setting-caption'>{source}</span>}
-   {on&&choices&&<div className='hig-setting-choices'><RadioGroup label={choices.label} options={choices.options} value={choices.value} disabled={section.disabled} onValueChange={choices.onValueChange}/></div>}
-   {on&&level!==undefined&&(levelLabel?<div className='hig-setting-meter' role='meter' aria-label={levelLabel} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(share*100)} aria-valuetext={formatNumber(share,locale,percent)}><span style={{transform:`scaleX(${share})`}}/></div>
-    :<div className='hig-setting-meter' aria-hidden='true'><span style={{transform:`scaleX(${share})`}}/></div>)}
+  {(showVolume||action)&&<div className='hig-setting-body'>
    {showVolume&&volume&&<div className='hig-setting-volume' role='group' aria-label={volume.label}>
     <span className='hig-setting-caption' aria-hidden='true'>{volume.label}</span>
+    {meter}
     <VolumeSteps options={volume.options} value={volume.value} onValueChange={volume.onValueChange} disabled={volumeOff} locale={locale}/>
    </div>}
    {action&&<Button className='hig-setting-action' intent='secondary' fullWidth disabled={action.disabled} suppressFeedback={action.feedback===false} onClick={action.onSelect}>{action.label}</Button>}
   </div>}
  </div>;
+ if(!showInput)return controlRow;
+ return <div className='hig-setting-list'>
+  {controlRow}
+  <div className='hig-setting-card hig-setting-input'>
+    {choices?<button type='button' className='hig-setting-device' disabled={section.disabled} onClick={()=>onChooseDevice(section.id)}>
+     <span>{source??choices.label}</span><span className='hig-setting-device-value'>{selected}<ChevronDown size={16} aria-hidden='true' className='hig-setting-forward'/></span>
+    </button>:source&&<span className='hig-setting-caption'>{source}</span>}
+    {!volume&&meter}
+  </div>
+ </div>;
 });
 /** The settings for what the app plays and feels like: each channel is a card with a switch, and a channel that is on can show the device it uses, a choice of devices, a live input meter and its volume as fixed steps. */
 export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,headingId,className,...rest}:SoundHapticsBlockProps){
+ const [deviceId,setDeviceId]=React.useState<string|null>(null);
+ const device=sections.find(section=>section.id===deviceId&&section.checked);
+ const choices=device?.choices;
+ const goBack=()=>setDeviceId(null);
+ const selectDevice=(value:string)=>{choices?.onValueChange(value);goBack();};
  return <section {...rest} className={`hig-settings-block${className?` ${className}`:''}`}>
-  <ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
+  <ScreenHeader title={choices?.label??title} onBack={choices?goBack:onBack} backProps={choices?{autoFocus:true}:undefined} key={choices?deviceId:null} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>
+  {choices?<div className='hig-setting-choices'><RadioGroup label={choices.label} options={choices.options} value={choices.value} disabled={device?.disabled} onValueChange={selectDevice}/></div>:<>
   {description&&<p className='hig-settings-description'>{description}</p>}
-  {sections.length>0&&<div className='hig-setting-cards'>{sections.map(section=><SoundCard key={section.id} {...section}/>)}</div>}
+  {sections.length>0&&<div className='hig-setting-cards'>{sections.map(section=><SoundCard key={section.id} onChooseDevice={setDeviceId} {...section}/>)}</div>}
+  </>}
  </section>;
 }

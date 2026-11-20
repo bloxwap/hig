@@ -106,6 +106,8 @@ describe('host slots (Unreleased)',()=>{
    volume:{label:'Mic volume',value:1,onValueChange:noop},action:{label:'Open Settings',onSelect:open}};
   let view=mount(SoundHapticsBlock,{title:'Sound & Haptics',description:'How the app sounds and feels.',sections:[mic]});
   expect(text(host(view,'sound-description'))).toBe('How the app sounds and feels.');
+  expect(has(view,'sound-mic-choices')).toBe(false);
+  act(()=>all(view,'sound-mic-disclosure').find(node=>node.props.onPress).props.onPress());
   const radios=view.findByType(RadioGroup);expect(radios.props).toMatchObject({label:'Input',value:'auto'});act(()=>{radios.props.onValueChange('usb');});expect(choose).toHaveBeenCalledWith('usb');
   const meter=host(view,'sound-mic-meter');expect(meter.props).toMatchObject({accessible:true,accessibilityRole:'progressbar',accessibilityLabel:'Input level'});expect(meter.props.accessibilityValue).toEqual({min:0,max:100,now:43,text:'43%'});
   const action=button(view,'sound-mic-action');expect(action.props.intent).toBe('secondary');act(()=>{action.props.onPress();});expect(open).toHaveBeenCalledTimes(1);

@@ -27,18 +27,20 @@ describe('SoundHapticsBlock',()=>{
   const back=vi.fn(),flip=vi.fn(),volume=vi.fn();
   render(<SoundHapticsBlock title='Sound & Haptics' onBack={back} sections={sections({onCheckedChange:flip,volume:{label:'Volume',value:0.25,onValueChange:volume}})}/>);
   expect(screen.getByRole('heading',{name:'Sound & Haptics'})).toBeTruthy();await userEvent.click(screen.getByRole('button',{name:'Back'}));expect(back).toHaveBeenCalledTimes(1);
-  expect(cards()).toHaveLength(3);expect(screen.getAllByRole('switch').map(input=>(input as HTMLInputElement).checked)).toEqual([true,true,false]);
+  expect(cards()).toHaveLength(4);expect(screen.getAllByRole('switch').map(input=>(input as HTMLInputElement).checked)).toEqual([true,true,false]);
   const steps=within(screen.getByRole('group',{name:'Volume'})).getAllByRole('button');
   expect(steps.map(step=>[step.textContent,step.getAttribute('aria-pressed'),step.dataset.intent])).toEqual([['25%','true','primary'],['50%','false','secondary'],['75%','false','secondary'],['100%','false','secondary']]);
   await userEvent.click(steps[2]);expect(volume).toHaveBeenCalledWith(0.75);
   // The whole row is the target: pressing the label flips the switch.
   await userEvent.click(screen.getByText('Effects'));expect(flip).toHaveBeenCalledWith(false);
   // A channel without extras is a switch alone.
-  expect(cards()[2].querySelector('.hig-setting-body')).toBeNull();
+  expect(cards()[3].querySelector('.hig-setting-body')).toBeNull();
  });
  it('shows the device and a live meter for an input channel, and hides the extras while a channel is off',()=>{
   const view=render(<SoundHapticsBlock title='Sound' sections={sections()}/>);
-  const mic=cards()[1];expect(mic.querySelector('.hig-setting-caption')!.textContent).toBe('iPhone Microphone');
+  const mic=cards()[1],input=mic.nextElementSibling!;expect(input.classList.contains('hig-setting-input')).toBe(true);expect(input.querySelector('.hig-setting-caption')!.textContent).toBe('iPhone Microphone');
+  expect(input.querySelector('.hig-setting-meter')).toBeNull();
+  expect(mic.querySelector('.hig-setting-caption + .hig-setting-meter + .hig-setting-steps')).toBeTruthy();
   expect(mic.querySelector('.hig-setting-meter')!.getAttribute('aria-hidden')).toBe('true');expect(mic.querySelector<HTMLElement>('.hig-setting-meter > span')!.style.transform).toBe('scaleX(0.17)');
   expect(within(mic).getByRole('group',{name:'Mic volume'})).toBeTruthy();expect(within(mic).getByRole('button',{name:'100%'}).getAttribute('aria-pressed')).toBe('true');
   view.rerender(<SoundHapticsBlock title='Sound' sections={sections({checked:false})}/>);expect(cards()[0].querySelector('.hig-setting-body')).toBeNull();expect(screen.queryByRole('group',{name:'Volume'})).toBeNull();
@@ -123,10 +125,16 @@ describe('settings host slots (Unreleased)',()=>{
    volume:{label:'Mic volume',value:1,onValueChange:volume},action:{label:'Open Settings',onSelect:open}};
   const view=render(<SoundHapticsBlock title='Sound & Haptics' description='How the app sounds and feels.' sections={[mic]}/>);
   expect(q('.hig-settings-block > .hig-settings-description')!.textContent).toBe('How the app sounds and feels.');
+  expect(screen.queryByRole('group',{name:'Input'})).toBeNull();
+  await userEvent.click(screen.getByRole('button',{name:'USB Mic Automatic'}));
+  expect(screen.getByRole('heading',{name:'Input'})).toBeTruthy();
+  expect(screen.queryByRole('group',{name:'Mic volume'})).toBeNull();
+  await userEvent.click(screen.getByRole('button',{name:'Back'}));
+  await userEvent.click(screen.getByRole('button',{name:'USB Mic Automatic'}));
   const group=screen.getByRole('group',{name:'Input'});expect(within(group).getByRole('radio',{name:'Automatic'})).toHaveProperty('checked',true);
   await userEvent.click(within(group).getByRole('radio',{name:'USB Mic'}));expect(choose).toHaveBeenCalledWith('usb');
   const meter=screen.getByRole('meter',{name:'Input level'});expect(meter.getAttribute('aria-valuenow')).toBe('43');expect(meter.getAttribute('aria-valuetext')).toBe('43%');
-  const body=q('.hig-setting-body')!;expect([...body.children].map(child=>child.className.split(' ')[0])).toEqual(['hig-setting-caption','hig-setting-choices','hig-setting-meter','hig-setting-volume','hig-button']);
+  const body=q('.hig-setting-body')!;expect([...body.children].map(child=>child.className.split(' ')[0])).toEqual(['hig-setting-volume','hig-button']);
   expect(body.lastElementChild!.classList.contains('hig-setting-action')).toBe(true);await userEvent.click(screen.getByRole('button',{name:'Open Settings'}));expect(open).toHaveBeenCalledTimes(1);
   // Off: source, choices and meter go; the volume stays only with volumeWhenOff 'disabled', unavailable; the action stays.
   view.rerender(<SoundHapticsBlock title='Sound & Haptics' sections={[{...mic,checked:false}]}/>);
