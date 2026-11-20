@@ -854,7 +854,13 @@
     {
       "name": "ClaimRewardBlock",
       "states": [
-        "default"
+        "default",
+        "ready",
+        "claiming",
+        "paid",
+        "expired",
+        "withheld",
+        "error"
       ],
       "support": "renderer"
     },
