@@ -1,6 +1,6 @@
 import React from 'react';
 import {formatCountdown,watchCountdown} from '@bloxwap/hig/contracts/format';
-import {Image,Pressable,View,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
+import {Image,Linking,Pressable,View,type FlatListProps,type ScrollViewProps,type ViewStyle} from 'react-native';
 import {formatNumber} from './number-format.js';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {useColors,useFills,useLayoutDirection,useMonoFontFamily,useNumberLocale,usePresentNumber} from './provider.js';
@@ -44,6 +44,8 @@ export interface RewardPromo {
 }
 /** A host figure that updates place by place: `{value:1090779, options:{style:'currency',currency:'USD',maximumFractionDigits:0}, suffix:' vol'}`. */
 export type RewardFigure=Figure;
+/** What a press on a standing does (`RewardEntry.action`). `onSelect` makes the row a button. `href` makes it a link (`accessibilityRole="link"`): without `onSelect` a press opens the URL through `Linking.openURL`, and a host `onSelect` (a router or an in-app browser) replaces that, so one press never opens both. */
+export type RewardLink={label:string;onSelect:()=>void;href?:undefined}|{label:string;href:string;onSelect?:()=>void};
 /** One step of the paging control under the list. */
 export interface RewardPageStep {label:string;onSelect:()=>void;disabled?:boolean}
 /** One trader in the standings. */
@@ -63,6 +65,8 @@ export interface RewardEntry {
  scoreOptions?:Intl.NumberFormatOptions;
  /** Marks the viewer's own row: the name and score take the action colour. */
  you?:boolean;
+ /** Makes the whole row one control. `label` is not drawn: it is read after the row's own reading, such as Open your place on PrizeRail. Set it on `you`, on an entry of the list, or on both. In a row with an interactive `verifiedMark` the mark stays its own control, and the name carries the reading and the action for assistive technology. */
+ action?:RewardLink;
 }
 export interface RewardBlockProps {
  /** Heading: Leaderboard. */
@@ -147,19 +151,26 @@ const Standing=React.memo(function Standing({entry,id,style,lead,pinned,scoreOpt
   const disc:ViewStyle={width:avatar,height:avatar,borderRadius:avatar/2,backgroundColor:fills.raised,alignItems:'center',justifyContent:'center',overflow:'hidden'};
   // An interactive host mark stays in the accessibility tree: the row's reading moves to the name, and the mark follows as its own element.
   const split=!!entry.verified&&verifiedMark!=null&&!!verifiedMarkInteractive;
-  return <View testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={{direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:pinned?withAlpha(colors.action,0.12):colors.surface,...(pinned?{marginTop:16,borderRadius:20}:null),...style}}>
+  // An action makes the row one control, read as the row and then the action. Rows press to the nested fill, as list rows do.
+  const action=entry.action,role=action?(action.href!==undefined?'link' as const:'button' as const):undefined,named=action?`${reading}, ${action.label}`:reading;
+  const press=action?()=>{const {onSelect,href}=action;if(onSelect)onSelect();else if(href!==undefined)void Linking.openURL(href).catch(()=>{});}:undefined;
+  const box=(pressed:boolean):ViewStyle=>({direction,flexDirection:'row',alignItems:'center',gap:12,minHeight:64,paddingVertical:8,paddingHorizontal:20,backgroundColor:pinned?withAlpha(colors.action,pressed?0.2:0.12):pressed?colors.nested:colors.surface,...(pinned?{marginTop:16,borderRadius:20}:null),...style});
+  const content=<>
    <Text {...hidden} style={{minWidth:24,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.muted}}>{entry.rank}</Text>
    <View {...hidden}>{typeof entry.avatar==='string'?<Image accessible={false} accessibilityIgnoresInvertColors source={{uri:entry.avatar}} style={disc as object}/>:<View style={disc}>{entry.avatar??<Text maxFontSizeMultiplier={1} style={{fontSize:12,lineHeight:16,fontWeight:'600',color:colors.muted}}>{entry.name.slice(0,2)}</Text>}</View>}</View>
    <View {...(split?null:hidden)} style={{flex:1,flexShrink:1,minWidth:0}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:6}}>
-     <Text testID={`${id}-name`} accessible={split} accessibilityLabel={split?reading:undefined} numberOfLines={1} style={{flexShrink:1,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{entry.name}</Text>
+     <Text testID={`${id}-name`} accessible={split} accessibilityLabel={split?named:undefined} {...(split&&action?{accessibilityRole:role,onPress:press,suppressHighlighting:true}:null)} numberOfLines={1} style={{flexShrink:1,fontFamily:monoFontFamily,fontSize:16,lineHeight:24,fontWeight:'600',color:colors.text}}>{entry.name}</Text>
      {entry.verified?(verifiedMark!=null?<View testID={`${id}-verified`}>{verifiedMark}</View>:<View testID={`${id}-verified`} style={{transform:[{scale:0.8}]}}><SeverityIcon kind='success' color={colors.warning}/></View>):null}
     </View>
     {figure?<View {...hidden} style={{alignItems:'flex-start'}}><NumberFlow testID={`${id}-detail`} {...figureProps(figure)} tone='muted' style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20}}/></View>
      :detail?<Text {...hidden} numberOfLines={1} style={{fontFamily:monoFontFamily,fontSize:14,lineHeight:20,color:colors.muted}}>{detail}</Text>:null}
    </View>
    <View {...hidden}><NumberFlow value={entry.score} options={score} tone='text' testID={`${id}-score`} style={{fontSize:16,lineHeight:24,fontWeight:'600'}}/></View>
-  </View>;
+  </>;
+  if(!action)return <View testID={id} accessible={!split} accessibilityLabel={split?undefined:reading} style={box(false)}>{content}</View>;
+  // With an interactive mark the row still takes the press, but the name is the element assistive technology activates, beside the mark.
+  return <Pressable testID={id} accessible={!split} accessibilityRole={split?undefined:role} accessibilityLabel={split?undefined:named} onPress={press} style={({pressed})=>box(pressed)}>{content}</Pressable>;
 });
 const firstStanding:ViewStyle={borderTopLeftRadius:20,borderTopRightRadius:20,overflow:"hidden"};
 const lastStanding:ViewStyle={borderBottomLeftRadius:20,borderBottomRightRadius:20,overflow:"hidden"};
