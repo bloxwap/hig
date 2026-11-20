@@ -3,7 +3,6 @@ import './glows.css';
 import React, {useState} from 'react';
 import {NotificationCard, InfoCard, InfoPanel, type NotificationTone} from './notification-card';
 import SpecializedToasts from './specialized';
-import {ToastInventory} from './inventory';
 import {basePath} from '../../lib/site';
 const tones: NotificationTone[]=['neutral','success','error','warning','info'];
 export default function ToastAlternatives(){
@@ -19,6 +18,5 @@ export default function ToastAlternatives(){
  <>{closedTones.includes(tone)?<button type="button" onClick={()=>setClosedTones(current=>current.filter(value=>value!==tone))}>Reset two-action preview</button>:<InfoCard tone={tone} title="Information with two actions" description="Choose how to proceed." action={{...action,appearance:'solid'}} secondaryAction={{label:'Close',onClick:()=>setClosedTones(current=>[...current,tone])}}/>}</>
  {closedPanels.includes(tone)?<button type="button" onClick={()=>setClosedPanels(current=>current.filter(value=>value!==tone))}>Reset multiline preview</button>:<InfoPanel tone={tone} title="Multiline information panel" description="A longer explanation that stays visible until dismissed." onClose={()=>setClosedPanels(current=>[...current,tone])}/>}
  </div></section>)}</div><p role="status">{message}</p>
- <ToastInventory/>
  </section>;
 }
