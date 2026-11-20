@@ -253,3 +253,61 @@ it('leaves standings untouched when the host changes its feedback handler',()=>{
  act(()=>root.update(h(HIGProvider,{reducedMotion:true,onAccepted:jest.fn()},block)));
  expect(read).not.toHaveBeenCalled();
 });
+
+describe('entry action (Unreleased)',()=>{
+ const place='Open your place on PrizeRail';
+ const me={id:'me',rank:2,name:'you',detail:'$1,090,779 vol',score:418450};
+ it('leaves rows without an action as plain views with the same reading',()=>{
+  const view=mount({you:me,youLabel:'Your rank'});
+  for(const id of ['reward-you','reward-row-a','reward-row-me','reward-row-c']){expect(button(view,id)).toBeUndefined();expect(host(view,id).props.accessibilityRole).toBeUndefined();expect(host(view,id).props.onClick).toBeUndefined();}
+  expect(host(view,'reward-you').props).toMatchObject({accessible:true,accessibilityLabel:'Your rank, 2, you, $1,090,779 vol, 418,450'});
+  expect(readings(view)).toEqual(['1, 0x4e79…949f, $1,789,061 vol, 795,407','2, you, $1,090,779 vol, 418,450','3, Zed, —']);
+ });
+ it('makes the pinned row and a list row one button each, read as the row and then the action',()=>{
+  const pinned=jest.fn(),inList=jest.fn();
+  const view=mount({youLabel:'Your rank',verifiedLabel:'Verified',you:{...me,verified:true,action:{label:place,onSelect:pinned}},entries:entries.map(entry=>entry.id==='me'?{...entry,action:{label:place,onSelect:inList}}:entry)});
+  expect(host(view,'reward-you').props).toMatchObject({accessible:true,accessibilityRole:'button',accessibilityLabel:`Your rank, 2, you, Verified, $1,090,779 vol, 418,450, ${place}`});
+  expect(host(view,'reward-row-me').props).toMatchObject({accessible:true,accessibilityRole:'button',accessibilityLabel:`2, you, $1,090,779 vol, 418,450, ${place}`});
+  act(()=>button(view,'reward-you').props.onPress());expect(pinned).toHaveBeenCalledTimes(1);expect(inList).not.toHaveBeenCalled();
+  act(()=>button(view,'reward-row-me').props.onPress());expect(inList).toHaveBeenCalledTimes(1);
+  // The row keeps its layout and fill at rest, and presses to the fills HIG rows use.
+  expect(flat(host(view,'reward-row-me'))).toMatchObject({minHeight:64,paddingHorizontal:20,backgroundColor:nativeSrgb.surface});
+  expect(button(view,'reward-row-me').props.style({pressed:true}).backgroundColor).toBe(nativeSrgb.nested);
+  expect(flat(host(view,'reward-you'))).toMatchObject({marginTop:16,borderRadius:20});expect(button(view,'reward-you').props.style({pressed:true}).backgroundColor).not.toBe(button(view,'reward-you').props.style({pressed:false}).backgroundColor);
+  // The other rows are not controls.
+  expect(button(view,'reward-row-a')).toBeUndefined();expect(host(view,'reward-row-a').props.accessibilityRole).toBeUndefined();
+ });
+ it('makes a row with href a link: it opens the URL, unless the host handles the press',()=>{
+  const {Linking}=require('react-native');
+  const open=jest.spyOn(Linking,'openURL').mockResolvedValue(undefined);
+  try{
+   const select=jest.fn();
+   const view=mount({you:{...me,action:{label:place,href:'https://example.com/me'}},entries:[{id:'a',rank:1,name:'Ada',score:5,action:{label:'Open Ada',href:'https://example.com/ada',onSelect:select}}]});
+   expect(host(view,'reward-you').props).toMatchObject({accessibilityRole:'link',accessibilityLabel:`2, you, $1,090,779 vol, 418,450, ${place}`});
+   act(()=>button(view,'reward-you').props.onPress());expect(open).toHaveBeenCalledTimes(1);expect(open).toHaveBeenCalledWith('https://example.com/me');
+   expect(host(view,'reward-row-a').props.accessibilityRole).toBe('link');
+   act(()=>button(view,'reward-row-a').props.onPress());expect(select).toHaveBeenCalledTimes(1);expect(open).toHaveBeenCalledTimes(1);
+  }finally{open.mockRestore();}
+ });
+ it('keeps an interactive verified mark its own element: the row takes the press and the name is the control that is read',()=>{
+  const select=jest.fn();
+  const view=mount({verifiedLabel:'Genesis',verifiedMarkInteractive:true,verifiedMark:h(View,{testID:'genesis',accessible:true,accessibilityRole:'button',accessibilityLabel:'Genesis badge'}),
+   entries:[{id:'a',rank:1,name:'Ada',verified:true,score:5,action:{label:'Open Ada',onSelect:select}},{id:'b',rank:2,name:'Bo',score:4,action:{label:'Open Bo',onSelect:select}}]});
+  // The row is not one accessible element, so the mark is not swallowed by it.
+  const row=host(view,'reward-row-a');expect(row.props.accessible).toBe(false);expect(row.props.accessibilityLabel).toBeUndefined();expect(row.props.accessibilityRole).toBeUndefined();
+  const name=button(view,'reward-row-a-name');expect(name.props).toMatchObject({accessible:true,accessibilityRole:'button',accessibilityLabel:'1, Ada, Genesis, 5, Open Ada'});
+  const hiddenAncestor=node=>{for(let current=node;current;current=current.parent)if(current.props?.accessibilityElementsHidden)return true;return false;};
+  expect(hiddenAncestor(host(view,'genesis'))).toBe(false);expect(hiddenAncestor(host(view,'reward-row-a-name'))).toBe(false);
+  act(()=>button(view,'reward-row-a').props.onPress());expect(select).toHaveBeenCalledTimes(1);
+  act(()=>name.props.onPress());expect(select).toHaveBeenCalledTimes(2);
+  // A row without a mark in the same list is the control itself.
+  expect(host(view,'reward-row-b').props).toMatchObject({accessible:true,accessibilityRole:'button',accessibilityLabel:'2, Bo, 4, Open Bo'});expect(button(view,'reward-row-b-name')).toBeUndefined();
+ });
+ it('carries the action into a windowed list',()=>{
+  const select=jest.fn();
+  const many=Array.from({length:60},(_,i)=>({id:String(i),rank:i+1,name:'Trader '+i,score:i,...(i===0?{action:{label:place,onSelect:select}}:null)}));
+  const view=mount({stickyHeader:true,entries:many,testID:'standings'});
+  expect(host(view,'standings-row-0').props).toMatchObject({accessibilityRole:'button',accessibilityLabel:`1, Trader 0, 0, ${place}`});
+  act(()=>button(view,'standings-row-0').props.onPress());expect(select).toHaveBeenCalledTimes(1);
+ });
+});

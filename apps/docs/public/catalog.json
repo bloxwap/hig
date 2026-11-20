@@ -819,7 +819,8 @@
         "sweepstakes",
         "loading",
         "paged",
-        "no-header"
+        "no-header",
+        "entry-action"
       ]
     },
     {

@@ -11,7 +11,7 @@ import {NumberFlow} from '../animated-number.js';
 import type {AssetArtwork} from '../asset-balance-row.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapIcon,SwapNumber} from './swap/shared.js';
-/** A way onward from the promotion. `href` draws a real link (an `<a>`), with `target` such as `_blank`; `onSelect` is still called on the press. */
+/** A way onward, from the promotion or from a standing (`RewardEntry.action`). `href` draws a real link (an `<a>`), with `target` such as `_blank`; `onSelect` is still called on the press. */
 export type RewardLink={label:string;onSelect:()=>void;href?:undefined;target?:undefined}|{label:string;href:string;target?:string;onSelect?:()=>void};
 /** The promotion above the standings: a prize pool filling towards a goal, or a draw with a top prize. Every word is host text. */
 export interface RewardPromo {
@@ -59,6 +59,8 @@ export interface RewardEntry {
  scoreOptions?:Intl.NumberFormatOptions;
  /** Marks the viewer's own row: the name and score take the action colour. */
  you?:boolean;
+ /** Makes the whole row one control: a real link (an `<a>`) with `href`, a button without. `label` is not drawn: it names the action after the row's own reading, such as Open your place on PrizeRail. Set it on `you`, on an entry of the list, or on both. In a row with an interactive `verifiedMark` the mark stays its own control. */
+ action?:RewardLink;
 }
 /** One step of the paging control under the list. */
 export interface RewardPageStep {label:string;onSelect:()=>void;disabled?:boolean}
@@ -121,6 +123,7 @@ function DrawingCountdown({drawing}:{drawing:NonNullable<RewardPromo['drawing']>
 }
 const wholeDollars={style:'currency',currency:'USD',maximumFractionDigits:0} as const,whole={maximumFractionDigits:0} as const;
 const hasVerifiedMark=(entry:RewardEntry)=>!!entry.verified;
+const hasAction=(entry:RewardEntry)=>!!entry.action;
 const noEntries:readonly RewardEntry[]=[];
 const skeletons=[0,1,2,3,4];
 /** The share of the goal reached, from 0 to 1. Unknown amounts and goals that are not above zero give `null`. */
@@ -128,23 +131,34 @@ export function rewardProgress(amount:number|null|undefined,goal:number|null|und
  return amount==null||goal==null||!Number.isFinite(amount)||!Number.isFinite(goal)||!(goal>0)?null:Math.min(1,Math.max(0,amount/goal));
 }
 const verifiedGlyph=<CircleCheck size={16} className='hig-reward-verified-mark'/>;
-const Standing=React.memo(function Standing({entry,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive}:{
- entry:RewardEntry;scoreOptions:Intl.NumberFormatOptions;
-} & Pick<RewardBlockProps,'verifiedLabel'|'verifiedMark'|'verifiedMarkInteractive'>){
- const detail=entry.detail;
- return <>
-  <span className='hig-reward-rank hig-number'>{entry.rank}</span>
+/** One standing as its row: the list's `li` (which takes the window's position props) or the pinned `div`. */
+const Standing=React.memo(function Standing({entry,as,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive,...rest}:{
+ entry:RewardEntry;as:'li'|'div';scoreOptions:Intl.NumberFormatOptions;
+} & Pick<RewardBlockProps,'verifiedLabel'|'verifiedMark'|'verifiedMarkInteractive'> & React.HTMLAttributes<HTMLElement>){
+ const detail=entry.detail,action=entry.action,described=detail!=null&&detail!=='',interactive=verifiedMark!=null&&!!verifiedMarkInteractive;
+ // Only a row with an action carries ids: its control is named by the row's own parts, then by the action.
+ const base=React.useId(),id=(part:string)=>action?base+part:undefined;
+ const content=<>
+  <span id={id('r')} className='hig-reward-rank hig-number'>{entry.rank}</span>
   <span className='hig-reward-avatar' aria-hidden='true'>{typeof entry.avatar==='string'?<img src={entry.avatar} alt=''/>:entry.avatar??entry.name.slice(0,2)}</span>
   <span className='hig-reward-identity'>
-   <strong className='hig-number'>{entry.name}{entry.verified&&(verifiedMark!=null&&verifiedMarkInteractive?<span className='hig-reward-verified'>{verifiedLabel&&<span className='hig-sr-only'>{verifiedLabel}</span>}{verifiedMark}</span>:<span className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark??verifiedGlyph}</span>)}</strong>
-   {detail!=null&&detail!==''&&<span className='hig-number'>{typeof detail==='string'?detail:<SwapNumber {...figureProps(detail)}/>}</span>}
+   <strong className='hig-number'>{action?<span id={id('n')}>{entry.name}</span>:entry.name}{entry.verified&&(interactive?<span className='hig-reward-verified'>{verifiedLabel&&<span id={id('v')} className='hig-sr-only'>{verifiedLabel}</span>}{verifiedMark}</span>:<span id={id('v')} className='hig-reward-verified' role={verifiedLabel?'img':undefined} aria-label={verifiedLabel}>{verifiedMark??verifiedGlyph}</span>)}</strong>
+   {described&&<span id={id('d')} className='hig-number'>{typeof detail==='string'?detail:<SwapNumber {...figureProps(detail)}/>}</span>}
   </span>
-  <span className='hig-reward-score'><NumberFlow value={entry.score} options={entry.scoreOptions??scoreOptions}/></span>
+  <span id={id('s')} className='hig-reward-score'><NumberFlow value={entry.score} options={entry.scoreOptions??scoreOptions}/></span>
  </>;
+ const row={className:'hig-reward-row','data-you':as==='div'||entry.you||undefined};
+ if(!action)return React.createElement(as,{...rest,...row},content);
+ const name=[id('r'),id('n'),entry.verified&&verifiedLabel?id('v'):null,described?id('d'):null,id('s'),id('a')].filter(Boolean).join(' ');
+ const label=<span id={id('a')} className='hig-sr-only'>{action.label}</span>;
+ // An interactive mark stays its own control, so the row cannot be the link itself: the link covers the row and the mark sits above it.
+ if(entry.verified&&interactive)return React.createElement(as,{...rest,...row,'data-action':''},content,<Onward link={action} className='hig-reward-hit' aria-labelledby={name}>{label}</Onward>);
+ const control=<Onward link={action} {...row} aria-labelledby={name}>{content}{label}</Onward>;
+ return as==='li'?<li {...rest}>{control}</li>:control;
 });
-function Onward({link,className,children}:{link:RewardLink;className:string;children:React.ReactNode}){
- return link.href!==undefined?<a className={className} href={link.href} target={link.target} rel={link.target==='_blank'?'noopener noreferrer':undefined} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></a>
-  :<button type='button' className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
+function Onward({link,className,children,...rest}:{link:RewardLink;className:string;children:React.ReactNode;'aria-labelledby'?:string;'data-you'?:boolean}){
+ return link.href!==undefined?<a {...rest} className={className} href={link.href} target={link.target} rel={link.target==='_blank'?'noopener noreferrer':undefined} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></a>
+  :<button type='button' {...rest} className={className} onClick={link.onSelect}>{children}<PressDecoration kind='row'/></button>;
 }
 /** A competition as a screen: an optional promotion (a prize pool filling towards its goal, or a draw with its top prize), an optional choice of standings, the viewer's own standing pinned on a tinted row, and the ranked list. */
 export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scoreTitle,entries=noEntries,scoreOptions=whole,verifiedLabel,verifiedMark,verifiedMarkInteractive,loading,loadingLabel,pagination,footnote,onBack,headerAction,stickyHeader,headingId,header=true,className,...rest}:RewardBlockProps){
@@ -154,12 +168,14 @@ export function RewardBlock({title,promo,tabs,you,youLabel,status,listTitle,scor
  const figure=promo?.figure!=null&&promo.figure!==false?promo.figure:amount===undefined?null:typeof amount==='string'?amount:<NumberFlow value={amount} options={money}/>;
  const standings=React.useMemo(()=>{
   if(loading||!entries.length)return null;
-  const renderStanding=(entry:RewardEntry)=><li key={entry.id} className='hig-reward-row' data-you={entry.you||undefined}><Standing entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/></li>;
+  const renderStanding=(entry:RewardEntry)=><Standing key={entry.id} as='li' entry={entry} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
+  // Rows that hold a control (an action, or an interactive mark) stay reachable by Tab from either end of a windowed list.
+  const marks=!!verifiedMarkInteractive&&verifiedMark!=null,actions=entries.some(hasAction);
   return entries.length>50?<RowWindow as='ol' items={entries} itemKey='id' className='hig-reward-rows' rowHeight={64} gap={2}
-    tabThrough={verifiedMarkInteractive&&verifiedMark!=null?hasVerifiedMark:false} renderRow={renderStanding}/>:
+    tabThrough={actions?entry=>!!entry.action||(marks&&!!entry.verified):marks?hasVerifiedMark:false} renderRow={renderStanding}/>:
     <ol className='hig-reward-rows'>{entries.map(renderStanding)}</ol>;
  },[loading,entries,scoreOptions,verifiedLabel,verifiedMark,verifiedMarkInteractive]);
- const pinned=you&&<div className='hig-reward-row' data-you><Standing entry={you} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/></div>;
+ const pinned=you&&<Standing as='div' entry={you} scoreOptions={scoreOptions} verifiedLabel={verifiedLabel} verifiedMark={verifiedMark} verifiedMarkInteractive={verifiedMarkInteractive}/>;
  return <section {...rest} className={`hig-reward-block${className?` ${className}`:''}`}>
   {header&&<ScreenHeader title={title} onBack={onBack} action={headerAction} headingId={headingId} stickyHeader={stickyHeader}/>}
   {promo&&<section className='hig-surface hig-reward-promo'>
