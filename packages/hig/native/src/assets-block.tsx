@@ -75,7 +75,7 @@ export interface AssetsBlockProps {
  filterScrollComponent?:React.ComponentType<ScrollViewProps>;
  /** Shows the loading text in place of the empty text while the list is empty. */
  loading?:boolean;
- /** Keeps the header pinned while the rest scrolls: the block becomes its own scroll view with the header as its sticky first child, transparent at rest and filled once content scrolls under it (test ID `<testID>-sticky-header`, `assets-sticky-header` without one). Place it in a bounded container, such as a sheet body. */
+ /** Keeps the header, search field, category capsules and All / Positions / Trend pinned while the markets scroll: the block becomes its own scroll view with them as its sticky first child, transparent at rest and filled once content scrolls under it (test ID `<testID>-sticky-header`, `assets-sticky-header` without one). Place it in a bounded container, such as a sheet body. */
  stickyHeader?:boolean;
  /** With `stickyHeader`: the header's fill once content is under it. Defaults to the background role; in a sheet pass the sheet's fill. */
  stickyHeaderBackground?:string;
@@ -222,10 +222,11 @@ function MarketList({listComponent,sticky,sections,header,controls,empty,renderH
    return {kind:'heading',key:`heading:${category.id}`,category,start,end,row};
   });
  },[sections,listComponent]);
- return <PickerFlatList listComponent={listComponent??SectionedMarketList} scrollComponent={scrollComponent} header={header} headerTestID={testID===undefined?'assets-sticky-header':`${testID}-sticky-header`}
+ // Pinned, the controls ride in the header (16dp under it and over the first section) and their cell holds only the empty state.
+ return <PickerFlatList listComponent={listComponent??SectionedMarketList} scrollComponent={scrollComponent} header={header} pinned={sticky?controls:undefined} headerTestID={testID===undefined?'assets-sticky-header':`${testID}-sticky-header`}
   testID={testID} data={cells} keyExtractor={cell=>cell.key} rowHeight={68} sticky={sticky} inset={inset} direction={direction} background={background}
-  renderItem={({item})=><View style={{direction,paddingHorizontal:inset,paddingTop:item.kind==='row'?4:16,gap:16}}>
-   {item.kind==='controls'?<>{controls}{sections.length===0?empty:null}</>:item.kind==='heading'?renderHeading(item.category):renderRow(item.asset)}
+  renderItem={({item,index})=><View style={{direction,paddingHorizontal:inset,paddingTop:item.kind==='row'?4:sticky&&index<=1?0:16,gap:16}}>
+   {item.kind==='controls'?<>{sticky?null:controls}{sections.length===0?empty:null}</>:item.kind==='heading'?renderHeading(item.category):renderRow(item.asset)}
   </View>}/>;
 }
 /**
@@ -320,7 +321,7 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
  if(windowed){
   content=<MarketList sticky={stickyHeader} listComponent={listComponent} sections={sections} header={header} controls={controls} empty={emptyContent} renderHeading={renderHeading} renderRow={row} inset={horizontalInset} background={stickyHeaderBackground} scrollComponent={stickyHeader||listComponent?scrollComponent:undefined} testID={testID} direction={direction}/>;
  }else{
-  const body=<>{controls}{sections.length===0?emptyContent:
+  const body=<>{stickyHeader?null:controls}{sections.length===0?emptyContent:
    <View testID={id('list')} style={{gap:16}}>
     {sections.map(section=><View key={section.category.id} testID={id(`section-${section.category.id}`)} style={{gap:4}}>
      {renderHeading(section.category)}
@@ -328,8 +329,8 @@ export function AssetsBlock({title,onClose,assets,categories,onSelect,selectedId
     </View>)}
    </View>}
   </>;
-  // The sticky layout puts the header and the body in separate views, so the body's first gap is its top padding.
-  content=stickyHeader?<StickyHeaderLayout horizontalInset={horizontalInset} testID={testID} headerTestID={id('sticky-header')??'assets-sticky-header'} header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16,paddingTop:16}}>{body}</StickyHeaderLayout>:<View testID={testID} style={{direction,paddingVertical:16,paddingHorizontal:horizontalInset,gap:16}}>
+  // The sticky layout pins the controls under the header, 16dp above the body.
+  content=stickyHeader?<StickyHeaderLayout horizontalInset={horizontalInset} testID={testID} headerTestID={id('sticky-header')??'assets-sticky-header'} header={header} pinned={controls} background={stickyHeaderBackground} scrollComponent={scrollComponent} bodyStyle={{direction,gap:16}}>{body}</StickyHeaderLayout>:<View testID={testID} style={{direction,paddingVertical:16,paddingHorizontal:horizontalInset,gap:16}}>
    {header}
    {body}
   </View>;
