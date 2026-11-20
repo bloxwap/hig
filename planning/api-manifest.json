@@ -404,7 +404,7 @@
       },
       "RewardEntry": {
         "entry": "blocks/reward-block",
-        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */\n    detail?: string | RewardFigure;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
+        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */\n    detail?: string | RewardFigure;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n    /** Makes the whole row one control: a real link (an `<a>`) with `href`, a button without. `label` is not drawn: it names the action after the row's own reading, such as Open your place on PrizeRail. Set it on `you`, on an entry of the list, or on both. In a row with an interactive `verifiedMark` the mark stays its own control. */\n    action?: RewardLink;\n}"
       },
       "SoundHapticsBlock": {
         "entry": "blocks/sound-haptics-block",
@@ -1918,7 +1918,7 @@
       },
       "RewardEntry": {
         "entry": "reward-block",
-        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */\n    detail?: string | RewardFigure;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n}"
+        "signature": "export interface RewardEntry {\n    id: string;\n    rank: number;\n    /** A short address, a handle, or the host's word for the viewer. */\n    name: string;\n    /** An image URL or a host element. Without one the first letters of the name are shown. */\n    avatar?: AssetArtwork;\n    /** Shows the verified mark after the name. */\n    verified?: boolean;\n    /** The line under the name: `$1,090,779 vol` as text, or the same as a live figure. */\n    detail?: string | RewardFigure;\n    /** Points or entries. `null` reads as unknown. */\n    score: number | null;\n    /** Format of this entry's score, in place of the block's `scoreOptions`, for a prize list where some amounts have cents. */\n    scoreOptions?: Intl.NumberFormatOptions;\n    /** Marks the viewer's own row: the name and score take the action colour. */\n    you?: boolean;\n    /** Makes the whole row one control. `label` is not drawn: it is read after the row's own reading, such as Open your place on PrizeRail. Set it on `you`, on an entry of the list, or on both. In a row with an interactive `verifiedMark` the mark stays its own control, and the name carries the reading and the action for assistive technology. */\n    action?: RewardLink;\n}"
       },
       "SoundHapticsBlock": {
         "entry": "sound-haptics-block",
@@ -2583,6 +2583,10 @@
       "RewardFigure": {
         "entry": "reward-block",
         "signature": "export type RewardFigure = Figure;"
+      },
+      "RewardLink": {
+        "entry": "reward-block",
+        "signature": "export type RewardLink = {\n    label: string;\n    onSelect: () => void;\n    href?: undefined;\n} | {\n    label: string;\n    href: string;\n    onSelect?: () => void;\n};"
       },
       "RewardPageStep": {
         "entry": "reward-block",

@@ -193,3 +193,67 @@ it('reads only the changed score when a virtualized leaderboard refreshes',()=>{
  expect([...reads]).toEqual([2]);
  expect(spoken(view.container.querySelector('li[data-index="2"] .hig-reward-score')!)).toBe('77');
 });
+
+describe('RewardBlock entry action (Unreleased)',()=>{
+ const place='Open your place on PrizeRail';
+ const me:RewardEntry={id:'me',rank:2,name:'you',detail:'$1,090,779 vol',score:418450};
+ it('leaves a row without an action as it was: no control, no id, the same elements',()=>{
+  render(<RewardBlock {...base} you={me} youLabel='Your rank' verifiedLabel='Verified'/>);
+  expect(q('.hig-reward-block')!.querySelectorAll('.hig-reward-row [id],.hig-reward-row a,.hig-reward-row button,a.hig-reward-row,button.hig-reward-row,[data-action],.hig-reward-hit').length).toBe(0);
+  expect([...q('.hig-reward-rows')!.children].map(row=>[row.tagName,row.className,row.getAttribute('data-you'),row.attributes.length])).toEqual([['LI','hig-reward-row',null,1],['LI','hig-reward-row','true',2],['LI','hig-reward-row',null,1]]);
+  const pinned=q('.hig-reward-you')!.firstElementChild!;expect([pinned.tagName,pinned.className,pinned.getAttribute('data-you'),pinned.attributes.length]).toEqual(['DIV','hig-reward-row','true',2]);
+  expect([...pinned.children].map(part=>part.tagName+'.'+part.className)).toEqual(['SPAN.hig-reward-rank hig-number','SPAN.hig-reward-avatar','SPAN.hig-reward-identity','SPAN.hig-reward-score']);
+  expect(pinned.querySelector('.hig-reward-identity > strong')!.firstChild!.nodeType).toBe(Node.TEXT_NODE);
+ });
+ it('makes a list row with href one real link, named by the row and then the action, and reports the press',async()=>{
+  const select=vi.fn();
+  const list=entries.map(entry=>entry.id==='me'?{...entry,action:{label:place,href:'https://example.com/me',target:'_blank',onSelect:select}}:entry);
+  render(<RewardBlock {...base} entries={list} verifiedLabel='Verified'/>);
+  const link=screen.getByRole('link',{name:`2 you $1,090,779 vol 418,450 ${place}`});
+  expect(link.tagName).toBe('A');expect(link.className).toBe('hig-reward-row');expect(link.getAttribute('data-you')).toBe('true');expect(link.getAttribute('href')).toBe('https://example.com/me');expect(link.getAttribute('target')).toBe('_blank');expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+  // The link is the row inside its list item, in place in the ordered list; the other rows are not controls.
+  expect(link.parentElement!.tagName).toBe('LI');expect(link.parentElement!.className).toBe('');expect([...q('.hig-reward-rows')!.children].indexOf(link.parentElement!)).toBe(1);
+  expect(screen.getAllByRole('link').length).toBe(1);expect(q('.hig-reward-rows')!.querySelectorAll('button').length).toBe(0);expect(rows().length).toBe(2);
+  // The label is read, not drawn, and nothing interactive is nested in the link.
+  expect(link.querySelector('.hig-sr-only:last-of-type')!.textContent).toBe(place);expect(link.querySelector('a,button,[tabindex]')).toBeNull();
+  link.addEventListener('click',event=>event.preventDefault());await userEvent.click(link);expect(select).toHaveBeenCalledTimes(1);
+ });
+ it('makes the pinned row a button inside its named group, reachable and pressed from the keyboard',async()=>{
+  const select=vi.fn();
+  render(<RewardBlock title='Leaderboard' header={false} youLabel='Your rank' verifiedLabel='Verified' you={{...me,verified:true,action:{label:place,onSelect:select}}} entries={entries}/>);
+  const group=screen.getByRole('group',{name:'Your rank'}),button=screen.getByRole('button',{name:`2 you Verified $1,090,779 vol 418,450 ${place}`});
+  expect(button.parentElement).toBe(group);expect(button.tagName).toBe('BUTTON');expect(button.getAttribute('type')).toBe('button');expect(button.className).toBe('hig-reward-row');expect(button.getAttribute('data-you')).toBe('true');
+  await userEvent.tab();expect(document.activeElement).toBe(button);await userEvent.keyboard('{Enter}');expect(select).toHaveBeenCalledTimes(1);await userEvent.keyboard(' ');expect(select).toHaveBeenCalledTimes(2);
+  // The same entry in the list has no action of its own, so it stays a plain row.
+  expect(q('.hig-reward-rows')!.querySelector('a,button')).toBeNull();
+ });
+ it('gives the control the provider press decoration, and HIG row focus, hover and pressed styles',()=>{
+  render(<HIGProvider pressDecoration={({kind})=><i data-press={kind}/>}><RewardBlock {...base} you={{...me,action:{label:place,onSelect:()=>{}}}}/></HIGProvider>);
+  expect(screen.getByRole('button',{name:new RegExp(place)}).querySelector('.hig-press-decoration[data-kind="row"] [data-press="row"]')).toBeTruthy();
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');
+  expect(css).toContain(':is(a,button).hig-reward-row:focus-visible,.hig-reward-hit:focus-visible { outline:2px solid var(--hig-focus,var(--hig-text));outline-offset:-2px; }');
+  expect(css).toContain(':is(a,button).hig-reward-row:active,.hig-reward-row:has(> .hig-reward-hit:active) { background:var(--hig-fill-raised); }');
+  expect(css).toContain(':is(a,button).hig-reward-row:hover,.hig-reward-row:has(> .hig-reward-hit:hover) { background:var(--hig-fill-raised); }');
+ });
+ it('keeps an interactive verified mark its own control beside the row link, never inside it',async()=>{
+  const explain=vi.fn(),select=vi.fn();
+  render(<RewardBlock title='Leaderboard' header={false} youLabel='Your rank' verifiedLabel='Genesis' verifiedMarkInteractive verifiedMark={<button type='button' onClick={explain}>Genesis badge</button>}
+   you={{...me,verified:true,action:{label:place,href:'/me',onSelect:select}}} entries={[{id:'a',rank:1,name:'0xabc',verified:true,score:5,action:{label:'Open 0xabc',onSelect:select}},{id:'b',rank:2,name:'Bo',score:4,action:{label:'Open Bo',onSelect:select}}]}/>);
+  const link=screen.getByRole('link',{name:`2 you Genesis $1,090,779 vol 418,450 ${place}`}),mark=screen.getAllByRole('button',{name:'Genesis badge'})[0];
+  const row=link.parentElement!;expect(row.tagName).toBe('DIV');expect(row.className).toBe('hig-reward-row');expect(row.hasAttribute('data-action')).toBe(true);expect(row.getAttribute('data-you')).toBe('true');expect(row.parentElement).toBe(screen.getByRole('group',{name:'Your rank'}));
+  expect(link.className).toBe('hig-reward-hit');expect(link.contains(mark)).toBe(false);expect(row.contains(mark)).toBe(true);expect(link.querySelector('a,button')).toBeNull();
+  await userEvent.click(mark);expect(explain).toHaveBeenCalledTimes(1);expect(select).not.toHaveBeenCalled();
+  link.addEventListener('click',event=>event.preventDefault());await userEvent.click(link);expect(select).toHaveBeenCalledTimes(1);
+  // In the list the row with a mark is the list item with the control over it; a row without a mark is the control itself.
+  const over=screen.getByRole('button',{name:'1 0xabc Genesis 5 Open 0xabc'});expect(over.className).toBe('hig-reward-hit');expect(over.parentElement!.tagName).toBe('LI');expect(over.parentElement!.className).toBe('hig-reward-row');
+  expect(screen.getByRole('button',{name:'2 Bo 4 Open Bo'}).className).toBe('hig-reward-row');
+  const css=readFileSync('packages/hig/react/src/styles.css','utf8');expect(css).toContain('.hig-reward-row[data-action] .hig-reward-verified { position:relative;z-index:1; }');
+ });
+ it('keeps a row with an action mounted in a windowed list so Tab reaches it, at its place in the full list',()=>{
+  const many:RewardEntry[]=Array.from({length:400},(_,i)=>({id:String(i),rank:i+1,name:'Trader '+i,score:i,...(i===300?{you:true,action:{label:place,href:'/me'}}:null)}));
+  render(<RewardBlock title='Standings' entries={many}/>);
+  const list=q('ol.hig-reward-rows')!;expect(list.children.length).toBeLessThan(50);
+  const link=screen.getByRole('link',{name:`301 Trader 300 300 ${place}`}),item=link.parentElement!;
+  expect(item.parentElement).toBe(list);expect(item.getAttribute('data-index')).toBe('300');expect(item.getAttribute('aria-posinset')).toBe('301');expect(item.getAttribute('aria-setsize')).toBe('400');expect(item.style.position).toBe('absolute');
+ });
+});

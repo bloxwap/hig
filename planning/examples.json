@@ -1501,11 +1501,16 @@
         "sweepstakes",
         "loading",
         "paged",
-        "no-header"
+        "no-header",
+        "entry-action"
       ],
       "a11y": "Visible label, semantic role/state, keyboard or platform touch behavior; device observations pending",
       "feedback": "accepted intent only; outcomes supplied by host; live updates silent",
       "variants": {
+        "entry-action": {
+          "web": "<C.RewardBlock title='Leaderboard' youLabel='Your rank' you={{id:'you',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,action:{label:'Open your place',onSelect:()=>setMessage('The host opens your place from the pinned row')}}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'a',rank:1,name:'0x4e79…949f',detail:'$1,789,061 vol',score:795407},{id:'you',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,you:true,action:{label:'Open your place',onSelect:()=>setMessage('The host opens your place from the list')}},{id:'c',rank:3,name:'0x3f50…eb5f',detail:'$1,059,852 vol',score:317217}]} onBack={()=>setMessage('The host goes back')}/>",
+          "native": "<C.RewardBlock title='Leaderboard' youLabel='Your rank' you={{id:'you',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,action:{label:'Open your place',onSelect:()=>setMessage('The host opens your place from the pinned row')}}} listTitle='Top 25 by volume' scoreTitle='Entries' entries={[{id:'a',rank:1,name:'0x4e79…949f',detail:'$1,789,061 vol',score:795407},{id:'you',rank:2,name:'you',detail:'$1,090,779 vol',score:418450,you:true,action:{label:'Open your place',onSelect:()=>setMessage('The host opens your place from the list')}},{id:'c',rank:3,name:'0x3f50…eb5f',detail:'$1,059,852 vol',score:317217}]} onBack={()=>setMessage('The host goes back')}/>"
+        },
         "loading": {
           "web": "<C.RewardBlock title='Leaderboard' loading loadingLabel='Loading standings' promo={{eyebrow:'Season 01',amount:null,goal:250000,caption:goal=>'of '+goal+' prize pool'}} entries={[]} onBack={()=>setMessage('The host goes back')}/>",
           "native": "<C.RewardBlock title='Leaderboard' loading loadingLabel='Loading standings' promo={{eyebrow:'Season 01',amount:null,goal:250000,caption:goal=>'of '+goal+' prize pool'}} entries={[]} onBack={()=>setMessage('The host goes back')}/>"
