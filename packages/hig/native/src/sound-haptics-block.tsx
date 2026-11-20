@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,type ScrollViewProps} from 'react-native';
+import {Pressable,View,type ScrollViewProps} from 'react-native';
 import {formatNumber} from './number-format.js';
 import {useColors,useFills,useLayoutDirection,useNumberLocale} from './provider.js';
 import {Text} from './surface.js';
@@ -7,6 +7,7 @@ import {Button} from './button.js';
 import {SettingCard,SettingHeader,SettingSwitch,type SettingAction} from './setting-switch.js';
 import {StickyHeaderLayout} from './sticky-header.js';
 export type {SettingAction} from './setting-switch.js';
+import {ChevronIcon} from './icons.js';
 import {RadioGroup} from './radio-group.js';
 import type {Choice} from './selection-types.js';
 /** A volume as a few fixed steps. `value` and `options` are fractions: 0.25 reads 25%. */
@@ -64,37 +65,57 @@ type VolumeStepsProps=Omit<SoundVolume,'label'>&{id:string;disabled:boolean;loca
 const VolumeSteps=React.memo(function VolumeSteps({id,options=steps,value,onValueChange,disabled,locale,direction}:VolumeStepsProps){
  return <View style={{direction,flexDirection:'row',gap:8}}>{options.map(option=><Button key={option} testID={`${id}-volume-${option}`} intent={option===value?'primary':'secondary'} accessibilityState={{selected:option===value}} disabled={disabled} onPress={()=>onValueChange(option)} style={{flex:1,alignSelf:'auto',paddingHorizontal:8}}>{formatNumber(option,locale,percent)}</Button>)}</View>;
 });
-const SoundCard=React.memo(function SoundCard(section:SoundSection){
+const SoundCard=React.memo(function SoundCard({onChooseDevice,...section}:SoundSection&{onChooseDevice:(id:string)=>void}){
  const colors=useColors(),fills=useFills(),direction=useLayoutDirection(),locale=useNumberLocale();
  const caption={fontSize:14,lineHeight:21,color:colors.muted} as const;
   const {source,choices,level,levelLabel,volume,action}=section,on=section.checked,id=`sound-${section.id}`;
+  const selected=choices?.options.find(option=>option.value===choices.value)?.label;
   const showVolume=!!volume&&(on||section.volumeWhenOff==='disabled');
-  const open=(on&&(!!source||!!choices||level!==undefined))||showVolume||!!action;
+  const showInput=on&&(!!source||!!choices||(!volume&&level!==undefined));
   const share=soundLevel(level);
   const fill=<View testID={`${id}-level`} style={{width:'100%',transform:[{scaleX:share}],transformOrigin:direction==='rtl'?'right center':'left center',borderRadius:2,backgroundColor:colors.action}}/>,track={direction,flexDirection:'row',height:4,borderRadius:2,backgroundColor:fills.raised,overflow:'hidden'} as const;
-  return <SettingCard testID={id}>
+  const meter=on&&level!==undefined?(levelLabel?<View testID={`${id}-meter`} accessible accessibilityRole='progressbar' accessibilityLabel={levelLabel} accessibilityValue={{min:0,max:100,now:Math.round(share*100),text:formatNumber(share,locale,percent)}} style={track}>{fill}</View>
+      :<View {...hidden} testID={`${id}-meter`} style={track}>{fill}</View>):null;
+  const controlRow=<SettingCard testID={id} joined={showInput}>
    <SettingSwitch testID={`${id}-switch`} label={section.label} description={section.description} checked={section.checked} disabled={section.disabled} onCheckedChange={section.onCheckedChange}/>
-   {open?<View testID={`${id}-body`} style={{gap:8}}>
-    {on&&source?<Text testID={`${id}-source`} style={caption}>{source}</Text>:null}
-    {on&&choices?<View testID={`${id}-choices`}><RadioGroup label={choices.label} options={choices.options} value={choices.value} disabled={section.disabled} onValueChange={choices.onValueChange}/></View>:null}
-    {on&&level!==undefined?(levelLabel?<View testID={`${id}-meter`} accessible accessibilityRole='progressbar' accessibilityLabel={levelLabel} accessibilityValue={{min:0,max:100,now:Math.round(share*100),text:formatNumber(share,locale,percent)}} style={track}>{fill}</View>
-     :<View {...hidden} testID={`${id}-meter`} style={track}>{fill}</View>):null}
+   {showVolume||action?<View testID={`${id}-body`} style={{gap:8}}>
     {showVolume&&volume?<View testID={`${id}-volume`} accessibilityRole='radiogroup' accessibilityLabel={volume.label} style={{gap:8}}>
      <Text {...hidden} style={caption}>{volume.label}</Text>
+     {meter}
      <VolumeSteps id={id} options={volume.options} value={volume.value} onValueChange={volume.onValueChange} disabled={!on||!!section.disabled} locale={locale} direction={direction}/>
     </View>:null}
     {action?<View style={{marginTop:on&&(source||choices||level!==undefined)||showVolume?8:0}}><Button testID={`${id}-action`} intent='secondary' fullWidth disabled={action.disabled} suppressFeedback={action.feedback===false} onPress={action.onSelect}>{action.label}</Button></View>:null}
    </View>:null}
   </SettingCard>;
+  if(!showInput)return controlRow;
+  const inputStyle={gap:8,paddingHorizontal:20,paddingVertical:12,backgroundColor:colors.surface};
+  return <View style={{gap:2,borderRadius:20,overflow:'hidden'}}>
+   {controlRow}
+   {choices?<Pressable testID={`${id}-disclosure`} disabled={section.disabled} accessibilityRole='button' accessibilityState={{disabled:!!section.disabled}} onPress={()=>onChooseDevice(section.id)} style={inputStyle}>
+    <View style={{direction,flexDirection:'row',alignItems:'center',gap:8,minHeight:24}}>
+      <Text testID={`${id}-source`} style={[caption,{flex:1}]}>{source??choices.label}</Text>
+      <Text style={caption}>{selected}</Text><View style={{transform:[{rotate:direction==='rtl'?'90deg':'-90deg'}]}}><ChevronIcon color={colors.muted}/></View>
+    </View>
+    {!volume&&meter}
+   </Pressable>:<View testID={`${id}-input`} style={inputStyle}>
+    {source&&<Text testID={`${id}-source`} style={caption}>{source}</Text>}
+    {!volume&&meter}
+   </View>}
+  </View>;
 });
 /** The settings for what the app plays and feels like, as a screen: each channel is a card with a switch, and a channel that is on can show the device it uses, a live input meter and its volume as fixed steps. */
 export function SoundHapticsBlock({title,description,sections,onBack,headerAction,stickyHeader,stickyHeaderBackground,scrollComponent,testID}:SoundHapticsBlockProps){
  const colors=useColors();
  const caption={fontSize:14,lineHeight:21,color:colors.muted} as const;
- const header=<SettingHeader testID='sound' title={title} onBack={onBack} action={headerAction}/>;
- const body=<>
+ const [deviceId,setDeviceId]=React.useState<string|null>(null);
+ const device=sections.find(section=>section.id===deviceId&&section.checked);
+ const choices=device?.choices;
+ const goBack=()=>setDeviceId(null);
+ const selectDevice=(value:string)=>{choices?.onValueChange(value);goBack();};
+ const header=<SettingHeader testID='sound' title={choices?.label??title} onBack={choices?goBack:onBack} action={headerAction}/>;
+ const body=choices?<View style={{marginTop:16}}><RadioGroup label={choices.label} options={choices.options} value={choices.value} disabled={device?.disabled} onValueChange={selectDevice}/></View>:<>
   {description?<Text testID='sound-description' style={{...caption,marginTop:16,paddingHorizontal:4}}>{description}</Text>:null}
-  {sections.length>0?<View testID='sound-sections' style={{gap:8,marginTop:16}}>{sections.map(section=><SoundCard key={section.id} {...section}/>)}</View>:null}
+  {sections.length>0?<View testID='sound-sections' style={{gap:8,marginTop:16}}>{sections.map(section=><SoundCard key={section.id} onChooseDevice={setDeviceId} {...section}/>)}</View>:null}
  </>;
  if(stickyHeader)return <StickyHeaderLayout testID={testID} headerTestID='sound-sticky-header' header={header} background={stickyHeaderBackground} scrollComponent={scrollComponent}>{body}</StickyHeaderLayout>;
  return <View testID={testID} style={{padding:16}}>

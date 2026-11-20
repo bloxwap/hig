@@ -754,7 +754,7 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-account-section-header > h3 { margin:0;min-width:0;font:inherit;overflow-wrap:anywhere; }
 .hig-account-section-total { flex:none; }
 /* TokenActionBlock: header, the assets and chains bars 8px apart, then equal full-width actions 16px below. */
-.hig-token-bars,.hig-token-actions,.hig-setting-cards,.hig-setting-body,.hig-setting-volume,.hig-notifications-item,.hig-signals-group,.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
+.hig-token-bars,.hig-token-actions,.hig-setting-cards,.hig-setting-body,.hig-setting-input,.hig-setting-volume,.hig-notifications-item,.hig-signals-group,.hig-reward-list { display:flex;flex-direction:column;gap:8px; }
 .hig-token-card > .hig-token-note { margin:0; }
 .hig-token-card > .hig-token-note + .hig-token-actions { margin-block-start:-8px; }
 /* ManagePositionBlock: header, two bars 8px apart, action rows and the position row 16px below each other. */
@@ -808,6 +808,14 @@ button.hig-asset-row:disabled:active { background:var(--hig-fill); }
 .hig-setting-notes {display:flex;flex-direction:column;gap:4px;padding-block-end:12px; }
 .hig-setting-notes > p { padding-inline:0; }
 .hig-setting-body > .hig-setting-action:not(:first-child) { margin-block-start:8px; }
+.hig-setting-device { display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:0;border:0;background:transparent;color:var(--hig-muted);font:inherit;font-size:.875rem;text-align:start;cursor:pointer; }
+.hig-setting-forward { transform:rotate(-90deg); }
+.hig-setting-forward:dir(rtl) { transform:rotate(90deg); }
+.hig-setting-device-value { display:inline-flex;align-items:center;gap:8px; }
+.hig-setting-card.hig-setting-input { position:relative;gap:8px;padding-block:12px; }
+.hig-setting-input .hig-setting-device { min-height:24px;color:var(--hig-text);font-size:1rem; }
+.hig-setting-input .hig-setting-device::after { content:'';position:absolute;inset:0; }
+.hig-setting-device-value { color:var(--hig-muted);font-size:.875rem; }
 .hig-setting-choices legend { margin-block-end:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
 .hig-setting-switch-text { flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;padding-block:calc((var(--hig-control) - 1.5em)/2);overflow-wrap:anywhere; }
 .hig-setting-switch-description,.hig-setting-caption { color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
