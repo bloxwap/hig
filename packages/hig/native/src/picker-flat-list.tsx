@@ -30,10 +30,10 @@ export function ListWithIntro<T>(props:FlatListProps<T|null>){
  return <VirtualizedList {...props} getItem={itemAfterIntro<T>} getItemCount={countWithIntro}/>;
 }
 
-export function PickerFlatList<T>({listComponent:List=FlatList,scrollComponent:Scroll,header,headerTestID,background,sticky,inset,direction,rowHeight,testID,...listProps}:
+export function PickerFlatList<T>({listComponent:List=FlatList,scrollComponent:Scroll,header,pinned,headerTestID,background,sticky,inset,direction,rowHeight,testID,...listProps}:
  Pick<FlatListProps<T>,'data'|'keyExtractor'|'renderItem'|'accessibilityRole'|'accessibilityLabel'|'ListFooterComponent'> & {
  listComponent?:React.ComponentType<FlatListProps<T>>;scrollComponent?:React.ComponentType<ScrollViewProps>;
- header:React.ReactElement|null;headerTestID:string;background?:string;sticky?:boolean;inset:number;direction:'rtl'|'ltr';rowHeight:number;testID?:string;
+ header:React.ReactElement|null;pinned?:React.ReactNode;headerTestID:string;background?:string;sticky?:boolean;inset:number;direction:'rtl'|'ltr';rowHeight:number;testID?:string;
 }){
  const {scrolled,onScroll,scrollEventThrottle}=useStickyHeaderScroll();
  const [viewport,setViewport]=useState(0);
@@ -44,5 +44,5 @@ export function PickerFlatList<T>({listComponent:List=FlatList,scrollComponent:S
   onLayout={event=>setViewport(event.nativeEvent.layout.height)} initialNumToRender={Math.ceil(size/rowHeight)+4}
   windowSize={1+8*rowHeight/size} maxToRenderPerBatch={4}
   renderScrollComponent={Scroll?props=><Scroll {...props}/>:undefined}
-  ListHeaderComponentStyle={{flexDirection:'row'}} ListHeaderComponent={!header?null:sticky?<StickyHeaderSlot header={header} headerTestID={headerTestID} horizontalInset={inset} background={background} scrolled={scrolled}/>:<View style={{flexGrow:1,direction,paddingHorizontal:inset,paddingTop:16}}>{header}</View>} />;
+  ListHeaderComponentStyle={{flexDirection:'row'}} ListHeaderComponent={!header?null:sticky?<StickyHeaderSlot header={header} pinned={pinned} headerTestID={headerTestID} horizontalInset={inset} background={background} scrolled={scrolled}/>:<View style={{flexGrow:1,direction,paddingHorizontal:inset,paddingTop:16}}>{header}</View>} />;
 }
