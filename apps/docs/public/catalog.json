@@ -1057,7 +1057,13 @@
       "entry": "blocks",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "ready",
+        "claiming",
+        "paid",
+        "expired",
+        "withheld",
+        "error"
       ]
     },
     {

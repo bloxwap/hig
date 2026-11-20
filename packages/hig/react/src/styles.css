@@ -925,6 +925,17 @@ a.hig-reward-rules,a.hig-reward-action { text-decoration:none; }
    TradeHistoryDetailBlock: header, the asset row, the result and the figures 8px apart, then the actions in one row 16px below. */
 .hig-trade-history-list,.hig-language-block,.hig-assets-block { color:var(--hig-text); }
 .hig-assets-block,.hig-profile-block,.hig-position-block,.hig-claim-reward-block { padding-inline:var(--hig-block-horizontal-inset,8px); }
+/* ClaimRewardBlock's claim step. The status region stays mounted so a change is announced; empty, it takes back the block's 16px gap. */
+.hig-claim-note,.hig-claim-links { margin:0;padding-inline:4px;color:var(--hig-muted);font-size:.875rem;line-height:1.5; }
+.hig-claim-attestation { display:flex;flex-direction:column;gap:4px;min-width:0; }
+.hig-claim-reward-block .hig-claim-attestation > .hig-choice { flex-wrap:nowrap;align-items:flex-start;padding-inline:4px; }
+.hig-claim-attestation > .hig-choice > input { flex:none;margin:2px 0 0; }
+.hig-claim-links { display:flex;flex-wrap:wrap;gap:4px 16px; }
+.hig-claim-transaction { justify-content:center; }
+.hig-claim-status { padding-inline:4px;font-weight:600;text-align:center;color:var(--hig-muted); }
+.hig-claim-status:empty { margin-block-start:-16px; }
+.hig-claim-status > p { margin:0; }
+.hig-claim-reward-block[data-status='paid'] .hig-claim-status { color:var(--hig-positive); }
 .hig-assets-block { --hig-filter-bleed:8px; }
 .hig-trade-rows { display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none; }
 button.hig-trade-row:active { background:var(--hig-fill-raised); }
