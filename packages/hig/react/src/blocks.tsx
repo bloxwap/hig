@@ -26,5 +26,5 @@ export {ConfirmBlock,type ConfirmBlockProps,type ConfirmDetail,type ConfirmTerti
 export {PresetPickerBlock,type PresetPickerBlockProps,type PresetPickerCustom} from './blocks/preset-picker-block.js';
 export {PositionsBlock,type PositionsBlockProps,type OpenPosition} from './blocks/positions-block.js';
 export {ReceiveBlock,type ReceiveBlockProps,type ReceiveNetwork} from './blocks/receive-block.js';
-export {ClaimRewardBlock,type ClaimRewardBlockProps} from './blocks/claim-reward-block.js';
+export {ClaimRewardBlock,type ClaimRewardBlockProps,type ClaimRewardStatus,type ClaimRewardLink,type ClaimRewardAttestation} from './blocks/claim-reward-block.js';
 export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWallet} from './blocks/advanced-block.js';
