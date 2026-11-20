@@ -122,8 +122,9 @@ test('rows are one line each, headingId names the title, and stickyHeader pins t
  expect(flat(host(view,'assets-sticky-header'))).toMatchObject({paddingTop:16,paddingHorizontal:8,backgroundColor:'transparent'});
  expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-header').length).toBeGreaterThan(0);
  act(()=>scroll.props.onScroll({nativeEvent:{contentOffset:{y:40}}}));expect(flat(host(view,'assets-sticky-header')).backgroundColor).toBe('#123456');
- // The search and the list scroll under the pinned header.
- expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-search')).toHaveLength(0);expect(has(view,'assets-list')).toBe(true);
+ // The search, market types and views are pinned with the header; only the list scrolls under them.
+ expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-search').length).toBeGreaterThan(0);expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-view').length).toBeGreaterThan(0);
+ expect(host(view,'assets-sticky-header').findAll(node=>node.props.testID==='assets-list')).toHaveLength(0);expect(has(view,'assets-list')).toBe(true);
  // A host scroll view, such as a sheet library's, takes ScrollView's place.
  const Sheet=props=>h(ScrollView,{...props,testID:'sheet-scroll'});view=mount({stickyHeader:true,scrollComponent:Sheet});expect(has(view,'sheet-scroll')).toBe(true);
  // The scroller fills a bounded parent and shrinks below its content, so it scrolls in a sheet body even when the host's scroll view carries no flex of its own.

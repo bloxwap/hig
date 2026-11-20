@@ -1,6 +1,7 @@
 import {GestureSheetHeaderContext,GestureSheetSurfaceContext,SheetHeaderScrim} from './sheet-header-glow.js';
 import React,{useCallback,useRef,useState} from 'react';
-import {ScrollView,View,type NativeScrollEvent,type NativeSyntheticEvent,type ScrollViewProps,type StyleProp,type ViewStyle} from 'react-native';
+import Svg,{Defs,LinearGradient,Rect,Stop} from 'react-native-svg';
+import {ScrollView,StyleSheet,View,type NativeScrollEvent,type NativeSyntheticEvent,type ScrollViewProps,type StyleProp,type ViewStyle} from 'react-native';
 import {useColors} from './provider.js';
 /** What a scroller needs so a pinned header knows when content is under it. Spread `onScroll` and `scrollEventThrottle` on the scroll view and pass `scrolled` to the header. */
 export interface StickyHeaderScroll {
@@ -30,6 +31,8 @@ const stickyScrollStyle:ViewStyle={flexGrow:1,flexShrink:1,minHeight:0};
 export interface StickyHeaderLayoutProps {
  /** The header, pinned as the scroll view's first child. */
  header:React.ReactNode;
+ /** Controls pinned 16dp under the header, such as a search field and filters, so only the content under them scrolls. They take the sheet's fill (or `background`) once content scrolls under them, so rows never show through. */
+ pinned?:React.ReactNode;
  children:React.ReactNode;
  /** Fill once content scrolls under the header. Defaults to the background role. */
  background?:string;
@@ -41,12 +44,35 @@ export interface StickyHeaderLayoutProps {
  horizontalInset?:number;
  bodyStyle?:StyleProp<ViewStyle>;
 }
-export function StickyHeaderSlot({header,headerTestID,horizontalInset=16,background,scrolled}:Pick<StickyHeaderLayoutProps,'header'|'headerTestID'|'horizontalInset'|'background'>&{scrolled:boolean}){
+/** The header's sheet scrim stretched over a header with pinned controls: the same translucency (96% at the top to 92%) behind the
+ * title and every control, fading out over the last 16dp, so the fade stays under the controls whatever their height. */
+function PinnedScrim({backdrop}:{backdrop:string}){
+ return <View pointerEvents='none' accessibilityElementsHidden importantForAccessibility='no-hide-descendants' style={StyleSheet.absoluteFill}>
+  <Svg style={{flex:1}} width='100%' viewBox='0 0 1 1' preserveAspectRatio='none'>
+   <Defs><LinearGradient id='pinnedScrim' x1='0' y1='0' x2='0' y2='1'><Stop offset={0} stopColor={backdrop} stopOpacity={0.96}/><Stop offset={1} stopColor={backdrop} stopOpacity={0.92}/></LinearGradient></Defs>
+   <Rect width={1} height={1} fill='url(#pinnedScrim)'/>
+  </Svg>
+  <Svg width='100%' height={16} viewBox='0 0 1 1' preserveAspectRatio='none'>
+   <Defs><LinearGradient id='pinnedScrimEdge' x1='0' y1='0' x2='0' y2='1'><Stop offset={0} stopColor={backdrop} stopOpacity={0.92}/><Stop offset={1} stopColor={backdrop} stopOpacity={0}/></LinearGradient></Defs>
+   <Rect width={1} height={1} fill='url(#pinnedScrimEdge)'/>
+  </Svg>
+ </View>;
+}
+export function StickyHeaderSlot({header,pinned,headerTestID,horizontalInset=16,background,scrolled}:Pick<StickyHeaderLayoutProps,'header'|'pinned'|'headerTestID'|'horizontalInset'|'background'>&{scrolled:boolean}){
  const inSheet=React.useContext(GestureSheetHeaderContext),sheetSurface=React.useContext(GestureSheetSurfaceContext),colors=useColors();
- return <View testID={headerTestID} style={[{flexGrow:1,paddingHorizontal:horizontalInset,paddingTop:16},stickyHeaderFill(scrolled&&!inSheet,background??colors.background)]}>{scrolled&&inSheet?<SheetHeaderScrim backdrop={sheetSurface??background??colors.background}/>:null}{header}</View>;
+ // In a sheet, pinned controls share the header's scrim: one translucent layer behind the title and the controls, fading out over the
+ // 16dp under the last control.
+ return <View testID={headerTestID} style={[{flexGrow:1,paddingHorizontal:horizontalInset,paddingTop:16},stickyHeaderFill(scrolled&&!inSheet,background??colors.background)]}>
+  {scrolled&&inSheet?pinned!=null?<PinnedScrim backdrop={sheetSurface??background??colors.background}/>:<SheetHeaderScrim backdrop={sheetSurface??background??colors.background}/>:null}
+  {header}
+  {pinned!=null?<>
+   <View style={{paddingTop:16,gap:16}}>{pinned}</View>
+   <View pointerEvents='none' style={{height:16}}/>
+  </>:null}
+ </View>;
 }
 /** A block as its own scroll view with its header pinned: 16dp around the content as the block draws it, the header transparent until content scrolls under it. Place it in a bounded container, such as a sheet body. */
-export function StickyHeaderLayout({header,children,background,scrollComponent:Scroll=ScrollView,testID,headerTestID,horizontalInset=16,bodyStyle}:StickyHeaderLayoutProps){
+export function StickyHeaderLayout({header,pinned,children,background,scrollComponent:Scroll=ScrollView,testID,headerTestID,horizontalInset=16,bodyStyle}:StickyHeaderLayoutProps){
  const {scrolled,onScroll,scrollEventThrottle}=useStickyHeaderScroll();
  // React Native's sticky slot moves the pinned child's style onto its own wrapper and gives the child flex:1, which measures 0 tall in a column.
  // So the pinned child carries only a row direction (the wrapper lays out as a row, where flex:1 fills the width and the height follows content),
@@ -55,7 +81,7 @@ export function StickyHeaderLayout({header,children,background,scrollComponent:S
  // content scrolls inside it. It cannot bound itself: in a parent whose height follows its content (a View with no flex or
  // height, a content-sized sheet) it grows to its content and nothing scrolls.
  return <Scroll showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} testID={testID} style={stickyScrollStyle} stickyHeaderIndices={[0]} onScroll={onScroll} scrollEventThrottle={scrollEventThrottle} contentContainerStyle={{paddingBottom:16}}>
-  <View style={stickySlotStyle}><StickyHeaderSlot header={header} headerTestID={headerTestID} horizontalInset={horizontalInset} background={background} scrolled={scrolled}/></View>
+  <View style={stickySlotStyle}><StickyHeaderSlot header={header} pinned={pinned} headerTestID={headerTestID} horizontalInset={horizontalInset} background={background} scrolled={scrolled}/></View>
   <View style={[{paddingHorizontal:horizontalInset},bodyStyle]}>{children}</View>
  </Scroll>;
 }
