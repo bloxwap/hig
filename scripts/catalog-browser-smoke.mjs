@@ -15,6 +15,18 @@ const results=[];const visualFailures=[];const targetFailures=[];mkdirSync('arti
 function checkBaseline(slug,file){const baseline=visualBaselinePath(slug);mkdirSync(dirname(baseline),{recursive:true});if(process.env.HIG_UPDATE_VISUALS==='1'){writeFileSync(baseline,readFileSync(file));return {updated:true,baseline};}if(!existsSync(baseline)){const message=`missing visual baseline ${baseline} for ${process.platform}; review the CI capture ${file} before committing it (HIG_UPDATE_VISUALS=1). Do not reuse another OS baseline or loosen the 2%/24-channel thresholds`;visualFailures.push(`${slug}: ${message}`);return {failed:true,message};}try{return compareVisual(readFileSync(file),readFileSync(baseline));}catch(error){mkdirSync('evidence/visual-actuals',{recursive:true});writeFileSync(`evidence/visual-actuals/${slug}.png`,readFileSync(file));writeFileSync(`evidence/visual-actuals/${slug}.txt`,String(error?.message??error));visualFailures.push(`${slug}: ${error?.message??error}`);return {failed:true,message:String(error?.message??error)};}}
 async function chooseState(page,entry,state){
  const label=state[0].toUpperCase()+state.slice(1);
+ if(entry.name==='WalletAddress'){
+  const href=state==='default'?'?':'?state='+state;
+  await page.locator('.example-links a').filter({visible:true}).and(page.locator(`[href="${href}"]`)).click();
+  assert.equal(await page.locator('.example-links a[aria-current="true"]').getAttribute('href'),href);
+  return;
+ }
+ if(entry.name==='AddressLockup'){
+  const [chain,orientation]=(state==='default'?'solana-vertical':state).split('-');
+  for(const value of [chain,orientation])await page.getByRole('radio',{name:value[0].toUpperCase()+value.slice(1),exact:true}).click();
+  await page.locator(`.example-canvas .hig-${orientation}-address[data-kind="${chain}"]`).waitFor();
+  return;
+ }
  if(await page.locator('.block-demo').count()){
   if(entry.states.length===1)return;
   if(entry.name==='ModalBlock'){
