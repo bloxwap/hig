@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -35,6 +35,11 @@
       "types": "./contracts/dist/environment.d.ts",
       "import": "./contracts/dist/environment.js",
       "default": "./contracts/dist/environment.js"
+    },
+    "./contracts/address": {
+      "types": "./contracts/dist/address.d.ts",
+      "import": "./contracts/dist/address.js",
+      "default": "./contracts/dist/address.js"
     },
     "./contracts/format": {
       "types": "./contracts/dist/format.d.ts",

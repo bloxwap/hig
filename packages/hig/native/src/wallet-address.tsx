@@ -1,7 +1,7 @@
 import React from 'react';
 import {QRCode} from './qr-code.js';
 import {WalletAddress as WalletAddressCore,WalletAddressFrame,type WalletAddressCoreProps} from './wallet-address-core.js';
-export {VerticalAddress,addressKind,type AddressKind} from './data.js';
+export {AddressLockup,Address,HorizontalAddress,VerticalAddress,addressKind,type AddressKind} from './data.js';
 export type {WalletAddressCoreProps} from './wallet-address-core.js';
 export interface WalletAddressProps extends Omit<WalletAddressCoreProps,'qr'> {
  /** QR payload when it differs from the address, e.g. an EIP-681 or Solana Pay URI. Defaults to the address. */
@@ -20,5 +20,5 @@ export interface WalletAddressProps extends Omit<WalletAddressCoreProps,'qr'> {
 export function WalletAddress({qrValue,arena,qr,...props}:WalletAddressProps){
  // As on web, `null` falls back to HIG's code like a missing `qr`.
  if(qr!=null)return <WalletAddressCore {...props} qr={qr}/>;
- return <WalletAddressFrame {...props} code={<QRCode value={qrValue??props.address} arena={arena} size={props.size??196} quietZone={0} background='none' testID='wallet-address-qr'/>}/>;
+ return <WalletAddressFrame {...props} code={edge=><QRCode value={qrValue??props.address} arena={arena} size={edge} quietZone={0} background='none' testID='wallet-address-qr'/>}/>;
 }

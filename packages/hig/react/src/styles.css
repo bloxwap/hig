@@ -527,9 +527,10 @@ img.hig-avatar { object-fit:cover; }
 }
 
 /* Vertical address: fixed-width rows whose height sets the type size, so a column of rows can match a QR code's edge. */
-.hig-vertical-address { display:inline-flex;flex-direction:column;flex:none;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:calc(var(--hig-address-row,1.5em)*.9);line-height:var(--hig-address-row,1.5em);font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--hig-muted);text-align:start;white-space:pre; }
-.hig-vertical-address > [aria-hidden] { display:flex;flex-direction:column; }
-.hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
+.hig-horizontal-address,.hig-vertical-address { display:inline-flex;flex-direction:column;flex:none;font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:calc(var(--hig-address-row,1.5em)*.9);line-height:var(--hig-address-row,1.5em);font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums;color:var(--hig-muted);text-align:start;white-space:pre; }
+.hig-horizontal-address > [aria-hidden],.hig-vertical-address > [aria-hidden] { display:flex;flex-direction:column; }
+.hig-vertical-address[data-kind='bitcoin'] { text-align:center; }
+.hig-horizontal-address [data-anchor],.hig-vertical-address [data-anchor] { font-weight:700;color:var(--hig-text); }
 /* QRCode: a square holding one inline SVG, with the arena as an HTML box over it. `size` sets the width; host CSS may resize the square and the drawing and the arena's box scale. */
 .hig-qr-code { position:relative;display:block;flex:none;box-sizing:border-box;width:var(--hig-qr-code-size,196px);max-width:100%;aspect-ratio:1; }
 .hig-qr-code > svg { position:absolute;inset:0;display:block;width:100%;height:100%; }
@@ -544,8 +545,11 @@ button.hig-wallet-address,button.hig-trade-row,button.hig-list-row,a.hig-list-ro
 /* Long-pressing an actionable row should operate the control without selecting its label. */
 .hig-gesture-sheet :is(button.hig-asset-row,.hig-asset-row-main,button.hig-list-row,a.hig-list-row,button.hig-trade-row,button.hig-reward-row,a.hig-reward-row,.hig-reward-hit) { -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
 button.hig-wallet-address:active { opacity:.8; }
-.hig-wallet-address-body { display:flex;align-items:center;gap:16px;max-width:100%; }
+.hig-wallet-address-body { direction:ltr;display:flex;align-items:center;gap:16px;max-width:100%; }
+.hig-wallet-address[data-orientation='vertical'] .hig-wallet-address-body { flex-direction:column; }
 .hig-wallet-address-qr { flex:none;display:block;width:var(--hig-qr);height:var(--hig-qr); }
+.hig-wallet-address[data-orientation='vertical'] .hig-wallet-address-qr { contain:inline-size;width:100%;height:auto;aspect-ratio:1; }
+.hig-wallet-address[data-orientation='horizontal'] .hig-wallet-address-qr { flex-shrink:1;min-width:0;height:auto;aspect-ratio:1; }
 .hig-wallet-address-qr > svg,.hig-wallet-address-qr > .hig-qr-code { display:block;width:100%;height:100%; }
 .hig-wallet-address-hint { display:inline-flex;align-items:center;gap:8px;font-size:.875rem;line-height:1.5;color:var(--hig-muted); }
 .hig-wallet-address-hint > svg { width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }

@@ -114,6 +114,7 @@
   "/docs/guides/components/status/": [
     "api-and-anatomy",
     "avatar",
+    "toast-gallery-types",
     "transient-toasts-toaster-and-toast",
     "how-the-native-host-moves",
     "where-the-platforms-differ",

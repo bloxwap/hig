@@ -1,8 +1,8 @@
 // Generated from planning/examples.json.
 import React from 'react';
-import {NumberReadout,Usd,Percent,Metric,Stat,List,Row,VerticalAddress,Table} from '@bloxwap/hig/react/data';
+import {NumberReadout,Usd,Percent,Metric,Stat,List,Row,AddressLockup,Table} from '@bloxwap/hig/react/data';
 import {Text,Stack} from '@bloxwap/hig/react/surface';
-const components={Stack,Text,NumberReadout,Usd,Percent,Metric,Stat,List,Row,Table,VerticalAddress};
+const components={Stack,Text,NumberReadout,Usd,Percent,Metric,Stat,List,Row,Table,AddressLockup};
 export function Example({name,state='default'}:{name:string;state?:string;previewDialog?:typeof import('@bloxwap/hig/react/overlay').Dialog}){const C=components;const rows=state==='empty'?[]:[{id:'btc',label:'Bitcoin (BTC)',value:67234.56}];
 const empty=state==='empty';
 const error=state==='error'?'Data unavailable. Retry when connected.':undefined;
@@ -14,5 +14,5 @@ case "Stat":return <C.Stat label='Sample daily change' value={<C.Percent value={
 case "List":return <C.List items={rows} keyFor={r=>r.id} render={r=><C.Row><C.Text>{r.label}</C.Text><C.NumberReadout value={r.value}/></C.Row>}/>;
 case "Row":return <C.Row><C.Text>Bitcoin (BTC)</C.Text><C.Usd value={67234.56}/></C.Row>;
 case "Table":return <C.Table caption='Sample positions' rows={rows} keyFor={r=>r.id} columns={[{key:'asset',label:'Asset',render:r=>r.label},{key:'price',label:'Price',render:r=><C.Usd value={r.value}/>} ]}/>;
-case "VerticalAddress":return <C.VerticalAddress address='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ'/>;
+case "AddressLockup":return state==="solana-horizontal"?<C.AddressLockup address='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ' kind='solana' orientation='horizontal'/>:state==="ethereum-vertical"?<C.AddressLockup address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' kind='ethereum' orientation='vertical'/>:state==="ethereum-horizontal"?<C.AddressLockup address='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688' kind='ethereum' orientation='horizontal'/>:state==="bitcoin-vertical"?<C.AddressLockup address='1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' kind='bitcoin' orientation='vertical'/>:state==="bitcoin-horizontal"?<C.AddressLockup address='1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' kind='bitcoin' orientation='horizontal'/>:<C.AddressLockup address='6uRAouaynVhU87V9iMaWy616295tf2ZnZQv2YxAcPnhQ' kind='solana' orientation='vertical'/>;
 default:return <C.Text>Platform example unavailable.</C.Text>;}}return <C.Stack>{preview()}</C.Stack>;}

@@ -14,25 +14,23 @@ export const NumberReadout=React.memo(function NumberReadout({value,options,stal
 export const Usd=React.memo(function Usd(props:NumberProps){return <NumberReadout {...props} options={{style:'currency',currency:'USD',...props.options}}/>;});
 /** Input is percent points: 5 means 5%, not 500%. */
 export const Percent=React.memo(function Percent(props:NumberProps){return <NumberReadout {...props} value={props.value==null?props.value:props.value/100} options={{maximumFractionDigits:Math.max(3,props.options?.minimumFractionDigits??0),...props.options,style:'percent'}}/>;});
-export type AddressKind='ethereum'|'solana';
-/** `0x…` is Ethereum-style (EVM); anything else lays out as Solana (base58). */
-export const addressKind=(address:string):AddressKind=>address.startsWith('0x')?'ethereum':'solana';
+import {addressKind,addressGrid,type AddressKind,type AddressOrientation} from '@bloxwap/hig/contracts/address';
+export {addressKind,type AddressKind,type AddressOrientation} from '@bloxwap/hig/contracts/address';
 /** Fixed-width rows: 6 characters for Ethereum-style addresses (42 characters make 7 rows), 4 for Solana (44 make 11). */
-export function addressRows(address:string,kind:AddressKind):string[]{const size=kind==='ethereum'?6:4,rows:string[]=[];for(let index=0;index<address.length;index+=size)rows.push(address.slice(index,index+size));return rows;}
-/**
- * A wallet address in HIG's vertical style: fixed-width monospace rows with the leading row and the trailing four characters
- * emphasised, the characters people compare, and the middle dimmed. Always left to right. Selecting it copies the plain address.
- */
-export function VerticalAddress({address,kind,rowHeight,className}:{address:string;/** Row layout; inferred from the address when omitted. */kind?:AddressKind;/** Row height in CSS pixels; the type size follows it. Defaults to the surrounding line height. */rowHeight?:number;className?:string}){
- const layout=kind??addressKind(address),rows=addressRows(address,layout),size=layout==='ethereum'?6:4,tail=address.length-4;
- return <span className={`hig-vertical-address${className?` ${className}`:''}`} dir='ltr' translate='no' data-kind={layout} style={rowHeight?{'--hig-address-row':`${rowHeight}px`} as React.CSSProperties:undefined}>
+export function addressRows(address:string,kind:AddressKind):string[]{
+ return addressGrid(address,kind,'vertical').map(row=>row.leading+row.middle+row.trailing);
+}
+export interface AddressProps {address:string;kind?:AddressKind;orientation?:AddressOrientation;rowHeight?:number;className?:string}
+export function AddressLockup({address,kind=addressKind(address),orientation='vertical',rowHeight,className}:AddressProps){
+ const rows=addressGrid(address,kind,orientation);
+ return <span className={`hig-${orientation}-address${className?` ${className}`:''}`} dir='ltr' translate='no' data-kind={kind} style={rowHeight?{'--hig-address-row':`${rowHeight}px`} as React.CSSProperties:undefined}>
   <span className='hig-sr-only'>{address}</span>
-  <span aria-hidden='true'>{rows.map((row,index)=>{
-   const characters=Array.from(row),start=index===0?0:Math.max(0,tail-index*size);
-   return <span key={index}>{characters.slice(0,start).join('')}{start<characters.length&&<span data-anchor>{characters.slice(start).join('')}</span>}</span>;
-  })}</span>
+  <span aria-hidden='true'>{rows.map((row,index)=><span key={index}>{row.leading&&<span data-anchor>{row.leading}</span>}{row.middle}{row.trailing&&<span data-anchor>{row.trailing}</span>}</span>)}</span>
  </span>;
 }
+export {AddressLockup as Address};
+export function VerticalAddress(props:Omit<AddressProps,'orientation'>){return <AddressLockup {...props} orientation='vertical'/>;}
+export function HorizontalAddress(props:Omit<AddressProps,'orientation'>){return <AddressLockup {...props} orientation='horizontal'/>;}
 export function Metric({label,value}: {label:string;value:React.ReactNode}){return <dl className='hig-surface'><dt>{label}</dt><dd>{value}</dd></dl>;}
 export const Stat=Metric;
 export interface ListProps<T> {items:readonly T[];keyFor:(item:T)=>string;render:(item:T)=>React.ReactNode;empty?:string;label?:string;loading?:boolean;error?:string;onRetry?:()=>void;onLoadMore?:()=>void}

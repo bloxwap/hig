@@ -97,3 +97,10 @@ it('every character carries the row type size, so HIG Text\'s body size cannot s
  const sizes=new Set(view.root.findAll(n=>typeof n.type==='string'&&n.type==='Text'&&typeof n.props.children==='string').map(n=>StyleSheet.flatten(n.props.style).fontSize));
  expect([...sizes]).toEqual([25.5]);act(()=>view.unmount());
 });
+it('stacks the QR above the complete two-row address in vertical mode',()=>{
+ const tree=mount(h(WalletAddress,{address:solana,orientation:'vertical'}));
+ expect(text(host(tree,'wallet-address-horizontal')).split('\n')).toEqual(solana.match(/.{22}/g));
+ const measure=tree.findAll(node=>node.props.testID==='wallet-address-measure'&&node.props.onLayout)[0];
+ act(()=>measure.props.onLayout({nativeEvent:{layout:{width:218}}}));
+ expect(tree.findByType(QRCode).props.size).toBe(218);
+});

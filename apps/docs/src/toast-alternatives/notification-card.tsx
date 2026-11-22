@@ -222,6 +222,7 @@ export function InfoPanel({
   title,
   description,
   icon,
+  action,
   onClose,
   className,
 }: {
@@ -230,6 +231,7 @@ export function InfoPanel({
   description?: ReactNode;
   /** Override the tone glyph; null hides the icon tile. */
   icon?: ReactNode;
+  action?: Pick<NotificationAction, "label" | "onClick">;
   /** When set, renders a full-width Close action below the message. */
   onClose?: () => void;
   /** Layout overrides (margin / max-width) from the calling view. */
@@ -272,6 +274,7 @@ export function InfoPanel({
           </div>
         ) : null}
       </div>
+        {action && <button type="button" onClick={action.onClick} className="inline-flex h-9 shrink-0 items-center justify-center rounded-full toast-tone-button px-3 text-sm font-extrabold">{action.label}</button>}
       </div>
       {onClose ? (
         <button

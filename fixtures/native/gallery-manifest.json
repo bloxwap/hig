@@ -483,6 +483,11 @@
       "name": "WalletAddress",
       "states": [
         "default",
+        "vertical",
+        "solana-horizontal",
+        "solana-vertical",
+        "bitcoin-horizontal",
+        "bitcoin-vertical",
         "host-qr"
       ],
       "support": "renderer"
@@ -528,9 +533,14 @@
       "support": "renderer"
     },
     {
-      "name": "VerticalAddress",
+      "name": "AddressLockup",
       "states": [
-        "default"
+        "default",
+        "solana-horizontal",
+        "ethereum-vertical",
+        "ethereum-horizontal",
+        "bitcoin-vertical",
+        "bitcoin-horizontal"
       ],
       "support": "renderer"
     },
