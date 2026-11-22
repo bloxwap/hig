@@ -13,6 +13,14 @@ const eth='0x9e0fD0622874ca1cBf79DA087BaF4622Faf77688',sol='6uRAouaynVhU87V9iMaW
 const rowsOf=(root:ParentNode)=>[...root.querySelectorAll('.hig-vertical-address > [aria-hidden] > span')].map(row=>row.textContent);
 const anchorsOf=(root:ParentNode)=>[...root.querySelectorAll('.hig-vertical-address [data-anchor]')].map(node=>node.textContent).join('');
 describe('VerticalAddress',()=>{
+ it('lays out a 34-character vertical Bitcoin address in five columns and seven rows',()=>{
+  const bitcoin='1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
+  const view=render(<VerticalAddress address={bitcoin} kind='bitcoin'/>);
+  const rows=rowsOf(view.container);
+  expect(rows.join('')).toBe(bitcoin);
+  expect(rows).toEqual(['1A1zP','1eP5Q','Gefi2','DMPTf','TL5SL','mv7Di','vfNa']);
+  expect(anchorsOf(view.container)).toBe('1A1zvfNa');
+ });
  it('lays Ethereum-style addresses out in 7 rows of 6 and Solana in 11 rows of 4',()=>{
   expect(addressKind(eth)).toBe('ethereum');expect(addressKind(sol)).toBe('solana');
   expect(addressRows(eth,'ethereum')).toEqual(['0x9e0f','D06228','74ca1c','Bf79DA','087BaF','4622Fa','f77688']);

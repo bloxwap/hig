@@ -82,6 +82,17 @@ Import `Avatar` from `@bloxwap/hig/react/avatar` or `@bloxwap/hig/native/avatar`
 
 The arithmetic is in `@bloxwap/hig/contracts/avatar`, with no React in it: `beamAvatar(seed, colors, inks?)` returns the colours, the two transforms, the mouth path and the eye positions in a 36-unit square, and `beamHash`, `beamInk`, `beamSize` and `beamEye` are exported beside it. The same entry holds what both renderers share outside the face: `avatarColorRoles` (the default palette roles), `avatarSide` (which sizes are drawn) and `avatarInitials` (the letters, never half of a character such as an emoji). A host that draws the same face somewhere else, such as on a canvas or in a share image, calls it directly.
 
+## Toast gallery types
+
+Refer to a gallery example by its tone and type, such as **success / dual-action**. The type describes where the controls appear.
+
+| Type | Presentation | Gallery implementation |
+| --- | --- | --- |
+| `notification-pill` | Compact message with an optional description. The whole pill can be tapped. | `NotificationCard` |
+| `inline-action` | One action beside the message, followed by a dismiss icon. | `InfoCard` with an inline action |
+| `dual-action` | Primary and secondary buttons side by side below the message. | `InfoCard` with a secondary action |
+| `dismissible-panel` | Multiline message with a full-width Close button below it. | `InfoPanel` |
+
 ## Transient toasts: `Toaster` and `toast()`
 
 One API raises a notice that leaves by itself, on web and on native. Mount `Toaster` once; call `toast()` from anywhere, in or out of a component. Both draw the `ToastNotice` capsule and stack it the way [Sonner](https://sonner.emilkowal.ski/) does: the newest in front, three visible, the older ones collapsed behind it.

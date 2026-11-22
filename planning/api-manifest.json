@@ -710,21 +710,25 @@
         "entry": "data",
         "signature": "export declare const Percent: React.MemoExoticComponent<(props: NumberProps) => React.JSX.Element>;"
       },
-      "AddressKind": {
-        "entry": "data",
-        "signature": "export type AddressKind = 'ethereum' | 'solana';"
-      },
-      "addressKind": {
-        "entry": "data",
-        "signature": "export declare const addressKind: (address: string) => AddressKind;"
-      },
       "addressRows": {
         "entry": "data",
         "signature": "export declare function addressRows(address: string, kind: AddressKind): string[];"
       },
+      "AddressProps": {
+        "entry": "data",
+        "signature": "export interface AddressProps {\n    address: string;\n    kind?: AddressKind;\n    orientation?: AddressOrientation;\n    rowHeight?: number;\n    className?: string;\n}"
+      },
+      "AddressLockup": {
+        "entry": "data",
+        "signature": "export declare function AddressLockup({ address, kind, orientation, rowHeight, className }: AddressProps): React.JSX.Element;"
+      },
       "VerticalAddress": {
         "entry": "data",
-        "signature": "export declare function VerticalAddress({ address, kind, rowHeight, className }: {\n    address: string; /** Row layout; inferred from the address when omitted. */\n    kind?: AddressKind; /** Row height in CSS pixels; the type size follows it. Defaults to the surrounding line height. */\n    rowHeight?: number;\n    className?: string;\n}): React.JSX.Element;"
+        "signature": "export declare function VerticalAddress(props: Omit<AddressProps, 'orientation'>): React.JSX.Element;"
+      },
+      "HorizontalAddress": {
+        "entry": "data",
+        "signature": "export declare function HorizontalAddress(props: Omit<AddressProps, 'orientation'>): React.JSX.Element;"
       },
       "Metric": {
         "entry": "data",
@@ -1208,11 +1212,11 @@
       },
       "WalletAddressProps": {
         "entry": "wallet-address",
-        "signature": "export interface WalletAddressProps {\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host with its own encoder, sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */\n    qr?: React.ReactNode;\n    /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */\n    qrValue?: string;\n    /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */\n    arena?: string;\n    /** QR edge in CSS pixels; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
+        "signature": "export interface WalletAddressProps {\n    /** Horizontal (default) puts the QR left of the address column. Vertical puts the QR above a two-row address. */\n    orientation?: 'horizontal' | 'vertical';\n    address: string;\n    /** Row layout; inferred from the address when omitted (`0x…` is Ethereum-style). */\n    kind?: AddressKind;\n    /** The QR code, drawn by the host with its own encoder, sized to `size`. It is named by the built-in “QR code” label, so keep the host's drawing hidden from assistive technology. Omitted or `null`, HIG draws its own `QRCode` of `qrValue`, which needs no package. */\n    qr?: React.ReactNode;\n    /** QR payload of HIG's own code when it differs from the address, for example an EIP-681 or Solana Pay URI. Defaults to the address. Unused with `qr`. */\n    qrValue?: string;\n    /** Image URL shown in the centre of HIG's own code, which then uses high error correction. Unused with `qr`. */\n    arena?: string;\n    /** Horizontal QR edge in CSS pixels, default 196. Vertical sizes the square to the address. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` raises no “Address copied” notice and no status text after a copy, for a host that confirms the copy itself. Defaults to `true`. */\n    announce?: boolean;\n    className?: string;\n    style?: React.CSSProperties;\n}"
       },
       "WalletAddress": {
         "entry": "wallet-address",
-        "signature": "export declare function WalletAddress({ address, kind, qr, qrValue, arena, size, onCopy, announce, className, style }: WalletAddressProps): React.JSX.Element;"
+        "signature": "export declare function WalletAddress({ address, kind, qr, qrValue, arena, orientation, size, onCopy, announce, className, style }: WalletAddressProps): React.JSX.Element;"
       },
       "SwapArtwork": {
         "entry": "blocks/swap-block",
@@ -2276,14 +2280,6 @@
         "entry": "data",
         "signature": "export declare function List<T>(props: ListProps<T>): React.JSX.Element;"
       },
-      "AddressKind": {
-        "entry": "data",
-        "signature": "export type AddressKind = 'ethereum' | 'solana';"
-      },
-      "addressKind": {
-        "entry": "data",
-        "signature": "export declare function addressKind(address: string): AddressKind;"
-      },
       "addressRows": {
         "entry": "data",
         "signature": "export declare function addressRows(address: string, kind?: AddressKind): {\n    character: string;\n    anchor: boolean;\n}[][];"
@@ -2294,7 +2290,15 @@
       },
       "VerticalAddress": {
         "entry": "data",
-        "signature": "export declare function VerticalAddress({ address, kind, rowHeight, testID }: VerticalAddressProps): React.JSX.Element;"
+        "signature": "export declare function VerticalAddress(props: VerticalAddressProps): React.JSX.Element;"
+      },
+      "HorizontalAddress": {
+        "entry": "data",
+        "signature": "export declare function HorizontalAddress(props: VerticalAddressProps): React.JSX.Element;"
+      },
+      "AddressLockup": {
+        "entry": "data",
+        "signature": "export declare function AddressLockup({ address, kind, rowHeight, testID, orientation }: VerticalAddressProps & {\n    orientation?: AddressOrientation;\n}): React.JSX.Element;"
       },
       "FieldProps": {
         "entry": "field",
@@ -2922,11 +2926,11 @@
       },
       "WalletAddressCoreProps": {
         "entry": "wallet-address-core",
-        "signature": "export interface WalletAddressCoreProps {\n    address: string;\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder or SVG), laid out in a `size` square. It is read as one image named by the built-in “QR code” label. */\n    qr: React.ReactNode;\n    /** QR edge in dp; default 196. The address column is exactly as tall. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` shows no “Address copied” notice after a copy, for a host that confirms the copy itself. Default `true`. */\n    announce?: boolean;\n    testID?: string;\n}"
+        "signature": "export interface WalletAddressCoreProps {\n    /** Horizontal (default) puts the QR left of the address column. Vertical puts the QR above a two-row address. */\n    orientation?: 'horizontal' | 'vertical';\n    address: string;\n    kind?: AddressKind;\n    /** The QR code, drawn by the host (its own encoder or SVG), laid out in a `size` square. It is read as one image named by the built-in “QR code” label. */\n    qr: React.ReactNode;\n    /** Horizontal QR edge in dp, default 196. Vertical sizes the square to the address. */\n    size?: number;\n    /** Host clipboard adapter. When set the whole component is one button that copies the address and shows the Tap to copy hint. */\n    onCopy?: () => Promise<void> | void;\n    /** `false` shows no “Address copied” notice after a copy, for a host that confirms the copy itself. Default `true`. */\n    announce?: boolean;\n    testID?: string;\n}"
       },
       "WalletAddressFrame": {
         "entry": "wallet-address-core",
-        "signature": "export declare function WalletAddressFrame({ address, kind, code, size, onCopy, announce, testID }: Omit<WalletAddressCoreProps, 'qr'> & {\n    code: React.ReactNode;\n}): React.JSX.Element;"
+        "signature": "export declare function WalletAddressFrame({ address, kind, code, orientation, size, onCopy, announce, testID }: Omit<WalletAddressCoreProps, 'qr'> & {\n    code: React.ReactNode | ((edge: number) => React.ReactNode);\n}): React.JSX.Element;"
       },
       "WalletAddress": {
         "entry": "wallet-address-core",

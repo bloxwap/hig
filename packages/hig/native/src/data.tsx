@@ -82,32 +82,38 @@ function NativeList<T>({contentContainerStyle,getItemLayout,items,keyFor,render,
 const MemoizedNativeList=React.memo(NativeList) as typeof NativeList;
 export function List<T>(props:ListProps<T>){return <MemoizedNativeList {...props}/>;}
 
-export type AddressKind='ethereum'|'solana';
-/** `0x…` is Ethereum-style (EVM); anything else lays out as Solana (base58). */
-export function addressKind(address:string):AddressKind{return address.startsWith('0x')?'ethereum':'solana';}
+import {addressKind,addressGrid,type AddressKind,type AddressOrientation} from '@bloxwap/hig/contracts/address';
+export {addressKind,type AddressKind,type AddressOrientation} from '@bloxwap/hig/contracts/address';
 /** The address in fixed-width rows: 6 characters for Ethereum (42 characters make 7 rows), 4 for Solana (44 make 11). `anchor` marks the leading row and the trailing 4 characters, the ones people compare. */
 export function addressRows(address:string,kind:AddressKind=addressKind(address)):{character:string;anchor:boolean}[][]{
- const size=kind==='ethereum'?6:4,tail=address.length-4,rows:{character:string;anchor:boolean}[][]=[];
- for(let index=0;index<address.length;index+=size)rows.push(Array.from(address.slice(index,index+size)).map((character,offset)=>({character,anchor:index+offset<size||index+offset>=tail})));
- return rows;
+ return addressGrid(address,kind,'vertical').map(row=>[
+  ...Array.from(row.leading,character=>({character,anchor:true})),
+  ...Array.from(row.middle,character=>({character,anchor:false})),
+  ...Array.from(row.trailing,character=>({character,anchor:true})),
+ ]);
 }
 export interface VerticalAddressProps {address:string;kind?:AddressKind;/** Row height in dp; the font size follows it. */rowHeight?:number;testID?:string}
 /** A wallet address as a monospace column: the anchor characters in `text` at weight 600, the middle in `muted`. One selectable text element named by the whole address, always left to right. */
-export function VerticalAddress({address,kind,rowHeight=22,testID}:VerticalAddressProps){
- const colors=useColors();const mono=useMonoFontFamily()??Platform.select({ios:'Menlo',default:'monospace'});const runs=React.useMemo(()=>{
+export {AddressLockup as Address};
+export function VerticalAddress(props:VerticalAddressProps){return <AddressLockup {...props} orientation='vertical'/>;}
+export function HorizontalAddress(props:VerticalAddressProps){return <AddressLockup {...props} orientation='horizontal'/>;}
+export function AddressLockup({address,kind=addressKind(address),rowHeight=22,testID,orientation='vertical'}:VerticalAddressProps&{orientation?:AddressOrientation}){
+ const colors=useColors();const mono=useMonoFontFamily()??Platform.select({ios:'Menlo',default:'monospace'});
+ const runs=React.useMemo(()=>{
   const runs:{text:string;anchor:boolean}[]=[];
-  for(const row of addressRows(address,kind)){
+  for(const row of addressGrid(address,kind,orientation)){
    const previous=runs.at(-1);
    if(previous)previous.text+='\n';
-   for(const cell of row){
+   for(const [text,anchor] of [[row.leading,true],[row.middle,false],[row.trailing,true]] as const){
+    if(!text)continue;
     const last=runs.at(-1);
-    if(last?.anchor===cell.anchor)last.text+=cell.character;
-    else runs.push({text:cell.character,anchor:cell.anchor});
+    if(last?.anchor===anchor)last.text+=text;
+    else runs.push({text,anchor});
    }
   }
   return runs;
- },[address,kind]);
+ },[address,kind,orientation]);
  // HIG Text sets its own body size, so each styled run carries the row's type size instead of inheriting it.
  const type={fontFamily:mono,fontSize:Math.round(rowHeight/1.1*10)/10,lineHeight:rowHeight,letterSpacing:1};
- return <Text selectable accessibilityLabel={address} testID={testID} maxFontSizeMultiplier={1.2} style={{...type,fontVariant:['tabular-nums'],writingDirection:'ltr',textAlign:'left'}}>{runs.map((run,index)=><Text key={index} maxFontSizeMultiplier={1.2} style={{...type,color:run.anchor?colors.text:colors.muted,fontWeight:run.anchor?'600':'500'}}>{run.text}</Text>)}</Text>;
+ return <Text selectable adjustsFontSizeToFit={orientation==='horizontal'} numberOfLines={orientation==='horizontal'?2:undefined} accessibilityLabel={address} testID={testID} maxFontSizeMultiplier={1.2} style={{...type,fontVariant:['tabular-nums'],writingDirection:'ltr',textAlign:kind==='bitcoin'&&orientation==='vertical'?'center':'left'}}>{runs.map((run,index)=><Text key={index} maxFontSizeMultiplier={1.2} style={{...type,color:run.anchor?colors.text:colors.muted,fontWeight:run.anchor?'600':'500'}}>{run.text}</Text>)}</Text>;
 }

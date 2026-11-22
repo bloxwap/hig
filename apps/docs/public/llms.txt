@@ -1076,7 +1076,7 @@ Source: docs/components/financial-data.md
 
 Readable numbers, metrics, lists, tables, and wallet addresses for host-provided financial data.
 
-Includes `NumberReadout`, `NumberFlow`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `VerticalAddress`, `WalletAddress`, `QRCode`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
+Includes `NumberReadout`, `NumberFlow`, `Usd`, `Percent`, `Metric`, `Stat`, `Row`, `List`, `AddressLockup`, `WalletAddress`, `QRCode`, `BarMark`, `BarPnl`, `AssetBalanceRow`, and `MarketRow`. `Table` is web-only; native uses labeled lists.
 
 Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data` or `@bloxwap/hig/native/data` according to applicability below. Import `@bloxwap/hig/react/css` once on web; tokens CSS is a separate explicit import.
 
@@ -1086,7 +1086,8 @@ Issue #19. Entry: `data`. Import platform entries from `@bloxwap/hig/react/data`
 | --- | --- |
 | Readouts | `value` accepts a number, `null`, or `undefined`. Locale comes from the provider; `options`, `stale`, and `label` control presentation. |
 | `VerticalAddress` | `address`, optional `kind` (`'ethereum'` or `'solana'`, inferred from a `0x` prefix) and `rowHeight`. The address in fixed-width monospace rows, always left to right: 6 characters per row for Ethereum-style addresses (42 characters make 7 rows) and 4 for Solana (44 make 11). The leading row and the trailing four characters, the ones people compare, are emphasised; the middle is dimmed. Assistive technology and copying get the plain address. |
-| `WalletAddress` | `address`, `kind`, `qrValue`, `arena`, `size` (QR edge, default 196) and `onCopy`. HIG's own [`QRCode`](#qrcode) beside `VerticalAddress`, the column exactly as tall as the code. `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of HIG's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`. No QR package is needed. |
+| `AddressLockup` | Choose `vertical` (default) or `horizontal` with `orientation`. Horizontal reads left to right across two balanced rows and highlights the first and last four characters. A 44-character Solana address has 22 characters per row. Set `kind` to `ethereum`, `solana`, or `bitcoin`. Use an explicit kind for legacy Bitcoin addresses. `HorizontalAddress` and `VerticalAddress` select a fixed orientation. |
+| `WalletAddress` | Horizontal (default) places the QR on the left and the address column on the right. Set `orientation="vertical"` to place a square QR above the two-row address, matching its width. In horizontal mode, `size` sets the QR edge (default 196). `qrValue` sets a payload other than the address, such as an EIP-681 or Solana Pay URI; `arena` puts an image in the centre. With `onCopy`, the host clipboard adapter, the whole component is one button that copies, shows “Tap to copy”, and raises “Address copied”; `announce={false}` leaves the notice to the host. `qr` draws the host's own code in place of HIG's. Separate entry: `@bloxwap/hig/react/wallet-address` and `@bloxwap/hig/native/wallet-address`. No QR package is needed. |
 | `QRCode` | `value`, `size` (default 196), `arena`, `errorCorrection`, `color`, `background`, `quietZone` (default 4), `label` and `decorative`. A QR code in the Cuer style, encoded by HIG with no package, drawn as one path. Separate entry: `@bloxwap/hig/react/qr-code` and `@bloxwap/hig/native/qr-code`. See [QRCode](#qrcode). |
 | `List` | `items`, `keyFor`, `render`, `empty`, `label`, `loading`, `error`, `onRetry`, and `onLoadMore`. |
 | `Table` (web) | `caption`, `rows`, `columns`, and `keyFor`; optional host sorting callbacks. Column `align` accepts logical `start`, `center`, or `end`. `rowProps(row, index)` forwards row highlights, styles, data/ARIA attributes and events. `captionHidden`, `stickyHeader`, `loading`, and `state` support dense product tables. |
@@ -1870,6 +1871,17 @@ Import `Avatar` from `@bloxwap/hig/react/avatar` or `@bloxwap/hig/native/avatar`
 - `size` is a number. Only the beam face is drawn; the other boring-avatars variants are not.
 
 The arithmetic is in `@bloxwap/hig/contracts/avatar`, with no React in it: `beamAvatar(seed, colors, inks?)` returns the colours, the two transforms, the mouth path and the eye positions in a 36-unit square, and `beamHash`, `beamInk`, `beamSize` and `beamEye` are exported beside it. The same entry holds what both renderers share outside the face: `avatarColorRoles` (the default palette roles), `avatarSide` (which sizes are drawn) and `avatarInitials` (the letters, never half of a character such as an emoji). A host that draws the same face somewhere else, such as on a canvas or in a share image, calls it directly.
+
+## Toast gallery types
+
+Refer to a gallery example by its tone and type, such as **success / dual-action**. The type describes where the controls appear.
+
+| Type | Presentation | Gallery implementation |
+| --- | --- | --- |
+| `notification-pill` | Compact message with an optional description. The whole pill can be tapped. | `NotificationCard` |
+| `inline-action` | One action beside the message, followed by a dismiss icon. | `InfoCard` with an inline action |
+| `dual-action` | Primary and secondary buttons side by side below the message. | `InfoCard` with a secondary action |
+| `dismissible-panel` | Multiline message with a full-width Close button below it. | `InfoPanel` |
 
 ## Transient toasts: `Toaster` and `toast()`
 

@@ -743,6 +743,11 @@
       "nativeSupport": "renderer",
       "states": [
         "default",
+        "vertical",
+        "solana-horizontal",
+        "solana-vertical",
+        "bitcoin-horizontal",
+        "bitcoin-vertical",
         "host-qr"
       ]
     },
@@ -795,12 +800,17 @@
       ]
     },
     {
-      "name": "VerticalAddress",
-      "route": "components/vertical-address",
+      "name": "AddressLockup",
+      "route": "components/address-lockup",
       "family": "financial-data",
       "nativeSupport": "renderer",
       "states": [
-        "default"
+        "default",
+        "solana-horizontal",
+        "ethereum-vertical",
+        "ethereum-horizontal",
+        "bitcoin-vertical",
+        "bitcoin-horizontal"
       ]
     },
     {

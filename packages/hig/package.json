@@ -36,6 +36,11 @@
       "import": "./contracts/dist/environment.js",
       "default": "./contracts/dist/environment.js"
     },
+    "./contracts/address": {
+      "types": "./contracts/dist/address.d.ts",
+      "import": "./contracts/dist/address.js",
+      "default": "./contracts/dist/address.js"
+    },
     "./contracts/format": {
       "types": "./contracts/dist/format.d.ts",
       "import": "./contracts/dist/format.js",
