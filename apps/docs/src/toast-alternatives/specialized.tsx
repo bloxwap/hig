@@ -74,6 +74,6 @@ export default function SpecializedToasts(){
  <Preview name="Network unavailable">{dismiss=><InfoCard tone="error" actionLayout="stacked" title="Can't reach the Solana network" description="Can't reach the Solana network to verify your last send. Check again in a moment." action={act('Check again')} secondaryAction={{label:'Close',onClick:dismiss}}/>}</Preview>
  <Preview name="New version available">{dismiss=><InfoCard tone="info" title="New version available" action={act('Refresh')} onClose={dismiss}/>}</Preview>
  <Preview name="Update downloading">{dismiss=><InfoPanel tone="info" title="Downloading update" description="45% downloaded" onClose={dismiss}/>}</Preview>
- <Preview name="Required update">{()=> <InfoCard tone="warning" title="Update required" description="This version can no longer trade. Update to keep trading." action={act('Update')}/>}</Preview>
+ <Preview name="Required update">{dismiss=><InfoPanel tone="warning" title="Update required" description="This version can no longer trade. Update to keep trading." action={act('Update')} onClose={dismiss}/>}</Preview>
  </div><p role="status">{action}</p></section>;
 }
