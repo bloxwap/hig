@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.2
+
+- Add AddressLockup on web and native with vertical and two-row horizontal presentations for Ethereum, Solana, and Bitcoin.
+- Add a vertical WalletAddress layout with a QR sized to the address beneath it. The default places the QR beside the address. Preview each chain in both orientations.
+- Name the four toast gallery layouts and give each tone and layout a stable reference.
+
 ## 0.10.1
 
 - Separate microphone selection from Mic volume in `SoundHapticsBlock`, on web and React Native. A channel's device `choices` are no longer an inline radio group: the channel shows its device and current choice as a row in its own card under the switch, and that row opens the choices as their own page (the header takes the choices' `label` and Back returns; choosing calls `onValueChange` and returns). The live level meter now sits above the volume steps when the channel has `volume`, or in the device card without it. No prop changes; on native the `sound-<id>-choices` test ID is gone, and the device row is `sound-<id>-disclosure` (with choices) or `sound-<id>-input` (source alone).
