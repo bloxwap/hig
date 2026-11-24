@@ -63,7 +63,7 @@ jobs:
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - uses: ./.github/actions/setup-bun
-      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
+      # Install from bun.lock.
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
@@ -104,9 +104,9 @@ jobs:
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - uses: ./.github/actions/setup-bun
-      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci (#181).
-      - name: package-lock.json matches package.json and bun.lock
-        run: node scripts/check-lockfiles.mjs --npm
+      # Install from bun.lock.
+      - name: bun.lock matches package.json
+        run: node scripts/check-lockfiles.mjs
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
@@ -159,7 +159,7 @@ jobs:
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - uses: ./.github/actions/setup-bun
-      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
+      # Install from bun.lock.
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh
@@ -204,7 +204,7 @@ jobs:
       - name: Install CPython 3.12
         run: bash scripts/ci-setup-python.sh
       - uses: ./.github/actions/setup-bun
-      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
+      # Install from bun.lock.
       - run: bun install --frozen-lockfile
       - name: Native fonts (on-disk reuse)
         run: bash scripts/ci-native-fonts.sh

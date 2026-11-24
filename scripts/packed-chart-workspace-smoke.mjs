@@ -10,8 +10,9 @@ import {packedTarball,workspaceVersion} from './workspace-version.mjs';
 //   react-and-chart:   apps/docs also uses @bloxwap/hig/chart (PriceChart).
 //   legacy-control:    @bloxwap/hig repacked with the pre-#96 optional @bloxwap/chart peer. Recorded, not asserted, so
 //                      the evidence shows whether this npm still reproduces the original bug.
-// Every scenario runs with the ambient npm (CI: the one bundled with Node 22.22) and with the npm pinned in this
-// repository's packageManager (11.6.1, the version chart reported), installed into a scratch prefix.
+// Every scenario runs with the ambient npm (CI: the one bundled with Node 22.22) and with npm 11.6.1
+// (the version chart reported for #96), installed into a scratch prefix. The pin is explicit because this
+// repository's packageManager is now bun@1.4.2; the smoke still reproduces npm's workspace peer behavior.
 import {execFileSync} from 'node:child_process';
 import {mkdirSync,writeFileSync,readFileSync,existsSync,cpSync,rmSync,realpathSync} from 'node:fs';
 import {join,resolve,relative} from 'node:path';
@@ -27,7 +28,7 @@ const chartVersion=JSON.parse(readFileSync(join(chartSource,'package.json'),'utf
 assert.equal(chartVersion,'0.5.0','root devDependency @bloxwap/chart must be 0.5.0');
 const env={...process.env,npm_config_legacy_peer_deps:'false',npm_config_strict_peer_deps:'true'};
 delete env.npm_config_force;
-const pinnedNpm=JSON.parse(readFileSync('package.json','utf8')).packageManager.replace(/^npm@/,'');
+const pinnedNpm='11.6.1';
 const ambientNpm=execFileSync('npm',['--version'],{encoding:'utf8'}).trim();
 function npmClients(scratch){
  const clients=[{version:ambientNpm,source:'ambient',command:['npm']}];
@@ -35,7 +36,7 @@ function npmClients(scratch){
   const prefix=join(scratch,`npm-${pinnedNpm}`);mkdirSync(prefix,{recursive:true});
   execFileSync('npm',['install','--prefix',prefix,'--no-audit','--no-fund','--ignore-scripts',`npm@${pinnedNpm}`],{stdio:'pipe'});
   const cli=join(prefix,'node_modules/npm/bin/npm-cli.js'),version=execFileSync(process.execPath,[cli,'--version'],{encoding:'utf8'}).trim();
-  assert.equal(version,pinnedNpm);clients.push({version,source:'packageManager',command:[process.execPath,cli]});
+  assert.equal(version,pinnedNpm);clients.push({version,source:'pinned-npm',command:[process.execPath,cli]});
  }
  return clients;
 }

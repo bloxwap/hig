@@ -43,7 +43,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const sourceCommit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
  const sourceVersion=JSON.parse(readFileSync('package.json','utf8')).version;
  // CI measurement reports may change; release sources and workflows must remain exactly at the tag.
- execFileSync('git',['diff','--exit-code','HEAD','--','packages','scripts','docs','apps','fixtures','.github','package.json','package-lock.json'],{stdio:'pipe'});
+ execFileSync('git',['diff','--exit-code','HEAD','--','packages','scripts','docs','apps','fixtures','.github','package.json','bun.lock'],{stdio:'pipe'});
  const files=verifyReleaseArtifacts(report,{directory:dirname(resolve(options.report)),sourceCommit,sourceVersion,tag:options.tag});
  if(options.output)writeFileSync(options.output,files.join('\n')+'\n');
  console.log(`Verified ${files.length} coordinated release artifacts and SHA-256 hashes; nothing published`);

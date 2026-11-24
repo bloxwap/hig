@@ -88,7 +88,7 @@ jobs:
           # setup-node v5+ auto-caches npm when packageManager is set; keep this pin
           # or set package-manager-cache: false if the action is upgraded.
       - uses: ./.github/actions/setup-bun
-      # Keep bun.lock and package-lock.json in sync; publishing still uses npm ci.
+      # Install from bun.lock.
       - run: bun install --frozen-lockfile
       - name: Exercise a custom deployment on pull requests
         if: github.event_name == 'pull_request'
