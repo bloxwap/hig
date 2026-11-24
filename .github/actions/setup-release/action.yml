@@ -16,8 +16,9 @@ runs:
     - name: Install CPython 3.12
       shell: bash
       run: bash scripts/ci-setup-python.sh
+    - uses: ./.github/actions/setup-bun
     - shell: bash
-      run: npm ci
+      run: bun install --frozen-lockfile
     - name: Native fonts (on-disk reuse)
       shell: bash
       run: bash scripts/ci-native-fonts.sh

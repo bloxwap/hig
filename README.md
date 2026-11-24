@@ -49,7 +49,7 @@ export function Save() {
 
 ## Local documentation
 
-Install the workspace with `npm ci`, then run `bun docs:dev` (or `npm run docs:dev`).
+Install the workspace with `bun install --frozen-lockfile`, then run `bun docs:dev` (or `npm run docs:dev`).
 Turbo prepares the packages and generated guides, then opens the docs task in its
 terminal UI at [localhost:3905](http://localhost:3905). Press `Ctrl+C` to stop;
 use `bun docs:dev --ui=stream` for plain logs. `bun docs:check`, `bun docs:build`,
@@ -77,7 +77,7 @@ Start one fixture with a filter, for example `bun dev:fixtures --filter=hig-web-
 ## Validation
 
 ```sh
-npm ci
+bun install --frozen-lockfile
 npm run check
 python3 -m pip install "fonttools[woff]==4.61.1" "brotli==1.2.1"
 npm run generate:fonts
