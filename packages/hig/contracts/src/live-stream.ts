@@ -4,16 +4,38 @@ export interface StreamConnection {
 }
 export interface LiveStreamSettings {
  streaming:StreamConnection;
- chat:StreamConnection;
  appAudio:boolean;
  microphone:boolean;
 }
 export type StreamSection='streaming'|'chat';
+/** Where the chat sign-in stands. The host drives it. */
+export type LiveStreamChatStatus='signedOut'|'connecting'|'connected'|'failed';
+/**
+ * Chat through the host's own sign-in. Restream's OAuth needs a client secret and refresh token that stay on the
+ * host's server, so the block takes no URL or key: it shows where the sign-in stands and asks the host to connect
+ * or sign out.
+ */
+export interface LiveStreamChatService {
+ status:LiveStreamChatStatus;
+ /** Shown under the status for `failed` (host text). */
+ error?:string;
+ /** Start the sign-in; the host opens the browser. Resolving returns to the list; a rejected promise keeps the section open. */
+ onConnect:()=>unknown;
+ /** Sign out (connected/failed). */
+ onDisconnect?:()=>unknown;
+ labels:{
+  title:string;
+  connect:string;
+  disconnect:string;
+  note:string;
+  status:(status:LiveStreamChatStatus)=>string;
+ };
+}
 export interface LiveStreamBlockProps {
  title:string;
  description?:string;
  streaming:{title:string;endpointLabel:string;keyLabel:string};
- chat:{title:string;endpointLabel:string;keyLabel:string};
+ chat:LiveStreamChatService;
  appAudioLabel:string;
  microphoneLabel:string;
  saveLabel:string;
@@ -26,16 +48,20 @@ export interface LiveStreamBlockProps {
  onBack?:()=>void;
 }
 export const initialStreamSettings:LiveStreamSettings={
- streaming:{endpoint:'',key:''},chat:{endpoint:'',key:''},appAudio:true,microphone:true,
+ streaming:{endpoint:'',key:''},appAudio:true,microphone:true,
 };
-export function connectionReady(section:StreamSection,connection:StreamConnection){
+/** A stream server link (RTMPS, RTMP or SRT) and a key. */
+export function connectionReady(connection:StreamConnection){
  if(!connection.endpoint.trim()||!connection.key.trim())return false;
- if(section==='chat')return true;
  try{
   const url=new URL(connection.endpoint);
   return !!url.hostname&&['rtmps:','rtmp:','srt:'].includes(url.protocol);
  }catch{return false;}
 }
+/** The chat statuses that offer Connect. */
+export function chatCanConnect(status:LiveStreamChatStatus){return status!=='connected';}
+/** The chat statuses that can sign out. */
+export function chatCanDisconnect(status:LiveStreamChatStatus){return status==='connected'||status==='failed';}
 /** The chat platforms Restream relays (its chat event sources), by stable id. */
 export type LiveStreamPlatform='twitch'|'youtube'|'kick'|'x'|'facebook'|'discord'|'linkedin'|'trovo'|'dlive'|'rumble';
 /**

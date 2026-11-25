@@ -671,7 +671,9 @@ See `tests/components.dom.test.tsx`, `tests/pro-data.dom.test.tsx`, `tests/pro-d
 
 ## LiveStreamBlock
 
-Streaming and Chat each open a separate setup screen. Save applies the link and key. Back discards edits. Chat is optional. Play requires a stream server link (RTMPS, RTMP, or SRT) and a stream key. The host receives both connections and audio preferences through `onPlay` and handles device consent and broadcasting. Pass `settings` and `onSettingsChange` to manage the values in the host, or `defaultSettings` for local edits.
+Streaming and Chat each open a separate setup screen. On Streaming, Save applies the link and key and Back discards edits. Play requires a stream server link (RTMPS, RTMP, or SRT) and a stream key. The host receives the streaming connection and audio preferences through `onPlay` and handles device consent and broadcasting. Pass `settings` and `onSettingsChange` to manage the values in the host, or `defaultSettings` for local edits.
+
+Chat is optional and signs in through the host, because Restream's OAuth client secret and refresh tokens must stay on the host's server. The block takes no URL or key. The host describes the sign-in in `chat`: its `status` (`signedOut`, `connecting`, `connected` or `failed`), an `error` for `failed`, and the words in `labels`. The Chat row shows `labels.status(status)` as its value. Its screen opens with the status line, announced when it changes, and `error` while `failed`. Connect (`labels.connect`) shows whenever the status is not `connected` (`chatCanConnect`); it calls `onConnect()`, shows a spinner while it runs or while `status` is `connecting`, and returns to the list once it resolves; a rejected promise keeps the screen open. With `onDisconnect`, `connected` and `failed` add `labels.disconnect` (`chatCanDisconnect`). `labels.note` closes the screen. The block never stores a token.
 
 ## LiveStreamChatBlock
 
