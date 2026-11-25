@@ -95,5 +95,3 @@ export function feedLines<T>(messages:readonly T[],maxVisible?:number):readonly 
  const count=typeof maxVisible==='number'&&Number.isInteger(maxVisible)&&maxVisible>=1?maxVisible:feedVisibleLines;
  return messages.slice(-count);
 }
-/** How strongly a line is drawn: the newest at full strength, each older one a step fainter, never below a quarter. */
-export function feedLineOpacity(fromNewest:number){return Math.max(25,100-fromNewest*20)/100;}

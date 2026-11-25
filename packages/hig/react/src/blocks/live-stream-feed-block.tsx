@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import {feedLineOpacity,feedLines,type LiveStreamFeedBlockProps} from '@bloxwap/hig/contracts/live-stream';
+import {feedLines,type LiveStreamFeedBlockProps} from '@bloxwap/hig/contracts/live-stream';
 export type {LiveStreamFeedBlockProps,LiveStreamChatMessage,LiveStreamPlatform} from '@bloxwap/hig/contracts/live-stream';
 export {platformColors} from '@bloxwap/hig/contracts/live-stream';
 import {Avatar} from '../avatar.js';
@@ -9,7 +9,7 @@ import {PlatformBadge} from './live-stream-platform.js';
 export function LiveStreamFeedBlock({label,messages,maxVisible}:LiveStreamFeedBlockProps){
  const lines=feedLines(messages,maxVisible);
  return <div className='hig-live-feed' role='log' aria-label={label}><ol className='hig-live-feed-list'>
-  {lines.map((message,index)=><li key={message.id} className='hig-live-feed-line' style={{opacity:feedLineOpacity(lines.length-1-index)}}>
+  {lines.map(message=><li key={message.id} className='hig-live-feed-line'>
    <Avatar name={message.username} src={message.avatarUrl} size={32} decorative/>
    <div className='hig-live-feed-body'>
     <div className='hig-live-chat-meta'><span className='hig-live-chat-name'>{message.username}</span><PlatformBadge message={message}/></div>

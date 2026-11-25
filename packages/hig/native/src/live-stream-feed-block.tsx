@@ -1,5 +1,5 @@
 import React from 'react';
-import {feedLineOpacity,feedLines,type LiveStreamFeedBlockProps} from '@bloxwap/hig/contracts/live-stream';
+import {feedLines,type LiveStreamFeedBlockProps} from '@bloxwap/hig/contracts/live-stream';
 export type {LiveStreamFeedBlockProps,LiveStreamChatMessage,LiveStreamPlatform} from '@bloxwap/hig/contracts/live-stream';
 export {platformColors} from '@bloxwap/hig/contracts/live-stream';
 import {View} from 'react-native';
@@ -13,7 +13,7 @@ export function LiveStreamFeedBlock({label,messages,maxVisible}:LiveStreamFeedBl
  const colors=useColors();
  const lines=feedLines(messages,maxVisible);
  return <View pointerEvents='none' accessibilityLabel={label} accessibilityLiveRegion='polite' style={{position:'absolute',left:0,right:0,bottom:0,padding:8,gap:4,alignItems:'flex-start'}}>
-  {lines.map((message,index)=><View key={message.id} style={{flexDirection:'row',alignItems:'flex-start',gap:12,maxWidth:'100%',paddingVertical:6,paddingLeft:6,paddingRight:12,borderRadius:24,backgroundColor:withAlpha(colors.background,.72),opacity:feedLineOpacity(lines.length-1-index)}}>
+  {lines.map(message=><View key={message.id} style={{flexDirection:'row',alignItems:'flex-start',gap:12,maxWidth:'100%',paddingVertical:6,paddingLeft:6,paddingRight:12,borderRadius:24,backgroundColor:withAlpha(colors.background,.72)}}>
    <AvatarFrame name={message.username} source={message.avatarUrl?{uri:message.avatarUrl}:undefined} size={32} decorative/>
    <View style={{flexShrink:1,minWidth:0,gap:2}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:8}}>
