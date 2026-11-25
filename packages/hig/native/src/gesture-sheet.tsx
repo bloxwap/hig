@@ -92,8 +92,10 @@ const ScrollContext=createContext<ScrollValue|null>(null);
 /**
  * A ScrollView that shares the drag with its sheet: at the top detent it scrolls, and a pull down from the top of the
  * content moves the sheet; below the top detent the drag moves the sheet and the content stays put. Outside a sheet it is a
- * plain ScrollView. Bounce and overscroll are off so the content cannot move while the sheet does, and while the sheet is
- * away from its top detent the content is held at its offset.
+ * plain ScrollView. Content taller than the scroller rubber-bands at its edges (iOS bounce, Android's overscroll effect);
+ * content that fits does not move. A host can pass `bounces={false}` and `overScrollMode='never'` to turn that off. While
+ * the sheet is away from its top detent the content is held at its offset, so it cannot move while the sheet does: a pull
+ * down from the top of the content moves the sheet and the bounce it began is put back.
  */
 export const GestureSheetScrollView=React.forwardRef<React.ComponentRef<typeof Reanimated.ScrollView>,React.ComponentProps<typeof Reanimated.ScrollView>>(function GestureSheetScrollView(props,ref){
  const sheet=useContext(ScrollContext);
@@ -111,17 +113,19 @@ export const GestureSheetScrollView=React.forwardRef<React.ComponentRef<typeof R
  const hasListener=!!listener;
  const onScroll=useAnimatedScrollHandler(event=>{
   'worklet';
-  const y=event.contentOffset.y;
+  // A bounce past the top edge reports a negative offset. To the sheet that is content at its top, never a scroll: the
+  // pull that caused it is the one that moves the sheet, and the content is held at its top while it does.
+  const raw=event.contentOffset.y,y=raw>0?raw:0;
   // Away from its top detent the sheet has the drag and the content holds still. `scrollEnabled` reaches the native view a
   // frame or more after the sheet moves, and until it does the scroller measures the finger against a view that is moving
   // with it and scrolls by the difference. That is put back here, on the same frame, and no one is told: the pan would read
   // it as a scroll and hand the drag over, the sheet would jump to its top, and the two would trade the drag every frame.
-  if(!atTop.value){if(Math.abs(y-held.value)>0.5)scrollTo(scroller,0,held.value,false);return;}
+  if(!atTop.value){if(Math.abs(raw-held.value)>0.5)scrollTo(scroller,0,held.value,false);return;}
   held.value=y;scrollY.value=y;
   if(hasListener)runOnJS(notifyScroll)(event);
  },[hasListener,notifyScroll]);
  const animatedProps=useAnimatedProps(()=>{'worklet';return {scrollEnabled:atTop.value};});
- return <GestureDetector gesture={native}><Reanimated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' {...props} ref={setRef} bounces={false} overScrollMode='never' scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
+ return <GestureDetector gesture={native}><Reanimated.ScrollView showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps='handled' alwaysBounceVertical={false} overScrollMode='auto' {...props} ref={setRef} scrollEventThrottle={16} onScroll={onScroll} animatedProps={animatedProps}/></GestureDetector>;
 });
 
 
