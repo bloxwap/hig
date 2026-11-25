@@ -1583,7 +1583,7 @@
     },
     {
       "name": "LiveStreamBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "live-stream-block",
       "entry": "blocks",
       "family": "blocks",
@@ -1598,7 +1598,7 @@
     },
     {
       "name": "LiveStreamChatBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "live-stream-chat-block",
       "entry": "blocks",
       "family": "blocks",
@@ -1613,7 +1613,7 @@
     },
     {
       "name": "LiveStreamFeedBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "live-stream-feed-block",
       "entry": "blocks",
       "family": "blocks",
@@ -1628,7 +1628,7 @@
     },
     {
       "name": "ReferralCodeBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "referral-code-block",
       "entry": "blocks",
       "family": "blocks",
@@ -2111,8 +2111,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.10.2')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.11.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.11.0')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.11.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"

@@ -1,24 +1,23 @@
 {
-  "version": "0.8.0",
-  "sourceCommit": "9a3fd4e52d0868f649de7b90047f00a6be7a4ff7",
-  "sourceTreeDirty": false,
+  "version": "0.11.0",
+  "sourceCommit": "2f2cae3e0a5c16bd09ad69dfa1348a098f5b8239",
+  "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
     "renderer": "19.1.0",
     "reactNative": "0.81.5"
   },
   "exports": {
-    "hig": 406
+    "hig": 493
   },
   "sizes": {
     "button": {
-      "raw": 1666,
-      "gzip": 903,
+      "raw": 2141,
+      "gzip": 1100,
       "inputs": [
+        "packages/hig/react/dist/use-busy-spinner.js",
         "packages/hig/contracts/dist/messages.js",
-        "packages/hig/contracts/dist/invariants.js",
-        "packages/hig/contracts/dist/decimal.js",
-        "packages/hig/contracts/dist/index.js",
+        "packages/hig/contracts/dist/environment.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
         "packages/hig/react/dist/provider.js",
@@ -27,16 +26,14 @@
       ]
     },
     "field": {
-      "raw": 714,
-      "gzip": 426,
+      "raw": 717,
+      "gzip": 429,
       "inputs": [
         "node_modules/@bloxwap/icons/dist/react/create-icon.js",
         "node_modules/@bloxwap/icons/dist/react/search.js",
         "node_modules/@bloxwap/icons/dist/react/x.js",
         "packages/hig/contracts/dist/messages.js",
-        "packages/hig/contracts/dist/invariants.js",
-        "packages/hig/contracts/dist/decimal.js",
-        "packages/hig/contracts/dist/index.js",
+        "packages/hig/contracts/dist/environment.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
         "packages/hig/react/dist/provider.js",
@@ -45,14 +42,12 @@
       ]
     },
     "nativeSwitch": {
-      "raw": 5383,
-      "gzip": 2668,
+      "raw": 6276,
+      "gzip": 3007,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
-        "packages/hig/contracts/dist/invariants.js",
-        "packages/hig/contracts/dist/decimal.js",
-        "packages/hig/contracts/dist/index.js",
+        "packages/hig/contracts/dist/environment.js",
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/native/dist/provider.js",
         "packages/hig/native/dist/text-content.js",
@@ -64,14 +59,12 @@
       ]
     },
     "nativeSwitchRow": {
-      "raw": 2718,
-      "gzip": 1348,
+      "raw": 3172,
+      "gzip": 1531,
       "inputs": [
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
-        "packages/hig/contracts/dist/invariants.js",
-        "packages/hig/contracts/dist/decimal.js",
-        "packages/hig/contracts/dist/index.js",
+        "packages/hig/contracts/dist/environment.js",
         "packages/hig/contracts/dist/messages.js",
         "packages/hig/native/dist/provider.js",
         "packages/hig/native/dist/text-content.js",
@@ -83,15 +76,16 @@
       ]
     },
     "nativeLink": {
-      "raw": 3657,
-      "gzip": 1757,
+      "raw": 4226,
+      "gzip": 1966,
       "inputs": [
-        "packages/hig/contracts/dist/messages.js",
         "packages/hig/tokens/dist/theme.js",
         "packages/hig/tokens/dist/index.js",
-        "packages/hig/contracts/dist/invariants.js",
-        "packages/hig/contracts/dist/decimal.js",
-        "packages/hig/contracts/dist/index.js",
+        "packages/hig/native/dist/button-tint.js",
+        "packages/hig/native/dist/static-loading-ring.js",
+        "packages/hig/native/dist/use-busy-spinner.js",
+        "packages/hig/contracts/dist/messages.js",
+        "packages/hig/contracts/dist/environment.js",
         "packages/hig/native/dist/provider.js",
         "packages/hig/native/dist/text-content.js",
         "packages/hig/native/dist/surface.js",
@@ -100,23 +94,37 @@
       ]
     },
     "feedbackContract": {
-      "raw": 2972,
-      "gzip": 1004,
+      "raw": 3254,
+      "gzip": 1053,
       "inputs": [
         "packages/hig/feedback/dist/presets.js",
         "packages/hig/feedback/dist/contract.js",
         "feedbackContract.js"
       ]
     },
+    "shipped": {
+      "@bloxwap/hig/react/provider": 40423,
+      "@bloxwap/hig/react/button": 43738,
+      "@bloxwap/hig/react/field": 45212,
+      "@bloxwap/hig/react/status": 53290,
+      "@bloxwap/hig/react/toast": 68150,
+      "@bloxwap/hig/react/blocks/swap-block": 260998,
+      "@bloxwap/hig/native/provider": 41339,
+      "@bloxwap/hig/native/button": 57421,
+      "@bloxwap/hig/native/switch": 53318,
+      "@bloxwap/hig/native/list-group": 66229,
+      "@bloxwap/hig/native/swap-block": 288772,
+      "@bloxwap/hig/native/reward-block": 213426
+    },
     "docsJS": {
-      "raw": 2193728,
-      "gzip": 689655
+      "raw": 2289668,
+      "gzip": 777677
     },
     "docsCSS": {
-      "raw": 207799
+      "raw": 225541
     },
     "fonts": {
-      "raw": 592796
+      "raw": 521216
     },
     "nativeFonts": {
       "raw": 1278880,
