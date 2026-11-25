@@ -9,7 +9,7 @@
     "bundle:web": "expo export --platform web"
   },
   "dependencies": {
-    "@bloxwap/hig": "0.11.0",
+    "@bloxwap/hig": "0.11.1",
     "@bloxwap/sfx": "^0.2.0",
     "@expo/metro-runtime": "~6.1.2",
     "@react-native-async-storage/async-storage": "^2.2.0",

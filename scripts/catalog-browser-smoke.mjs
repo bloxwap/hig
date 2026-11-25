@@ -54,6 +54,13 @@ try{
    await page.evaluate(()=>{for(const el of document.querySelectorAll('[data-hig-density]'))el.setAttribute('data-hig-density','comfortable');for(const el of document.querySelectorAll('.example-frame [data-density]'))el.setAttribute('data-density','comfortable');});
    const axe=await new AxeBuilder({page}).include('.example-frame').withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
    const serious=axe.violations.filter(v=>v.impact==='critical'||v.impact==='serious').map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)}));
+   // The one contrast exemption (owner decision, 0.11.1): LiveStreamFeedBlock fades older lines towards nothing by design, and
+   // LiveStreamChatBlock is where chat is read. Only text inside a faded feed line is excused; the newest line, at full strength, is still checked.
+   if(entry.name==='LiveStreamFeedBlock')for(const violation of axe.violations.filter(v=>v.id==='color-contrast')){
+    const faded=await page.evaluate(targets=>targets.map(target=>{const line=typeof target==='string'?document.querySelector(target)?.closest('.hig-live-feed-line'):null;return !!line&&Number(line.style.opacity)<1;}),violation.nodes.map(n=>n.target[0]));
+    violation.nodes=violation.nodes.filter((_,index)=>!faded[index]);
+   }
+   axe.violations=axe.violations.filter(v=>v.nodes.length>0);
    assert.deepEqual(axe.violations,[],`${entry.name}/${state} accessibility`);assert.deepEqual(errors,[],`${entry.name}/${state} runtime`);
    const file=`artifacts/visual/${entry.slug}-${state}.png`;await page.locator('.example-frame').screenshot({path:file,animations:'disabled',caret:'hide'});
    let regression=null;

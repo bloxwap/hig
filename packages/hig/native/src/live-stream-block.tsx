@@ -57,6 +57,7 @@ export function LiveStreamBlock(props:LiveStreamBlockProps){
    <ListGroup>
     <ListRow label={props.appAudioLabel} checked={settings.appAudio} onCheckedChange={appAudio=>change({...settings,appAudio})}/>
     <ListRow label={props.microphoneLabel} checked={settings.microphone} onCheckedChange={microphone=>change({...settings,microphone})}/>
+    <ListRow label={props.chatFeedLabel} checked={settings.chatFeed} onCheckedChange={chatFeed=>change({...settings,chatFeed})}/>
    </ListGroup>
    <Button style={{alignSelf:'stretch'}} disabled={!ready} onPress={()=>props.onPlay(settings)}>{props.playLabel}</Button>
   </>}

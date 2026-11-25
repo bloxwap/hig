@@ -63,7 +63,7 @@
         "@bloxwap/chart": "0.5.0",
         "@bloxwap/font": "0.1.4",
         "@bloxwap/haptic": "0.4.0",
-        "@bloxwap/hig": "0.11.0",
+        "@bloxwap/hig": "0.11.1",
         "@bloxwap/sfx": "0.3.0",
         "@radix-ui/react-dialog": "1.1.15",
         "@radix-ui/react-dropdown-menu": "2.1.16",
@@ -96,7 +96,7 @@
     "fixtures/native": {
       "name": "hig-native-fixture",
       "dependencies": {
-        "@bloxwap/hig": "0.11.0",
+        "@bloxwap/hig": "0.11.1",
         "@bloxwap/sfx": "^0.2.0",
         "@expo/metro-runtime": "~6.1.2",
         "@react-native-async-storage/async-storage": "^2.2.0",
@@ -125,7 +125,7 @@
       "name": "hig-next-fixture",
       "dependencies": {
         "@bloxwap/font": "0.1.4",
-        "@bloxwap/hig": "0.11.0",
+        "@bloxwap/hig": "0.11.1",
         "next": "16.4.6",
         "react": "19.3.1",
         "react-dom": "19.3.1",
@@ -134,7 +134,7 @@
     "fixtures/ssr": {
       "name": "hig-ssr-fixture",
       "dependencies": {
-        "@bloxwap/hig": "0.11.0",
+        "@bloxwap/hig": "0.11.1",
         "@radix-ui/react-dialog": "1.1.15",
         "@radix-ui/react-dropdown-menu": "2.1.16",
         "@radix-ui/react-popover": "1.1.15",
@@ -148,7 +148,7 @@
       "name": "hig-web-fixture",
       "dependencies": {
         "@bloxwap/haptic": "^0.4.0",
-        "@bloxwap/hig": "0.11.0",
+        "@bloxwap/hig": "0.11.1",
         "@bloxwap/sfx": "^0.3.0",
         "@radix-ui/react-dialog": "1.1.15",
         "@radix-ui/react-dropdown-menu": "2.1.16",
@@ -161,7 +161,7 @@
     },
     "packages/hig": {
       "name": "@bloxwap/hig",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "peerDependencies": {
         "@bloxwap/chart": "^0.3.0 || ^0.4.0 || ^0.5.0",
         "@bloxwap/haptic": "^0.2.0 || ^0.3.0 || ^0.4.0",

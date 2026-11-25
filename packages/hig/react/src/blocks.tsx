@@ -29,6 +29,6 @@ export {ReceiveBlock,type ReceiveBlockProps,type ReceiveNetwork} from './blocks/
 export {ClaimRewardBlock,type ClaimRewardBlockProps,type ClaimRewardStatus,type ClaimRewardLink,type ClaimRewardAttestation} from './blocks/claim-reward-block.js';
 export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWallet} from './blocks/advanced-block.js';
 export {LiveStreamBlock,type LiveStreamBlockProps,type LiveStreamChatService,type LiveStreamChatStatus,type LiveStreamSettings,type StreamConnection} from './blocks/live-stream-block.js';
-export {LiveStreamChatBlock,platformColors,type LiveStreamChatBlockProps,type LiveStreamChatMessage,type LiveStreamPlatform} from './blocks/live-stream-chat-block.js';
+export {LiveStreamChatBlock,platformColors,platformIcons,platformMarks,type LiveStreamChatBlockProps,type LiveStreamChatMessage,type LiveStreamPlatform} from './blocks/live-stream-chat-block.js';
 export {LiveStreamFeedBlock,type LiveStreamFeedBlockProps} from './blocks/live-stream-feed-block.js';
 export {ReferralCodeBlock,normalizeReferralCode,referralClaimable,referralProgress,referralStage,type ReferralCodeBlockProps,type ReferralCodeLabels,type ReferralRewards,type ReferralStage} from './blocks/referral-code-block.js';

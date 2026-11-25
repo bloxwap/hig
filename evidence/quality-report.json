@@ -1,6 +1,6 @@
 {
-  "version": "0.11.0",
-  "sourceCommit": "2f2cae3e0a5c16bd09ad69dfa1348a098f5b8239",
+  "version": "0.11.1",
+  "sourceCommit": "809aaf93f70ec6dff9b0b2fc0864b2e842fb6d50",
   "sourceTreeDirty": true,
   "nativeRuntime": {
     "react": "19.1.0",
@@ -117,11 +117,11 @@
       "@bloxwap/hig/native/reward-block": 213426
     },
     "docsJS": {
-      "raw": 2289668,
-      "gzip": 777677
+      "raw": 2295593,
+      "gzip": 780415
     },
     "docsCSS": {
-      "raw": 225541
+      "raw": 226230
     },
     "fonts": {
       "raw": 521216
