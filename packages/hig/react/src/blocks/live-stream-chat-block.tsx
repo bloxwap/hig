@@ -12,14 +12,16 @@ import {ScreenHeader} from './screen-header.js';
 import {SwapIcon} from './swap/shared.js';
 export function LiveStreamChatBlock({title,messages,emptyLabel,onClose,headingId}:LiveStreamChatBlockProps){
  const overrides=useMessageOverrides();
- const log=useRef<HTMLOListElement>(null),following=useRef(true);
+ const log=useRef<HTMLDivElement>(null),following=useRef(true);
  // A new line keeps the newest in view unless the reader scrolled back to read earlier ones.
  useLayoutEffect(()=>{const node=log.current;if(node&&following.current)node.scrollTop=node.scrollHeight;},[messages]);
  return <section className='hig-live-chat'>
   <ScreenHeader title={title} headingId={headingId} action={onClose&&<IconButton intent='ghost' label={overrides.close??en.close} onClick={onClose}><SwapIcon name='close'/></IconButton>}/>
   {messages.length===0&&<p className='hig-settings-description'>{emptyLabel}</p>}
-  <ol ref={log} className='hig-live-chat-log' role='log' aria-label={title} hidden={messages.length===0}
+  {/* The log is the scroller; the list inside keeps its list semantics, which a log role on the list itself would replace. */}
+  <div ref={log} className='hig-live-chat-log' role='log' aria-label={title} hidden={messages.length===0}
    onScroll={event=>{const node=event.currentTarget;following.current=node.scrollHeight-node.scrollTop-node.clientHeight<=chatFollowSlack;}}>
+  <ol className='hig-live-chat-list'>
    {messages.map(message=><li key={message.id} className='hig-live-chat-message'>
     <Avatar name={message.username} src={message.avatarUrl} size={32} decorative/>
     <div className='hig-live-chat-body'>
@@ -28,5 +30,6 @@ export function LiveStreamChatBlock({title,messages,emptyLabel,onClose,headingId
     </div>
    </li>)}
   </ol>
+  </div>
  </section>;
 }

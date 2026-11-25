@@ -16,7 +16,7 @@ it('draws only the newest lines, oldest first and fainter with age, each with it
  view.rerender(<LiveStreamFeedBlock label="Live chat" messages={many(7)} maxVisible={2}/>);
  expect(rows().map(row=>within(row).getByText(/^line/).textContent)).toEqual(['line 6','line 7']);
  view.rerender(<LiveStreamFeedBlock label="Live chat" messages={[]}/>);
- expect(screen.getByRole('log').children.length).toBe(0);
+ expect(within(screen.getByRole('log')).queryAllByRole('listitem')).toHaveLength(0);
 });
 it('cuts each message to one line',()=>{
  render(<LiveStreamFeedBlock label="Live chat" messages={[line(1)]}/>);
