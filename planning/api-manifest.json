@@ -650,6 +650,18 @@
         "entry": "blocks/advanced-block",
         "signature": "export declare function AdvancedBlock(props: AdvancedBlockProps): React.JSX.Element;"
       },
+      "LiveStreamBlock": {
+        "entry": "blocks/live-stream-block",
+        "signature": "export declare function LiveStreamBlock(props: LiveStreamBlockProps): React.JSX.Element;"
+      },
+      "LiveStreamChatBlock": {
+        "entry": "blocks/live-stream-chat-block",
+        "signature": "export declare function LiveStreamChatBlock({ title, messages, emptyLabel, onClose, headingId }: LiveStreamChatBlockProps): React.JSX.Element;"
+      },
+      "LiveStreamFeedBlock": {
+        "entry": "blocks/live-stream-feed-block",
+        "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -2167,6 +2179,18 @@
       "ClaimRewardAttestation": {
         "entry": "claim-reward-block",
         "signature": "export interface ClaimRewardAttestation {\n    /** The statement beside the checkbox, as one sentence. */\n    label: string;\n    checked: boolean;\n    onCheckedChange: (checked: boolean) => void;\n    /** Links under the statement, such as the official rules. */\n    links?: readonly ClaimRewardLink[];\n}"
+      },
+      "LiveStreamBlock": {
+        "entry": "live-stream-block",
+        "signature": "export declare function LiveStreamBlock(props: LiveStreamBlockProps): React.JSX.Element;"
+      },
+      "LiveStreamChatBlock": {
+        "entry": "live-stream-chat-block",
+        "signature": "export declare function LiveStreamChatBlock({ title, messages, emptyLabel, onClose, headingId }: LiveStreamChatBlockProps): React.JSX.Element;"
+      },
+      "LiveStreamFeedBlock": {
+        "entry": "live-stream-feed-block",
+        "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",

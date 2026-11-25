@@ -674,6 +674,27 @@
       "support": "renderer"
     },
     {
+      "name": "LiveStreamBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "LiveStreamChatBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
+      "name": "LiveStreamFeedBlock",
+      "states": [
+        "default"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "SoundHapticsBlock",
       "states": [
         "default",

@@ -971,6 +971,33 @@
       ]
     },
     {
+      "name": "LiveStreamBlock",
+      "route": "components/live-stream-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "LiveStreamChatBlock",
+      "route": "components/live-stream-chat-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
+      "name": "LiveStreamFeedBlock",
+      "route": "components/live-stream-feed-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ]
+    },
+    {
       "name": "SoundHapticsBlock",
       "route": "components/sound-haptics-block",
       "family": "blocks",
