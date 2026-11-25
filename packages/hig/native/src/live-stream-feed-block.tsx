@@ -1,12 +1,13 @@
 import React from 'react';
 import {feedLineOpacity,feedLines,type LiveStreamFeedBlockProps} from '@bloxwap/hig/contracts/live-stream';
-export type {LiveStreamFeedBlockProps,LiveStreamChatMessage} from '@bloxwap/hig/contracts/live-stream';
+export type {LiveStreamFeedBlockProps,LiveStreamChatMessage,LiveStreamPlatform} from '@bloxwap/hig/contracts/live-stream';
+export {platformColors} from '@bloxwap/hig/contracts/live-stream';
 import {View} from 'react-native';
 import {withAlpha} from '@bloxwap/hig/tokens';
 import {Text} from './surface.js';
 import {useColors} from './provider.js';
 import {AvatarFrame} from './avatar-frame.js';
-import {Badge} from './status.js';
+import {PlatformBadge} from './live-stream-platform.js';
 /** Chat lines drawn over other content, such as a chart. It fills the bottom of its parent and takes no touches, so the content under it stays usable. */
 export function LiveStreamFeedBlock({label,messages,maxVisible}:LiveStreamFeedBlockProps){
  const colors=useColors();
@@ -17,7 +18,7 @@ export function LiveStreamFeedBlock({label,messages,maxVisible}:LiveStreamFeedBl
    <View style={{flexShrink:1,minWidth:0,gap:2}}>
     <View style={{flexDirection:'row',alignItems:'center',gap:8}}>
      <Text numberOfLines={1} style={{flexShrink:1,fontWeight:'600'}}>{message.username}</Text>
-     <Badge>{message.source}</Badge>
+     <PlatformBadge message={message}/>
     </View>
     <Text numberOfLines={1}>{message.text}</Text>
    </View>

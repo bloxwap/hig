@@ -30,3 +30,20 @@ it('follows the newest line until the reader scrolls back',()=>{
  log.scrollTop=40;fireEvent.scroll(log);size(400);add('4');expect(log.scrollTop).toBe(40);
  log.scrollTop=300;fireEvent.scroll(log);size(500);add('5');expect(log.scrollTop).toBe(500);
 });
+it('fills a named platform badge with its brand and keeps an unknown one neutral',()=>{
+ render(<LiveStreamChatBlock title="Chat" emptyLabel="None" messages={[
+  {id:'1',username:'a',source:'Twitch',platform:'twitch',text:'hi'},
+  {id:'2',username:'b',source:'X',platform:'x',text:'hi'},
+  {id:'3',username:'c',source:'Other',text:'hi'},
+ ]}/>);
+ const twitch=screen.getByText('Twitch');
+ expect(twitch.dataset.platform).toBe('twitch');expect(twitch.style.background).toBe('rgb(145, 70, 255)');expect(twitch.style.color).toBe('rgb(255, 255, 255)');
+ const x=screen.getByText('X');expect(x.dataset.platform).toBe('x');expect(x.getAttribute('style')).toBeNull();
+ expect(screen.getByText('Other').dataset.platform).toBeUndefined();
+});
+it('draws a long message in full across lines, unlike the one-line feed',()=>{
+ const text='Watching the funding rate flip negative while open interest keeps climbing.';
+ render(<LiveStreamChatBlock title="Chat" emptyLabel="None" messages={[{id:'1',username:'a',source:'Twitch',text}]}/>);
+ const line=screen.getByText(text);
+ expect(line.className).toBe('hig-live-chat-text');
+});

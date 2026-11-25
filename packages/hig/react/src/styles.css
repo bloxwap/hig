@@ -1331,6 +1331,8 @@ span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
 .hig-live-chat-meta { display:flex;align-items:center;gap:8px;min-width:0;font-size:.875rem; }
 .hig-live-chat-name { min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
 .hig-live-chat-meta .hig-badge { flex:none;padding:2px 8px;font-size:.6875rem; }
+.hig-live-platform { font-weight:600; }
+.hig-live-platform[data-platform='x'] { background:var(--hig-text);color:var(--hig-background); }
 .hig-live-chat-text { margin:2px 0 0;line-height:1.5;overflow-wrap:anywhere; }
 .hig-live-feed { position:absolute;inset-inline:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin:0;padding:8px;list-style:none;pointer-events:none; }
 .hig-live-feed-line { display:flex;align-items:flex-start;gap:12px;max-width:100%;min-width:0;padding:6px 12px 6px 6px;border-radius:24px;background:color-mix(in srgb,var(--hig-background) 72%,transparent);transition:opacity var(--hig-motion-duration-fast,180ms); }

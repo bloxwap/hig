@@ -18,6 +18,10 @@ it('draws only the newest lines, oldest first and fainter with age, each with it
  view.rerender(<LiveStreamFeedBlock label="Live chat" messages={[]}/>);
  expect(screen.getByRole('log').children.length).toBe(0);
 });
+it('cuts each message to one line',()=>{
+ render(<LiveStreamFeedBlock label="Live chat" messages={[line(1)]}/>);
+ expect(screen.getByText('line 1').className).toBe('hig-live-feed-text');
+});
 it('keeps a usable line count and a visible oldest line',()=>{
  for(const bad of [0,-1,1.5,Number.NaN,undefined])expect(feedLines(many(9),bad).length).toBe(4);
  expect(feedLines(many(2),5).length).toBe(2);

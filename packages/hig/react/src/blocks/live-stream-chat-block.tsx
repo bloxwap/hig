@@ -2,11 +2,12 @@
 import React,{useLayoutEffect,useRef} from 'react';
 import * as en from '@bloxwap/hig/contracts/messages';
 import {chatFollowSlack,type LiveStreamChatBlockProps} from '@bloxwap/hig/contracts/live-stream';
-export type {LiveStreamChatBlockProps,LiveStreamChatMessage} from '@bloxwap/hig/contracts/live-stream';
+export type {LiveStreamChatBlockProps,LiveStreamChatMessage,LiveStreamPlatform} from '@bloxwap/hig/contracts/live-stream';
+export {platformColors} from '@bloxwap/hig/contracts/live-stream';
 import {useMessageOverrides} from '../provider.js';
 import {IconButton} from '../button.js';
 import {Avatar} from '../avatar.js';
-import {Badge} from '../status.js';
+import {PlatformBadge} from './live-stream-platform.js';
 import {ScreenHeader} from './screen-header.js';
 import {SwapIcon} from './swap/shared.js';
 export function LiveStreamChatBlock({title,messages,emptyLabel,onClose,headingId}:LiveStreamChatBlockProps){
@@ -22,7 +23,7 @@ export function LiveStreamChatBlock({title,messages,emptyLabel,onClose,headingId
    {messages.map(message=><li key={message.id} className='hig-live-chat-message'>
     <Avatar name={message.username} src={message.avatarUrl} size={32} decorative/>
     <div className='hig-live-chat-body'>
-     <div className='hig-live-chat-meta'><span className='hig-live-chat-name'>{message.username}</span><Badge>{message.source}</Badge></div>
+     <div className='hig-live-chat-meta'><span className='hig-live-chat-name'>{message.username}</span><PlatformBadge message={message}/></div>
      <p className='hig-live-chat-text'>{message.text}</p>
     </div>
    </li>)}

@@ -3128,6 +3128,10 @@
         "entry": "icons",
         "signature": "export declare function TrendIcon({ color, direction }: {\n    color: string;\n    direction: 'up' | 'down';\n}): React.JSX.Element;"
       },
+      "PlatformBadge": {
+        "entry": "live-stream-platform",
+        "signature": "export declare function PlatformBadge({ message }: {\n    message: LiveStreamChatMessage;\n}): React.JSX.Element;"
+      },
       "capsuleRadius": {
         "entry": "modal-radius",
         "signature": "export declare const capsuleRadius = 22;"

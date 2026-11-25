@@ -36,12 +36,32 @@ export function connectionReady(section:StreamSection,connection:StreamConnectio
   return !!url.hostname&&['rtmps:','rtmp:','srt:'].includes(url.protocol);
  }catch{return false;}
 }
+/** The chat platforms Restream relays (its chat event sources), by stable id. */
+export type LiveStreamPlatform='twitch'|'youtube'|'kick'|'x'|'facebook'|'discord'|'linkedin'|'trovo'|'dlive'|'rumble';
+/**
+ * Each platform's brand fill and the ink that reads on it. `x` is `null`: its brand is black and white, so its badge
+ * draws in the theme's text colour with the background as ink, and stays visible in light and dark.
+ */
+export const platformColors:Readonly<Record<LiveStreamPlatform,{fill:string;ink:string}|null>>={
+ twitch:{fill:'#9146ff',ink:'#ffffff'},
+ youtube:{fill:'#ff0000',ink:'#ffffff'},
+ kick:{fill:'#53fc18',ink:'#000000'},
+ x:null,
+ facebook:{fill:'#0866ff',ink:'#ffffff'},
+ discord:{fill:'#5865f2',ink:'#ffffff'},
+ linkedin:{fill:'#0a66c2',ink:'#ffffff'},
+ trovo:{fill:'#19d66b',ink:'#000000'},
+ dlive:{fill:'#ffd300',ink:'#000000'},
+ rumble:{fill:'#85c742',ink:'#000000'},
+};
 /** One chat line from a connected channel. Every word is host text. */
 export interface LiveStreamChatMessage {
  id:string;
  username:string;
  /** Where the line was sent, as the host names it: Twitch, Kick. */
  source:string;
+ /** Colours the source badge with that platform's brand. Without it the badge is neutral. */
+ platform?:LiveStreamPlatform;
  text:string;
  /** The sender's photo. Without it, or if it fails to load, the first two letters of `username` show. */
  avatarUrl?:string;

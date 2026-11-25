@@ -53,6 +53,7 @@
     "validation-and-citation",
     "livestreamblock",
     "livestreamchatblock",
+    "live-stream-platforms",
     "livestreamfeedblock"
   ],
   "/docs/guides/components/chart/": [

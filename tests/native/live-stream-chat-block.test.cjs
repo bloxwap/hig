@@ -23,3 +23,13 @@ it('lists each line with its sender, source and photo, and gives the host the cl
   expect(onClose).toHaveBeenCalledTimes(1);
  }finally{act(()=>root.unmount());}
 });
+it('draws a long message without a line limit',()=>{
+ const text='Watching the funding rate flip negative while open interest keeps climbing.';
+ let root;
+ act(()=>{root=create(React.createElement(HIGProvider,null,React.createElement(LiveStreamChatBlock,{title:'Chat',emptyLabel:'None',messages:[{id:'1',username:'a',source:'Twitch',text}]})));});
+ try{
+  const nodes=root.root.findAll(node=>typeof node.type!=='string'&&node.props.children===text);
+  expect(nodes.length).toBeGreaterThan(0);
+  for(const node of nodes)expect(node.props.numberOfLines).toBeUndefined();
+ }finally{act(()=>root.unmount());}
+});
