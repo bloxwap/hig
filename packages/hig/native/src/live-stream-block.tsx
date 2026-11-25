@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {chatCanDisconnect,chatCanReconnect,chatServiceUrlValid,connectionReady,initialStreamSettings,type LiveStreamBlockProps,type LiveStreamChatService,type StreamConnection,type StreamSection} from '@bloxwap/hig/contracts/live-stream';
+import {chatCanConnect,chatCanDisconnect,connectionReady,initialStreamSettings,type LiveStreamBlockProps,type LiveStreamChatService,type StreamConnection,type StreamSection} from '@bloxwap/hig/contracts/live-stream';
 export type {LiveStreamBlockProps,LiveStreamChatService,LiveStreamChatStatus,LiveStreamSettings,StreamConnection} from '@bloxwap/hig/contracts/live-stream';
 import {View} from 'react-native';
 import {Text} from './surface.js';
@@ -9,25 +9,21 @@ import {ListGroup,ListRow} from './list-group.js';
 import {Field,Input} from './field.js';
 import {Alert} from './status.js';
 import {ScreenHeader} from './screen-header.js';
-/** The chat section: the authorization service URL, Connect, where the service stands, and the note on trust. */
+/** The chat section: where the sign-in stands, Connect or Sign out, and the note. */
 function ChatService({chat,onDone}:{chat:LiveStreamChatService;onDone:()=>void}){
  const colors=useColors();
- const [url,setUrl]=useState(chat.serviceUrl??'');
  const [pending,setPending]=useState(false);
  const {status,labels}=chat;
  const busy=pending||status==='connecting';
  const connect=()=>{
-  const value=url.trim();
-  if(busy||!chatServiceUrlValid(value))return;
+  if(busy)return;
   setPending(true);
-  Promise.resolve().then(()=>chat.onConnect(value)).then(()=>{setPending(false);onDone();},()=>setPending(false));
+  Promise.resolve().then(()=>chat.onConnect()).then(()=>{setPending(false);onDone();},()=>setPending(false));
  };
  return <>
-  <Field label={labels.serviceLabel}><Input keyboardType='url' textContentType='URL' autoComplete='off' autoCapitalize='none' autoCorrect={false} value={url} onChangeText={setUrl}/></Field>
-  <Button style={{alignSelf:'stretch'}} busy={busy} disabled={!chatServiceUrlValid(url)} onPress={connect}>{labels.connect}</Button>
   <Text accessibilityLiveRegion='polite' style={{color:colors.muted}}>{labels.status(status)}</Text>
   {status==='failed'&&chat.error?<Alert severity='error' title={chat.error}/>:null}
-  {chatCanReconnect(status)&&chat.onReconnect&&labels.reconnect?<Button style={{alignSelf:'stretch'}} intent='secondary' onPress={()=>{Promise.resolve().then(chat.onReconnect).catch(()=>{/* The host's status and error explain. */});}}>{labels.reconnect}</Button>:null}
+  {chatCanConnect(status)?<Button style={{alignSelf:'stretch'}} busy={busy} onPress={connect}>{labels.connect}</Button>:null}
   {chatCanDisconnect(status)&&chat.onDisconnect?<Button style={{alignSelf:'stretch'}} intent='secondary' onPress={()=>{Promise.resolve().then(chat.onDisconnect).catch(()=>{/* The host's status and error explain. */});}}>{labels.disconnect}</Button>:null}
   <Text style={{color:colors.muted}}>{labels.note}</Text>
  </>;

@@ -7,9 +7,9 @@ const {Input}=require('../../packages/hig/native/src/field');
 const {Button}=require('../../packages/hig/native/src/button');
 const {Alert}=require('../../packages/hig/native/src/status');
 const {ScreenHeader}=require('../../packages/hig/native/src/screen-header');
-const statusText={unconfigured:'Not set up',signedOut:'Signed out',connecting:'Connecting',connected:'Connected',failed:'Failed'};
-const chat=overrides=>({status:'unconfigured',onConnect:jest.fn(),labels:{title:'Chat',serviceLabel:'Service URL',connect:'Connect',disconnect:'Disconnect',reconnect:'Reconnect',
- note:'Enter only a service URL you trust.',status:status=>statusText[status]},...overrides});
+const statusText={signedOut:'Signed out',connecting:'Connecting',connected:'Connected',failed:'Failed'};
+const chat=overrides=>({status:'signedOut',onConnect:jest.fn(),labels:{title:'Chat',connect:'Connect',disconnect:'Sign out',
+ note:'Sign in with Restream to show your chat.',status:status=>statusText[status]},...overrides});
 function mount(chatProps,onPlay=jest.fn()){
  const props={title:'Live streaming',streaming:{title:'Streaming',endpointLabel:'Stream',keyLabel:'Stream key'},chat:chatProps,
   appAudioLabel:'App audio',microphoneLabel:'Microphone',saveLabel:'Save',playLabel:'Play',onPlay};
@@ -37,24 +37,20 @@ it('saves streaming and gives the host the selected settings',()=>{
   expect(onPlay).toHaveBeenCalledWith({streaming:{endpoint:'rtmps://example.org/live',key:'stream-key'},appAudio:true,microphone:false});
  }finally{view.unmount();}
 });
-it('shows the chat status and connects with the trimmed service URL',async()=>{
+it('shows the chat status and connects without asking for a URL',async()=>{
  const onConnect=jest.fn(()=>Promise.resolve());
- const view=mount(chat({onConnect,serviceUrl:'https://old.example.com'}));
- const {action,open,edit,row,root}=view;
+ const view=mount(chat({onConnect}));
+ const {action,open,row,root}=view;
  try{
-  expect(row('Chat').props.value).toBe('Not set up');
+  expect(row('Chat').props.value).toBe('Signed out');
   open('Chat');
   expect(root.root.findByType(ScreenHeader).props.title).toBe('Chat');
-  const input=()=>root.root.findAllByType(Input)[0];
-  expect(input().props.value).toBe('https://old.example.com');
-  expect([input().props.keyboardType,input().props.autoCapitalize,input().props.autoCorrect]).toEqual(['url','none',false]);
-  expect(view.texts()).toEqual(expect.arrayContaining(['Not set up','Enter only a service URL you trust.']));
-  expect(action('Disconnect')).toBeUndefined();
-  edit(0,'https://auth.example.com:8443');expect(action('Connect').props.disabled).toBe(true);
-  edit(0,'https://auth.example.com?x');expect(action('Connect').props.disabled).toBe(true);
-  edit(0,' https://auth.example.com/ ');expect(action('Connect').props.disabled).toBe(false);
+  expect(root.root.findAllByType(Input)).toHaveLength(0);
+  expect(view.texts()).toEqual(expect.arrayContaining(['Signed out','Sign in with Restream to show your chat.']));
+  expect(action('Sign out')).toBeUndefined();
   await act(async()=>{action('Connect').props.onPress();});
-  expect(onConnect).toHaveBeenCalledWith('https://auth.example.com/');
+  expect(onConnect).toHaveBeenCalledTimes(1);
+  expect(onConnect).toHaveBeenCalledWith();
   expect(row('Chat')).toBeTruthy();
  }finally{view.unmount();}
 });
@@ -62,30 +58,29 @@ it('keeps the chat section open when connecting is rejected, and is busy while c
  const onConnect=jest.fn(()=>Promise.reject(new Error('no')));
  const view=mount(chat({onConnect}));
  try{
-  view.open('Chat');view.edit(0,'https://auth.example.com');
+  view.open('Chat');
   await act(async()=>{view.action('Connect').props.onPress();});
   expect(onConnect).toHaveBeenCalledTimes(1);
   expect(view.action('Connect')).toBeTruthy();
  }finally{view.unmount();}
- const busy=mount(chat({status:'connecting',serviceUrl:'https://auth.example.com',onDisconnect:jest.fn(),onReconnect:jest.fn()}));
+ const busy=mount(chat({status:'connecting',onDisconnect:jest.fn()}));
  try{
   busy.open('Chat');
   expect(busy.action('Connect').props.busy).toBe(true);
-  expect([busy.action('Disconnect'),busy.action('Reconnect')]).toEqual([undefined,undefined]);
+  expect(busy.action('Sign out')).toBeUndefined();
  }finally{busy.unmount();}
 });
-it('offers disconnect and reconnect by status',async()=>{
- for(const [status,disconnect,reconnect] of [['unconfigured',false,false],['connected',true,false],['signedOut',true,true],['failed',true,true]]){
-  const onDisconnect=jest.fn(),onReconnect=jest.fn();
-  const view=mount(chat({status,error:status==='failed'?'Service unreachable':undefined,serviceUrl:'https://auth.example.com',onDisconnect,onReconnect}));
+it('offers Connect and Sign out by status',async()=>{
+ for(const [status,connect,disconnect] of [['connected',false,true],['signedOut',true,false],['failed',true,true]]){
+  const onDisconnect=jest.fn();
+  const view=mount(chat({status,error:status==='failed'?'Sign-in unreachable':undefined,onDisconnect}));
   try{
    view.open('Chat');
-   expect([status,!!view.action('Disconnect'),!!view.action('Reconnect')]).toEqual([status,disconnect,reconnect]);
+   expect([status,!!view.action('Connect'),!!view.action('Sign out')]).toEqual([status,connect,disconnect]);
    expect(view.texts()).toContain(statusText[status]);
-   expect(view.root.root.findAllByType(Alert).map(node=>node.props.title)).toEqual(status==='failed'?['Service unreachable']:[]);
-   if(disconnect)await act(async()=>{view.action('Disconnect').props.onPress();});
-   if(reconnect)await act(async()=>{view.action('Reconnect').props.onPress();});
-   expect([onDisconnect.mock.calls.length,onReconnect.mock.calls.length]).toEqual([disconnect?1:0,reconnect?1:0]);
+   expect(view.root.root.findAllByType(Alert).map(node=>node.props.title)).toEqual(status==='failed'?['Sign-in unreachable']:[]);
+   if(disconnect)await act(async()=>{view.action('Sign out').props.onPress();});
+   expect(onDisconnect.mock.calls.length).toBe(disconnect?1:0);
   }finally{view.unmount();}
  }
 });
