@@ -44,7 +44,7 @@ export type LiveStreamPlatform='twitch'|'youtube'|'kick'|'x'|'facebook'|'discord
  */
 export const platformColors:Readonly<Record<LiveStreamPlatform,{fill:string;ink:string}|null>>={
  twitch:{fill:'#9146ff',ink:'#ffffff'},
- youtube:{fill:'#ff0000',ink:'#ffffff'},
+ youtube:{fill:'#e60000',ink:'#ffffff'},
  kick:{fill:'#53fc18',ink:'#000000'},
  x:null,
  facebook:{fill:'#0866ff',ink:'#ffffff'},
