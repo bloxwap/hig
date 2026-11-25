@@ -41,6 +41,11 @@
       "import": "./contracts/dist/address.js",
       "default": "./contracts/dist/address.js"
     },
+    "./contracts/live-stream": {
+      "types": "./contracts/dist/live-stream.d.ts",
+      "import": "./contracts/dist/live-stream.js",
+      "default": "./contracts/dist/live-stream.js"
+    },
     "./contracts/format": {
       "types": "./contracts/dist/format.d.ts",
       "import": "./contracts/dist/format.js",
@@ -363,6 +368,21 @@
       "import": "./react/dist/blocks/reward-block.js",
       "default": "./react/dist/blocks/reward-block.js"
     },
+    "./react/blocks/live-stream-block": {
+      "types": "./react/dist/blocks/live-stream-block.d.ts",
+      "import": "./react/dist/blocks/live-stream-block.js",
+      "default": "./react/dist/blocks/live-stream-block.js"
+    },
+    "./react/blocks/live-stream-chat-block": {
+      "types": "./react/dist/blocks/live-stream-chat-block.d.ts",
+      "import": "./react/dist/blocks/live-stream-chat-block.js",
+      "default": "./react/dist/blocks/live-stream-chat-block.js"
+    },
+    "./react/blocks/live-stream-feed-block": {
+      "types": "./react/dist/blocks/live-stream-feed-block.d.ts",
+      "import": "./react/dist/blocks/live-stream-feed-block.js",
+      "default": "./react/dist/blocks/live-stream-feed-block.js"
+    },
     "./react/blocks/sound-haptics-block": {
       "types": "./react/dist/blocks/sound-haptics-block.d.ts",
       "import": "./react/dist/blocks/sound-haptics-block.js",
@@ -517,6 +537,21 @@
       "types": "./native/dist/reward-block.d.ts",
       "import": "./native/dist/reward-block.js",
       "default": "./native/dist/reward-block.js"
+    },
+    "./native/live-stream-block": {
+      "types": "./native/dist/live-stream-block.d.ts",
+      "import": "./native/dist/live-stream-block.js",
+      "default": "./native/dist/live-stream-block.js"
+    },
+    "./native/live-stream-chat-block": {
+      "types": "./native/dist/live-stream-chat-block.d.ts",
+      "import": "./native/dist/live-stream-chat-block.js",
+      "default": "./native/dist/live-stream-chat-block.js"
+    },
+    "./native/live-stream-feed-block": {
+      "types": "./native/dist/live-stream-feed-block.d.ts",
+      "import": "./native/dist/live-stream-feed-block.js",
+      "default": "./native/dist/live-stream-feed-block.js"
     },
     "./native/sound-haptics-block": {
       "types": "./native/dist/sound-haptics-block.d.ts",

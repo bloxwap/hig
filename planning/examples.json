@@ -1582,6 +1582,51 @@
       }
     },
     {
+      "name": "LiveStreamBlock",
+      "added": "Unreleased",
+      "slug": "live-stream-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.LiveStreamBlock title='Live streaming' description='Set up streaming and optional chat. Your device asks before broadcasting.' streaming={{title:'Streaming',endpointLabel:'Server link (RTMPS, RTMP, or SRT)',keyLabel:'Stream key'}} chat={{title:'Chat',endpointLabel:'Chat link or channel',keyLabel:'Chat key'}} appAudioLabel='Include app audio' microphoneLabel='Include microphone' saveLabel='Save' playLabel='Play' defaultSettings={{streaming:{endpoint:'rtmps://live.restream.io:1935/live',key:''},chat:{endpoint:'',key:''},appAudio:true,microphone:true}} onPlay={()=>setMessage('Broadcast requested (demo)')}/>",
+      "native": "<C.LiveStreamBlock title='Live streaming' description='Set up streaming and optional chat. Your device asks before broadcasting.' streaming={{title:'Streaming',endpointLabel:'Server link (RTMPS, RTMP, or SRT)',keyLabel:'Stream key'}} chat={{title:'Chat',endpointLabel:'Chat link or channel',keyLabel:'Chat key'}} appAudioLabel='Include app audio' microphoneLabel='Include microphone' saveLabel='Save' playLabel='Play' defaultSettings={{streaming:{endpoint:'rtmps://live.restream.io:1935/live',key:''},chat:{endpoint:'',key:''},appAudio:true,microphone:true}} onPlay={()=>setMessage('Broadcast requested (demo)')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "Named setup fields, masked keys, disclosure rows and labeled audio switches.",
+      "feedback": "The host requests consent and starts broadcasting."
+    },
+    {
+      "name": "LiveStreamChatBlock",
+      "added": "Unreleased",
+      "slug": "live-stream-chat-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.LiveStreamChatBlock title='Chat' emptyLabel='No messages yet' messages={[{id:'1',username:'mira',source:'Twitch',platform:'twitch',text:'gm, what are we trading today?'},{id:'2',username:'okto',source:'Kick',platform:'kick',text:'Long or short on BTC?'},{id:'3',username:'sable',source:'YouTube',platform:'youtube',text:'First time here. This looks great.'},{id:'4',username:'vex',source:'𝕏',platform:'x',text:'That wick was wild'},{id:'5',username:'mira',source:'Twitch',platform:'twitch',text:'Watching the funding rate flip negative while open interest keeps climbing. Someone is about to get squeezed, and I would rather it not be me.'}]} onClose={()=>setMessage('The host closes the drawer')}/>",
+      "native": "<C.LiveStreamChatBlock title='Chat' emptyLabel='No messages yet' messages={[{id:'1',username:'mira',source:'Twitch',platform:'twitch',text:'gm, what are we trading today?'},{id:'2',username:'okto',source:'Kick',platform:'kick',text:'Long or short on BTC?'},{id:'3',username:'sable',source:'YouTube',platform:'youtube',text:'First time here. This looks great.'},{id:'4',username:'vex',source:'𝕏',platform:'x',text:'That wick was wild'},{id:'5',username:'mira',source:'Twitch',platform:'twitch',text:'Watching the funding rate flip negative while open interest keeps climbing. Someone is about to get squeezed, and I would rather it not be me.'}]} onClose={()=>setMessage('The host closes the drawer')}/>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "A named message log that announces new lines, with each sender, source and message read in order.",
+      "feedback": "The host closes the drawer."
+    },
+    {
+      "name": "LiveStreamFeedBlock",
+      "added": "Unreleased",
+      "slug": "live-stream-feed-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<div style={{position:'relative',width:'100%',height:280}}><C.LiveStreamFeedBlock label='Live chat' messages={[{id:'1',username:'mira',source:'Twitch',platform:'twitch',text:'gm, what are we trading today?'},{id:'2',username:'okto',source:'Kick',platform:'kick',text:'Long or short on BTC? Funding just flipped negative and open interest keeps climbing, so someone is about to get squeezed.'},{id:'3',username:'sable',source:'YouTube',platform:'youtube',text:'First time here. This looks great.'},{id:'4',username:'vex',source:'𝕏',platform:'x',text:'That wick was wild'}]}/></div>",
+      "native": "<View style={{width:'100%',height:280}}><C.LiveStreamFeedBlock label='Live chat' messages={[{id:'1',username:'mira',source:'Twitch',platform:'twitch',text:'gm, what are we trading today?'},{id:'2',username:'okto',source:'Kick',platform:'kick',text:'Long or short on BTC? Funding just flipped negative and open interest keeps climbing, so someone is about to get squeezed.'},{id:'3',username:'sable',source:'YouTube',platform:'youtube',text:'First time here. This looks great.'},{id:'4',username:'vex',source:'𝕏',platform:'x',text:'That wick was wild'}]}/></View>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default"
+      ],
+      "a11y": "A named message log that announces new lines and takes no pointer input.",
+      "feedback": "None. The feed is display only."
+    },
+    {
       "name": "SoundHapticsBlock",
       "slug": "sound-haptics-block",
       "entry": "blocks",

@@ -50,7 +50,11 @@
     "when-to-use-and-examples",
     "states-interaction-and-accessibility",
     "platform-mapping-and-limits",
-    "validation-and-citation"
+    "validation-and-citation",
+    "livestreamblock",
+    "livestreamchatblock",
+    "live-stream-platforms",
+    "livestreamfeedblock"
   ],
   "/docs/guides/components/chart/": [
     "api-and-anatomy",

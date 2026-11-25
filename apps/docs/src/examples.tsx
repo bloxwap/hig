@@ -37,6 +37,9 @@ const BlocksPresetPickerBlockExamples=lazy(()=>import('./example-groups/blocks-p
 const BlocksProfileBlockExamples=lazy(()=>import('./example-groups/blocks-profile-block').then(module=>({default:module.Example})));
 const BlocksScreenHeaderExamples=lazy(()=>import('./example-groups/blocks-screen-header').then(module=>({default:module.Example})));
 const BlocksRewardBlockExamples=lazy(()=>import('./example-groups/blocks-reward-block').then(module=>({default:module.Example})));
+const BlocksLiveStreamBlockExamples=lazy(()=>import('./example-groups/blocks-live-stream-block').then(module=>({default:module.Example})));
+const BlocksLiveStreamChatBlockExamples=lazy(()=>import('./example-groups/blocks-live-stream-chat-block').then(module=>({default:module.Example})));
+const BlocksLiveStreamFeedBlockExamples=lazy(()=>import('./example-groups/blocks-live-stream-feed-block').then(module=>({default:module.Example})));
 const BlocksSoundHapticsBlockExamples=lazy(()=>import('./example-groups/blocks-sound-haptics-block').then(module=>({default:module.Example})));
 const BlocksModalBlockExamples=lazy(()=>import('./example-groups/blocks-modal-block').then(module=>({default:module.Example})));
 const BlocksFeedbackBlockExamples=lazy(()=>import('./example-groups/blocks-feedback-block').then(module=>({default:module.Example})));
@@ -140,6 +143,9 @@ const previews:Record<string,React.ComponentType<Props>>={
   "ProfileBlock": BlocksProfileBlockExamples,
   "ScreenHeader": BlocksScreenHeaderExamples,
   "RewardBlock": BlocksRewardBlockExamples,
+  "LiveStreamBlock": BlocksLiveStreamBlockExamples,
+  "LiveStreamChatBlock": BlocksLiveStreamChatBlockExamples,
+  "LiveStreamFeedBlock": BlocksLiveStreamFeedBlockExamples,
   "SoundHapticsBlock": BlocksSoundHapticsBlockExamples,
   "ModalBlock": BlocksModalBlockExamples,
   "FeedbackBlock": BlocksFeedbackBlockExamples,

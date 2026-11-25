@@ -668,3 +668,19 @@ M2 supplies visual blocks; M3 adds semantic feedback composition because #26 dep
 ## Validation and citation
 
 See `tests/components.dom.test.tsx`, `tests/pro-data.dom.test.tsx`, `tests/pro-data-typecheck.tsx`, `tests/native/components.test.cjs`, consumer fixtures and milestone evidence. Physical hardware, assistive-technology and baseline product comparisons are unperformed unless linked explicitly. Cite HIG 0.1.0 with this chapter anchor and a commit permalink, not a mutable preview branch. Preserve business behavior behind a host rollback flag during adoption.
+
+## LiveStreamBlock
+
+Streaming and Chat each open a separate setup screen. Save applies the link and key. Back discards edits. Chat is optional. Play requires a stream server link (RTMPS, RTMP, or SRT) and a stream key. The host receives both connections and audio preferences through `onPlay` and handles device consent and broadcasting. Pass `settings` and `onSettingsChange` to manage the values in the host, or `defaultSettings` for local edits.
+
+## LiveStreamChatBlock
+
+The chat of a live stream, for the host to present in a drawer. Each line shows the sender, the source it came from (Twitch, Kick) and the message. `source` is host text, so any platform the stream relays can be named. `avatarUrl` is optional: without it, or if the photo fails to load, the first two letters of `username` show. Pass `messages` oldest first. The log follows the newest line until the reader scrolls back, and follows again once they return to the end. `onClose` shows Close in the header.
+
+## Live stream platforms
+
+A chat message can name its `platform`, one of the chat sources Restream relays: `twitch`, `youtube`, `kick`, `x`, `facebook`, `discord`, `linkedin`, `trovo`, `dlive` or `rumble`. `LiveStreamChatBlock` and `LiveStreamFeedBlock` then fill the source badge with that platform's brand colour (`platformColors`), with dark or light ink chosen to read on it. X is black and white, so its badge uses the theme's text colour and stays visible in light and dark. `source` is still the label drawn in the badge; for X use its mark, 𝕏. Without `platform`, or with one the block does not know, the badge is neutral.
+
+## LiveStreamFeedBlock
+
+Chat lines drawn over other content, such as a chart, as they arrive. It takes the same `messages` as `LiveStreamChatBlock`, oldest first, and draws only the newest `maxVisible` (default 4), all at full strength so every line meets text contrast over the chart. Every line is the `LiveStreamChatBlock` row in one line: the sender's photo or initials, the username with the source (Twitch, Kick) as a badge, and the message under them cut to a single line. The full message shows in `LiveStreamChatBlock`, which wraps a long message across as many lines as it needs. The feed pins itself to the bottom of its parent and takes no pointer input, so the chart under it stays usable: on web, give the parent `position: relative`. `label` names the feed for assistive technology and is not drawn.

@@ -33,3 +33,6 @@ export {PositionsBlock,type PositionsBlockProps,type OpenPosition} from './posit
 export {ReceiveBlock,type ReceiveBlockProps,type ReceiveNetwork} from './receive-block.js';
 export {ClaimRewardBlock,type ClaimRewardBlockProps,type ClaimRewardStatus,type ClaimRewardLink,type ClaimRewardAttestation} from './claim-reward-block.js';
 export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWallet} from './advanced-block.js';
+export {LiveStreamBlock,type LiveStreamBlockProps,type LiveStreamSettings,type StreamConnection} from './live-stream-block.js';
+export {LiveStreamChatBlock,platformColors,type LiveStreamChatBlockProps,type LiveStreamChatMessage,type LiveStreamPlatform} from './live-stream-chat-block.js';
+export {LiveStreamFeedBlock,type LiveStreamFeedBlockProps} from './live-stream-feed-block.js';
