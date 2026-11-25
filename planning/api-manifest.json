@@ -1,5 +1,5 @@
 {
-  "version": "0.10.2",
+  "version": "0.11.0",
   "api": {
     "react": {
       "AnimatedNumberTrend": {
@@ -661,6 +661,10 @@
       "LiveStreamFeedBlock": {
         "entry": "blocks/live-stream-feed-block",
         "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
+      },
+      "ReferralCodeBlock": {
+        "entry": "blocks/referral-code-block",
+        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, rewards, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",
@@ -2191,6 +2195,10 @@
       "LiveStreamFeedBlock": {
         "entry": "live-stream-feed-block",
         "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
+      },
+      "ReferralCodeBlock": {
+        "entry": "referral-code-block",
+        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, rewards, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",

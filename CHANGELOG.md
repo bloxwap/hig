@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.0
+
+- Add `LiveStreamBlock`, `LiveStreamChatBlock` and `LiveStreamFeedBlock` on React and React Native. `LiveStreamBlock` collects the streaming and chat endpoints and keys, with app audio and microphone switches. `LiveStreamChatBlock` is the full chat log: avatar, name, source badge and messages of any length, following the newest line. `LiveStreamFeedBlock` overlays the newest lines on a chart as the same row cut to one line with an ellipsis, at full strength and taking no pointer input.
+- Chat messages take an optional `platform` from the chat sources Restream relays (Twitch, YouTube, Kick, X, Facebook, Discord, LinkedIn, Trovo, DLive, Rumble). The source badge takes that brand's fill and a readable ink; X follows the theme's text colour so it reads in light and dark. `platformColors` and `LiveStreamPlatform` are exported from the blocks entries.
+- Add `ReferralCodeBlock` on React and React Native (`@bloxwap/hig/react/blocks/referral-code-block`, `@bloxwap/hig/native/referral-code-block`, the `blocks` aggregates and `@bloxwap/hig/contracts/referral`) for Hyperliquid referral codes in three stages. Trading towards the goal, the traded volume rolls with `NumberFlow` over a progress bar, with the amount still to trade. Once the goal is met, a field takes the code, cleaned to capitals and numbers by `normalizeReferralCode` (or the host's `normalizeCode`), and a confirmation the trader must acknowledge before `onSetCode`, since a code is set once. With the code set, the block shows the code and its `shareUrl` with Copy and Share. `rewards` adds a card under the code with the unclaimed balance in USDC and Claim, available once the balance reaches `minimum` (1 by default). Every word comes from the host's `labels`.
+- Install with Bun: the lockfile is `bun.lock` and `package-lock.json` is gone. `node-forge` is overridden to 1.4.3.
+
 ## 0.10.2
 
 - Add AddressLockup on web and native with vertical and two-row horizontal presentations for Ethereum, Solana, and Bitcoin.

@@ -1,5 +1,5 @@
 {
-  "version": "0.10.2",
+  "version": "0.11.0",
   "components": [
     {
       "name": "Button",
@@ -858,6 +858,19 @@
       "nativeSupport": "renderer",
       "states": [
         "default"
+      ]
+    },
+    {
+      "name": "ReferralCodeBlock",
+      "route": "components/referral-code-block",
+      "entry": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "progress",
+        "create",
+        "share",
+        "rewards-minimum"
       ]
     },
     {

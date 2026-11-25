@@ -998,6 +998,19 @@
       ]
     },
     {
+      "name": "ReferralCodeBlock",
+      "route": "components/referral-code-block",
+      "family": "blocks",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "progress",
+        "create",
+        "share",
+        "rewards-minimum"
+      ]
+    },
+    {
       "name": "SoundHapticsBlock",
       "route": "components/sound-haptics-block",
       "family": "blocks",

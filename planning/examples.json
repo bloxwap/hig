@@ -1583,7 +1583,7 @@
     },
     {
       "name": "LiveStreamBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "live-stream-block",
       "entry": "blocks",
       "family": "blocks",
@@ -1598,7 +1598,7 @@
     },
     {
       "name": "LiveStreamChatBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "live-stream-chat-block",
       "entry": "blocks",
       "family": "blocks",
@@ -1613,7 +1613,7 @@
     },
     {
       "name": "LiveStreamFeedBlock",
-      "added": "Unreleased",
+      "added": "0.11.0",
       "slug": "live-stream-feed-block",
       "entry": "blocks",
       "family": "blocks",
@@ -1625,6 +1625,43 @@
       ],
       "a11y": "A named message log that announces new lines and takes no pointer input.",
       "feedback": "None. The feed is display only."
+    },
+    {
+      "name": "ReferralCodeBlock",
+      "added": "0.11.0",
+      "slug": "referral-code-block",
+      "entry": "blocks",
+      "family": "blocks",
+      "web": "<C.Stack><C.ReferralCodeBlock goal={10000} volume={checked?10000:6250} code={message||null} onSetCode={code=>setMessage(code)} shareUrl={message?'https://app.hyperliquid.xyz/join/'+message:undefined} onCopy={()=>C.toast.success('Code copied')} onShare={()=>C.toast.success('Share sheet opened')} rewards={{balance:open?0:48.62,onClaim:()=>{setOpen(true);C.toast.success('48.62 USDC sent to your account');},labels:{title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.',note:'Paid in USDC to your trading account.'}}} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}}/>{!checked&&!message?<C.Button intent='secondary' onClick={()=>setChecked(true)}>Trade $3,750</C.Button>:message?<C.Button intent='secondary' onClick={()=>{setMessage('');setChecked(false);}}>Start over</C.Button>:null}</C.Stack>",
+      "native": "<C.Stack><C.ReferralCodeBlock goal={10000} volume={checked?10000:6250} code={message||null} onSetCode={code=>setMessage(code)} shareUrl={message?'https://app.hyperliquid.xyz/join/'+message:undefined} onCopy={()=>C.toast.success('Code copied')} onShare={()=>C.toast.success('Share sheet opened')} rewards={{balance:open?0:48.62,onClaim:()=>{setOpen(true);C.toast.success('48.62 USDC sent to your account');},labels:{title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.',note:'Paid in USDC to your trading account.'}}} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}}/>{!checked&&!message?<C.Button intent='secondary' onPress={()=>setChecked(true)}>Trade $3,750</C.Button>:message?<C.Button intent='secondary' onPress={()=>{setMessage('');setChecked(false);}}>Start over</C.Button>:null}</C.Stack>",
+      "nativeSupport": "renderer",
+      "states": [
+        "default",
+        "progress",
+        "create",
+        "share",
+        "rewards-minimum"
+      ],
+      "a11y": "The traded volume is a named progress bar with its value read as the amount of the goal. The code field is labelled, with its hint and any error as its description. The confirmation is a heading, a warning and a labelled checkbox; Confirm is unavailable until it is ticked. Copy code announces Copied. The rewards balance reads with its token; Claim is unavailable below the minimum, which is said under the balance, and a failed claim is an alert",
+      "feedback": "Set code opens the confirmation. Confirm asks the host to save the code once; the host passes it back as `code`. Copy code and Share link call the host's clipboard and share sheet. Claim to account asks the host to send the whole balance",
+      "variants": {
+        "progress": {
+          "web": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={6250} onSetCode={()=>{}}/>",
+          "native": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={6250} onSetCode={()=>{}}/>"
+        },
+        "create": {
+          "web": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={12480} onSetCode={code=>C.toast.success(code+' saved')}/>",
+          "native": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={12480} onSetCode={code=>C.toast.success(code+' saved')}/>"
+        },
+        "share": {
+          "web": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={12480} code='BLOX' onSetCode={()=>{}} shareUrl='https://app.hyperliquid.xyz/join/BLOX' onCopy={()=>C.toast.success('Code copied')} onShare={()=>C.toast.success('Share sheet opened')} rewards={{balance:48.62,onClaim:()=>C.toast.success('48.62 USDC sent to your account'),labels:{title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.',note:'Paid in USDC to your trading account.'}}}/>",
+          "native": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={12480} code='BLOX' onSetCode={()=>{}} shareUrl='https://app.hyperliquid.xyz/join/BLOX' onCopy={()=>C.toast.success('Code copied')} onShare={()=>C.toast.success('Share sheet opened')} rewards={{balance:48.62,onClaim:()=>C.toast.success('48.62 USDC sent to your account'),labels:{title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.',note:'Paid in USDC to your trading account.'}}}/>"
+        },
+        "rewards-minimum": {
+          "web": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={12480} code='BLOX' onSetCode={()=>{}} shareUrl='https://app.hyperliquid.xyz/join/BLOX' onCopy={()=>C.toast.success('Code copied')} onShare={()=>C.toast.success('Share sheet opened')} rewards={{balance:0.42,onClaim:()=>C.toast.success('48.62 USDC sent to your account'),labels:{title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.',note:'Paid in USDC to your trading account.'}}}/>",
+          "native": "<C.ReferralCodeBlock goal={10000} labels={{title:'Referral code',volume:'Traded volume',goal:g=>'of '+g,remaining:r=>r+' to go',progressNote:'Trade $10,000 on Hyperliquid to create your referral code.',unlocked:'Referral code unlocked',unlockedNote:'Pick a code to share. You can only set it once.',field:'Your code',fieldHint:'Letters and numbers, up to 20.',set:'Set code',confirmTitle:c=>'Set '+c+' as your code?',oneTime:'One time only',confirmWarning:\"You can only set a referral code once. It can't be changed later.\",acknowledge:'I understand this is one time',confirm:'Confirm code',cancel:'Back',yourCode:'Your referral code',shareNote:'Friends who join with your code get 4% off fees on their first $25M traded.',copy:'Copy code',copied:'Copied',share:'Share link'}} volume={12480} code='BLOX' onSetCode={()=>{}} shareUrl='https://app.hyperliquid.xyz/join/BLOX' onCopy={()=>C.toast.success('Code copied')} onShare={()=>C.toast.success('Share sheet opened')} rewards={{balance:0.42,onClaim:()=>C.toast.success('48.62 USDC sent to your account'),labels:{title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.',note:'Paid in USDC to your trading account.'}}}/>"
+        }
+      }
     },
     {
       "name": "SoundHapticsBlock",
@@ -2074,8 +2111,8 @@
       "slug": "install-command",
       "entry": "blocks",
       "family": "actions-surfaces",
-      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.2' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.10.2')}/>",
-      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.10.2' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
+      "web": "<C.InstallCommand command='npm install @bloxwap/hig@0.11.0' onCopy={()=>navigator.clipboard.writeText('npm install @bloxwap/hig@0.11.0')}/>",
+      "native": "<C.InstallCommand command='npm install @bloxwap/hig@0.11.0' onCopy={()=>{setMessage('Host clipboard adapter required');throw new Error('Host clipboard adapter required');}}/>",
       "nativeSupport": "renderer",
       "states": [
         "default"

@@ -54,7 +54,8 @@
     "livestreamblock",
     "livestreamchatblock",
     "live-stream-platforms",
-    "livestreamfeedblock"
+    "livestreamfeedblock",
+    "referralcodeblock"
   ],
   "/docs/guides/components/chart/": [
     "api-and-anatomy",

@@ -1,6 +1,6 @@
 {
   "name": "@bloxwap/hig",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "Bloxwap Human Interface Guidelines: tokens, contracts, React and React Native components, chart adapter, feedback and fonts in one package.",
   "type": "module",
   "license": "MIT",
@@ -45,6 +45,11 @@
       "types": "./contracts/dist/live-stream.d.ts",
       "import": "./contracts/dist/live-stream.js",
       "default": "./contracts/dist/live-stream.js"
+    },
+    "./contracts/referral": {
+      "types": "./contracts/dist/referral.d.ts",
+      "import": "./contracts/dist/referral.js",
+      "default": "./contracts/dist/referral.js"
     },
     "./contracts/format": {
       "types": "./contracts/dist/format.d.ts",
@@ -383,6 +388,11 @@
       "import": "./react/dist/blocks/live-stream-feed-block.js",
       "default": "./react/dist/blocks/live-stream-feed-block.js"
     },
+    "./react/blocks/referral-code-block": {
+      "types": "./react/dist/blocks/referral-code-block.d.ts",
+      "import": "./react/dist/blocks/referral-code-block.js",
+      "default": "./react/dist/blocks/referral-code-block.js"
+    },
     "./react/blocks/sound-haptics-block": {
       "types": "./react/dist/blocks/sound-haptics-block.d.ts",
       "import": "./react/dist/blocks/sound-haptics-block.js",
@@ -552,6 +562,11 @@
       "types": "./native/dist/live-stream-feed-block.d.ts",
       "import": "./native/dist/live-stream-feed-block.js",
       "default": "./native/dist/live-stream-feed-block.js"
+    },
+    "./native/referral-code-block": {
+      "types": "./native/dist/referral-code-block.d.ts",
+      "import": "./native/dist/referral-code-block.js",
+      "default": "./native/dist/referral-code-block.js"
     },
     "./native/sound-haptics-block": {
       "types": "./native/dist/sound-haptics-block.d.ts",
