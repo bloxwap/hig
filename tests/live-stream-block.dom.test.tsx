@@ -12,7 +12,7 @@ function chat(overrides:Partial<LiveStreamChatService>={}):LiveStreamChatService
 }
 function renderBlock(chatProps:LiveStreamChatService,play=vi.fn()){
  return render(<LiveStreamBlock title="Live streaming" streaming={{title:'Streaming',endpointLabel:'Server',keyLabel:'Stream key'}}
-  chat={chatProps} appAudioLabel="App audio" microphoneLabel="Microphone" saveLabel="Save" playLabel="Play" onPlay={play}/>);
+  chat={chatProps} appAudioLabel="App audio" microphoneLabel="Microphone" chatFeedLabel="Live chat feed" saveLabel="Save" playLabel="Play" onPlay={play}/>);
 }
 const button=(name:string)=>screen.getByRole('button',{name}) as HTMLButtonElement;
 const edit=(label:string,value:string)=>fireEvent.change(screen.getByLabelText(label),{target:{value}});
@@ -24,8 +24,8 @@ it('edits the streaming connection and requests a broadcast with the saved value
  expect(screen.getByLabelText('Stream key').getAttribute('type')).toBe('password');
  fireEvent.click(button('Save'));expect(button('Play').disabled).toBe(false);
  fireEvent.click(button('Streaming'));edit('Stream key','discard');fireEvent.click(button('Back'));
- fireEvent.click(screen.getByRole('switch',{name:'Microphone'}));fireEvent.click(button('Play'));
- expect(play).toHaveBeenCalledWith({streaming:{endpoint:'srt://example.org:9000',key:'demo-stream'},appAudio:true,microphone:false});
+ fireEvent.click(screen.getByRole('switch',{name:'Microphone'}));fireEvent.click(screen.getByRole('switch',{name:'Live chat feed'}));fireEvent.click(button('Play'));
+ expect(play).toHaveBeenCalledWith({streaming:{endpoint:'srt://example.org:9000',key:'demo-stream'},appAudio:true,microphone:false,chatFeed:false});
 });
 it('shows the chat status on the row and connects without asking for a URL',async()=>{
  const onConnect=vi.fn(()=>Promise.resolve());

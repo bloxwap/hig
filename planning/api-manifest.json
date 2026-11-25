@@ -1,5 +1,5 @@
 {
-  "version": "0.11.0",
+  "version": "0.11.1",
   "api": {
     "react": {
       "AnimatedNumberTrend": {
@@ -660,7 +660,7 @@
       },
       "LiveStreamFeedBlock": {
         "entry": "blocks/live-stream-feed-block",
-        "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
+        "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible, lineDuration }: LiveStreamFeedBlockProps): React.JSX.Element;"
       },
       "ReferralCodeBlock": {
         "entry": "blocks/referral-code-block",
@@ -2194,7 +2194,7 @@
       },
       "LiveStreamFeedBlock": {
         "entry": "live-stream-feed-block",
-        "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
+        "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible, lineDuration }: LiveStreamFeedBlockProps): React.JSX.Element;"
       },
       "ReferralCodeBlock": {
         "entry": "referral-code-block",
@@ -3136,9 +3136,13 @@
         "entry": "icons",
         "signature": "export declare function TrendIcon({ color, direction }: {\n    color: string;\n    direction: 'up' | 'down';\n}): React.JSX.Element;"
       },
-      "PlatformBadge": {
+      "ChatAvatar": {
         "entry": "live-stream-platform",
-        "signature": "export declare function PlatformBadge({ message }: {\n    message: LiveStreamChatMessage;\n}): React.JSX.Element;"
+        "signature": "export declare function ChatAvatar({ message }: {\n    message: LiveStreamChatMessage;\n}): React.JSX.Element;"
+      },
+      "SourceBadge": {
+        "entry": "live-stream-platform",
+        "signature": "export declare function SourceBadge({ message }: {\n    message: LiveStreamChatMessage;\n}): React.JSX.Element | null;"
       },
       "capsuleRadius": {
         "entry": "modal-radius",

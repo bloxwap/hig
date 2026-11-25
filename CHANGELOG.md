@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.1
+
+- `LiveStreamBlock` adds a Live chat feed switch under the audio switches, on React and React Native. `LiveStreamSettings` gains `chatFeed` (on by default) and the block takes a required `chatFeedLabel`. The host shows `LiveStreamFeedBlock` only while `chatFeed` is on. Hosts that pass `settings` or `defaultSettings` add `chatFeed` to them.
+- `LiveStreamChatBlock` and `LiveStreamFeedBlock` rows change layout on React and React Native: the sender's photo grows from 32 to 40 units, a named `platform` draws as a symbol on the photo's bottom trailing corner (its logo from `platformIcons`, or a letter mark from `platformMarks` for Trovo and DLive, on `platformColors`) instead of a badge beside the name, and the message sits under the username. A line without a known `platform` keeps `source` as a neutral badge. The internal `PlatformBadge` is replaced by `ChatAvatar` and `SourceBadge`.
+- `LiveStreamFeedBlock` is animated on React and React Native. Lines fade upward from the newest at full strength to nothing at the top (`feedLineOpacity`). A new line rises from under the feed's bottom edge and pushes the others up. Each line fades out after `lineDuration` (new prop, default 12000 ms) even when nothing pushes it. `feedFrame`, `feedLineDuration`, `feedFadeDuration` and `feedEnterDuration` are exported from `@bloxwap/hig/contracts/live-stream`. Reduced motion drops the rise and the fades.
+
 ## 0.11.0
 
 - Add `LiveStreamBlock`, `LiveStreamChatBlock` and `LiveStreamFeedBlock` on React and React Native. `LiveStreamBlock` collects the streaming and chat endpoints and keys, with app audio and microphone switches. `LiveStreamChatBlock` is the full chat log: avatar, name, source badge and messages of any length, following the newest line. `LiveStreamFeedBlock` overlays the newest lines on a chart as the same row cut to one line with an ellipsis, at full strength and taking no pointer input.

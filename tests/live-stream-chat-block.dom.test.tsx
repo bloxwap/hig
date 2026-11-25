@@ -2,7 +2,7 @@
 import React from 'react';
 import {afterEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
-import {LiveStreamChatBlock,type LiveStreamChatMessage} from '../packages/hig/react/src/blocks/live-stream-chat-block';
+import {LiveStreamChatBlock,platformIcons,type LiveStreamChatMessage} from '../packages/hig/react/src/blocks/live-stream-chat-block';
 const lines:LiveStreamChatMessage[]=[
  {id:'1',username:'mira',source:'Twitch',text:'gm'},
  {id:'2',username:'okto',source:'Kick',text:'long or short?',avatarUrl:'https://example.org/okto.png'},
@@ -30,16 +30,22 @@ it('follows the newest line until the reader scrolls back',()=>{
  log.scrollTop=40;fireEvent.scroll(log);size(400);add('4');expect(log.scrollTop).toBe(40);
  log.scrollTop=300;fireEvent.scroll(log);size(500);add('5');expect(log.scrollTop).toBe(500);
 });
-it('fills a named platform badge with its brand and keeps an unknown one neutral',()=>{
+it('draws a named platform as a symbol on the photo and keeps an unknown source as a neutral badge',()=>{
  render(<LiveStreamChatBlock title="Chat" emptyLabel="None" messages={[
   {id:'1',username:'a',source:'Twitch',platform:'twitch',text:'hi'},
   {id:'2',username:'b',source:'X',platform:'x',text:'hi'},
   {id:'3',username:'c',source:'Other',text:'hi'},
+  {id:'4',username:'d',source:'Trovo',platform:'trovo',text:'hi'},
  ]}/>);
- const twitch=screen.getByText('Twitch');
+ const symbol=(source:string)=>screen.getByText(source).parentElement as HTMLElement;
+ const twitch=symbol('Twitch');
+ expect(twitch.className).toBe('hig-live-platform');expect(twitch.parentElement?.className).toBe('hig-live-chat-avatar');
  expect(twitch.dataset.platform).toBe('twitch');expect(twitch.style.background).toBe('rgb(145, 70, 255)');expect(twitch.style.color).toBe('rgb(255, 255, 255)');
- const x=screen.getByText('X');expect(x.dataset.platform).toBe('x');expect(x.getAttribute('style')).toBeNull();
- expect(screen.getByText('Other').dataset.platform).toBeUndefined();
+ expect(twitch.firstElementChild?.getAttribute('aria-hidden')).toBe('true');expect(twitch.firstElementChild?.tagName).toBe('svg');expect(twitch.querySelector('path')?.getAttribute('d')).toBe(platformIcons.twitch);
+ const x=symbol('X');expect(x.dataset.platform).toBe('x');expect(x.getAttribute('style')).toBeNull();
+ const other=screen.getByText('Other');
+ expect(other.dataset.platform).toBeUndefined();expect(other.closest('.hig-live-chat-meta')).toBeTruthy();expect(document.querySelectorAll('.hig-live-platform')).toHaveLength(3);
+ const trovo=symbol('Trovo');expect(trovo.querySelector('svg')).toBeNull();expect(trovo.firstElementChild?.textContent).toBe('Tr');
 });
 it('draws a long message in full across lines, unlike the one-line feed',()=>{
  const text='Watching the funding rate flip negative while open interest keeps climbing.';

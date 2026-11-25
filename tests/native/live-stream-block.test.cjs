@@ -12,7 +12,7 @@ const chat=overrides=>({status:'signedOut',onConnect:jest.fn(),labels:{title:'Ch
  note:'Sign in with Restream to show your chat.',status:status=>statusText[status]},...overrides});
 function mount(chatProps,onPlay=jest.fn()){
  const props={title:'Live streaming',streaming:{title:'Streaming',endpointLabel:'Stream',keyLabel:'Stream key'},chat:chatProps,
-  appAudioLabel:'App audio',microphoneLabel:'Microphone',saveLabel:'Save',playLabel:'Play',onPlay};
+  appAudioLabel:'App audio',microphoneLabel:'Microphone',chatFeedLabel:'Live chat feed',saveLabel:'Save',playLabel:'Play',onPlay};
  let root;
  act(()=>{root=create(React.createElement(HIGProvider,null,React.createElement(LiveStreamBlock,props)));});
  const row=label=>root.root.findAllByType(ListRow).find(node=>node.props.label===label);
@@ -34,7 +34,7 @@ it('saves streaming and gives the host the selected settings',()=>{
   open('Streaming');edit(1,'discard');act(()=>root.root.findByType(ScreenHeader).props.onBack());
   act(()=>row('Microphone').props.onCheckedChange(false));
   act(()=>action('Play').props.onPress());
-  expect(onPlay).toHaveBeenCalledWith({streaming:{endpoint:'rtmps://example.org/live',key:'stream-key'},appAudio:true,microphone:false});
+  expect(onPlay).toHaveBeenCalledWith({streaming:{endpoint:'rtmps://example.org/live',key:'stream-key'},appAudio:true,microphone:false,chatFeed:true});
  }finally{view.unmount();}
 });
 it('shows the chat status and connects without asking for a URL',async()=>{

@@ -1,22 +1,21 @@
 import React,{useRef} from 'react';
 import {chatFollowSlack,type LiveStreamChatBlockProps,type LiveStreamChatMessage} from '@bloxwap/hig/contracts/live-stream';
 export type {LiveStreamChatBlockProps,LiveStreamChatMessage,LiveStreamPlatform} from '@bloxwap/hig/contracts/live-stream';
-export {platformColors} from '@bloxwap/hig/contracts/live-stream';
+export {platformColors,platformIcons,platformMarks} from '@bloxwap/hig/contracts/live-stream';
 import {FlatList,View} from 'react-native';
 import {Text} from './surface.js';
 import {useColors,useMessages} from './provider.js';
 import {IconButton} from './button.js';
 import {CloseIcon} from './icons.js';
-import {AvatarFrame} from './avatar-frame.js';
-import {PlatformBadge} from './live-stream-platform.js';
+import {ChatAvatar,SourceBadge} from './live-stream-platform.js';
 import {ScreenHeader} from './screen-header.js';
 function ChatLine({message}:{message:LiveStreamChatMessage}){
  return <View style={{flexDirection:'row',gap:12,alignItems:'flex-start'}}>
-  <AvatarFrame name={message.username} source={message.avatarUrl?{uri:message.avatarUrl}:undefined} size={32} decorative/>
+  <ChatAvatar message={message}/>
   <View style={{flex:1,minWidth:0,gap:2}}>
    <View style={{flexDirection:'row',alignItems:'center',gap:8}}>
     <Text numberOfLines={1} style={{flexShrink:1,fontWeight:'600'}}>{message.username}</Text>
-    <PlatformBadge message={message}/>
+    <SourceBadge message={message}/>
    </View>
    <Text>{message.text}</Text>
   </View>
