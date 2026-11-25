@@ -695,6 +695,16 @@
       "support": "renderer"
     },
     {
+      "name": "ReferralCodeBlock",
+      "states": [
+        "default",
+        "progress",
+        "create",
+        "share"
+      ],
+      "support": "renderer"
+    },
+    {
       "name": "SoundHapticsBlock",
       "states": [
         "default",

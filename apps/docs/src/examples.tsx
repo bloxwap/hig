@@ -40,6 +40,7 @@ const BlocksRewardBlockExamples=lazy(()=>import('./example-groups/blocks-reward-
 const BlocksLiveStreamBlockExamples=lazy(()=>import('./example-groups/blocks-live-stream-block').then(module=>({default:module.Example})));
 const BlocksLiveStreamChatBlockExamples=lazy(()=>import('./example-groups/blocks-live-stream-chat-block').then(module=>({default:module.Example})));
 const BlocksLiveStreamFeedBlockExamples=lazy(()=>import('./example-groups/blocks-live-stream-feed-block').then(module=>({default:module.Example})));
+const BlocksReferralCodeBlockExamples=lazy(()=>import('./example-groups/blocks-referral-code-block').then(module=>({default:module.Example})));
 const BlocksSoundHapticsBlockExamples=lazy(()=>import('./example-groups/blocks-sound-haptics-block').then(module=>({default:module.Example})));
 const BlocksModalBlockExamples=lazy(()=>import('./example-groups/blocks-modal-block').then(module=>({default:module.Example})));
 const BlocksFeedbackBlockExamples=lazy(()=>import('./example-groups/blocks-feedback-block').then(module=>({default:module.Example})));
@@ -146,6 +147,7 @@ const previews:Record<string,React.ComponentType<Props>>={
   "LiveStreamBlock": BlocksLiveStreamBlockExamples,
   "LiveStreamChatBlock": BlocksLiveStreamChatBlockExamples,
   "LiveStreamFeedBlock": BlocksLiveStreamFeedBlockExamples,
+  "ReferralCodeBlock": BlocksReferralCodeBlockExamples,
   "SoundHapticsBlock": BlocksSoundHapticsBlockExamples,
   "ModalBlock": BlocksModalBlockExamples,
   "FeedbackBlock": BlocksFeedbackBlockExamples,

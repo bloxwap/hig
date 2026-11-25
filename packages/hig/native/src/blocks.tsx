@@ -36,3 +36,4 @@ export {AdvancedBlock,type AdvancedBlockProps,type AdvancedTask,type AdvancedWal
 export {LiveStreamBlock,type LiveStreamBlockProps,type LiveStreamSettings,type StreamConnection} from './live-stream-block.js';
 export {LiveStreamChatBlock,platformColors,type LiveStreamChatBlockProps,type LiveStreamChatMessage,type LiveStreamPlatform} from './live-stream-chat-block.js';
 export {LiveStreamFeedBlock,type LiveStreamFeedBlockProps} from './live-stream-feed-block.js';
+export {ReferralCodeBlock,normalizeReferralCode,referralProgress,referralStage,type ReferralCodeBlockProps,type ReferralCodeLabels,type ReferralStage} from './referral-code-block.js';

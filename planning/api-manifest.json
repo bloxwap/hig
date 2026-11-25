@@ -662,6 +662,10 @@
         "entry": "blocks/live-stream-feed-block",
         "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
       },
+      "ReferralCodeBlock": {
+        "entry": "blocks/referral-code-block",
+        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
+      },
       "BrandMark": {
         "entry": "brand",
         "signature": "export declare function BrandMark({ size, label }: {\n    size?: number;\n    label?: string;\n}): React.JSX.Element;"
@@ -2191,6 +2195,10 @@
       "LiveStreamFeedBlock": {
         "entry": "live-stream-feed-block",
         "signature": "export declare function LiveStreamFeedBlock({ label, messages, maxVisible }: LiveStreamFeedBlockProps): React.JSX.Element;"
+      },
+      "ReferralCodeBlock": {
+        "entry": "referral-code-block",
+        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",

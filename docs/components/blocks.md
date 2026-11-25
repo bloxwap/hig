@@ -684,3 +684,13 @@ A chat message can name its `platform`, one of the chat sources Restream relays:
 ## LiveStreamFeedBlock
 
 Chat lines drawn over other content, such as a chart, as they arrive. It takes the same `messages` as `LiveStreamChatBlock`, oldest first, and draws only the newest `maxVisible` (default 4), all at full strength so every line meets text contrast over the chart. Every line is the `LiveStreamChatBlock` row in one line: the sender's photo or initials, the username with the source (Twitch, Kick) as a badge, and the message under them cut to a single line. The full message shows in `LiveStreamChatBlock`, which wraps a long message across as many lines as it needs. The feed pins itself to the bottom of its parent and takes no pointer input, so the chart under it stays usable: on web, give the parent `position: relative`. `label` names the feed for assistive technology and is not drawn.
+
+## ReferralCodeBlock
+
+A trader's referral code in three stages, picked from `volume`, `goal` and `code`.
+
+- **Trading towards the goal.** While `volume` is under `goal` (10,000 on Hyperliquid), the card shows the traded volume as a large figure that rolls with NumberFlow as it changes, the goal under it, a bar that fills to it, and what is still to trade with the share reached. The bar is a named progress bar for assistive technology. `volume: null` reads as unknown and draws an empty bar. `volumeOptions` formats the figures; the default is whole US dollars.
+- **Goal met.** Once `volume` reaches `goal` and there is no `code`, the card says the code is unlocked and shows a field. What is typed is cleaned as it goes: capitals, letters and numbers, at most 20 (`normalizeCode` replaces this). Set code opens a confirmation in the same card: the code, a warning that it can be set only once, and a checkbox the trader must tick before Confirm is available. Confirm calls `onSetCode(code)`; the host saves it, sets `busy` while it does, and passes it back as `code`. A failed save keeps the confirmation open with `error` under the checkbox.
+- **Code set.** With `code`, the card shows it large in the mono face, the `shareUrl` under it, `labels.shareNote` (such as the 4% discount a friend gets), and Copy code and Share link when the host passes `onCopy` and `onShare`. Copy code reads Copied for two seconds after the host's copy resolves.
+
+Every word is host text in `labels`, so the goal and the code read in the host's language and currency. The block never reads a balance or an exchange: the host passes `volume` and saves the code.
