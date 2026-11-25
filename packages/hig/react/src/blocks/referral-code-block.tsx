@@ -1,22 +1,22 @@
 "use client";
 import React from 'react';
 import {formatNumber} from '@bloxwap/hig/contracts/format';
-import {normalizeReferralCode,referralCodeMaxLength,referralCopiedMs,referralProgress,referralStage,referralVolumeFormat,type ReferralCodeBlockProps} from '@bloxwap/hig/contracts/referral';
-export type {ReferralCodeBlockProps,ReferralCodeLabels,ReferralStage} from '@bloxwap/hig/contracts/referral';
-export {normalizeReferralCode,referralProgress,referralStage} from '@bloxwap/hig/contracts/referral';
+import {normalizeReferralCode,referralClaimable,referralCodeMaxLength,referralCopiedMs,referralProgress,referralRewardsFormat,referralStage,referralVolumeFormat,type ReferralCodeBlockProps,type ReferralRewards} from '@bloxwap/hig/contracts/referral';
+export type {ReferralCodeBlockProps,ReferralCodeLabels,ReferralRewards,ReferralStage} from '@bloxwap/hig/contracts/referral';
+export {normalizeReferralCode,referralClaimable,referralProgress,referralStage} from '@bloxwap/hig/contracts/referral';
 import {useNumberLocale,usePresentNumber} from '../provider.js';
 import {NumberFlow} from '../animated-number.js';
 import {Button} from '../button.js';
 import {Field,Input} from '../field.js';
 import {Checkbox} from '../selection.js';
-import {InlineNotice} from '../status.js';
+import {Alert,InlineNotice} from '../status.js';
 import {ScreenHeader} from './screen-header.js';
 /**
  * A referral code in three stages. Trading towards the goal: the traded volume rolling with NumberFlow over a bar that fills to it.
  * Goal met: a field for the code, then a confirmation the trader must acknowledge, since a code is set once. Code set: the code and
  * its link, with Copy and Share.
  */
-export function ReferralCodeBlock({volume,goal,volumeOptions=referralVolumeFormat,code,labels,onSetCode,busy,error,normalizeCode=normalizeReferralCode,shareUrl,onCopy,onShare,onBack,headingId}:ReferralCodeBlockProps){
+export function ReferralCodeBlock({volume,goal,volumeOptions=referralVolumeFormat,code,labels,onSetCode,busy,error,normalizeCode=normalizeReferralCode,shareUrl,onCopy,onShare,rewards,onBack,headingId}:ReferralCodeBlockProps){
  const locale=useNumberLocale();const present=usePresentNumber();
  const stage=referralStage(volume,goal,code);
  const [draft,setDraft]=React.useState('');
@@ -72,5 +72,20 @@ export function ReferralCodeBlock({volume,goal,volumeOptions=referralVolumeForma
     {onShare&&<Button onClick={()=>onShare(code,shareUrl)}>{labels.share}</Button>}
    </div>}
   </div>}
+  {stage==='share'&&code&&rewards&&<RewardsCard rewards={rewards} money={volumeOptions}/>}
  </section>;
+}
+/** The referrer's unclaimed rewards and Claim, under the code. */
+function RewardsCard({rewards,money}:{rewards:ReferralRewards;money:Intl.NumberFormatOptions}){
+ const locale=useNumberLocale();const present=usePresentNumber();
+ const {balance,symbol='USDC',minimum=1,onClaim,claiming,error,labels}=rewards;
+ const claimable=referralClaimable(balance,minimum);
+ const below=balance!=null&&Number.isFinite(balance)&&!claimable;
+ return <div className='hig-surface hig-referral-card hig-referral-rewards'>
+  <p className='hig-referral-eyebrow'>{labels.title}</p>
+  <p className='hig-referral-figure'><NumberFlow value={balance} options={present(referralRewardsFormat)}/> <span className='hig-referral-symbol'>{symbol}</span></p>
+  {below?<p className='hig-referral-note hig-number'>{labels.minimum(formatNumber(minimum,locale,present(money)))}</p>:labels.note&&<p className='hig-referral-note'>{labels.note}</p>}
+  {error&&<Alert severity='error' title={error}/>}
+  <Button fullWidth busy={claiming} disabled={!claimable} onClick={()=>{Promise.resolve().then(onClaim).catch(()=>{/* The host's `error` explains. */});}}>{labels.claim}</Button>
+ </div>;
 }

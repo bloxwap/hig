@@ -1,16 +1,17 @@
 import React from 'react';
-import {normalizeReferralCode,referralCodeMaxLength,referralCopiedMs,referralProgress,referralStage,referralVolumeFormat,type ReferralCodeBlockProps} from '@bloxwap/hig/contracts/referral';
-export type {ReferralCodeBlockProps,ReferralCodeLabels,ReferralStage} from '@bloxwap/hig/contracts/referral';
-export {normalizeReferralCode,referralProgress,referralStage} from '@bloxwap/hig/contracts/referral';
+import {normalizeReferralCode,referralClaimable,referralCodeMaxLength,referralCopiedMs,referralProgress,referralRewardsFormat,referralStage,referralVolumeFormat,type ReferralCodeBlockProps,type ReferralRewards} from '@bloxwap/hig/contracts/referral';
+export type {ReferralCodeBlockProps,ReferralCodeLabels,ReferralRewards,ReferralStage} from '@bloxwap/hig/contracts/referral';
+export {normalizeReferralCode,referralClaimable,referralProgress,referralStage} from '@bloxwap/hig/contracts/referral';
 import {View} from 'react-native';
 import {formatNumber} from './number-format.js';
+import {formatNumberReadout} from './animated-number-model.js';
 import {useColors,useFills,useLayoutDirection,useMonoFontFamily,useNumberLocale,usePresentNumber} from './provider.js';
 import {Surface,Text} from './surface.js';
 import {NumberFlow} from './animated-number.js';
 import {Button} from './button.js';
 import {Field,Input} from './field.js';
 import {Checkbox} from './checkbox.js';
-import {InlineNotice} from './status.js';
+import {Alert,InlineNotice} from './status.js';
 import {ScreenHeader} from './screen-header.js';
 const hidden={accessible:false,accessibilityElementsHidden:true,importantForAccessibility:'no-hide-descendants' as const};
 /**
@@ -18,7 +19,7 @@ const hidden={accessible:false,accessibilityElementsHidden:true,importantForAcce
  * Goal met: a field for the code, then a confirmation the trader must acknowledge, since a code is set once. Code set: the code and
  * its link, with Copy and Share.
  */
-export function ReferralCodeBlock({volume,goal,volumeOptions=referralVolumeFormat,code,labels,onSetCode,busy,error,normalizeCode=normalizeReferralCode,shareUrl,onCopy,onShare,onBack,headingId}:ReferralCodeBlockProps){
+export function ReferralCodeBlock({volume,goal,volumeOptions=referralVolumeFormat,code,labels,onSetCode,busy,error,normalizeCode=normalizeReferralCode,shareUrl,onCopy,onShare,rewards,onBack,headingId}:ReferralCodeBlockProps){
  const colors=useColors();const fills=useFills();const direction=useLayoutDirection();const mono=useMonoFontFamily();
  const locale=useNumberLocale();const present=usePresentNumber();
  const stage=referralStage(volume,goal,code);
@@ -84,5 +85,25 @@ export function ReferralCodeBlock({volume,goal,volumeOptions=referralVolumeForma
     {onShare?<View style={{flex:1}}><Button testID='referral-code-share-button' fullWidth onPress={()=>onShare(code,shareUrl)}>{labels.share}</Button></View>:null}
    </View>:null}
   </Surface>:null}
+  {stage==='share'&&code&&rewards?<RewardsCard rewards={rewards} money={volumeOptions}/>:null}
  </View>;
+}
+/** The referrer's unclaimed rewards and Claim, under the code. */
+function RewardsCard({rewards,money}:{rewards:ReferralRewards;money:Intl.NumberFormatOptions}){
+ const colors=useColors();const locale=useNumberLocale();const present=usePresentNumber();const direction=useLayoutDirection();
+ const {balance,symbol='USDC',minimum=1,onClaim,claiming,error,labels}=rewards;
+ const claimable=referralClaimable(balance,minimum);
+ const below=balance!=null&&Number.isFinite(balance)&&!claimable;
+ const figure={fontSize:44,lineHeight:50,fontWeight:'700' as const,letterSpacing:-0.9};
+ const muted={fontSize:15,lineHeight:22,color:colors.muted} as const;
+ return <Surface testID='referral-code-rewards' style={{gap:12}}>
+  <Text style={{fontSize:12,lineHeight:16,letterSpacing:1.4,textTransform:'uppercase',color:colors.muted}}>{labels.title}</Text>
+  <View accessible accessibilityLabel={`${balance==null?'':formatNumberReadout(balance,locale,present(referralRewardsFormat)).text} ${symbol}`} style={{direction,flexDirection:'row',alignItems:'baseline',gap:6}}>
+   <View {...hidden}><NumberFlow value={balance} options={present(referralRewardsFormat)} tone='text' style={figure}/></View>
+   <Text {...hidden} style={{fontSize:22,lineHeight:28,fontWeight:'600',color:colors.muted}}>{symbol}</Text>
+  </View>
+  {below?<Text testID='referral-code-minimum' style={muted}>{labels.minimum(formatNumber(minimum,locale,present(money)))}</Text>:labels.note?<Text style={muted}>{labels.note}</Text>:null}
+  {error?<Alert severity='error' title={error}/>:null}
+  <Button testID='referral-code-claim' fullWidth busy={claiming} disabled={!claimable} onPress={()=>{if(!claimable||claiming)return;Promise.resolve().then(onClaim).catch(()=>{/* The host's `error` explains. */});}}>{labels.claim}</Button>
+ </Surface>;
 }

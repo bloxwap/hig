@@ -33,3 +33,19 @@ it('confirms the code once ticked and then shares it',async()=>{
   expect(onShare).toHaveBeenCalledWith('BLOX','https://app.hyperliquid.xyz/join/BLOX');
  }finally{act(()=>root.unmount());}
 });
+it('claims rewards only at or above the minimum',async()=>{
+ const onClaim=jest.fn();
+ const rewardLabels={title:'Referral rewards',claim:'Claim to account',minimum:m=>'Claim once you have '+m+' or more.'};
+ const props=balance=>({volume:12000,code:'BLOX',rewards:{balance,onClaim,labels:rewardLabels}});
+ const root=mount(props(.42));
+ try{
+  expect(root.root.findByProps({testID:'referral-code-claim'}).props.disabled).toBe(true);
+  expect(text(root)).toContain('Claim once you have $1 or more.');
+  act(()=>root.root.findByProps({testID:'referral-code-claim'}).props.onPress());
+  expect(onClaim).not.toHaveBeenCalled();
+  act(()=>root.update(React.createElement(HIGProvider,null,React.createElement(ReferralCodeBlock,{goal:10000,labels,onSetCode:()=>{},...props(48.62)}))));
+  expect(text(root)).not.toContain('Claim once you have');
+  await act(async()=>{root.root.findByProps({testID:'referral-code-claim'}).props.onPress();});
+  expect(onClaim).toHaveBeenCalledTimes(1);
+ }finally{act(()=>root.unmount());}
+});

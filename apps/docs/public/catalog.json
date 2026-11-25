@@ -869,7 +869,8 @@
         "default",
         "progress",
         "create",
-        "share"
+        "share",
+        "rewards-minimum"
       ]
     },
     {

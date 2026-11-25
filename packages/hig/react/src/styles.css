@@ -1359,6 +1359,7 @@ span.hig-press-decoration[data-kind] > * { pointer-events:auto; }
 .hig-referral-code { padding:16px;border-radius:16px;background:var(--hig-fill);color:var(--hig-text);font-family:var(--hig-font-mono,'Bloxwap Mono',ui-monospace,monospace);font-size:clamp(1.5rem,8vw,2.25rem);font-weight:700;letter-spacing:.12em;line-height:1.2;text-align:center;overflow-wrap:anywhere; }
 .hig-referral-link { color:var(--hig-muted);font-size:.875rem;text-align:center;overflow-wrap:anywhere; }
 .hig-referral-error { color:var(--hig-negative);font-size:.9375rem; }
+.hig-referral-symbol { color:var(--hig-muted);font-size:.5em;font-weight:600;letter-spacing:0; }
 .hig-referral-actions { display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px; }
 @media (prefers-reduced-motion: reduce) { .hig-referral-track > span { transition:none; } }
 [data-hig-motion='reduced'] .hig-referral-track > span { transition:none; }

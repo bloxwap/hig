@@ -51,3 +51,21 @@ it('shares the code and its link and reads Copied after a copy',async()=>{
  fireEvent.click(screen.getByRole('button',{name:'Share link'}));
  expect(onShare).toHaveBeenCalledWith('BLOX','https://app.hyperliquid.xyz/join/BLOX');
 });
+const rewardLabels={title:'Referral rewards',claim:'Claim to account',minimum:(m:string)=>'Claim once you have '+m+' or more.',note:'Paid to your account.'};
+it('claims rewards at or above the minimum, and says why below it',async()=>{
+ const {referralClaimable}=await import('../packages/hig/contracts/src/referral');
+ expect(referralClaimable(1)).toBe(true);expect(referralClaimable(.99)).toBe(false);expect(referralClaimable(null)).toBe(false);expect(referralClaimable(0,0)).toBe(false);
+ const onClaim=vi.fn();
+ const block=(balance:number|null,extra={})=><ReferralCodeBlock volume={12000} goal={10000} code='BLOX' labels={labels} onSetCode={()=>{}} rewards={{balance,onClaim,labels:rewardLabels,...extra}}/>;
+ const view=render(block(48.62));
+ expect(screen.getByText('Referral rewards')).toBeTruthy();expect(screen.getByText('USDC')).toBeTruthy();expect(screen.getByText('Paid to your account.')).toBeTruthy();
+ await act(async()=>{fireEvent.click(screen.getByRole('button',{name:'Claim to account'}));});
+ expect(onClaim).toHaveBeenCalledTimes(1);
+ view.rerender(block(.42));
+ expect((screen.getByRole('button',{name:'Claim to account'}) as HTMLButtonElement).disabled).toBe(true);
+ expect(screen.getByText('Claim once you have $1 or more.')).toBeTruthy();
+ view.rerender(block(48.62,{error:'Claim failed'}));
+ expect(screen.getByRole('alert').textContent).toContain('Claim failed');
+ view.rerender(<ReferralCodeBlock volume={6000} goal={10000} labels={labels} onSetCode={()=>{}} rewards={{balance:48.62,onClaim,labels:rewardLabels}}/>);
+ expect(screen.queryByText('Referral rewards')).toBeNull();
+});

@@ -664,7 +664,7 @@
       },
       "ReferralCodeBlock": {
         "entry": "blocks/referral-code-block",
-        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
+        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, rewards, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",
@@ -2198,7 +2198,7 @@
       },
       "ReferralCodeBlock": {
         "entry": "referral-code-block",
-        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
+        "signature": "export declare function ReferralCodeBlock({ volume, goal, volumeOptions, code, labels, onSetCode, busy, error, normalizeCode, shareUrl, onCopy, onShare, rewards, onBack, headingId }: ReferralCodeBlockProps): React.JSX.Element;"
       },
       "BrandMark": {
         "entry": "brand",

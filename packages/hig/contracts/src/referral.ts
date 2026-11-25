@@ -61,6 +61,37 @@ export const referralCodeMaxLength=20;
 export function normalizeReferralCode(input:string):string{
  return input.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,referralCodeMaxLength);
 }
+/** What the referrer has earned, shown once the code is set, and how to claim it. The host reads the balance and sends the payout. */
+export interface ReferralRewards {
+ /** The unclaimed balance, in `symbol` units. `null` reads as unknown. It rolls with NumberFlow as it changes. */
+ balance:number|null;
+ /** The token the rewards are paid in, after the balance. Defaults to USDC. */
+ symbol?:string;
+ /** The smallest balance that can be claimed. Defaults to 1, Hyperliquid's claim threshold. */
+ minimum?:number;
+ /** Claims the whole balance. The host sends it to the trader's account and passes the new `balance`. */
+ onClaim:()=>unknown;
+ /** The claim is being sent: Claim shows a spinner and ignores presses. */
+ claiming?:boolean;
+ /** Why the claim failed. Drawn above Claim, which stays available for another try. */
+ error?:string;
+ labels:{
+  /** Over the balance: Referral rewards. */
+  title:string;
+  /** The claim button: Claim to account. */
+  claim:string;
+  /** Under the balance while it is below `minimum`, given the formatted minimum: Claim once you have $1 or more. */
+  minimum:(minimum:string)=>string;
+  /** Under the balance, such as where the claim goes: Paid in USDC to your trading account. */
+  note?:string;
+ };
+}
+/** Two fraction digits, the default format of a rewards balance. */
+export const referralRewardsFormat:Intl.NumberFormatOptions={minimumFractionDigits:2,maximumFractionDigits:2};
+/** Whether a rewards balance can be claimed: known, finite, and at least the minimum (and above zero). */
+export function referralClaimable(balance:number|null|undefined,minimum=1):boolean{
+ return balance!=null&&Number.isFinite(balance)&&balance>0&&balance>=minimum;
+}
 export interface ReferralCodeBlockProps {
  /** What the trader has traded so far, in the goal's currency. `null` reads as unknown and draws an empty bar. The figure rolls with NumberFlow as it changes. */
  volume:number|null;
@@ -85,6 +116,8 @@ export interface ReferralCodeBlockProps {
  onCopy?:(code:string)=>unknown;
  /** Shows Share link. The host opens its share sheet with `shareUrl`, or the code when there is no link. */
  onShare?:(code:string,url:string|undefined)=>unknown;
+ /** Adds the rewards card under the code once it is set: the balance and Claim. */
+ rewards?:ReferralRewards;
  /** Shows Back on the leading edge of the header. */
  onBack?:()=>void;
  /** `id` of the header's heading, so a host dialog or sheet can name itself with `aria-labelledby`. */
