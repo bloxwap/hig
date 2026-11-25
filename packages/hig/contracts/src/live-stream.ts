@@ -4,16 +4,43 @@ export interface StreamConnection {
 }
 export interface LiveStreamSettings {
  streaming:StreamConnection;
- chat:StreamConnection;
  appAudio:boolean;
  microphone:boolean;
 }
 export type StreamSection='streaming'|'chat';
+/** Where the chat authorization service stands. The host drives it. */
+export type LiveStreamChatStatus='unconfigured'|'signedOut'|'connecting'|'connected'|'failed';
+/**
+ * Chat through a trusted HTTPS authorization service the host's user configures. The service holds the confidential
+ * application secret and refresh token on its server, so the block only takes its URL and shows where it stands.
+ */
+export interface LiveStreamChatService {
+ status:LiveStreamChatStatus;
+ /** The saved service URL, shown in the field when the section opens. */
+ serviceUrl?:string;
+ /** Shown under the status for `failed` (host text). */
+ error?:string;
+ /** Save the URL (trimmed) and start authorization. The host validates and opens the browser. A rejected promise keeps the section open. */
+ onConnect:(serviceUrl:string)=>unknown;
+ /** Sign out of the service (connected/signedOut/failed). */
+ onDisconnect?:()=>unknown;
+ /** Retry authorization with the saved URL (signedOut/failed). */
+ onReconnect?:()=>unknown;
+ labels:{
+  title:string;
+  serviceLabel:string;
+  connect:string;
+  disconnect:string;
+  reconnect?:string;
+  note:string;
+  status:(status:LiveStreamChatStatus)=>string;
+ };
+}
 export interface LiveStreamBlockProps {
  title:string;
  description?:string;
  streaming:{title:string;endpointLabel:string;keyLabel:string};
- chat:{title:string;endpointLabel:string;keyLabel:string};
+ chat:LiveStreamChatService;
  appAudioLabel:string;
  microphoneLabel:string;
  saveLabel:string;
@@ -26,16 +53,33 @@ export interface LiveStreamBlockProps {
  onBack?:()=>void;
 }
 export const initialStreamSettings:LiveStreamSettings={
- streaming:{endpoint:'',key:''},chat:{endpoint:'',key:''},appAudio:true,microphone:true,
+ streaming:{endpoint:'',key:''},appAudio:true,microphone:true,
 };
-export function connectionReady(section:StreamSection,connection:StreamConnection){
+/** A stream server link (RTMPS, RTMP or SRT) and a key. */
+export function connectionReady(connection:StreamConnection){
  if(!connection.endpoint.trim()||!connection.key.trim())return false;
- if(section==='chat')return true;
  try{
   const url=new URL(connection.endpoint);
   return !!url.hostname&&['rtmps:','rtmp:','srt:'].includes(url.protocol);
  }catch{return false;}
 }
+/**
+ * A chat authorization service origin: `https`, a host, and nothing else (no user or password, port, query or
+ * fragment, and an empty or `/` path). Surrounding spaces are ignored.
+ */
+export function chatServiceUrlValid(value:string):boolean{
+ const text=value.trim();
+ // The raw text is checked too: URL drops a default port and an empty `?` or `#`, which still count as given.
+ if(!/^https:\/\/[^\s/\\?#@:[\]]+\/?$/i.test(text))return false;
+ try{
+  const url=new URL(text);
+  return url.protocol==='https:'&&!!url.hostname&&!url.username&&!url.password&&!url.port&&!url.search&&!url.hash&&url.pathname==='/';
+ }catch{return false;}
+}
+/** The chat statuses that can sign out of the service. */
+export function chatCanDisconnect(status:LiveStreamChatStatus){return status==='connected'||status==='signedOut'||status==='failed';}
+/** The chat statuses that can retry authorization with the saved URL. */
+export function chatCanReconnect(status:LiveStreamChatStatus){return status==='signedOut'||status==='failed';}
 /** The chat platforms Restream relays (its chat event sources), by stable id. */
 export type LiveStreamPlatform='twitch'|'youtube'|'kick'|'x'|'facebook'|'discord'|'linkedin'|'trovo'|'dlive'|'rumble';
 /**
