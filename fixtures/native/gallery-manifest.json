@@ -724,7 +724,8 @@
         "tournament-invite",
         "trend",
         "swing",
-        "live-activity"
+        "live-activity",
+        "push-notifications"
       ],
       "support": "alternative"
     },
