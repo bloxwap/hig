@@ -1,6 +1,27 @@
 import {describe,expect,it} from 'vitest';
 import {backdropProgress,detentHeight,detentHeights,dragPosition,releaseTarget,rubberBand,SHEET_CLOSE,SHEET_FLICK,SHEET_FLICK_REACH,SHEET_FLICK_TRAVEL,SHEET_RESIZE,SHEET_THROW,SHEET_TRAVEL,SHEET_VIEW_ENTER,SHEET_VIEW_SCALE} from '../packages/hig/contracts/src/gesture-sheet';
 import * as native from '../packages/hig/native/src/gesture-sheet-model';
+describe('who takes a drag inside a native sheet that holds a scroller',()=>{
+ // The top detent sits at 80. A drag that began there has `start` 80.
+ const owns=(position:number,offset:number,travel:number,scrollers=1,start=80)=>native.scrollerOwnsDrag(scrollers,start,80,position,offset,travel);
+ it('gives the content any travel above where the drag began, and the drag while it is scrolled and the sheet rests at its top',()=>{
+  expect(owns(80,0,-12)).toBe(true);expect(owns(80,240,30)).toBe(true);expect(owns(80,0.4,30)).toBe(true);
+  // Content at its top, finger moving down: the sheet takes it.
+  expect(owns(80,0,30)).toBe(false);expect(owns(80,0,0)).toBe(false);
+ });
+ it('keeps the drag with the sheet once the drag has moved it, whatever the content reports',()=>{
+  // The sheet is 40 below its top detent and the content slipped 6 under the moving finger.
+  expect(owns(120,6,40)).toBe(false);expect(owns(81,6,1)).toBe(false);
+  // Within half a point of the top the sheet counts as resting there.
+  expect(owns(80.5,6,0.5)).toBe(true);
+  // The finger comes back above where the drag began: the content scrolls again.
+  expect(owns(120,0,-1)).toBe(true);
+ });
+ it('never gives the drag to the content without a scroller, or when the drag began below the top detent',()=>{
+  expect(owns(80,240,30,0)).toBe(false);expect(owns(80,0,-12,0)).toBe(false);
+  expect(owns(400,240,-30,1,400)).toBe(false);expect(owns(80,240,-320,1,400)).toBe(false);
+ });
+});
 describe('gesture sheet arithmetic, shared by the web and native engines',()=>{
  it('reads detents as points or a share of the room, clamped, sorted and without duplicates',()=>{
   expect(detentHeight(300,800)).toBe(300);expect(detentHeight('50%',800)).toBe(400);expect(detentHeight(2000,800)).toBe(800);expect(detentHeight(-5,800)).toBe(0);expect(detentHeight('x%' as `${number}%`,800)).toBe(0);

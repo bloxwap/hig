@@ -3092,6 +3092,10 @@
         "entry": "flat-list-options",
         "signature": "export declare const memoizedRenderer: {\n    readonly strictMode: true;\n};"
       },
+      "scrollerOwnsDrag": {
+        "entry": "gesture-sheet-model",
+        "signature": "export declare function scrollerOwnsDrag(scrollers: number, start: number, top: number, position: number, offset: number, travel: number): boolean;"
+      },
       "HeaderInfoProps": {
         "entry": "header-info",
         "signature": "export interface HeaderInfoProps {\n    /** Accessible name of the info button: About Papertrade. */\n    label: string;\n    /** What the popover says. Host text. */\n    children: React.ReactNode;\n    /** `warning` and `negative` lead the popover with that severity's symbol in its colour. Default `muted`. */\n    tone?: 'muted' | 'warning' | 'negative';\n    /** Test ID of the button; the popover is `<testID>-popover`. Default `header-info`. */\n    testID?: string;\n}"

@@ -7,6 +7,7 @@ jest.mock('react-native-reanimated',()=>{
  const shared=initial=>{const ref=React.useRef(null);if(ref.current===null)ref.current={value:initial};return ref.current;};
  return {__esModule:true,default:{View:RN.View,ScrollView:RN.ScrollView},cancelAnimation:()=>{},Easing:{bezier:(...points)=>points},ReduceMotion:{Always:'always',System:'system'},runOnJS:fn=>fn,
   useSharedValue:shared,useDerivedValue:fn=>({get value(){return fn();}}),useAnimatedStyle:()=>({}),useAnimatedProps:()=>({}),useAnimatedScrollHandler:handler=>handler,useAnimatedReaction:()=>{},
+  useAnimatedRef:()=>{const ref=React.useRef(null);if(ref.current===null){const set=node=>{set.current=node;};set.current=null;ref.current=set;}return ref.current;},scrollTo:jest.fn(),
   withTiming:to=>to};
 });
 jest.mock('react-native-gesture-handler',()=>{
@@ -94,10 +95,16 @@ it('sizes fixed content to the tallest detent and caps content-sized sheets',()=
  expect(view.findAll(node=>typeof node.type==='string'&&node.props.style&&require('react-native').StyleSheet.flatten(node.props.style).maxHeight===300)).toHaveLength(1);void box;
 });
 
-it('GestureSheetScrollView is a plain scroller outside a sheet, with bounce and overscroll off',()=>{
+it('GestureSheetScrollView bounces overflowing content at its edges, and a host can turn that off',()=>{
  act(()=>{root=create(h(GestureSheetScrollView,{testID:'scroller'},h(RNText,null,'Row')));});
- const scroller=root.root.findAll(node=>node.props.testID==='scroller'&&node.props.bounces!==undefined)[0];
- expect(scroller.props).toMatchObject({bounces:false,overScrollMode:'never',scrollEventThrottle:16});
+ const scroller=root.root.findAll(node=>node.props.testID==='scroller'&&node.props.overScrollMode!==undefined)[0];
+ // Overflowing content rubber-bands at its edges; content that fits stays put.
+ expect(scroller.props).toMatchObject({alwaysBounceVertical:false,overScrollMode:'auto',scrollEventThrottle:16});
+ expect(scroller.props.bounces).not.toBe(false);
+ act(()=>root.unmount());
+ act(()=>{root=create(h(GestureSheetScrollView,{testID:'scroller',bounces:false,overScrollMode:'never'},h(RNText,null,'Row')));});
+ const still=root.root.findAll(node=>node.props.testID==='scroller'&&node.props.overScrollMode!==undefined)[0];
+ expect(still.props).toMatchObject({bounces:false,overScrollMode:'never'});
 });
 
 it('does not republish a stable sheet on unrelated parent updates and still propagates changed content',()=>{
@@ -127,6 +134,36 @@ it('hands a list its own scroll events as well as the sheet\'s, so a windowed li
  const scroller=root.root.findByType(ScrollView);
  act(()=>scroller.props.onScroll({contentOffset:{y:120}}));
  expect(onScroll).toHaveBeenCalledWith(expect.objectContaining({nativeEvent:expect.objectContaining({contentOffset:{y:120}})}));
+});
+it('reads a bounce past the top edge as content at its top, so the pull still moves the sheet',()=>{
+ const {ScrollView}=require('react-native');const {scrollTo}=require('react-native-reanimated');scrollTo.mockClear();
+ // The stand-ins never run the opening travel, so this open sheet is still below its top detent and holds its content.
+ const view=mount({open:true,contentMode:'custom',children:h(GestureSheetScrollView,{testID:'bounced'},h(RNText,null,'Row'))});layout(view);
+ const scroller=view.findAll(node=>node.type===ScrollView&&node.props.testID==='bounced')[0];
+ // The bounce pulled the content 30 past its top: it is put back at its top, never at a negative offset.
+ act(()=>scroller.props.onScroll({contentOffset:{y:-30}}));
+ expect(scrollTo).toHaveBeenCalledTimes(1);expect(scrollTo.mock.calls[0].slice(1)).toEqual([0,0,false]);
+});
+it('holds its content while the sheet is away from its top detent, and tells neither the sheet nor the host',()=>{
+ const {ScrollView}=require('react-native');const {scrollTo}=require('react-native-reanimated');scrollTo.mockClear();
+ const onScroll=jest.fn();
+ // The stand-ins never run the opening travel, so this open sheet is still below its top detent.
+ const view=mount({open:true,contentMode:'custom',children:h(GestureSheetScrollView,{testID:'held',onScroll},h(RNText,null,'Row'))});layout(view);
+ const scroller=view.findAll(node=>node.type===ScrollView&&node.props.testID==='held')[0];
+ // The content slips 40 under a moving sheet: it is put back where it was (its top) at once.
+ act(()=>scroller.props.onScroll({contentOffset:{y:40}}));
+ expect(scrollTo).toHaveBeenCalledTimes(1);expect(scrollTo.mock.calls[0].slice(1)).toEqual([0,0,false]);
+ expect(onScroll).not.toHaveBeenCalled();
+ // The event that reports it back at its place moves nothing again.
+ act(()=>scroller.props.onScroll({contentOffset:{y:0}}));
+ expect(scrollTo).toHaveBeenCalledTimes(1);expect(onScroll).not.toHaveBeenCalled();
+});
+it('keeps a host ref on the scroller as well as its own',()=>{
+ const {ScrollView}=require('react-native');const ref=React.createRef();const seen=jest.fn();
+ act(()=>{root=create(h(GestureSheetScrollView,{ref}));});
+ expect(ref.current).toBe(root.root.findByType(ScrollView).instance);
+ act(()=>root.update(h(GestureSheetScrollView,{ref:seen})));
+ expect(seen).toHaveBeenCalledWith(root.root.findByType(ScrollView).instance);
 });
 it('draws nothing behind its handle: no highlight sits in the top corner of the surface',()=>{
  const {RadialGradient,LinearGradient}=require('react-native-svg');
