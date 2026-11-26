@@ -1162,6 +1162,7 @@ button.hig-list-row:active,a.hig-list-row:active { background:var(--hig-fill-rai
 .hig-modal-section[data-tone='positive'] { --hig-modal-tone:var(--hig-positive); }
 .hig-modal-section[data-tone='negative'] { --hig-modal-tone:var(--hig-negative); }
 .hig-modal-section[data-tone='warning'] { --hig-modal-tone:var(--hig-warning); }
+.hig-modal-section[data-tone='info'] { --hig-modal-tone:var(--hig-info); }
 .hig-modal-icon { flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--hig-modal-tone);background:color-mix(in srgb,var(--hig-modal-tone) 15%,transparent); }
 .hig-modal-section h3 { margin:0;font-size:1rem;line-height:1.5;font-weight:700;color:var(--hig-text); }
 .hig-modal-section h3 > span { color:var(--hig-muted); }

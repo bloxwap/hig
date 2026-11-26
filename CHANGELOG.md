@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2
+
+- `ModalBlock` adds a Push notifications modal on React and React Native: the ask before the system permission prompt. It says what the viewer gets (payouts, moves over 2%, market open and close) as three rows, then Not now and Turn on. It is built from `Dialog` and the existing modal classes, with no new API.
+
 ## 0.11.1
 
 - `LiveStreamBlock` adds a Live chat feed switch under the audio switches, on React and React Native. `LiveStreamSettings` gains `chatFeed` (on by default) and the block takes a required `chatFeedLabel`. The host shows `LiveStreamFeedBlock` only while `chatFeed` is on. Hosts that pass `settings` or `defaultSettings` add `chatFeed` to them.

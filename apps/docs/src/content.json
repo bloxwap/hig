@@ -3904,7 +3904,8 @@
         "tournament-invite",
         "trend",
         "swing",
-        "live-activity"
+        "live-activity",
+        "push-notifications"
       ],
       "a11y": "Choose a modal, then open it to review dialog focus and dismissal",
       "feedback": "Preview actions update local demo state",
